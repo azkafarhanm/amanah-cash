@@ -1,7 +1,7 @@
 # Amanah Cash — Non-Functional Requirements
 
 **Version:** 1.0
-**Status:** Draft
+**Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-17
 

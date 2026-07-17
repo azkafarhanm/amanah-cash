@@ -1,7 +1,7 @@
 # Amanah Cash — Functional Requirements (SRS)
 
 **Version:** 1.0
-**Status:** Draft
+**Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-17
 
@@ -381,4 +381,4 @@ This document is referenced by:
 - `docs/07-database-design.md` — schema implementation
 - `docs/08-system-architecture.md` — system architecture
 
-Changes to this document require review of all dependent documents per the documentation synchronization matrix in `docs/11-engineering-workflow.md`.
+Changes to this document require review of all affected requirements, design documents, tests, and traceability references according to `docs/11-development-workflow.md`.
