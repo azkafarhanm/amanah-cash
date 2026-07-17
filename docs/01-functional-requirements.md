@@ -27,6 +27,8 @@ Amanah Cash is a Progressive Web App for managing entrusted student funds. It en
 | **Withdrawal** | A record of funds returned by a student (money coming in from the operator's perspective). |
 | **Balance** | The net amount currently entrusted to a student, computed as total deposits minus total withdrawals. |
 | **Transaction** | A single deposit or withdrawal event recorded in the system. |
+| **Currency** | Indonesian Rupiah (`IDR`). All monetary values are whole Rupiah with no decimal amount. |
+| **Auditability** | Traceability of financial events through immutable transaction records. Actor attribution is not part of the MVP. |
 
 ### 1.4 Product Principles Mapping
 
@@ -53,7 +55,7 @@ Every functional requirement in this document is grounded in the following princ
 
 ### 2.1 Operator
 
-The operator is the sole user role in the MVP. There is no authentication, multi-user support, or role-based access control in the MVP scope.
+The operator is the sole user role in the MVP. There is no authentication, multi-user support, role-based access control, or actor attribution in the MVP scope. Financial auditability is provided by traceable transaction records, not by identifying who performed an action.
 
 **Capabilities:**
 - Create, view, and search student records
@@ -73,7 +75,7 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Fields:**
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
-| Name | Text | Yes | Non-empty, max 100 characters |
+| Name | Text | Yes | Normalized, non-empty, max 100 characters |
 
 **Principles:** Minimal Data Collection (9), Simplicity Over Generality (8)
 
@@ -82,7 +84,8 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 - The system assigns a unique identifier automatically.
 - The system records the creation timestamp automatically.
 - The system rejects empty or whitespace-only names.
-- The system rejects duplicate names (case-insensitive) to prevent confusion.
+- Before validation, the system trims leading and trailing whitespace and collapses consecutive internal whitespace to a single space.
+- The system rejects duplicate normalized names using case-insensitive comparison.
 
 #### FR-3.1.2: View Student List
 
@@ -94,7 +97,7 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 - The list displays each student's name and current balance.
 - The list is sorted alphabetically by name.
 - Each list item is tappable to navigate to the student detail view.
-- The list loads without a visible loading spinner under normal network conditions.
+- The student list can become usable without waiting for any student's complete transaction history to be loaded.
 
 #### FR-3.1.3: Search Student
 
@@ -104,8 +107,9 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 
 **Acceptance Criteria:**
 - A search input is visible on the student list screen.
-- Search results filter as the operator types (instant filtering).
+- Search results update after each input change without requiring a submit action.
 - Search is case-insensitive and matches partial name input.
+- Search uses the same normalized student names used for uniqueness validation.
 - The search field is accessible with a single tap from the primary screen.
 - The keyboard appears automatically when the search field is focused on mobile.
 
@@ -118,9 +122,10 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Acceptance Criteria:**
 - The detail view displays the student's name.
 - The detail view displays the student's current balance, computed from the full transaction history.
-- The detail view displays a chronological list of all transactions (newest first).
+- The detail view displays transactions newest first and may load older entries progressively.
 - Each transaction in the list shows: type (deposit/withdrawal), amount, and timestamp.
-- The balance is always consistent with the sum of displayed transactions.
+- Each transaction clearly communicates the direction of money: a deposit is money entrusted to the student, while a withdrawal is money returned by the student.
+- The displayed balance is computed from the complete transaction history and must not be derived only from the currently loaded or displayed entries.
 
 ---
 
@@ -133,17 +138,17 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Fields:**
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
-| Amount | Number | Yes | Positive, greater than zero, max 2 decimal places |
+| Amount | Whole number | Yes | Positive whole Rupiah, greater than zero |
 
 **Principles:** Fast Input (4), Speed of Operation (3), Trust by Design (10)
 
 **Acceptance Criteria:**
-- The system accepts a positive amount and creates a deposit transaction.
+- The system accepts a positive whole-Rupiah amount and creates a deposit transaction.
 - The system records the student reference, amount, type (deposit), and timestamp automatically.
-- The system rejects zero, negative, or non-numeric amounts.
-- The system rejects amounts with more than 2 decimal places.
+- The system rejects zero, negative, non-numeric, or decimal amounts.
 - After recording, the student's computed balance updates immediately.
 - The deposit action is accessible from the student detail view with a single tap.
+- The transaction entry UI identifies a deposit as money entrusted to the student.
 
 #### FR-3.2.2: Record Withdrawal
 
@@ -152,18 +157,19 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Fields:**
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
-| Amount | Number | Yes | Positive, greater than zero, max 2 decimal places |
+| Amount | Whole number | Yes | Positive whole Rupiah, greater than zero |
 
 **Principles:** Fast Input (4), Speed of Operation (3), Trust by Design (10)
 
 **Acceptance Criteria:**
-- The system accepts a positive amount and creates a withdrawal transaction.
+- The system accepts a positive whole-Rupiah amount and creates a withdrawal transaction.
 - The system records the student reference, amount, type (withdrawal), and timestamp automatically.
-- The system rejects zero, negative, or non-numeric amounts.
-- The system rejects amounts with more than 2 decimal places.
+- The system rejects zero, negative, non-numeric, or decimal amounts.
 - The system does not allow a withdrawal that would make the balance negative.
+- Balance validation and withdrawal recording behave as one atomic operation, including when multiple requests occur concurrently.
 - After recording, the student's computed balance updates immediately.
 - The withdrawal action is accessible from the student detail view with a single tap.
+- The transaction entry UI identifies a withdrawal as money returned by the student.
 
 #### FR-3.2.3: View Transaction History
 
@@ -172,10 +178,11 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Principles:** Trust by Design (10), Single Source of Truth (5), Minimal Cognitive Load (11)
 
 **Acceptance Criteria:**
-- The transaction list displays all transactions for the student, newest first.
+- The transaction list displays transactions newest first and supports progressive loading of older entries.
 - Each entry shows: type (deposit/withdrawal), amount, and timestamp.
-- The list is scrollable if the number of transactions exceeds the screen height.
-- The list is read-only — transactions cannot be edited or deleted.
+- The list is scrollable if the loaded transactions exceed the screen height.
+- The operator can continue loading older entries until the complete history is available.
+- Transactions are append-only and cannot be edited or deleted through any application operation.
 
 ---
 
@@ -191,7 +198,8 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 - Balance = sum of all deposits minus sum of all withdrawals for the student.
 - The balance is computed on demand, never read from a stored field.
 - The balance is always consistent with the transaction history.
-- The balance handles rounding to 2 decimal places (standard banker's rounding).
+- The balance uses exact whole-Rupiah arithmetic; no monetary rounding is performed.
+- The balance uses every persisted transaction, regardless of how much transaction history is currently loaded in the UI.
 
 ---
 
@@ -206,7 +214,7 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 **Acceptance Criteria:**
 - The application provides a valid web app manifest.
 - The application registers a service worker.
-- The browser offers an install prompt on supported devices.
+- The application satisfies the installability requirements of supported browsers and provides installation guidance when the browser does not expose an automatic prompt.
 - Once installed, the application launches in a standalone window without browser chrome.
 
 #### FR-3.4.2: Navigation
@@ -219,7 +227,7 @@ The operator is the sole user role in the MVP. There is no authentication, multi
 - The application has three primary screens: Student List, Student Detail, and Transaction Entry.
 - Navigation between screens uses standard browser back/forward behavior.
 - The current screen is visually indicated.
-- Navigation requires no more than 2 taps from any screen to any other screen.
+- Each core workflow follows the tap counts defined in Section 5; there is no universal tap limit between every possible pair of screens.
 
 #### FR-3.4.3: Responsive Layout
 
@@ -244,7 +252,7 @@ The data model supports the functional requirements above. Full schema details a
 | Field | Type | Notes |
 |-------|------|-------|
 | id | UUID | Primary key, auto-generated |
-| name | String | Unique (case-insensitive), max 100 chars |
+| name | String | Normalized, unique (case-insensitive), max 100 chars |
 | created_at | Timestamp | Auto-generated on creation |
 
 ### 4.2 Transaction
@@ -254,7 +262,7 @@ The data model supports the functional requirements above. Full schema details a
 | id | UUID | Primary key, auto-generated |
 | student_id | UUID | Foreign key to Student |
 | type | Enum | `deposit` or `withdrawal` |
-| amount | Decimal(12,2) | Positive, max 2 decimal places |
+| amount | Integer | Positive whole Rupiah (`IDR`) |
 | created_at | Timestamp | Auto-generated on creation |
 
 **Note:** There is no Balance entity. Balances are computed from transactions (Single Source of Truth — Principle 5).
@@ -269,8 +277,8 @@ The data model supports the functional requirements above. Full schema details a
 Student List → Tap Student → Student Detail → Tap Deposit → Enter Amount → Confirm → Updated Balance
 ```
 
-**Steps:** 4 taps + 1 amount entry
-**Target time:** Under 5 seconds
+**Steps:** 3 taps + 1 amount entry
+**Usability target:** Under 5 seconds, excluding network delay
 
 ### 5.2 Record a Withdrawal
 
@@ -278,8 +286,8 @@ Student List → Tap Student → Student Detail → Tap Deposit → Enter Amount
 Student List → Tap Student → Student Detail → Tap Withdrawal → Enter Amount → Confirm → Updated Balance
 ```
 
-**Steps:** 4 taps + 1 amount entry
-**Target time:** Under 5 seconds
+**Steps:** 3 taps + 1 amount entry
+**Usability target:** Under 5 seconds, excluding network delay
 
 ### 5.3 Search and View a Student
 
@@ -288,7 +296,7 @@ Student List → Tap Search → Type Name → Tap Student → Student Detail
 ```
 
 **Steps:** 2 taps + typing
-**Target time:** Under 3 seconds
+**Usability target:** Under 3 seconds, excluding network delay
 
 ### 5.4 Add a New Student
 
@@ -297,7 +305,7 @@ Student List → Tap Add → Enter Name → Confirm → Student Detail
 ```
 
 **Steps:** 2 taps + 1 name entry
-**Target time:** Under 5 seconds
+**Usability target:** Under 5 seconds, excluding network delay
 
 ---
 
@@ -311,7 +319,7 @@ Student List → Tap Add → Enter Name → Confirm → Student Detail
 | Duplicate student name | Display inline error: "A student with this name already exists" |
 | Zero or negative amount | Display inline error: "Amount must be greater than zero" |
 | Non-numeric amount | Display inline error: "Enter a valid number" |
-| Amount with > 2 decimal places | Display inline error: "Maximum 2 decimal places" |
+| Decimal amount | Display inline error: "Amount must be a whole Rupiah value" |
 | Withdrawal exceeding balance | Display inline error: "Insufficient balance" |
 
 ### 6.2 System Errors
@@ -332,7 +340,7 @@ The following are explicitly **out of scope** for the MVP. They will not be impl
 
 | Feature | Reason for Exclusion |
 |---------|---------------------|
-| Authentication / multi-user | Not required for single-operator use case |
+| Authentication / multi-user / actor attribution | Not required for single-operator use case; MVP auditability covers financial event traceability |
 | Offline sync | Deferred to post-MVP (Principle 2) |
 | Transaction editing or deletion | Preserves audit integrity (Principle 10) |
 | Reports or exports | Not required for day-one operation (Principle 6) |
@@ -352,13 +360,13 @@ The following are explicitly **out of scope** for the MVP. They will not be impl
 | FR-3.1.1 | Create Student | Student record persists with unique ID and timestamp |
 | FR-3.1.2 | View Student List | List displays all students with computed balances |
 | FR-3.1.3 | Search Student | Instant case-insensitive filtering by name |
-| FR-3.1.4 | View Student Detail | Balance and full transaction history displayed |
+| FR-3.1.4 | View Student Detail | Correct full-history balance displayed; transaction entries may load progressively |
 | FR-3.2.1 | Record Deposit | Positive amount recorded; balance updates immediately |
 | FR-3.2.2 | Record Withdrawal | Positive amount recorded if balance sufficient; balance updates immediately |
-| FR-3.2.3 | View Transaction History | Chronological list of all transactions for a student |
+| FR-3.2.3 | View Transaction History | Newest-first history with progressive access to all transactions |
 | FR-3.3.1 | Compute Balance | Balance = deposits - withdrawals; computed on demand |
 | FR-3.4.1 | PWA Installation | Application is installable and launches standalone |
-| FR-3.4.2 | Navigation | All screens reachable in 2 taps or fewer |
+| FR-3.4.2 | Navigation | Core workflows follow their documented tap counts |
 | FR-3.4.3 | Responsive Layout | Usable on mobile (primary) and desktop (secondary) |
 
 ---
