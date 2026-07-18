@@ -6,19 +6,21 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. Sprint 1 has added a validated local Next.js development foundation without implementing product UI or changing persistence. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens and reusable UI primitives without implementing product UI or changing persistence. Student management and financial use cases remain unimplemented until their roadmap milestones.
 
 **Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
+
+**Sprint 2 — Shared Design System Foundation** is complete. It added only approved reusable UI primitives and did not create a Landing Page layout or page-specific component.
 
 ## Current Handover
 
 - **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented; no Landing Page implementation milestone has begun.
-- **Current sprint:** Sprint 1 — Project Bootstrap is implemented and validated for Local Development.
+- **Current sprint:** Sprint 2 — Shared Design System Foundation is implemented and validated.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Added the local Next.js 16 App Router foundation with React 19, strict TypeScript, Tailwind CSS 4, flat ESLint configuration, locally packaged Geist, global CSS, typed metadata, and an intentionally empty `/` route. Install, development-server smoke test, production build, TypeScript, lint, and the existing 16-test suite pass.
-- **Current architecture decisions:** Use `src/app` for App Router files; keep the existing Node.js and SQLite foundation unchanged; use the local `geist` package to avoid build-time remote font fetching; keep authentication, Prisma, API Routes, product UI, and production deployment deferred.
+- **Work completed:** Retained the validated Sprint 1 bootstrap and integrated the approved token hierarchy into Tailwind/global CSS. Added typed, composable `Container`, `Section`, `Button`, `Heading`, `Card`, and text-only `Logo` primitives under `src/components/ui`; `/` remains intentionally empty. Production build, TypeScript, lint, CSS parsing, and the existing 16-test suite pass.
+- **Current architecture decisions:** Use CSS custom properties as the canonical approved token layer and CSS Modules for primitive styles; expose component APIs through `src/components/ui/index.ts`; keep components Server Component-compatible; keep the text-only Logo unlinked until Product Identity routing and brand assets are approved; keep the existing Node.js/SQLite foundation, authentication, Prisma, API Routes, Landing Page sections, and production deployment unchanged or deferred.
 - **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Define and approve the next implementation sprint for Landing Page Implementation Plan Milestone 1; do not begin its UI or component work without explicit sprint approval.
+- **Next recommended task:** Define and approve Sprint 3 for the remaining Landing Page Implementation Plan Milestone 1 delivery foundation; do not create the Landing Page shell or page-specific components without explicit sprint approval.
 
 ## MVP Scope
 
