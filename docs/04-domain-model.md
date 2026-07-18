@@ -1,9 +1,9 @@
 # Amanah Cash — Domain Model
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -227,6 +227,8 @@ The MVP domain model intentionally excludes:
 - Offline state or synchronization concepts.
 
 These exclusions preserve the approved single-operator, single-currency, append-only MVP.
+
+Auth.js with the Database Session Strategy is the approved long-term authentication solution, but authentication concepts remain outside this MVP Domain Model. A dedicated Authentication Sprint must define its own approved model before introducing `User`, `Account`, `Session`, `VerificationToken`, or any other authentication entity. Sprint 1 creates none of them.
 
 ## 9. Design Decisions
 

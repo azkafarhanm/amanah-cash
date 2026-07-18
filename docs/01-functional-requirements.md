@@ -1,9 +1,9 @@
 # Amanah Cash — Functional Requirements (SRS)
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -56,6 +56,8 @@ Every functional requirement in this document is grounded in the following princ
 ### 2.1 Operator
 
 The operator is the sole user role in the MVP. There is no authentication, multi-user support, role-based access control, or actor attribution in the MVP scope. Financial auditability is provided by traceable transaction records, not by identifying who performed an action.
+
+Auth.js with the Database Session Strategy is the approved long-term authentication solution, but it does not change this MVP behavior. Authentication is deferred to a dedicated Authentication Sprint. Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
 
 **Capabilities:**
 - Create, view, and search student records
@@ -336,11 +338,11 @@ Student List → Tap Add → Enter Name → Confirm → Student Detail
 
 ## 7. Scope Boundary
 
-The following are explicitly **out of scope** for the MVP. They will not be implemented, suggested, or discussed as part of MVP work.
+The following are explicitly **out of scope** for the MVP and will not be implemented as part of MVP work. A deferred architecture is mentioned only where a separate Project Owner decision has approved it.
 
 | Feature | Reason for Exclusion |
 |---------|---------------------|
-| Authentication / multi-user / actor attribution | Not required for single-operator use case; MVP auditability covers financial event traceability |
+| Authentication / multi-user / actor attribution | Not required for the single-operator MVP; Auth.js with Database Sessions is deferred to a dedicated Authentication Sprint, and MVP auditability covers financial event traceability |
 | Offline sync | Deferred to post-MVP (Principle 2) |
 | Transaction editing or deletion | Preserves audit integrity (Principle 10) |
 | Reports or exports | Not required for day-one operation (Principle 6) |

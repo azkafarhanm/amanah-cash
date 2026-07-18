@@ -1,9 +1,9 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -139,6 +139,8 @@ Requirements:
 ### 7.1 SQLite Write Serialization and Process Boundary
 
 SQLite does not provide row-level `SELECT ... FOR UPDATE` locks. The MVP therefore uses `BEGIN IMMEDIATE` as the approved physical write-serialization mechanism. Acquiring the immediate transaction before any Student lookup or Balance query reserves SQLite's single-writer boundary; every Deposit and Withdrawal waits for or follows the preceding financial write. This database-wide serialization is stronger than the Domain requirement that writes for the same Student be serialized and preserves deterministic ordering and non-negative Balance correctness.
+
+For Sprint 1, this contract applies to Local Development using the approved local SQLite database. Sprint 1 does not select or implement production persistence hosting and operations, introduce an external database, or revise this persistence architecture. Production deployment decisions are deferred to the Deployment phase.
 
 The supported MVP process boundary is:
 

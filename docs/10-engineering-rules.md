@@ -1,9 +1,9 @@
 # Amanah Cash — Engineering Rules
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -28,7 +28,9 @@ This document defines engineering standards for contributors implementing the ap
 - Prefer direct, readable code over generic frameworks created inside the project.
 - Add a dependency only when it has a clear current responsibility and a lower maintenance cost than a local implementation.
 
-Do not introduce distributed infrastructure, offline synchronization, authentication, reporting, or other excluded scope.
+Do not introduce distributed infrastructure, offline synchronization, authentication, reporting, or other excluded scope during MVP implementation. Auth.js with Database Sessions is the approved long-term authentication solution, but it may be installed or modeled only in a separately approved Authentication Sprint. Sprint 1 must not install Auth.js or create authentication schema.
+
+Sprint 1 is a Local Development bootstrap only. Use the approved local SQLite database; do not deploy to Vercel, configure production persistence hosting and operations, introduce an external database, or modify the persistence architecture. Production deployment decisions belong to the Deployment phase.
 
 ## 4. Domain-First Development
 

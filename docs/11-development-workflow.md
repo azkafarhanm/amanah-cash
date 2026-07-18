@@ -1,9 +1,9 @@
 # Amanah Cash — Development Workflow
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -77,7 +77,7 @@ Output: recorded commands, results, and any limitations.
 
 1. Update requirement, design, workflow, or operational documents affected by the implementation.
 2. Update `CHANGELOG.md` when appropriate.
-3. Update `AI_CONTEXT.md` before final review when project state or durable guidance changes.
+3. Treat the `AI_CONTEXT.md` update as the mandatory post-review finalization step defined in Section 8.1.
 4. Verify links, requirement IDs, terminology, and cross-document consistency.
 
 Output: documentation included in the same reviewable diff.
@@ -92,6 +92,38 @@ Output: documentation included in the same reviewable diff.
 6. Resolve every blocking review finding before commit.
 
 Output: an approved diff ready to commit.
+
+## 8.1 Implementation Task Closure
+
+Every implementation task must finish in this order:
+
+```text
+Planning
+    ↓
+Implementation
+    ↓
+Validation
+    ↓
+Review
+    ↓
+Update AI_CONTEXT.md
+    ↓
+Final Report
+```
+
+`AI_CONTEXT.md` is the project handover document, not a changelog. Replace stale state instead of appending task history. Keep it concise and limited to the current milestone, current sprint, active branch, completed work, current architecture decisions, current blockers, and next recommended task.
+
+The final report for every implementation task must include this Closing Checklist:
+
+```text
+- [x] Implementation completed
+- [x] Validation completed
+- [x] Documentation updated (if needed)
+- [x] AI_CONTEXT.md updated
+- [x] Ready for commit
+```
+
+An item may be checked only when its evidence exists. If any item remains unchecked, the task is not closed and the final report must state what remains. The final report must explicitly say `AI_CONTEXT.md has been updated.` When an update is impossible, it must explain why and must not claim the task is complete.
 
 ## 9. Commit
 
@@ -225,6 +257,7 @@ A change is done only when:
 - Mobile-primary behavior is verified for UI changes.
 - Error states are explicit.
 - Documentation, `AI_CONTEXT.md`, and `CHANGELOG.md` are updated when applicable.
+- The implementation-task Closing Checklist is complete and included in the final report.
 - Complete diff is reviewed and contains only intended files.
 - Commit follows the approved convention.
 - Release-impacting changes have reproducible deployment and verification instructions.

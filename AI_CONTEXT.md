@@ -6,7 +6,19 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository contains a runnable three-screen PWA shell, one Node.js server boundary, one SQLite connection, initial Student and Transaction migrations, and baseline foundation tests. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. Sprint 1 has added a validated local Next.js development foundation without implementing product UI or changing persistence. Student management and financial use cases remain unimplemented until their roadmap milestones.
+
+**Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
+
+## Current Handover
+
+- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented; no Landing Page implementation milestone has begun.
+- **Current sprint:** Sprint 1 — Project Bootstrap is implemented and validated for Local Development.
+- **Active branch:** `feat/landing-page`.
+- **Work completed:** Added the local Next.js 16 App Router foundation with React 19, strict TypeScript, Tailwind CSS 4, flat ESLint configuration, locally packaged Geist, global CSS, typed metadata, and an intentionally empty `/` route. Install, development-server smoke test, production build, TypeScript, lint, and the existing 16-test suite pass.
+- **Current architecture decisions:** Use `src/app` for App Router files; keep the existing Node.js and SQLite foundation unchanged; use the local `geist` package to avoid build-time remote font fetching; keep authentication, Prisma, API Routes, product UI, and production deployment deferred.
+- **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
+- **Next recommended task:** Define and approve the next implementation sprint for Landing Page Implementation Plan Milestone 1; do not begin its UI or component work without explicit sprint approval.
 
 ## MVP Scope
 
@@ -20,11 +32,18 @@ Included:
 
 Excluded:
 
-- Authentication, accounts, multiple users, roles, and actor attribution.
+- Authentication, accounts, multiple users, roles, and actor attribution from current MVP behavior and its foundation.
 - Offline data or Transaction synchronization.
 - Transaction or Student editing and deletion.
 - Notes, categories, reports, exports, notifications, and bulk operations.
 - Multiple currencies and distributed infrastructure.
+
+## Deferred Architecture Decisions
+
+- Auth.js with the Database Session Strategy is the approved long-term authentication solution, but authentication is deferred to a dedicated Authentication Sprint outside the MVP foundation.
+- Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+- Sprint 1 targets Local Development only and uses the approved local SQLite database.
+- Vercel deployment is not part of Sprint 1. The production deployment strategy is deferred to the Deployment phase; Sprint 1 must not introduce an external database or change the approved persistence architecture.
 
 ## Domain Terminology
 
@@ -106,7 +125,7 @@ There is no Balance column or table, currency column, actor column, update times
 - Put authoritative business logic in UI code.
 - Use floating-point money.
 - Split Withdrawal checking and insertion across transaction boundaries.
-- Add authentication, offline sync, multi-currency, reporting, or distributed infrastructure.
+- Add authentication outside a separately approved Authentication Sprint, or add offline sync, multi-currency, reporting, or distributed infrastructure.
 - Bypass tests, database constraints, review, or documentation synchronization.
 
 ## AI Should Always Preserve

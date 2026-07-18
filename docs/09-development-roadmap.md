@@ -1,15 +1,17 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
 ## 1. Purpose
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
+
+Roadmap milestones and delivery sprints are distinct planning units. The current **Sprint 1 — Project Bootstrap** prepares the approved Next.js development foundation only; it does not redefine Roadmap Milestone 1 or begin a later product or Landing Page milestone.
 
 ## 2. Delivery Rules
 
@@ -18,8 +20,12 @@ This roadmap organizes implementation of the approved Amanah Cash MVP into seque
 - Keep Balance derived from complete Transaction history.
 - Test financial integrity before adding presentation refinements.
 - Treat mobile as the primary verification viewport.
-- Do not add offline behavior, authentication, reporting, or other excluded scope.
+- Do not add offline behavior, authentication, reporting, or other excluded scope during the MVP milestones. Authentication may begin only in its separately approved dedicated Sprint.
 - A milestone is complete only when its listed criteria are verified.
+
+### 2.1 Current Sprint 1 Execution Boundary
+
+The current **Sprint 1 — Project Bootstrap** is limited to Local Development project bootstrap using the approved local SQLite database. It must not install Auth.js; create an authentication Route Handler; create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema; deploy to Vercel; configure production hosting; introduce an external database; or make a production deployment decision. These constraints govern the current sprint without changing the completed scope or acceptance criteria of Roadmap Milestone 1.
 
 ## 3. Milestone Overview
 
@@ -315,6 +321,8 @@ Verify all functional, financial, responsive, and traceability requirements as o
 
 Prepare the approved MVP for reliable deployment without expanding its scope.
 
+This is the Deployment phase in which production hosting and database compatibility decisions are made. No production deployment decision is pulled forward into Sprint 1.
+
 ### Scope
 
 - Production configuration and database migration execution.
@@ -374,7 +382,7 @@ Prepare the approved MVP for reliable deployment without expanding its scope.
 
 No milestone includes:
 
-- Authentication, user accounts, actor attribution, roles, or multi-tenancy.
+- Authentication, user accounts, actor attribution, roles, or multi-tenancy. Auth.js with Database Sessions remains the approved long-term solution, but implementation requires a separately approved dedicated Authentication Sprint outside these MVP milestones.
 - Offline data or Transaction synchronization.
 - Transaction edit, deletion, notes, categories, reporting, or export.
 - Student deletion or bulk operations.

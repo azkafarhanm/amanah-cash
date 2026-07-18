@@ -41,11 +41,13 @@ Included:
 
 Excluded:
 
-- Authentication, multi-user behavior, roles, and actor attribution.
+- Authentication, multi-user behavior, roles, and actor attribution from current MVP behavior and its foundation.
 - Offline synchronization.
 - Transaction or Student editing and deletion.
 - Reports, exports, notes, categories, notifications, and bulk operations.
 - Multiple currencies and distributed infrastructure.
+
+Auth.js with Database Sessions remains the approved long-term authentication solution, but its installation, configuration, and schema are deferred to a dedicated Authentication Sprint. Sprint 1 is limited to Local Development project bootstrap with SQLite; production deployment decisions are deferred to the Deployment phase.
 
 ## Documentation Map
 

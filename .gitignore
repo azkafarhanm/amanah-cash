@@ -1,4 +1,10 @@
 data/
 node_modules/
 *.log
-
+.next/
+out/
+coverage/
+.env*
+!.env.example
+*.tsbuildinfo
+next-env.d.ts

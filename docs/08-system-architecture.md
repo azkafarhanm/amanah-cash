@@ -1,9 +1,9 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-18
 
 ---
 
@@ -374,6 +374,8 @@ MVP security is limited to approved integrity protections:
 
 There is no authentication, user authorization, account, role, OAuth, JWT, actor attribution, or multi-tenant boundary in the MVP.
 
+Auth.js with the Database Session Strategy is the approved long-term authentication solution, but it is not part of the MVP foundation. Its installation, configuration, Route Handlers, persistence entities, and behavior are deferred to a dedicated Authentication Sprint. Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+
 ## 14. Deployment
 
 ```text
@@ -395,6 +397,8 @@ Deployment responsibilities:
 - Provide production error diagnostics without changing operator-facing behavior.
 
 Exact hosting provider, transport configuration, supported-browser versions, and operational monitoring remain deployment decisions. The process model is fixed for the MVP: one active application server process owns the SQLite database file. These choices do not add MVP features.
+
+Sprint 1 targets Local Development only. It uses the approved local SQLite database and does not include Vercel deployment, production hosting configuration, or production persistence hosting and operations decisions. Those decisions and activities are deferred to the Deployment phase. Sprint 1 must not introduce an external database or alter the approved persistence architecture in anticipation of production deployment.
 
 Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues, background workers, caches, and distributed transaction infrastructure are intentionally absent.
 
