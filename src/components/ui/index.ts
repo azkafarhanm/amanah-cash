@@ -3,4 +3,8 @@ export { Card, type CardProps } from "./card";
 export { Container, type ContainerProps } from "./container";
 export { Heading, type HeadingProps } from "./heading";
 export { Logo, type LogoProps } from "./logo";
+export {
+  PageContainer,
+  type PageContainerProps,
+} from "./page-container";
 export { Section, type SectionProps } from "./section";

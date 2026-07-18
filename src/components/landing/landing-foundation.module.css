@@ -1,0 +1,21 @@
+.skipLink {
+  position: absolute;
+  inset-block-start: calc(var(--space-24) * -1);
+  inset-inline-start: var(--layout-gutter-mobile);
+  z-index: var(--z-raised);
+  display: inline-flex;
+  min-height: var(--button-height-default);
+  align-items: center;
+  padding-inline: var(--button-padding-inline);
+  color: var(--button-primary-foreground);
+  background: var(--button-primary-background);
+  border-radius: var(--button-radius);
+  font: var(--type-button);
+}
+
+.skipLink:focus-visible {
+  inset-block-start: var(--space-4);
+  outline: var(--border-width-emphasis) solid var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}

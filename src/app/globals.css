@@ -78,6 +78,7 @@
   --shadow-focus: 0 0 0 3px rgb(37 99 235 / 28%);
   --motion-duration-fast: 140ms;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --z-raised: 10;
 
   --color-background-canvas: var(--color-neutral-50);
   --color-background-surface: var(--color-neutral-0);

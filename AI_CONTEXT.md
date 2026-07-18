@@ -6,21 +6,23 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens and reusable UI primitives without implementing product UI or changing persistence. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, and the structural Landing Page shell without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
 
 **Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
 
 **Sprint 2 — Shared Design System Foundation** is complete. It added only approved reusable UI primitives and did not create a Landing Page layout or page-specific component.
 
+**Sprint 3 — Landing Foundation** is complete. It established only the public `/` shell, skip link, semantic landmark slots, and `PageContainer`; no Landing Page section, navigation, authentication route, or product action was implemented.
+
 ## Current Handover
 
-- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented; no Landing Page implementation milestone has begun.
-- **Current sprint:** Sprint 2 — Shared Design System Foundation is implemented and validated.
+- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is in progress and is not complete.
+- **Current sprint:** Sprint 3 — Landing Foundation is implemented and validated.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained the validated Sprint 1 bootstrap and integrated the approved token hierarchy into Tailwind/global CSS. Added typed, composable `Container`, `Section`, `Button`, `Heading`, `Card`, and text-only `Logo` primitives under `src/components/ui`; `/` remains intentionally empty. Production build, TypeScript, lint, CSS parsing, and the existing 16-test suite pass.
-- **Current architecture decisions:** Use CSS custom properties as the canonical approved token layer and CSS Modules for primitive styles; expose component APIs through `src/components/ui/index.ts`; keep components Server Component-compatible; keep the text-only Logo unlinked until Product Identity routing and brand assets are approved; keep the existing Node.js/SQLite foundation, authentication, Prisma, API Routes, Landing Page sections, and production deployment unchanged or deferred.
+- **Work completed:** Retained Sprint 1 and Sprint 2 foundations. `/` now renders a Server Component structural shell with the exact `Lewati ke konten utama` skip link, one empty `header`, one targeted `main`, one empty `footer`, and a landing-sized `PageContainer`. Production rendering, build, TypeScript, lint, focused structural checks, and the full 20-test suite pass.
+- **Current architecture decisions:** `/` is reserved for the public Landing Page, `/login` for the future authentication entry, and `/app` for the future authenticated application; Sprint 3 implements only `/`. Keep CSS custom properties as the canonical token layer, CSS Modules for primitive styles, Server Component-compatible foundations, the existing Node.js/SQLite foundation, and deferred authentication, Prisma, API Routes, Landing Page sections, metadata closure, font approval closure, and production deployment.
 - **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Define and approve Sprint 3 for the remaining Landing Page Implementation Plan Milestone 1 delivery foundation; do not create the Landing Page shell or page-specific components without explicit sprint approval.
+- **Next recommended task:** Define and approve one small Sprint 4 for an unblocked remaining Landing Page Milestone 1 workstream, preferably exact final typed metadata; do not begin Milestone 2 Header, Hero, or Footer content.
 
 ## MVP Scope
 
