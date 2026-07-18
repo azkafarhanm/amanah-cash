@@ -1,5 +1,4 @@
 .container {
-  width: 100%;
   max-width: var(--container-max-width);
   margin-inline: auto;
   padding-inline: var(--layout-gutter-mobile);
@@ -40,7 +39,8 @@
   justify-content: center;
   gap: var(--button-gap);
   padding-inline: var(--button-padding-inline);
-  border: var(--border-width-default) solid transparent;
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-transparent);
   border-radius: var(--button-radius);
   font: var(--type-button);
   cursor: pointer;
@@ -49,7 +49,8 @@
 }
 
 .button:focus-visible {
-  outline: var(--border-width-emphasis) solid var(--focus-visible-color);
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
   outline-offset: var(--space-0-5);
   box-shadow: var(--focus-visible-shadow);
 }
@@ -99,7 +100,8 @@
 .card {
   padding: var(--landing-card-padding);
   background: var(--landing-card-background);
-  border: var(--border-width-default) solid var(--landing-card-border);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--landing-card-border);
   border-radius: var(--landing-card-radius);
   box-shadow: var(--shadow-none);
 }
@@ -108,20 +110,4 @@
   color: var(--color-text-primary);
   font: var(--type-section-title);
   letter-spacing: var(--letter-spacing-tight);
-}
-
-@media (min-width: 48rem) {
-  .container {
-    padding-inline: var(--layout-gutter-wide);
-  }
-
-  .sectionLanding {
-    padding-block: var(--landing-section-padding-tablet);
-  }
-}
-
-@media (min-width: 64rem) {
-  .sectionLanding {
-    padding-block: var(--landing-section-padding-desktop);
-  }
 }

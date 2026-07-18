@@ -6,7 +6,7 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, and the structural Landing Page shell without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, the structural Landing Page shell, exact approved metadata, and the approved local Geist font contract without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
 
 **Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
 
@@ -14,15 +14,17 @@ Milestone 1 — Project Foundation is implemented. The repository retains the ru
 
 **Sprint 3 — Landing Foundation** is complete. It established only the public `/` shell, skip link, semantic landmark slots, and `PageContainer`; no Landing Page section, navigation, authentication route, or product action was implemented.
 
+**Sprint 4 — Metadata & Compliance** is complete. It finalized exact Landing Page metadata, verified the approved Geist font system and fallback, closed remaining token compliance gaps, and officially completed Landing Page Implementation Plan Milestone 1 without beginning Milestone 2.
+
 ## Current Handover
 
-- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is in progress and is not complete.
-- **Current sprint:** Sprint 3 — Landing Foundation is implemented and validated.
+- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is officially complete.
+- **Current sprint:** Sprint 4 — Metadata & Compliance is implemented and validated.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained Sprint 1 and Sprint 2 foundations. `/` now renders a Server Component structural shell with the exact `Lewati ke konten utama` skip link, one empty `header`, one targeted `main`, one empty `footer`, and a landing-sized `PageContainer`. Production rendering, build, TypeScript, lint, focused structural checks, and the full 20-test suite pass.
-- **Current architecture decisions:** `/` is reserved for the public Landing Page, `/login` for the future authentication entry, and `/app` for the future authenticated application; Sprint 3 implements only `/`. Keep CSS custom properties as the canonical token layer, CSS Modules for primitive styles, Server Component-compatible foundations, the existing Node.js/SQLite foundation, and deferred authentication, Prisma, API Routes, Landing Page sections, metadata closure, font approval closure, and production deployment.
+- **Work completed:** Retained the Sprint 1–3 foundations; added the exact approved title, description, Open Graph title, and Open Graph description; verified `geist` through `next/font/local`, the existing CSS variable contract, and the system sans fallback; completed component token and responsive-breakpoint compliance. Production rendering, build, TypeScript, lint, and the full 23-test suite pass.
+- **Current architecture decisions:** `/` is the public Landing Page, `/login` is reserved for the future authentication entry, and `/app` is reserved for the future authenticated application. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep authentication, Prisma, API Routes, Landing Page content sections, and production deployment deferred.
 - **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Define and approve one small Sprint 4 for an unblocked remaining Landing Page Milestone 1 workstream, preferably exact final typed metadata; do not begin Milestone 2 Header, Hero, or Footer content.
+- **Next recommended task:** Define and approve a small Sprint 5 within Landing Page Implementation Plan Milestone 2; do not implement Header, Hero, or Footer content before that sprint contract is approved.
 
 ## MVP Scope
 

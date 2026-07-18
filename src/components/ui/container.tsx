@@ -16,7 +16,12 @@ export function Container({
 
   return (
     <div
-      className={[styles.container, sizeClass, className]
+      className={[
+        styles.container,
+        sizeClass,
+        "tablet:px-[var(--layout-gutter-wide)]",
+        className,
+      ]
         .filter(Boolean)
         .join(" ")}
       {...props}

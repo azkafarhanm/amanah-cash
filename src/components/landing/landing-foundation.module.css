@@ -15,7 +15,8 @@
 
 .skipLink:focus-visible {
   inset-block-start: var(--space-4);
-  outline: var(--border-width-emphasis) solid var(--focus-visible-color);
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
   outline-offset: var(--space-0-5);
   box-shadow: var(--focus-visible-shadow);
 }
