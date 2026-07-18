@@ -212,7 +212,7 @@ References: FR-3.1.4, FR-3.2.2, FR-3.3.1
         └── Valid input
               --> Disable duplicate submission
               --> Submit atomic withdrawal
-              --> Database locks Student and checks current full history
+              --> Database begins approved SQLite write serialization and checks current full history
               --> {Atomic outcome}
                     ├── Success after commit
                     │     --> [Student Detail]

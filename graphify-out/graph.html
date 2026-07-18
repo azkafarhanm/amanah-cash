@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>graphify - graphify-out/graph.html</title>
+<script src="https://unpkg.com/vis-network@9.1.6/standalone/umd/vis-network.min.js"
+        integrity="sha384-Ux6phic9PEHJ38YtrijhkzyJ8yQlH8i/+buBR8s3mAZOJrP1gwyvAcIYl3GWtpX1"
+        crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  #graph { flex: 1; }
+  #sidebar { width: 280px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow: hidden; }
+  #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
+  #search { width: 100%; background: #0f0f1a; border: 1px solid #3a3a5e; color: #e0e0e0; padding: 7px 10px; border-radius: 6px; font-size: 13px; outline: none; }
+  #search:focus { border-color: #4E79A7; }
+  #search-results { max-height: 140px; overflow-y: auto; padding: 4px 12px; border-bottom: 1px solid #2a2a4e; display: none; }
+  .search-item { padding: 4px 6px; cursor: pointer; border-radius: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-item:hover { background: #2a2a4e; }
+  #info-panel { padding: 14px; border-bottom: 1px solid #2a2a4e; min-height: 140px; }
+  #info-panel h3 { font-size: 13px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #info-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+  #info-content .field { margin-bottom: 5px; }
+  #info-content .field b { color: #e0e0e0; }
+  #info-content .empty { color: #555; font-style: italic; }
+  .neighbor-link { display: block; padding: 2px 6px; margin: 2px 0; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #333; }
+  .neighbor-link:hover { background: #2a2a4e; }
+  #neighbors-list { max-height: 160px; overflow-y: auto; margin-top: 4px; }
+  #legend-wrap { flex: 1; overflow-y: auto; padding: 12px; }
+  #legend-wrap h3 { font-size: 13px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .legend-item:hover { background: #2a2a4e; padding-left: 4px; }
+  .legend-item.dimmed { opacity: 0.35; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend-count { color: #666; font-size: 11px; }
+  #stats { padding: 10px 14px; border-top: 1px solid #2a2a4e; font-size: 11px; color: #555; }
+  #legend-controls { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 4px 0; }
+  #legend-controls label { display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 12px; color: #aaa; user-select: none; }
+  #legend-controls label:hover { color: #e0e0e0; }
+  .legend-cb, #select-all-cb { appearance: none; -webkit-appearance: none; width: 14px; height: 14px; border: 1.5px solid #3a3a5e; border-radius: 3px; background: #0f0f1a; cursor: pointer; position: relative; flex-shrink: 0; }
+  .legend-cb:checked, #select-all-cb:checked { background: #4E79A7; border-color: #4E79A7; }
+  .legend-cb:checked::after, #select-all-cb:checked::after { content: ''; position: absolute; left: 3.5px; top: 1px; width: 4px; height: 7px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  #select-all-cb:indeterminate { background: #4E79A7; border-color: #4E79A7; }
+  #select-all-cb:indeterminate::after { content: ''; position: absolute; left: 2px; top: 5px; width: 8px; height: 2px; background: #fff; border: none; transform: none; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="sidebar">
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search nodes..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="info-panel">
+    <h3>Node Info</h3>
+    <div id="info-content"><span class="empty">Click a node to inspect it</span></div>
+  </div>
+  <div id="legend-wrap">
+    <h3>Communities</h3>
+    <div id="legend-controls">
+      <label><input type="checkbox" id="select-all-cb" checked onchange="toggleAllCommunities(!this.checked)">Select All</label>
+    </div>
+    <div id="legend"></div>
+  </div>
+  <div id="stats">47 nodes &middot; 52 edges &middot; 14 communities</div>
+</div>
+<script>
+const RAW_NODES = [{"id": "ai_context_amanah_cash_ai_context", "label": "Amanah Cash AI Context", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Amanah Cash AI Context", "community": 1, "community_name": "Project Documentation Governance", "source_file": "AI_CONTEXT.md", "file_type": "document", "degree": 5}, {"id": "ai_context_project_constraints", "label": "Project Implementation Constraints", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Project Implementation Constraints", "community": 10, "community_name": "Implementation Constraints", "source_file": "AI_CONTEXT.md", "file_type": "rationale", "degree": 0}, {"id": "changelog_amanah_cash_changelog", "label": "Amanah Cash Changelog", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Amanah Cash Changelog", "community": 1, "community_name": "Project Documentation Governance", "source_file": "CHANGELOG.md", "file_type": "document", "degree": 1}, {"id": "readme_amanah_cash", "label": "Amanah Cash", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Amanah Cash", "community": 1, "community_name": "Project Documentation Governance", "source_file": "README.md", "file_type": "document", "degree": 5}, {"id": "readme_transaction_history_source_of_truth", "label": "Transaction History as Financial Source of Truth", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Transaction History as Financial Source of Truth", "community": 2, "community_name": "Transaction History Authority", "source_file": "README.md", "file_type": "rationale", "degree": 1}, {"id": "docs_00_product_principles_product_principles", "label": "Product Principles", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Product Principles", "community": 1, "community_name": "Project Documentation Governance", "source_file": "docs/00-product-principles.md", "file_type": "document", "degree": 4}, {"id": "docs_00_product_principles_mobile_first", "label": "Mobile First", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Mobile First", "community": 5, "community_name": "Mobile-First Interface", "source_file": "docs/00-product-principles.md", "file_type": "rationale", "degree": 1}, {"id": "docs_00_product_principles_single_source_of_truth", "label": "Single Source of Truth", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Single Source of Truth", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/00-product-principles.md", "file_type": "rationale", "degree": 2}, {"id": "docs_00_product_principles_intentionally_small_mvp", "label": "Intentionally Small MVP Scope", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Intentionally Small MVP Scope", "community": 4, "community_name": "Simple MVP Architecture", "source_file": "docs/00-product-principles.md", "file_type": "rationale", "degree": 1}, {"id": "docs_00_product_principles_trust_by_design", "label": "Trust by Design", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Trust by Design", "community": 11, "community_name": "Trust by Design", "source_file": "docs/00-product-principles.md", "file_type": "rationale", "degree": 0}, {"id": "docs_01_functional_requirements_functional_requirements", "label": "Functional Requirements", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 40.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Functional Requirements", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/01-functional-requirements.md", "file_type": "document", "degree": 10}, {"id": "docs_01_functional_requirements_student", "label": "Student", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Student", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/01-functional-requirements.md", "file_type": "concept", "degree": 1}, {"id": "docs_01_functional_requirements_transaction", "label": "Transaction", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 19.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Transaction", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/01-functional-requirements.md", "file_type": "concept", "degree": 3}, {"id": "docs_01_functional_requirements_balance", "label": "Balance", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Balance", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/01-functional-requirements.md", "file_type": "concept", "degree": 2}, {"id": "docs_01_functional_requirements_pwa", "label": "Progressive Web App", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Progressive Web App", "community": 12, "community_name": "Progressive Web App", "source_file": "docs/01-functional-requirements.md", "file_type": "concept", "degree": 0}, {"id": "docs_02_non_functional_requirements_non_functional_requirements", "label": "Non-Functional Requirements", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Non-Functional Requirements", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/02-non-functional-requirements.md", "file_type": "document", "degree": 2}, {"id": "docs_02_non_functional_requirements_financial_correctness", "label": "Financial Correctness", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Financial Correctness", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/02-non-functional-requirements.md", "file_type": "rationale", "degree": 2}, {"id": "docs_02_non_functional_requirements_retry_safety", "label": "Retry Safety", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Retry Safety", "community": 6, "community_name": "Safe Transaction Retry", "source_file": "docs/02-non-functional-requirements.md", "file_type": "concept", "degree": 1}, {"id": "docs_03_business_rules_business_rules", "label": "Business Rules", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Business Rules", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/03-business-rules.md", "file_type": "document", "degree": 4}, {"id": "docs_03_business_rules_append_only_transactions", "label": "Append-Only Transactions", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 19.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Append-Only Transactions", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/03-business-rules.md", "file_type": "concept", "degree": 3}, {"id": "docs_03_business_rules_atomic_withdrawal", "label": "Atomic Withdrawal", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Atomic Withdrawal", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/03-business-rules.md", "file_type": "concept", "degree": 2}, {"id": "docs_03_business_rules_rupiah_amount", "label": "RupiahAmount", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 10.0, "font": {"size": 0, "color": "#ffffff"}, "title": "RupiahAmount", "community": 13, "community_name": "Whole-Rupiah Amounts", "source_file": "docs/03-business-rules.md", "file_type": "concept", "degree": 0}, {"id": "docs_04_domain_model_domain_model", "label": "Domain Model", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 28.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Domain Model", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/04-domain-model.md", "file_type": "document", "degree": 6}, {"id": "docs_04_domain_model_student_aggregate", "label": "Student Aggregate", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Student Aggregate", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/04-domain-model.md", "file_type": "concept", "degree": 1}, {"id": "docs_04_domain_model_immutable_transaction", "label": "Immutable Transaction Entity", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Immutable Transaction Entity", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/04-domain-model.md", "file_type": "concept", "degree": 2}, {"id": "docs_04_domain_model_derived_balance", "label": "Derived Balance", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Derived Balance", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/04-domain-model.md", "file_type": "concept", "degree": 4}, {"id": "docs_05_user_flow_user_flows", "label": "User Flows", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 19.0, "font": {"size": 12, "color": "#ffffff"}, "title": "User Flows", "community": 7, "community_name": "User Experience Flows", "source_file": "docs/05-user-flow.md", "file_type": "document", "degree": 3}, {"id": "docs_05_user_flow_transaction_retry_flow", "label": "Transaction Retry Flow", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Transaction Retry Flow", "community": 6, "community_name": "Safe Transaction Retry", "source_file": "docs/05-user-flow.md", "file_type": "concept", "degree": 1}, {"id": "docs_05_user_flow_progressive_transaction_history", "label": "Progressive Transaction History", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Progressive Transaction History", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/05-user-flow.md", "file_type": "concept", "degree": 2}, {"id": "docs_06_wireframe_wireframes", "label": "Wireframes", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Wireframes", "community": 5, "community_name": "Mobile-First Interface", "source_file": "docs/06-wireframe.md", "file_type": "document", "degree": 2}, {"id": "docs_06_wireframe_three_screen_inventory", "label": "Three-Screen Inventory", "color": {"background": "#FF9DA7", "border": "#FF9DA7", "highlight": {"background": "#ffffff", "border": "#FF9DA7"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Three-Screen Inventory", "community": 7, "community_name": "User Experience Flows", "source_file": "docs/06-wireframe.md", "file_type": "concept", "degree": 1}, {"id": "docs_07_database_design_database_design", "label": "Database Design", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 19.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Database Design", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/07-database-design.md", "file_type": "document", "degree": 3}, {"id": "docs_07_database_design_students_table", "label": "Students Table", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Students Table", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/07-database-design.md", "file_type": "concept", "degree": 1}, {"id": "docs_07_database_design_transactions_table", "label": "Transactions Table", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Transactions Table", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/07-database-design.md", "file_type": "concept", "degree": 2}, {"id": "docs_07_database_design_per_student_serialization", "label": "Per-Student Financial Write Serialization", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Per-Student Financial Write Serialization", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/07-database-design.md", "file_type": "rationale", "degree": 1}, {"id": "docs_07_database_design_cursor_history", "label": "Stable Cursor History Retrieval", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Stable Cursor History Retrieval", "community": 2, "community_name": "Transaction History Authority", "source_file": "docs/07-database-design.md", "file_type": "concept", "degree": 1}, {"id": "docs_08_system_architecture_system_architecture", "label": "System Architecture", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 28.0, "font": {"size": 12, "color": "#ffffff"}, "title": "System Architecture", "community": 1, "community_name": "Project Documentation Governance", "source_file": "docs/08-system-architecture.md", "file_type": "document", "degree": 6}, {"id": "docs_08_system_architecture_layered_architecture", "label": "Layered Architecture", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Layered Architecture", "community": 8, "community_name": "Domain-Layer Architecture", "source_file": "docs/08-system-architecture.md", "file_type": "concept", "degree": 1}, {"id": "docs_08_system_architecture_single_deployable_architecture", "label": "Single Deployable Architecture", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Single Deployable Architecture", "community": 4, "community_name": "Simple MVP Architecture", "source_file": "docs/08-system-architecture.md", "file_type": "rationale", "degree": 1}, {"id": "docs_09_development_roadmap_development_roadmap", "label": "Development Roadmap", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Development Roadmap", "community": 1, "community_name": "Project Documentation Governance", "source_file": "docs/09-development-roadmap.md", "file_type": "document", "degree": 2}, {"id": "docs_09_development_roadmap_sequential_milestones", "label": "Sequential MVP Milestones", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Sequential MVP Milestones", "community": 9, "community_name": "Delivery Completion Process", "source_file": "docs/09-development-roadmap.md", "file_type": "concept", "degree": 2}, {"id": "docs_10_engineering_rules_engineering_rules", "label": "Engineering Rules", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 22.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Engineering Rules", "community": 1, "community_name": "Project Documentation Governance", "source_file": "docs/10-engineering-rules.md", "file_type": "document", "degree": 4}, {"id": "docs_10_engineering_rules_domain_first_development", "label": "Domain-First Development", "color": {"background": "#9C755F", "border": "#9C755F", "highlight": {"background": "#ffffff", "border": "#9C755F"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Domain-First Development", "community": 8, "community_name": "Domain-Layer Architecture", "source_file": "docs/10-engineering-rules.md", "file_type": "rationale", "degree": 1}, {"id": "docs_10_engineering_rules_financial_integrity", "label": "Financial Integrity Engineering Rules", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 16.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Financial Integrity Engineering Rules", "community": 0, "community_name": "Financial Data Integrity", "source_file": "docs/10-engineering-rules.md", "file_type": "concept", "degree": 2}, {"id": "docs_11_development_workflow_development_workflow", "label": "Development Workflow", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 19.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Development Workflow", "community": 1, "community_name": "Project Documentation Governance", "source_file": "docs/11-development-workflow.md", "file_type": "document", "degree": 3}, {"id": "docs_11_development_workflow_requirement_traceability", "label": "Requirement Traceability Chain", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Requirement Traceability Chain", "community": 3, "community_name": "Requirements Traceability", "source_file": "docs/11-development-workflow.md", "file_type": "concept", "degree": 1}, {"id": "docs_11_development_workflow_definition_of_done", "label": "Definition of Done", "color": {"background": "#BAB0AC", "border": "#BAB0AC", "highlight": {"background": "#ffffff", "border": "#BAB0AC"}}, "size": 13.0, "font": {"size": 0, "color": "#ffffff"}, "title": "Definition of Done", "community": 9, "community_name": "Delivery Completion Process", "source_file": "docs/11-development-workflow.md", "file_type": "concept", "degree": 1}];
+const RAW_EDGES = [{"from": "ai_context_amanah_cash_ai_context", "to": "docs_00_product_principles_product_principles", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ai_context_amanah_cash_ai_context", "to": "docs_03_business_rules_business_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ai_context_amanah_cash_ai_context", "to": "docs_08_system_architecture_system_architecture", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ai_context_amanah_cash_ai_context", "to": "docs_10_engineering_rules_engineering_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ai_context_amanah_cash_ai_context", "to": "docs_11_development_workflow_development_workflow", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "changelog_amanah_cash_changelog", "to": "docs_09_development_roadmap_development_roadmap", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_amanah_cash", "to": "docs_00_product_principles_product_principles", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_amanah_cash", "to": "docs_01_functional_requirements_functional_requirements", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_amanah_cash", "to": "docs_08_system_architecture_system_architecture", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_amanah_cash", "to": "docs_10_engineering_rules_engineering_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_amanah_cash", "to": "docs_11_development_workflow_development_workflow", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "readme_transaction_history_source_of_truth", "to": "docs_00_product_principles_single_source_of_truth", "label": "conceptually_related_to", "title": "conceptually_related_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_00_product_principles_product_principles", "to": "docs_01_functional_requirements_functional_requirements", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_00_product_principles_product_principles", "to": "docs_03_business_rules_business_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_00_product_principles_mobile_first", "to": "docs_06_wireframe_wireframes", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_00_product_principles_single_source_of_truth", "to": "docs_04_domain_model_derived_balance", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_00_product_principles_intentionally_small_mvp", "to": "docs_08_system_architecture_single_deployable_architecture", "label": "rationale_for", "title": "rationale_for [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_02_non_functional_requirements_non_functional_requirements", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_03_business_rules_business_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_04_domain_model_domain_model", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_05_user_flow_user_flows", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_06_wireframe_wireframes", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_07_database_design_database_design", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_09_development_roadmap_sequential_milestones", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_01_functional_requirements_functional_requirements", "to": "docs_11_development_workflow_requirement_traceability", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_student", "to": "docs_01_functional_requirements_transaction", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_transaction", "to": "docs_01_functional_requirements_balance", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_01_functional_requirements_transaction", "to": "docs_03_business_rules_append_only_transactions", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_01_functional_requirements_balance", "to": "docs_02_non_functional_requirements_financial_correctness", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_02_non_functional_requirements_non_functional_requirements", "to": "docs_04_domain_model_domain_model", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_02_non_functional_requirements_financial_correctness", "to": "docs_03_business_rules_atomic_withdrawal", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_02_non_functional_requirements_retry_safety", "to": "docs_05_user_flow_transaction_retry_flow", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_03_business_rules_business_rules", "to": "docs_04_domain_model_domain_model", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_03_business_rules_append_only_transactions", "to": "docs_07_database_design_transactions_table", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_03_business_rules_append_only_transactions", "to": "docs_10_engineering_rules_financial_integrity", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_03_business_rules_atomic_withdrawal", "to": "docs_07_database_design_per_student_serialization", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_04_domain_model_domain_model", "to": "docs_05_user_flow_user_flows", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_04_domain_model_domain_model", "to": "docs_07_database_design_database_design", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_04_domain_model_domain_model", "to": "docs_08_system_architecture_system_architecture", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_04_domain_model_student_aggregate", "to": "docs_04_domain_model_immutable_transaction", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_04_domain_model_immutable_transaction", "to": "docs_04_domain_model_derived_balance", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_04_domain_model_derived_balance", "to": "docs_05_user_flow_progressive_transaction_history", "label": "conceptually_related_to", "title": "conceptually_related_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_04_domain_model_derived_balance", "to": "docs_10_engineering_rules_financial_integrity", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_05_user_flow_user_flows", "to": "docs_06_wireframe_three_screen_inventory", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_05_user_flow_progressive_transaction_history", "to": "docs_07_database_design_cursor_history", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_07_database_design_database_design", "to": "docs_08_system_architecture_system_architecture", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_07_database_design_students_table", "to": "docs_07_database_design_transactions_table", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_08_system_architecture_system_architecture", "to": "docs_09_development_roadmap_development_roadmap", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_08_system_architecture_system_architecture", "to": "docs_10_engineering_rules_engineering_rules", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "docs_08_system_architecture_layered_architecture", "to": "docs_10_engineering_rules_domain_first_development", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_09_development_roadmap_sequential_milestones", "to": "docs_11_development_workflow_definition_of_done", "label": "conceptually_related_to", "title": "conceptually_related_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "docs_10_engineering_rules_engineering_rules", "to": "docs_11_development_workflow_development_workflow", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}];
+const LEGEND = [{"cid": 0, "color": "#4E79A7", "label": "Financial Data Integrity", "count": 10}, {"cid": 1, "color": "#F28E2B", "label": "Project Documentation Governance", "count": 8}, {"cid": 2, "color": "#E15759", "label": "Transaction History Authority", "count": 7}, {"cid": 3, "color": "#76B7B2", "label": "Requirements Traceability", "count": 6}, {"cid": 4, "color": "#59A14F", "label": "Simple MVP Architecture", "count": 2}, {"cid": 5, "color": "#EDC948", "label": "Mobile-First Interface", "count": 2}, {"cid": 6, "color": "#B07AA1", "label": "Safe Transaction Retry", "count": 2}, {"cid": 7, "color": "#FF9DA7", "label": "User Experience Flows", "count": 2}, {"cid": 8, "color": "#9C755F", "label": "Domain-Layer Architecture", "count": 2}, {"cid": 9, "color": "#BAB0AC", "label": "Delivery Completion Process", "count": 2}, {"cid": 10, "color": "#4E79A7", "label": "Implementation Constraints", "count": 1}, {"cid": 11, "color": "#F28E2B", "label": "Trust by Design", "count": 1}, {"cid": 12, "color": "#E15759", "label": "Progressive Web App", "count": 1}, {"cid": 13, "color": "#76B7B2", "label": "Whole-Rupiah Amounts", "count": 1}];
+
+// HTML-escape helper — prevents XSS when injecting graph data into innerHTML
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Build vis datasets
+const nodesDS = new vis.DataSet(RAW_NODES.map(n => ({
+  id: n.id, label: n.label, color: n.color, size: n.size,
+  font: n.font, title: n.title,
+  _community: n.community, _community_name: n.community_name,
+  _source_file: n.source_file, _file_type: n.file_type, _degree: n.degree,
+})));
+
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.from, to: e.to,
+  label: '',
+  title: e.title,
+  dashes: e.dashes,
+  width: e.width,
+  color: e.color,
+  arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+})));
+
+const container = document.getElementById('graph');
+const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.005,
+      springLength: 120,
+      springConstant: 0.08,
+      damping: 0.4,
+      avoidOverlap: 0.8,
+    },
+    stabilization: { iterations: 200, fit: true },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 100,
+    hideEdgesOnDrag: true,
+    navigationButtons: false,
+    keyboard: false,
+  },
+  nodes: { shape: 'dot', borderWidth: 1.5 },
+  edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 },
+});
+
+network.once('stabilizationIterationsDone', () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+
+function showInfo(nodeId) {
+  const n = nodesDS.get(nodeId);
+  if (!n) return;
+  const neighborIds = network.getConnectedNodes(nodeId);
+  const neighborItems = neighborIds.map(nid => {
+    const nb = nodesDS.get(nid);
+    const color = nb ? nb.color.background : '#555';
+    return `<span class="neighbor-link" style="border-left-color:${esc(color)}" data-nid="${esc(nid)}">${esc(nb ? nb.label : nid)}</span>`;
+  }).join('');
+  document.getElementById('info-content').innerHTML = `
+    <div class="field"><b>${esc(n.label)}</b></div>
+    <div class="field">Type: ${esc(n._file_type || 'unknown')}</div>
+    <div class="field">Community: ${esc(n._community_name)}</div>
+    <div class="field">Source: ${esc(n._source_file || '-')}</div>
+    <div class="field">Degree: ${n._degree}</div>
+    ${neighborIds.length ? `<div class="field" style="margin-top:8px;color:#aaa;font-size:11px">Neighbors (${neighborIds.length})</div><div id="neighbors-list">${neighborItems}</div>` : ''}
+  `;
+}
+
+function focusNode(nodeId) {
+  network.focus(nodeId, { scale: 1.4, animation: true });
+  network.selectNodes([nodeId]);
+  showInfo(nodeId);
+}
+
+// Neighbor links use a data attribute + one delegated listener rather than an
+// inline onclick. A node id/label sourced from a document or a scraped URL
+// (graphify add) can contain a double-quote; dropping the stringified id
+// unescaped into a quoted onclick both broke every link and allowed a hostile
+// source to inject an event handler into the local report (stored XSS, #1838).
+// esc() on data-nid keeps the value inside the attribute; the listener reads it
+// back verbatim. Bound to document so it survives the innerHTML rebuild that
+// recreates #neighbors-list on each showInfo().
+document.addEventListener('click', e => {
+  const el = e.target.closest('.neighbor-link');
+  if (el && el.dataset.nid !== undefined) focusNode(el.dataset.nid);
+});
+
+// Track hovered node — hover detection is more reliable than click params
+let hoveredNodeId = null;
+network.on('hoverNode', params => {
+  hoveredNodeId = params.node;
+  container.style.cursor = 'pointer';
+});
+network.on('blurNode', () => {
+  hoveredNodeId = null;
+  container.style.cursor = 'default';
+});
+container.addEventListener('click', () => {
+  if (hoveredNodeId !== null) {
+    showInfo(hoveredNodeId);
+    network.selectNodes([hoveredNodeId]);
+  }
+});
+network.on('click', params => {
+  if (params.nodes.length > 0) {
+    showInfo(params.nodes[0]);
+  } else if (hoveredNodeId === null) {
+    document.getElementById('info-content').innerHTML = '<span class="empty">Click a node to inspect it</span>';
+  }
+});
+
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.style.display = 'none'; return; }
+  const matches = RAW_NODES.filter(n => n.label.toLowerCase().includes(q)).slice(0, 20);
+  if (!matches.length) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'search-item';
+    el.textContent = n.label;
+    el.style.borderLeft = `3px solid ${n.color.background}`;
+    el.style.paddingLeft = '8px';
+    el.onclick = () => {
+      network.focus(n.id, { scale: 1.5, animation: true });
+      network.selectNodes([n.id]);
+      showInfo(n.id);
+      searchResults.style.display = 'none';
+      searchInput.value = '';
+    };
+    searchResults.appendChild(el);
+  });
+});
+document.addEventListener('click', e => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput)
+    searchResults.style.display = 'none';
+});
+
+const hiddenCommunities = new Set();
+
+const selectAllCb = document.getElementById('select-all-cb');
+
+function updateSelectAllState() {
+  const total = LEGEND.length;
+  const hidden = hiddenCommunities.size;
+  selectAllCb.checked = hidden === 0;
+  selectAllCb.indeterminate = hidden > 0 && hidden < total;
+}
+
+function toggleAllCommunities(hide) {
+  document.querySelectorAll('.legend-item').forEach(item => {
+    hide ? item.classList.add('dimmed') : item.classList.remove('dimmed');
+  });
+  document.querySelectorAll('.legend-cb').forEach(cb => {
+    cb.checked = !hide;
+  });
+  LEGEND.forEach(c => {
+    if (hide) hiddenCommunities.add(c.cid); else hiddenCommunities.delete(c.cid);
+  });
+  const updates = RAW_NODES.map(n => ({ id: n.id, hidden: hide }));
+  nodesDS.update(updates);
+  updateSelectAllState();
+}
+
+const legendEl = document.getElementById('legend');
+LEGEND.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  const cb = document.createElement('input');
+  cb.type = 'checkbox';
+  cb.className = 'legend-cb';
+  cb.checked = true;
+  cb.addEventListener('change', (e) => {
+    e.stopPropagation();
+    if (cb.checked) {
+      hiddenCommunities.delete(c.cid);
+      item.classList.remove('dimmed');
+    } else {
+      hiddenCommunities.add(c.cid);
+      item.classList.add('dimmed');
+    }
+    const updates = RAW_NODES
+      .filter(n => n.community === c.cid)
+      .map(n => ({ id: n.id, hidden: !cb.checked }));
+    nodesDS.update(updates);
+    updateSelectAllState();
+  });
+  item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>
+    <span class="legend-label">${c.label}</span>
+    <span class="legend-count">${c.count}</span>`;
+  item.prepend(cb);
+  item.onclick = (e) => {
+    if (e.target === cb) return;
+    cb.checked = !cb.checked;
+    cb.dispatchEvent(new Event('change'));
+  };
+  legendEl.appendChild(item);
+});
+</script>
+<script>
+// Render hyperedges as shaded regions
+const hyperedges = [{"id": "financial_source_of_truth", "label": "Financial Source of Truth", "nodes": ["docs_00_product_principles_single_source_of_truth", "docs_03_business_rules_append_only_transactions", "docs_04_domain_model_derived_balance", "docs_07_database_design_transactions_table", "docs_10_engineering_rules_financial_integrity"], "relation": "form", "confidence": "INFERRED", "confidence_score": 0.95, "source_file": "docs/03-business-rules.md"}, {"id": "student_financial_consistency_boundary", "label": "Student Financial Consistency Boundary", "nodes": ["docs_04_domain_model_student_aggregate", "docs_03_business_rules_atomic_withdrawal", "docs_07_database_design_per_student_serialization", "docs_08_system_architecture_layered_architecture"], "relation": "implement", "confidence": "INFERRED", "confidence_score": 0.95, "source_file": "docs/07-database-design.md"}, {"id": "approved_documentation_delivery_chain", "label": "Approved Documentation Delivery Chain", "nodes": ["docs_01_functional_requirements_functional_requirements", "docs_03_business_rules_business_rules", "docs_04_domain_model_domain_model", "docs_08_system_architecture_system_architecture", "docs_09_development_roadmap_development_roadmap", "docs_11_development_workflow_requirement_traceability"], "relation": "participate_in", "confidence": "INFERRED", "confidence_score": 0.85, "source_file": "docs/11-development-workflow.md"}];
+// afterDrawing passes ctx already transformed to network coordinate space.
+// Draw node positions raw — no manual pan/zoom/DPR math needed.
+network.on('afterDrawing', function(ctx) {
+    hyperedges.forEach(h => {
+        const positions = h.nodes
+            .map(nid => network.getPositions([nid])[nid])
+            .filter(p => p !== undefined);
+        if (positions.length < 2) return;
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = '#6366f1';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        // Centroid and expanded hull in network coordinates
+        const cx = positions.reduce((s, p) => s + p.x, 0) / positions.length;
+        const cy = positions.reduce((s, p) => s + p.y, 0) / positions.length;
+        const expanded = positions.map(p => ({
+            x: cx + (p.x - cx) * 1.15,
+            y: cy + (p.y - cy) * 1.15
+        }));
+        ctx.moveTo(expanded[0].x, expanded[0].y);
+        expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        // Label
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(h.label, cx, cy - 5);
+        ctx.restore();
+    });
+});
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-17
@@ -108,7 +108,7 @@ Runs on the server and translates application operations into database access:
 - Case-insensitive Student uniqueness.
 - Complete-history Balance aggregation.
 - Stable progressive-history queries.
-- Per-Student write locking.
+- SQLite financial-write serialization through `BEGIN IMMEDIATE`.
 - Atomic Deposit and Withdrawal persistence.
 - Stable Transaction UUID lookup for retry resolution.
 
@@ -151,7 +151,7 @@ The single relational database:
 - Enforces primary keys, foreign keys, required values, type checks, positive Amount, and Student-name uniqueness.
 - Restricts Student deletion when Transactions exist.
 - Supports append-only Transaction access for the application.
-- Provides per-Student locking and atomic commit or rollback.
+- Provides single-writer serialization through `BEGIN IMMEDIATE` and atomic commit or rollback.
 - Computes exact whole-Rupiah Balance from all persisted Transactions.
 - Supports deterministic newest-first history retrieval.
 
@@ -166,8 +166,8 @@ It does not store Balance, authentication data, offline state, or a second finan
 | Case-insensitive uniqueness | No | Convert conflict to domain outcome | Unique index |
 | Whole-Rupiah Amount | Immediate feedback | Authoritative validation | Integer type and positive check |
 | Transaction type | Fixed by entry mode | Allow only approved type | Type check |
-| Existing Student | No | Map missing Student outcome | Foreign key and locked-row lookup |
-| Sufficient Balance | Informative only | Invoke atomic operation | Locked full-history check and insert |
+| Existing Student | No | Map missing Student outcome | Foreign key and lookup inside the immediate transaction |
+| Sufficient Balance | Informative only | Invoke atomic operation | Serialized full-history check and insert |
 | Duplicate retry | Disable repeated tap | Reuse logical Transaction UUID | Transaction primary key |
 
 Validation is intentionally repeated at trust boundaries. Client validation improves interaction speed; server and database validation protect correctness.
@@ -180,13 +180,13 @@ One database transaction normalizes and inserts the Student. The unique index re
 
 ### 9.2 Deposit
 
-One database transaction locks the Student row, inserts one complete Deposit, and commits. Every financial write for the same Student uses the same lock protocol.
+One `BEGIN IMMEDIATE` SQLite transaction acquires the write reservation, verifies the Student, inserts one complete Deposit, and commits. Every financial write uses the same serialization protocol.
 
 ### 9.3 Withdrawal
 
 One database transaction:
 
-1. Locks the Student row.
+1. Starts `BEGIN IMMEDIATE` before reading the Student or Balance.
 2. Calculates Balance from all persisted Transactions.
 3. Rejects the request if Amount exceeds Balance.
 4. Otherwise inserts the Withdrawal.
@@ -194,7 +194,13 @@ One database transaction:
 
 Validation and insertion are not split across transactions.
 
-### 9.4 Read Operations
+### 9.4 SQLite Process and Retry Contract
+
+The MVP runs one active server process against one SQLite database file. All database access passes through that server's Persistence layer; multiple server writers and external direct writers are unsupported. SQLite may serialize writes for different Students because its physical lock is database-wide. This still satisfies the Domain guarantee that writes for the same Student are serialized.
+
+The connection sets `PRAGMA busy_timeout = 5000`. Exhausted lock acquisition returns the retryable unavailable outcome without an automatic server retry and without beginning a financial read or insert. The client preserves the logical Transaction UUID. Unknown commit outcomes are resolved by UUID lookup before the same submission may be retried, following Database Design Section 7.4.
+
+### 9.5 Read Operations
 
 Student reads, Balance queries, and history-page queries do not mutate state. Balance and history may be requested separately, but Balance always uses complete history.
 
@@ -242,8 +248,8 @@ References: FR-3.2.1, FR-3.3.1
 Whole-Rupiah input
   → client validation
   → server/domain validation
-  → begin transaction
-  → lock Student
+  → BEGIN IMMEDIATE
+  → verify Student
   → insert immutable Deposit
   → commit
   → calculate/return updated Balance
@@ -258,8 +264,8 @@ References: FR-3.2.2, FR-3.3.1
 Whole-Rupiah input
   → client validation
   → server/domain validation
-  → begin transaction
-  → lock Student
+  → BEGIN IMMEDIATE
+  → verify Student
   → calculate full-history Balance
   → sufficient? ── no → rollback + Insufficient balance
        │
@@ -362,7 +368,7 @@ MVP security is limited to approved integrity protections:
 - Use parameterized persistence operations rather than combining input with database commands.
 - Limit application database capabilities to approved reads, Student inserts, and Transaction inserts.
 - Deny application mutation or deletion of persisted Transactions.
-- Use atomic transactions and per-Student locks for financial integrity.
+- Use the approved SQLite `BEGIN IMMEDIATE` transaction protocol for financial integrity.
 - Use stable Transaction UUIDs for duplicate prevention and retry safety.
 - Return only the data required by approved screens.
 
@@ -388,7 +394,7 @@ Deployment responsibilities:
 - Provide configuration for the server-to-database connection outside source code.
 - Provide production error diagnostics without changing operator-facing behavior.
 
-Exact hosting provider, process model, transport configuration, supported-browser versions, and operational monitoring remain deployment decisions. They do not change this architecture or add MVP features.
+Exact hosting provider, transport configuration, supported-browser versions, and operational monitoring remain deployment decisions. The process model is fixed for the MVP: one active application server process owns the SQLite database file. These choices do not add MVP features.
 
 Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues, background workers, caches, and distributed transaction infrastructure are intentionally absent.
 
@@ -397,7 +403,7 @@ Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues
 | Decision | Why chosen | Approved source |
 |----------|------------|-----------------|
 | One server deployable | Smallest unit that centralizes validation and financial integrity | Principles 6–8, 12 |
-| One relational database | Matches approved tables, constraints, locks, and atomic writes | Database Design Sections 3–11 |
+| One SQLite database | Matches the implemented foundation and approved tables, constraints, serialization, and atomic writes | Database Design Sections 3–11 |
 | Layered internals | Separates UI, use-case orchestration, rules, and persistence without distributed complexity | Domain Model Sections 3–7 |
 | Server-authoritative financial operations | Client state cannot enforce concurrency or append-only history | NFR-3.2–3.3; BR-TXN-004–005 |
 | Per-Student transaction boundary | Non-negative Balance is scoped to one Student aggregate | BR-BAL-004–005; Domain Model Section 6 |

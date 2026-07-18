@@ -1,6 +1,6 @@
 # Amanah Cash — Domain Model
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-17
@@ -129,6 +129,37 @@ Balance(student) = Σ deposit.amount - Σ withdrawal.amount
 
 The calculation always uses the complete persisted history for the Student. A progressively loaded UI history is not a balance input.
 
+### 4.6 Cross-Layer Terminology Contract
+
+Each layer uses one authoritative vocabulary. Translations and transport names do not change Domain meaning.
+
+| Concept | Domain terminology | Database terminology | API terminology | Production UI terminology | Public-facing terminology |
+|---------|--------------------|----------------------|-----------------|---------------------------|---------------------------|
+| Student | `Student` | table `students`; `student_id` reference | `student`; `studentId` | `Siswa` | `siswa` |
+| Transaction | `Transaction` | table `transactions` | `transaction` | `Transaksi` | `transaksi` or `transaksi keuangan siswa` |
+| Deposit | `Deposit` | `transactions.type = 'deposit'` | type value `deposit` | action `Setor`; noun `Setoran`; title `Setor dana` | exact type `Setoran`; broader narrative term `pemasukan` |
+| Withdrawal | `Withdrawal` | `transactions.type = 'withdrawal'` | type value `withdrawal` | action `Tarik`; noun `Penarikan`; title `Tarik dana` | exact type `Penarikan`; broader narrative term `pengeluaran` |
+| Balance | `Balance` | derived query result `balance`; never a stored column | `balance` | `Saldo` | `saldo` |
+| Amount | `RupiahAmount` or `Amount` | column `amount` | `amount` | `Jumlah` | `jumlah Rupiah` |
+
+Authority rules:
+
+1. Domain rules, code-level Domain types, and technical traceability use the English Domain terminology in this document.
+2. Database schema and queries use the exact table, column, and lowercase Transaction type names in the Database column above.
+3. API request and response contracts use the API terminology above. Transaction direction values are exactly `deposit` and `withdrawal`; translated values are not transport enums.
+4. Production application copy uses the UI terminology above and the final strings in `docs/19-screen-specifications.md`.
+5. Public Landing Page copy uses the Public-facing terminology above and the final strings in `docs/24-landing-page-content.md`.
+6. English Domain terms that appear in requirements, flows, wireframes, component anatomy, tests, logs, or developer tools are internal semantic and implementation terminology. They are not approved production UI copy.
+7. `Setor`, `Setoran`, and public `pemasukan` map only to Domain `Deposit`. `Tarik`, `Penarikan`, and public `pengeluaran` map only to Domain `Withdrawal`. Implementers must not improvise synonyms such as credit/debit, send/receive, income/expense, or cash-in/cash-out.
+
+Financial perspective is explicit:
+
+- A Deposit is money entrusted to the Student. It leaves the operator's custody perspective and enters the tracked entrusted-funds Balance, so Balance increases.
+- A Withdrawal is money returned by the Student. It returns to the operator's custody perspective and leaves the tracked entrusted-funds Balance, so Balance decreases.
+- Public `pemasukan` and `pengeluaran` describe movement into and out of the tracked Student Balance. They do not describe the operator's accounting revenue, expense, or cash position.
+
+This contract maps vocabulary only. It does not change Transaction direction, Balance calculation, product scope, or any Business Rule.
+
 ## 5. Relationships
 
 ### 5.1 Student to Transaction
@@ -151,7 +182,7 @@ Commands that change financial history must enter through the Student boundary:
 
 All financial writes for the same Student are serialized. A withdrawal checks the balance from the complete persisted history and appends the withdrawal inside the same atomic operation.
 
-Transactions for different Students do not share a financial invariant and may proceed independently.
+Transactions for different Students do not share a financial invariant and are logically independent. The approved SQLite implementation may serialize them at its physical single-writer boundary without changing the aggregate rule.
 
 The aggregate boundary does not require loading every Transaction into application memory. Persistence may calculate the full-history balance and load transaction pages separately, provided the same invariants are enforced.
 

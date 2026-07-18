@@ -113,9 +113,9 @@ Persist traceable, append-only Deposit events using whole-Rupiah amounts.
 - TransactionId, TransactionType, and RupiahAmount domain types.
 - Positive whole-Rupiah validation.
 - Deposit application use case.
-- Per-Student financial-write lock.
+- SQLite `BEGIN IMMEDIATE` financial-write serialization.
 - Deposit Transaction Entry mode and direction text.
-- Application protection against Transaction update and deletion.
+- Append-only Persistence access and SQLite triggers against Transaction update and deletion.
 
 ### Deliverables
 
@@ -157,11 +157,11 @@ Provide exact complete-history Balance calculation and concurrency-safe Withdraw
 - Atomic Withdrawal application use case.
 - Withdrawal UI including current Balance and insufficient-balance outcome.
 - Concurrency tests for simultaneous Deposits and Withdrawals on one Student.
-- Independence test for writes to different Students.
+- Concurrency test confirming all writes preserve correct per-Student histories under SQLite's single-writer boundary.
 
 ### Dependencies
 
-- Milestone 3 Transaction model, append-only persistence, and per-Student lock protocol.
+- Milestone 3 Transaction model, append-only persistence, and SQLite write-serialization protocol.
 
 ### Completion Criteria
 

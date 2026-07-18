@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#164e3e">
+    <meta name="description" content="Amanah Cash student fund ledger">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="icon" href="/icons/icon-192.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Amanah Cash</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Amanah Cash</p>
+          <h1 id="screen-title">Students</h1>
+        </div>
+        <span id="system-status" class="status" role="status">Connecting…</span>
+      </header>
+
+      <nav aria-label="Application screens">
+        <a href="#students" data-route="students">Students</a>
+        <a href="#student-detail" data-route="student-detail">Student Detail</a>
+        <a href="#transaction-entry" data-route="transaction-entry">Transaction Entry</a>
+      </nav>
+
+      <section id="screen" class="screen" aria-live="polite"></section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

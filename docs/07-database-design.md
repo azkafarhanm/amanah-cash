@@ -1,6 +1,6 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-17
@@ -16,7 +16,7 @@ This document defines the logical relational database design for the Amanah Cash
 - `docs/03-business-rules.md`
 - `docs/04-domain-model.md`
 
-The design is intentionally limited to Student and Transaction persistence. It does not select a database product or define deployment infrastructure.
+The design is intentionally limited to Student and Transaction persistence. The approved MVP implementation uses SQLite. This document defines only the SQLite behavior required to preserve the approved rules; it does not define hosting infrastructure.
 
 ## 2. Design Principles
 
@@ -136,32 +136,37 @@ Requirements:
 
 ## 7. Atomic Financial Writes
 
-### 7.1 Per-Student Serialization
+### 7.1 SQLite Write Serialization and Process Boundary
 
-Every deposit and withdrawal write acquires an exclusive transactional lock for the target Student row. The lock is held until commit or rollback.
+SQLite does not provide row-level `SELECT ... FOR UPDATE` locks. The MVP therefore uses `BEGIN IMMEDIATE` as the approved physical write-serialization mechanism. Acquiring the immediate transaction before any Student lookup or Balance query reserves SQLite's single-writer boundary; every Deposit and Withdrawal waits for or follows the preceding financial write. This database-wide serialization is stronger than the Domain requirement that writes for the same Student be serialized and preserves deterministic ordering and non-negative Balance correctness.
 
-Using the Student row as the lock target provides one stable serialization point even when the Student has no Transactions. Writes for different Students remain independent.
+The supported MVP process boundary is:
 
-All application paths that append a financial Transaction must use this protocol. Locking only withdrawals would allow a concurrent deposit to have ambiguous ordering relative to a withdrawal.
+- one active Amanah Cash server process owns one SQLite database file;
+- all application reads and writes pass through that server's Persistence layer;
+- no second server process, direct writer, shared-network-filesystem writer, or external application may write the database file; and
+- scaling to multiple writer processes requires a separately approved architecture revision before deployment.
+
+All application paths that append a financial Transaction use the same `BEGIN IMMEDIATE` protocol. SQLite may serialize writes for different Students at the physical database boundary; independence between different Students is not an MVP correctness or performance guarantee.
 
 ### 7.2 Deposit Transaction
 
 ```text
-BEGIN
-  1. Lock the target Student row for update.
+BEGIN IMMEDIATE
+  1. Acquire SQLite's write reservation before reading the target Student.
   2. Fail if the Student does not exist.
   3. Insert the complete deposit row.
   4. Commit.
 COMMIT
 ```
 
-The lock gives all financial writes for that Student a deterministic database order. The insert and commit are one unit; failure rolls back the event completely.
+The immediate transaction gives financial writes a deterministic database order. The Student lookup, insert, and commit are one unit; failure rolls back the event completely.
 
 ### 7.3 Withdrawal Transaction
 
 ```text
-BEGIN
-  1. Lock the target Student row for update.
+BEGIN IMMEDIATE
+  1. Acquire SQLite's write reservation before reading the target Student.
   2. Fail if the Student does not exist.
   3. Calculate balance from every persisted Transaction for the Student.
   4. If withdrawal amount is greater than balance, roll back without inserting.
@@ -170,7 +175,7 @@ BEGIN
 COMMIT
 ```
 
-The Student lock ensures another deposit or withdrawal for the same Student cannot pass the lock until the current operation commits or rolls back. Therefore, balance validation and withdrawal insertion observe one serialized history and behave atomically.
+The immediate transaction ensures another Deposit or Withdrawal cannot begin its financial read/write sequence until the current operation commits or rolls back. Therefore, Balance validation and Withdrawal insertion observe one serialized history and behave atomically.
 
 Application-side validation without this database transaction is insufficient and must not be used as the financial integrity boundary.
 
@@ -181,19 +186,21 @@ Application-side validation without this database transaction is insufficient an
 - A transaction is reported as successful only after commit succeeds.
 - A lost connection or unknown commit outcome must be resolved by looking up the same Transaction UUID before retrying.
 - The system generates one Transaction UUID for a logical submission and reuses it when resolving or retrying that submission. The primary key prevents the same event from being inserted twice.
+- The SQLite connection must execute `PRAGMA busy_timeout = 5000` when it opens. If `BEGIN IMMEDIATE` still returns `SQLITE_BUSY` after that bounded wait, no financial read or insert has occurred; the server returns the approved retryable unavailable outcome and does not automatically retry or create a new submission.
+- A safe user retry reuses the original Transaction UUID. After an unknown commit outcome, Persistence first looks up that UUID: an existing matching Transaction resolves as success; absence permits the same logical submission to run again; an unavailable lookup remains an unknown outcome and must not be presented as failure or success.
 
 This retry behavior satisfies the requirement that a safe retry must not create an unintended duplicate without adding a separate idempotency entity or field.
 
 ## 8. Append-Only Transaction Model
 
-The application database role receives:
+SQLite has no table-level application roles or `GRANT`/`REVOKE` permissions. Append-only behavior is therefore enforced at both available MVP boundaries:
 
-- `SELECT` and `INSERT` access to `transactions`.
-- No `UPDATE`, `DELETE`, or `TRUNCATE` access to `transactions`.
+- the application Persistence interface exposes only `SELECT` and `INSERT` operations for `transactions`; it exposes no `UPDATE`, `DELETE`, or replacement operation; and
+- the SQLite schema installs `trg_transactions_no_update` (`BEFORE UPDATE`) and `trg_transactions_no_delete` (`BEFORE DELETE`) on `transactions`; each aborts the statement with `RAISE(ABORT, 'transactions are append-only')`.
 
-The application exposes no operation that updates or deletes a Transaction. Corrections, reversals, administrative mutation, and transaction deletion are outside MVP scope.
+The application exposes no operation that updates or deletes a Transaction. Corrections, reversals, administrative mutation, and transaction deletion remain outside MVP scope.
 
-Schema migrations and controlled database administration are operational responsibilities outside the application role. They do not create an MVP product capability to mutate financial events.
+Schema migrations are controlled maintenance operations. A migration may replace append-only triggers only inside an exclusive migration transaction while the application server is stopped, and it must restore the protection before the application reopens the database. This operational ability does not create an MVP product capability to mutate financial events.
 
 No soft-delete column is added because soft deletion would allow a persisted financial event to be excluded from balance calculation and would weaken the append-only source of truth.
 
@@ -221,16 +228,16 @@ The first request has no cursor. Each later request uses the `(created_at, id)` 
 
 Balance is queried separately from this page and always uses complete persisted history.
 
-## 11. Application Role Permissions
+## 11. Application Persistence Access Boundary
 
-Minimum application permissions are:
+The application-owned Persistence interface permits:
 
-| Table | SELECT | INSERT | UPDATE | DELETE | TRUNCATE |
-|-------|--------|--------|--------|--------|----------|
-| `students` | Yes | Yes | No | No | No |
-| `transactions` | Yes | Yes | No | No | No |
+| Table | SELECT | INSERT | UPDATE | DELETE |
+|-------|--------|--------|--------|--------|
+| `students` | Yes | Yes | No | No |
+| `transactions` | Yes | Yes | No | No |
 
-These permissions match the MVP capabilities: create/read Students and append/read Transactions. Database locking of a selected Student row must remain available to the application role under the selected database product.
+SQLite schema triggers independently reject Transaction update and deletion if a prohibited statement bypasses that interface. `BEGIN IMMEDIATE` must remain available on the application connection. No product request may execute arbitrary SQL or obtain the underlying connection.
 
 ## 12. Design Decisions
 
@@ -245,9 +252,9 @@ These permissions match the MVP capabilities: create/read Students and append/re
 | Case-insensitive unique name index | Duplicate prevention must remain correct under concurrent Student creation. |
 | Restricted Student deletion | Transaction history must always retain a valid Student reference. |
 | No balance column or table | Persisting balance would create a second financial source of truth. |
-| Per-Student write lock | It enforces the non-negative invariant without serializing unrelated Students. |
-| Lock deposits and withdrawals | Every financial event receives a deterministic order within one Student aggregate. |
-| Append-only application permissions | Database permissions reinforce the absence of edit and delete operations. |
+| SQLite `BEGIN IMMEDIATE` write serialization | It preserves deterministic ordering and the non-negative invariant within the approved single-process SQLite boundary. |
+| Serialize deposits and withdrawals | Every financial event receives a deterministic order within one Student aggregate. |
+| Append-only Persistence boundary and triggers | SQLite triggers reinforce the absence of application edit and delete operations without relying on unavailable table roles. |
 | Composite history index and cursor | It supports deterministic progressive loading while Transactions are appended. |
 | Stable Transaction UUID on retry | The existing primary key prevents duplicate logical submissions without another MVP field. |
 
@@ -260,9 +267,9 @@ These permissions match the MVP capabilities: create/read Students and append/re
 | `transactions.type` check | BR-TXN-001–003 |
 | Integer positive `amount` | NFR-3.1; BR-MON-001–003 |
 | Transaction primary key and required columns | NFR-6.1; BR-TXN-003 |
-| Append-only permissions | FR-3.2.3; BR-TXN-004; BR-AUD-001 |
+| Append-only Persistence boundary and triggers | FR-3.2.3; BR-TXN-004; BR-AUD-001 |
 | Atomic insert and rollback | NFR-3.3, NFR-5.2; BR-TXN-005 |
 | Balance query | FR-3.3.1; BR-BAL-001–003 |
-| Per-Student lock and atomic withdrawal | FR-3.2.2; NFR-3.3; BR-BAL-004–005 |
+| SQLite write serialization and atomic withdrawal | FR-3.2.2; NFR-3.3; BR-BAL-004–005 |
 | History index and cursor | FR-3.2.3; NFR-4.1; BR-UI-002–003 |
 | Stable retry UUID | NFR-5.1 |

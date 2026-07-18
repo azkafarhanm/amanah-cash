@@ -60,7 +60,7 @@ Business rules must be visible in Domain code or explicit persistence constraint
 
 ### 5.3 Atomic Financial Writes
 
-- Every Deposit and Withdrawal must use the approved per-Student lock protocol.
+- Every Deposit and Withdrawal must use the approved SQLite `BEGIN IMMEDIATE` serialization protocol in Database Design Section 7.
 - Withdrawal Balance validation and insertion must occur in one database transaction.
 - Application-side checks may assist the UI but are not the integrity boundary.
 - A Transaction is successful only after commit succeeds.
@@ -101,6 +101,7 @@ Never trust client validation as sufficient. Convert database constraint conflic
 
 ## 9. Naming Conventions
 
+- Follow the authoritative cross-layer terminology contract in Domain Model Section 4.6.
 - Use approved domain names without synonyms.
 - Use `Student` for the aggregate root and `Transaction` for a financial event.
 - Use `deposit` and `withdrawal` for persisted Transaction types.
@@ -131,7 +132,7 @@ Minimum expectations:
 - Domain tests for normalization, whole-Rupiah Amounts, Transaction direction, and Balance formula.
 - Persistence tests for constraints, append-only access, rollback, locking, and retry UUID behavior.
 - Concurrency tests for simultaneous financial writes to one Student.
-- Tests proving different Students do not share a financial lock boundary.
+- Concurrency tests proving SQLite serialization preserves correct independent histories for different Students.
 - Application tests for explicit validation and failure outcomes.
 - Presentation tests for loading, empty, validation, failure, retry, and progressive-history states.
 - End-to-end tests for Create Student, Deposit, Withdrawal, Balance, search, and history.

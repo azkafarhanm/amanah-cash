@@ -4,6 +4,10 @@
 
 Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A single Operator creates Students, records Deposits and Withdrawals, and views Balances derived from immutable Transaction history. Approved documents in `docs/` remain authoritative.
 
+## Current Implementation State
+
+Milestone 1 — Project Foundation is implemented. The repository contains a runnable three-screen PWA shell, one Node.js server boundary, one SQLite connection, initial Student and Transaction migrations, and baseline foundation tests. Student management and financial use cases remain unimplemented until their roadmap milestones.
+
 ## MVP Scope
 
 Included:

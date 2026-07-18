@@ -1,0 +1,77 @@
+{
+  "AI_CONTEXT.md": {
+    "mtime": 1784274302.765662,
+    "ast_hash": "fcc19f812370c3963a347764e77974d7",
+    "semantic_hash": "fcc19f812370c3963a347764e77974d7"
+  },
+  "CHANGELOG.md": {
+    "mtime": 1784275022.9203799,
+    "ast_hash": "089246bbb4f0fa599df15738334d14d3",
+    "semantic_hash": "089246bbb4f0fa599df15738334d14d3"
+  },
+  "README.md": {
+    "mtime": 1784274302.769595,
+    "ast_hash": "d1dd6885cceccc9bebc8e1f6334a2086",
+    "semantic_hash": "d1dd6885cceccc9bebc8e1f6334a2086"
+  },
+  "docs/00-product-principles.md": {
+    "mtime": 1783062953.960176,
+    "ast_hash": "451b549292afdf1d29f02a5a408059ab",
+    "semantic_hash": "451b549292afdf1d29f02a5a408059ab"
+  },
+  "docs/01-functional-requirements.md": {
+    "mtime": 1784274982.54818,
+    "ast_hash": "c30e475b67ac1bd51ef6ffe407fcb724",
+    "semantic_hash": "c30e475b67ac1bd51ef6ffe407fcb724"
+  },
+  "docs/02-non-functional-requirements.md": {
+    "mtime": 1784274982.54818,
+    "ast_hash": "8469b70744b82f5488dc973d95e26d88",
+    "semantic_hash": "8469b70744b82f5488dc973d95e26d88"
+  },
+  "docs/03-business-rules.md": {
+    "mtime": 1784274982.5520508,
+    "ast_hash": "027a15f0754ae0acb9bd845285ca8e15",
+    "semantic_hash": "027a15f0754ae0acb9bd845285ca8e15"
+  },
+  "docs/04-domain-model.md": {
+    "mtime": 1784274982.5520508,
+    "ast_hash": "fc88309ce59f4389ac6e8d13606ac94a",
+    "semantic_hash": "fc88309ce59f4389ac6e8d13606ac94a"
+  },
+  "docs/05-user-flow.md": {
+    "mtime": 1784274982.5559216,
+    "ast_hash": "f8ece10513b3341e1b28eb24526e36bc",
+    "semantic_hash": "f8ece10513b3341e1b28eb24526e36bc"
+  },
+  "docs/06-wireframe.md": {
+    "mtime": 1784274982.5559216,
+    "ast_hash": "76371d82821db8c2c42d1590b89fa58e",
+    "semantic_hash": "76371d82821db8c2c42d1590b89fa58e"
+  },
+  "docs/07-database-design.md": {
+    "mtime": 1784274982.5559216,
+    "ast_hash": "03e56d45cb3527e09a2f9c712cbbba3e",
+    "semantic_hash": "03e56d45cb3527e09a2f9c712cbbba3e"
+  },
+  "docs/08-system-architecture.md": {
+    "mtime": 1784274982.5597923,
+    "ast_hash": "b07daf8cf089a4df72d47561774cc758",
+    "semantic_hash": "b07daf8cf089a4df72d47561774cc758"
+  },
+  "docs/09-development-roadmap.md": {
+    "mtime": 1784274982.5597923,
+    "ast_hash": "02cb8219c78e066b9e60fcc076be2c3e",
+    "semantic_hash": "02cb8219c78e066b9e60fcc076be2c3e"
+  },
+  "docs/10-engineering-rules.md": {
+    "mtime": 1784274982.5597923,
+    "ast_hash": "273a6ccb89464bd10add46581465aac9",
+    "semantic_hash": "273a6ccb89464bd10add46581465aac9"
+  },
+  "docs/11-development-workflow.md": {
+    "mtime": 1784274982.563663,
+    "ast_hash": "ec29781beccfea1874b025178256d03e",
+    "semantic_hash": "ec29781beccfea1874b025178256d03e"
+  }
+}
