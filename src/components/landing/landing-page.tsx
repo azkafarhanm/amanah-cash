@@ -1,5 +1,6 @@
 import { PageContainer } from "@/components/ui";
 
+import { LandingFooter } from "./landing-footer";
 import { SkipLink } from "./skip-link";
 
 export function LandingPage() {
@@ -12,9 +13,7 @@ export function LandingPage() {
       <main id="main-content" tabIndex={-1}>
         <PageContainer />
       </main>
-      <footer>
-        <PageContainer />
-      </footer>
+      <LandingFooter />
     </>
   );
 }

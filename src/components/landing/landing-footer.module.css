@@ -1,0 +1,33 @@
+.footer {
+  padding-block: var(--landing-section-padding-mobile);
+  color: var(--color-text-primary);
+  background: var(--landing-canvas);
+  border-block-start: var(--landing-footer-border);
+}
+
+.content {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.identity {
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--landing-copy-max);
+}
+
+.productName,
+.description,
+.copyright {
+  margin: var(--space-0);
+}
+
+.productName {
+  font: var(--type-label);
+}
+
+.description,
+.copyright {
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}

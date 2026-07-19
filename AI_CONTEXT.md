@@ -6,7 +6,7 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, the structural Landing Page shell, exact approved metadata, and the approved local Geist font contract without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, the structural Landing Page shell, exact approved metadata, the approved local Geist font contract, and the first Milestone 2 Footer identity content without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
 
 **Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
 
@@ -16,15 +16,17 @@ Milestone 1 — Project Foundation is implemented. The repository retains the ru
 
 **Sprint 4 — Metadata & Compliance** is complete. It finalized exact Landing Page metadata, verified the approved Geist font system and fallback, closed remaining token compliance gaps, and officially completed Landing Page Implementation Plan Milestone 1 without beginning Milestone 2.
 
+**Sprint 5 — Footer Identity Foundation** is complete. It begins Landing Page Implementation Plan Milestone 2 with only the static Footer identity, approved descriptor, server-rendered current year, and tokenized responsive structure; Footer navigation, Header, Hero, and all other Landing Page sections remain unimplemented.
+
 ## Current Handover
 
-- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is officially complete.
-- **Current sprint:** Sprint 4 — Metadata & Compliance is implemented and validated.
+- **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is complete, and Milestone 2 is in progress.
+- **Current sprint:** Sprint 5 — Footer Identity Foundation is implemented and validated.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained the Sprint 1–3 foundations; added the exact approved title, description, Open Graph title, and Open Graph description; verified `geist` through `next/font/local`, the existing CSS variable contract, and the system sans fallback; completed component token and responsive-breakpoint compliance. Production rendering, build, TypeScript, lint, and the full 23-test suite pass.
-- **Current architecture decisions:** `/` is the public Landing Page, `/login` is reserved for the future authentication entry, and `/app` is reserved for the future authenticated application. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep authentication, Prisma, API Routes, Landing Page content sections, and production deployment deferred.
+- **Work completed:** Retained the Sprint 1–4 foundations and replaced the empty Footer slot with a Server Component containing exact approved identity text, descriptor, and server-rendered current year. It reuses `PageContainer`, approved Footer tokens, and responsive token breakpoints without adding navigation or links. Production rendering, build, TypeScript, lint, and the full 25-test suite pass.
+- **Current architecture decisions:** `/` is the public Landing Page, `/login` is reserved for the future authentication entry, and `/app` is reserved for the future authenticated application. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep the Sprint 5 Footer identity non-interactive and server-rendered; defer Footer navigation, Header, Hero, authentication, Prisma, API Routes, remaining Landing Page sections, and production deployment.
 - **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Define and approve a small Sprint 5 within Landing Page Implementation Plan Milestone 2; do not implement Header, Hero, or Footer content before that sprint contract is approved.
+- **Next recommended task:** Resolve the pending Header Product Identity and primary product-entry destinations before defining the next small Milestone 2 implementation sprint; do not implement Header, Hero, Footer navigation, or screenshots without their required approvals.
 
 ## MVP Scope
 

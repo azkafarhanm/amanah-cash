@@ -102,6 +102,10 @@
     var(--line-height-heading) var(--font-family-sans);
   --type-button: var(--font-weight-semibold) var(--font-size-16) /
     var(--line-height-20) var(--font-family-sans);
+  --type-label: var(--font-weight-semibold) var(--font-size-14) /
+    var(--line-height-body) var(--font-family-sans);
+  --type-supporting: var(--font-weight-regular) var(--font-size-14) /
+    var(--line-height-body) var(--font-family-sans);
   --layout-gutter-mobile: var(--space-4);
   --layout-gutter-wide: var(--space-6);
   --layout-content-max: var(--size-content-160);
@@ -117,6 +121,7 @@
   --landing-surface: var(--color-background-surface);
   --landing-surface-subtle: var(--color-background-subtle);
   --landing-content-max: var(--size-content-300);
+  --landing-copy-max: var(--size-content-160);
   --landing-section-padding-mobile: var(--space-12);
   --landing-section-padding-tablet: var(--space-16);
   --landing-section-padding-desktop: var(--space-24);
@@ -139,6 +144,8 @@
   --landing-card-border: var(--color-border-default);
   --landing-card-radius: var(--shape-container);
   --landing-card-padding: var(--space-6);
+  --landing-footer-border: var(--border-width-default)
+    var(--border-style-default) var(--color-border-default);
   --screen-shell-content-max: var(--layout-content-max);
   --landing-screen-content-max: var(--landing-content-max);
 }

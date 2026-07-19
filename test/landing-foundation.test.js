@@ -18,15 +18,54 @@ test("the root route renders only the structural LandingPage shell", () => {
 
 test("LandingPage preserves the approved landmark source order", () => {
   const shell = readSource("src/components/landing/landing-page.tsx");
-  const landmarks = ["<SkipLink />", "<header>", "<main", "<footer>"];
+  const landmarks = ["<SkipLink />", "<header>", "<main", "<LandingFooter />"];
   const positions = landmarks.map((landmark) => shell.indexOf(landmark));
 
   assert.equal(positions.every((position) => position >= 0), true);
   assert.deepEqual(positions, [...positions].sort((left, right) => left - right));
   assert.equal((shell.match(/<header>/g) ?? []).length, 1);
   assert.equal((shell.match(/<main/g) ?? []).length, 1);
-  assert.equal((shell.match(/<footer>/g) ?? []).length, 1);
+  assert.equal((shell.match(/<LandingFooter \/>/g) ?? []).length, 1);
   assert.match(shell, /<main id="main-content" tabIndex=\{-1\}>/);
+});
+
+test("LandingFooter renders only the approved static identity content", () => {
+  const footer = readSource("src/components/landing/landing-footer.tsx");
+
+  assert.doesNotMatch(footer, /["']use client["']/);
+  assert.equal((footer.match(/<footer/g) ?? []).length, 1);
+  assert.match(footer, />Amanah Cash</);
+  assert.match(
+    footer,
+    /Pencatatan transaksi keuangan siswa yang sederhana, jelas, dan mudah\s+ditelusuri\./,
+  );
+  assert.match(footer, /new Date\(\)\.getFullYear\(\)/);
+  assert.match(footer, /© \{currentYear\} Amanah Cash\./);
+  assert.match(footer, /<PageContainer className=\{styles\.content\}>/);
+  assert.doesNotMatch(footer, /<a\b|<nav\b|href=|Link|Dokumentasi/);
+});
+
+test("LandingFooter uses the approved static token contract", () => {
+  const footer = readSource("src/components/landing/landing-footer.tsx");
+  const styles = readSource(
+    "src/components/landing/landing-footer.module.css",
+  );
+  const localPrimitive =
+    /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;
+
+  assert.doesNotMatch(styles, localPrimitive);
+  assert.match(styles, /background: var\(--landing-canvas\)/);
+  assert.match(styles, /border-block-start: var\(--landing-footer-border\)/);
+  assert.match(styles, /font: var\(--type-label\)/);
+  assert.match(styles, /font: var\(--type-supporting\)/);
+  assert.match(
+    footer,
+    /tablet:py-\[var\(--landing-section-padding-tablet\)\]/,
+  );
+  assert.match(
+    footer,
+    /desktop:py-\[var\(--landing-section-padding-desktop\)\]/,
+  );
 });
 
 test("the skip link uses the exact approved label and main target", () => {
@@ -91,6 +130,7 @@ test("component styles consume tokens without local primitive values", () => {
   const componentStyles = [
     "src/components/ui/ui.module.css",
     "src/components/landing/landing-foundation.module.css",
+    "src/components/landing/landing-footer.module.css",
   ].map(readSource);
   const localPrimitive =
     /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;
