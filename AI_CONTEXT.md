@@ -6,7 +6,7 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A si
 
 ## Current Implementation State
 
-Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, the structural Landing Page shell, exact approved metadata, the approved local Geist font contract, and the first Milestone 2 Footer identity content without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
+Milestone 1 — Project Foundation is implemented. The repository retains the runnable three-screen PWA shell, Node.js server boundary, SQLite connection, initial Student and Transaction migrations, and foundation tests. The Next.js foundation now includes approved shared design tokens, reusable UI primitives, the structural Landing Page shell, exact approved metadata, the approved local Geist font contract, and the first Milestone 2 Footer identity and Hero content foundations without product UI or persistence changes. Student management and financial use cases remain unimplemented until their roadmap milestones.
 
 **Sprint 1 — Project Bootstrap** is complete. It was a separate implementation cycle for the approved Next.js foundation; it did not reopen or rename Development Roadmap Milestone 1 or begin a Landing Page implementation milestone.
 
@@ -16,17 +16,19 @@ Milestone 1 — Project Foundation is implemented. The repository retains the ru
 
 **Sprint 4 — Metadata & Compliance** is complete. It finalized exact Landing Page metadata, verified the approved Geist font system and fallback, closed remaining token compliance gaps, and officially completed Landing Page Implementation Plan Milestone 1 without beginning Milestone 2.
 
-**Sprint 5 — Footer Identity Foundation** is complete. It begins Landing Page Implementation Plan Milestone 2 with only the static Footer identity, approved descriptor, server-rendered current year, and tokenized responsive structure; Footer navigation, Header, Hero, and all other Landing Page sections remain unimplemented.
+**Sprint 5 — Footer Identity Foundation** is complete. It established the static Footer identity, approved descriptor, server-rendered current year, and tokenized responsive structure. Footer navigation remains unimplemented.
+
+**Sprint 6 — Hero Content Foundation** is complete. It adds only the approved Hero heading, subheading, supporting copy, responsive typography, and page-level `h1`; Hero actions, screenshot, decoration, motion, Header, navigation, and remaining sections are not implemented.
 
 ## Current Handover
 
 - **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is complete, and Milestone 2 is in progress.
-- **Current sprint:** Sprint 5 — Footer Identity Foundation is implemented and validated.
+- **Current sprint:** Sprint 6 — Hero Content Foundation is implemented and validated.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained the Sprint 1–4 foundations and replaced the empty Footer slot with a Server Component containing exact approved identity text, descriptor, and server-rendered current year. It reuses `PageContainer`, approved Footer tokens, and responsive token breakpoints without adding navigation or links. Production rendering, build, TypeScript, lint, and the full 25-test suite pass.
-- **Current architecture decisions:** `/` is the public Landing Page, `/login` is reserved for the future authentication entry, and `/app` is reserved for the future authenticated application. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep the Sprint 5 Footer identity non-interactive and server-rendered; defer Footer navigation, Header, Hero, authentication, Prisma, API Routes, remaining Landing Page sections, and production deployment.
+- **Work completed:** Retained the Sprint 1–5 foundations and added a minimal Hero Server Component with the exact approved heading, subheading, and supporting copy. It reuses `PageContainer`, provides the page's only `h1`, and consumes approved mobile, tablet, and desktop typography aliases without actions, links, screenshots, decoration, motion, placeholders, or future composition hooks. Production rendering, build, TypeScript, lint, and the full 27-test suite pass.
+- **Current architecture decisions:** `/` is the public Landing Page, `/login` is reserved for the future authentication entry, and `/app` is reserved for the future authenticated application. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep the Sprint 5 Footer identity and Sprint 6 Hero content non-interactive and server-rendered; defer Hero actions and evidence, Footer navigation, Header, authentication, Prisma, API Routes, remaining Landing Page sections, and production deployment.
 - **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Resolve the pending Header Product Identity and primary product-entry destinations before defining the next small Milestone 2 implementation sprint; do not implement Header, Hero, Footer navigation, or screenshots without their required approvals.
+- **Next recommended task:** Resolve the pending Header Product Identity and primary product-entry destinations plus the approved Student Detail screenshot inputs before defining the next small Milestone 2 implementation sprint; do not implement Header, Hero actions or evidence, Footer navigation, or screenshots without their required approvals.
 
 ## MVP Scope
 

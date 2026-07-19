@@ -18,7 +18,13 @@ test("the root route renders only the structural LandingPage shell", () => {
 
 test("LandingPage preserves the approved landmark source order", () => {
   const shell = readSource("src/components/landing/landing-page.tsx");
-  const landmarks = ["<SkipLink />", "<header>", "<main", "<LandingFooter />"];
+  const landmarks = [
+    "<SkipLink />",
+    "<header>",
+    "<main",
+    "<HeroSection />",
+    "<LandingFooter />",
+  ];
   const positions = landmarks.map((landmark) => shell.indexOf(landmark));
 
   assert.equal(positions.every((position) => position >= 0), true);
@@ -27,6 +33,51 @@ test("LandingPage preserves the approved landmark source order", () => {
   assert.equal((shell.match(/<main/g) ?? []).length, 1);
   assert.equal((shell.match(/<LandingFooter \/>/g) ?? []).length, 1);
   assert.match(shell, /<main id="main-content" tabIndex=\{-1\}>/);
+});
+
+test("HeroSection renders only the approved static content hierarchy", () => {
+  const hero = readSource("src/components/landing/hero-section.tsx");
+
+  assert.doesNotMatch(hero, /["']use client["']/);
+  assert.equal((hero.match(/<h1/g) ?? []).length, 1);
+  assert.match(hero, /Transaksi keuangan siswa, tercatat lebih jelas/);
+  assert.match(
+    hero,
+    /Amanah Cash membantu guru mencatat pemasukan dan pengeluaran, melihat\s+saldo, dan menelusuri riwayat transaksi dalam satu alur yang sederhana\./,
+  );
+  assert.match(
+    hero,
+    /Dirancang untuk penggunaan sehari-hari melalui browser di ponsel maupun\s+komputer\./,
+  );
+  assert.match(hero, /<PageContainer>/);
+  assert.doesNotMatch(
+    hero,
+    /<a\b|<button\b|href=|Link|CTA|Action|Screenshot|Decoration|TODO/,
+  );
+});
+
+test("HeroSection uses only the approved responsive token contract", () => {
+  const hero = readSource("src/components/landing/hero-section.tsx");
+  const styles = readSource(
+    "src/components/landing/hero-section.module.css",
+  );
+  const localPrimitive =
+    /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;
+
+  assert.doesNotMatch(styles, localPrimitive);
+  assert.match(styles, /font: var\(--landing-hero-title-mobile\)/);
+  assert.match(styles, /font: var\(--landing-lead\)/);
+  assert.match(styles, /font: var\(--type-body\)/);
+  assert.match(styles, /max-width: var\(--landing-copy-max\)/);
+  assert.match(styles, /gap: var\(--landing-content-gap\)/);
+  assert.match(
+    hero,
+    /tablet:\[font:var\(--landing-hero-title-tablet\)\]/,
+  );
+  assert.match(
+    hero,
+    /desktop:\[font:var\(--landing-hero-title-desktop\)\]/,
+  );
 });
 
 test("LandingFooter renders only the approved static identity content", () => {
@@ -131,6 +182,7 @@ test("component styles consume tokens without local primitive values", () => {
     "src/components/ui/ui.module.css",
     "src/components/landing/landing-foundation.module.css",
     "src/components/landing/landing-footer.module.css",
+    "src/components/landing/hero-section.module.css",
   ].map(readSource);
   const localPrimitive =
     /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;

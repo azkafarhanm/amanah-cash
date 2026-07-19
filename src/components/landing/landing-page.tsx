@@ -1,5 +1,6 @@
 import { PageContainer } from "@/components/ui";
 
+import { HeroSection } from "./hero-section";
 import { LandingFooter } from "./landing-footer";
 import { SkipLink } from "./skip-link";
 
@@ -11,7 +12,7 @@ export function LandingPage() {
         <PageContainer />
       </header>
       <main id="main-content" tabIndex={-1}>
-        <PageContainer />
+        <HeroSection />
       </main>
       <LandingFooter />
     </>

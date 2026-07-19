@@ -51,7 +51,13 @@
   --font-size-18: 1.125rem;
   --font-size-24: 1.5rem;
   --font-size-32: 2rem;
+  --font-size-40: 2.5rem;
+  --font-size-48: 3rem;
+  --font-size-56: 3.5rem;
   --line-height-20: 1.25rem;
+  --line-height-56: 3.5rem;
+  --line-height-64: 4rem;
+  --line-height-heading-tight: 1.1;
   --line-height-heading: 1.2;
   --line-height-body: 1.5;
   --letter-spacing-normal: 0;
@@ -106,6 +112,8 @@
     var(--line-height-body) var(--font-family-sans);
   --type-supporting: var(--font-weight-regular) var(--font-size-14) /
     var(--line-height-body) var(--font-family-sans);
+  --type-body: var(--font-weight-regular) var(--font-size-16) /
+    var(--line-height-body) var(--font-family-sans);
   --layout-gutter-mobile: var(--space-4);
   --layout-gutter-wide: var(--space-6);
   --layout-content-max: var(--size-content-160);
@@ -125,6 +133,15 @@
   --landing-section-padding-mobile: var(--space-12);
   --landing-section-padding-tablet: var(--space-16);
   --landing-section-padding-desktop: var(--space-24);
+  --landing-content-gap: var(--space-4);
+  --landing-hero-title-mobile: var(--font-weight-bold) var(--font-size-40) /
+    var(--line-height-heading-tight) var(--font-family-sans);
+  --landing-hero-title-tablet: var(--font-weight-bold) var(--font-size-48) /
+    var(--line-height-56) var(--font-family-sans);
+  --landing-hero-title-desktop: var(--font-weight-bold) var(--font-size-56) /
+    var(--line-height-64) var(--font-family-sans);
+  --landing-lead: var(--font-weight-regular) var(--font-size-18) /
+    var(--line-height-body) var(--font-family-sans);
   --landing-section-title: var(--font-weight-bold) var(--font-size-32) /
     var(--line-height-heading) var(--font-family-sans);
 

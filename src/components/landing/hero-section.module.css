@@ -1,0 +1,32 @@
+.section {
+  padding-block: var(--landing-section-padding-mobile);
+  background: var(--landing-canvas);
+}
+
+.content {
+  display: grid;
+  gap: var(--landing-content-gap);
+  max-width: var(--landing-copy-max);
+}
+
+.title,
+.subheading,
+.supportingCopy {
+  margin: var(--space-0);
+}
+
+.title {
+  color: var(--color-text-primary);
+  font: var(--landing-hero-title-mobile);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.subheading {
+  color: var(--color-text-primary);
+  font: var(--landing-lead);
+}
+
+.supportingCopy {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
