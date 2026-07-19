@@ -144,6 +144,8 @@
     var(--line-height-body) var(--font-family-sans);
   --landing-section-title: var(--font-weight-bold) var(--font-size-32) /
     var(--line-height-heading) var(--font-family-sans);
+  --landing-nav-height: var(--size-14);
+  --landing-nav-background: var(--landing-canvas);
 
   --button-primary-background: var(--color-action-primary);
   --button-primary-background-hover: var(--color-action-primary-hover);

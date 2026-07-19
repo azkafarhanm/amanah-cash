@@ -20,7 +20,7 @@ test("LandingPage preserves the approved landmark source order", () => {
   const shell = readSource("src/components/landing/landing-page.tsx");
   const landmarks = [
     "<SkipLink />",
-    "<header>",
+    "<LandingHeader />",
     "<main",
     "<HeroSection />",
     "<LandingFooter />",
@@ -29,10 +29,41 @@ test("LandingPage preserves the approved landmark source order", () => {
 
   assert.equal(positions.every((position) => position >= 0), true);
   assert.deepEqual(positions, [...positions].sort((left, right) => left - right));
-  assert.equal((shell.match(/<header>/g) ?? []).length, 1);
+  assert.equal((shell.match(/<LandingHeader \/>/g) ?? []).length, 1);
   assert.equal((shell.match(/<main/g) ?? []).length, 1);
   assert.equal((shell.match(/<LandingFooter \/>/g) ?? []).length, 1);
   assert.match(shell, /<main id="main-content" tabIndex=\{-1\}>/);
+});
+
+test("LandingHeader renders only the approved Product Identity", () => {
+  const header = readSource("src/components/landing/landing-header.tsx");
+
+  assert.doesNotMatch(header, /["']use client["']/);
+  assert.equal((header.match(/<header/g) ?? []).length, 1);
+  assert.match(header, /href="\/"/);
+  assert.match(header, /aria-label="Amanah Cash — Beranda"/);
+  assert.match(header, /<Logo aria-hidden="true" \/>/);
+  assert.match(header, /<PageContainer className=\{styles\.content\}>/);
+  assert.doesNotMatch(
+    header,
+    /<nav\b|<button\b|#cara-kerja|#fitur|#tanya-jawab|\/login|\/app|Mulai menggunakan|TODO/,
+  );
+});
+
+test("LandingHeader uses the approved static token contract", () => {
+  const styles = readSource(
+    "src/components/landing/landing-header.module.css",
+  );
+  const localPrimitive =
+    /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;
+
+  assert.doesNotMatch(styles, localPrimitive);
+  assert.match(styles, /background: var\(--landing-nav-background\)/);
+  assert.match(styles, /min-height: var\(--landing-nav-height\)/);
+  assert.match(styles, /min-height: var\(--control-height-minimum\)/);
+  assert.match(styles, /\.identity:focus-visible/);
+  assert.match(styles, /var\(--focus-visible-color\)/);
+  assert.match(styles, /var\(--focus-visible-shadow\)/);
 });
 
 test("HeroSection renders only the approved static content hierarchy", () => {
@@ -183,6 +214,7 @@ test("component styles consume tokens without local primitive values", () => {
     "src/components/landing/landing-foundation.module.css",
     "src/components/landing/landing-footer.module.css",
     "src/components/landing/hero-section.module.css",
+    "src/components/landing/landing-header.module.css",
   ].map(readSource);
   const localPrimitive =
     /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|:\s*transparent\b|@media\s*\(/i;

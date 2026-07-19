@@ -1,0 +1,23 @@
+.header {
+  background: var(--landing-nav-background);
+}
+
+.content {
+  display: flex;
+  min-height: var(--landing-nav-height);
+  align-items: center;
+}
+
+.identity {
+  display: inline-flex;
+  min-height: var(--control-height-minimum);
+  align-items: center;
+  color: var(--color-text-primary);
+}
+
+.identity:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
