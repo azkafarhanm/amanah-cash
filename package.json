@@ -8,10 +8,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "prisma:format": "prisma format",
+    "prisma:generate": "prisma generate",
+    "prisma:validate": "prisma validate",
     "typecheck": "tsc --noEmit",
     "test": "node --test"
   },
   "dependencies": {
+    "@prisma/client": "7.8.0",
     "geist": "1.7.2",
     "next": "16.2.10",
     "react": "19.2.7",
@@ -22,8 +26,10 @@
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "dotenv": "17.2.3",
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.10",
+    "prisma": "7.8.0",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3"
   },

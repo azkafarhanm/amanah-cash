@@ -25,12 +25,12 @@ Milestone 1 — Project Foundation is implemented. The repository retains the ru
 ## Current Handover
 
 - **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is complete, and Milestone 2 is in progress.
-- **Current sprint:** Authentication Architecture Documentation is complete; no Authentication implementation has begun.
+- **Current sprint:** Authentication Persistence Layer is implemented; Auth.js integration and all authentication behavior remain unimplemented.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained all Sprint 1–7 implementation unchanged and synchronized authoritative documentation for Google-only Auth.js authentication, pre-provisioned users, `PLATFORM_ADMIN`/`OPERATOR` authorization, exactly-one Operator ownership per Student, and privacy-first administrative separation. ADR-001 through ADR-003 are accepted. No code, schema, migration, route, or UI was changed.
-- **Current architecture decisions:** Auth.js uses Google only and Database Sessions. Platform Admin pre-provisions Operator Full Name, Google Email, and `OPERATOR` role; unregistered/inactive Google emails are denied. Roles are `PLATFORM_ADMIN` and `OPERATOR`; initial Platform Admin bootstrap remains an implementation contract. `/` is public, `/login` owns authentication, and successful login leads to protected `/app`. Every Student belongs to exactly one Operator. Operators access only assigned Student financial data. Platform Admin manages Operators, assignments, transfers, settings, and maintenance but has no routine financial-data access. Authentication implementation and physical schema remain deferred to approved implementation sprints. Desktop Header Navigation remains deferred until its fragment targets exist.
-- **Current blockers:** Authentication implementation is not authorized until the physical identity/session/ownership schema, migration of existing Students, session/cookie lifetimes, and initial Platform Admin bootstrap are approved. The installed Next.js dependency tree also reports two moderate PostCSS advisories requiring upstream monitoring before release.
-- **Next recommended task:** Approve the physical identity, Auth.js Google-linkage, database-session, and exactly-one Student ownership schema contract before implementing Authentication. Do not render the primary CTA before `/login` is functional.
+- **Work completed:** Added the approved Prisma identity model, Auth.js-compatible User/Account/Session persistence, required active-Operator Student ownership, reversible migration, and persistence tests. No Auth.js configuration, provider, callback, session behavior, route, authorization middleware, API, or UI was added.
+- **Current architecture decisions:** Auth.js uses Google only and Database Sessions. Platform Admin pre-provisions Operator Full Name, Google Email, and `OPERATOR` role; unregistered/inactive Google emails are denied. Roles are `PLATFORM_ADMIN` and `OPERATOR`; initial Platform Admin bootstrap logic remains deferred. `/` is public, `/login` owns authentication, and successful login leads to protected `/app`. Every Student belongs to exactly one active Operator. Operators access only assigned Student financial data. Platform Admin manages Operators, assignments, transfers, settings, and maintenance but has no routine financial-data access. Desktop Header Navigation remains deferred until its fragment targets exist.
+- **Current blockers:** A populated legacy database requires an approved explicit Student-to-Operator mapping before the ownership migration can run; the migration intentionally fails atomically rather than inventing ownership. The installed dependency tree reports moderate upstream advisories requiring review before release.
+- **Next recommended task:** Implement the separately scoped Auth.js integration against the approved persistence model. Do not render the primary CTA before `/login` is functional.
 
 ## MVP Scope
 
@@ -41,7 +41,7 @@ Included:
 - View correct Balance and progressively loaded Transaction history.
 - PWA installation and mobile-first responsive operation.
 - Explicit validation, loading, empty, failure, and retry states.
-- Google-only authentication, pre-provisioned users, two roles, and server-enforced Student ownership are approved architecture but not yet implemented.
+- Google-only authentication remains unimplemented; its pre-provisioned User, two-role, database-session, provider-Account, and Student-ownership persistence is implemented.
 
 Excluded:
 
@@ -53,11 +53,11 @@ Excluded:
 
 ## Authentication and Authorization Decisions
 
-- Auth.js, Google-only authentication, and Database Sessions are locked decisions; implementation remains deferred to a dedicated approved sprint.
+- Auth.js, Google-only authentication, and Database Sessions are locked decisions; only their persistence model is currently implemented.
 - Platform Admin provisions and deactivates users and assigns/transfers Students. Google verifies identity only; Amanah Cash owns roles and authorization.
 - Roles are exactly `PLATFORM_ADMIN` and `OPERATOR`.
 - Every Student belongs to exactly one Operator; transfer changes current responsibility without changing immutable Transaction history.
-- Physical auth/session/ownership schema, package versions, cookie/session lifetimes, secrets, and migrations require a reviewed implementation contract.
+- The physical auth/session/ownership schema and Prisma package versions are implemented. Auth.js package selection, runtime session behavior, cookies, secrets, and bootstrap logic remain future sprint work.
 - Sprint 1 targets Local Development only and uses the approved local SQLite database.
 - Vercel deployment is not part of Sprint 1. The production deployment strategy is deferred to the Deployment phase; Sprint 1 must not introduce an external database or change the approved persistence architecture.
 

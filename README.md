@@ -66,6 +66,7 @@ Auth.js with Database Sessions remains the approved long-term authentication sol
 | [Engineering Rules](docs/10-engineering-rules.md) | Contributor standards |
 | [Development Workflow](docs/11-development-workflow.md) | Requirement-to-release workflow |
 | [Authentication and Authorization TDS](docs/29-technical-design-authentication-authorization.md) | Implementation contract for identity, sessions, roles, and ownership |
+| [Authentication Persistence Design](docs/30-authentication-persistence-design.md) | Prisma identity schema, ownership constraints, and migration decisions |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 

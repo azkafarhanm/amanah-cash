@@ -1,6 +1,6 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -16,7 +16,7 @@ This document defines the logical relational database design for the Amanah Cash
 - `docs/03-business-rules.md`
 - `docs/04-domain-model.md`
 
-The implemented financial design remains limited to Student and Transaction persistence. Approved identity, session, role, and Student-ownership concepts require a future physical schema extension. This document records its constraints without modifying or prescribing the current schema.
+The implemented design includes Student and Transaction persistence plus the approved Auth.js-compatible identity, database-session, and Student-ownership persistence extension. Authentication behavior remains outside this database design. See [Authentication Persistence Design](30-authentication-persistence-design.md) for the physical identity model and migration decisions.
 
 ## 2. Design Principles
 
@@ -42,11 +42,13 @@ students
 - Every row in `transactions` references exactly one existing Student.
 - A Student referenced by a Transaction cannot be deleted.
 
-### 3.1 Pending Authentication and Ownership Schema Contract
+### 3.1 Authentication and Ownership Schema Contract
 
-A separately reviewed schema revision must define the provisioned platform user (Full Name, unique normalized Google Email, role, active status), Auth.js database sessions and required Google-provider linkage, and exactly-one Operator ownership for every Student. It must define deactivation/session revocation and migrate existing Students without temporary unowned access.
+The approved physical schema revision defines the provisioned User (Full Name, unique normalized Google Email, role, active status), Auth.js Account linkage, database Sessions, and exactly-one active Operator ownership for every Student. Account and Session rows cascade with their User. User deletion is restricted while Students are owned. Database triggers prevent ownership by an inactive or non-Operator User.
 
-The schema must not add passwords, public-registration tokens, Balance persistence, Transaction actor attribution, or routine Platform Admin financial access. No physical table or column name is approved here.
+The schema adds no passwords, public-registration tokens, VerificationToken table, Balance persistence, Transaction actor attribution, or routine Platform Admin financial access. The migration creates no users and consumes no `SUPER_ADMIN_EMAIL`; it only prepares the User fields required by the future explicit bootstrap operation.
+
+A populated legacy database requires an approved Student-to-Operator mapping before migration. The implemented migration fails atomically rather than inventing ownership when legacy Student rows exist.
 
 ## 4. Table: `students`
 

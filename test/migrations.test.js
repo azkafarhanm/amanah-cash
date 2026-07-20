@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, test } from "node:test";
@@ -45,12 +45,18 @@ test("reopening a file-backed database does not reapply an applied migration", (
 
   const first = openDatabase({ databasePath, migrationsPath });
   const firstSnapshot = schemaSnapshot(first.connection);
-  assert.deepEqual(appliedMigrations(first.connection), [{ version: "001_initial_schema.sql" }]);
+  assert.deepEqual(appliedMigrations(first.connection), [
+    { version: "001_initial_schema.sql" },
+    { version: "002_auth_identity_and_ownership.sql" }
+  ]);
   first.close();
 
   const second = openDatabase({ databasePath, migrationsPath });
   assert.deepEqual(schemaSnapshot(second.connection), firstSnapshot);
-  assert.deepEqual(appliedMigrations(second.connection), [{ version: "001_initial_schema.sql" }]);
+  assert.deepEqual(appliedMigrations(second.connection), [
+    { version: "001_initial_schema.sql" },
+    { version: "002_auth_identity_and_ownership.sql" }
+  ]);
   second.close();
 });
 
@@ -81,4 +87,82 @@ test("a failing migration rolls back its changes and is not recorded", () => {
   } finally {
     connection.close();
   }
+});
+
+test("identity migration refuses to invent ownership for existing Students", () => {
+  const directory = makeTemporaryDirectory("ownership-precondition");
+  const databasePath = join(directory, "amanah-cash.sqlite");
+  const initialMigrationsPath = join(directory, "initial-migrations");
+  mkdirSync(initialMigrationsPath);
+  writeFileSync(
+    join(initialMigrationsPath, "001_initial_schema.sql"),
+    readFileSync(resolve(root, "migrations/001_initial_schema.sql"), "utf8")
+  );
+
+  const initial = openDatabase({ databasePath, migrationsPath: initialMigrationsPath });
+  initial.connection.prepare("INSERT INTO students (id, name) VALUES ('student-1', 'Alya')").run();
+  initial.close();
+
+  assert.throws(
+    () => openDatabase({ databasePath, migrationsPath: resolve(root, "migrations") }),
+    /NOT NULL constraint failed: new_students\.operator_id/
+  );
+
+  const connection = new DatabaseSync(databasePath);
+  try {
+    assert.deepEqual(appliedMigrations(connection), [{ version: "001_initial_schema.sql" }]);
+    assert.deepEqual(
+      connection.prepare("SELECT id, name FROM students").all().map((row) => ({ ...row })),
+      [{ id: "student-1", name: "Alya" }]
+    );
+    assert.equal(
+      connection.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = 'users'").get()
+        .count,
+      0
+    );
+  } finally {
+    connection.close();
+  }
+});
+
+test("Prisma migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260720000000_auth_identity_and_ownership/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/002_auth_identity_and_ownership.sql"), "utf8")
+  );
+});
+
+test("identity migration rollback preserves financial rows", () => {
+  const directory = makeTemporaryDirectory("identity-rollback");
+  const databasePath = join(directory, "amanah-cash.sqlite");
+  const migrated = openDatabase({ databasePath, migrationsPath: resolve(root, "migrations") });
+  migrated.connection
+    .prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator', 'Operator', 'operator@example.com', 'OPERATOR', 1)")
+    .run();
+  migrated.connection
+    .prepare("INSERT INTO students (id, name, operator_id) VALUES ('student-1', 'Alya', 'operator')")
+    .run();
+  migrated.connection
+    .prepare("INSERT INTO transactions (id, student_id, type, amount) VALUES ('transaction-1', 'student-1', 'deposit', 1000)")
+    .run();
+
+  migrated.connection.exec(
+    readFileSync(resolve(root, "prisma/migrations/20260720000000_auth_identity_and_ownership/rollback.sql"), "utf8")
+  );
+
+  assert.deepEqual(appliedMigrations(migrated.connection), [{ version: "001_initial_schema.sql" }]);
+  assert.deepEqual(
+    migrated.connection.prepare("SELECT id, name FROM students").all().map((row) => ({ ...row })),
+    [{ id: "student-1", name: "Alya" }]
+  );
+  assert.deepEqual(
+    migrated.connection.prepare("SELECT id, student_id, type, amount FROM transactions").all().map((row) => ({ ...row })),
+    [{ id: "transaction-1", student_id: "student-1", type: "deposit", amount: 1000 }]
+  );
+  assert.equal(
+    migrated.connection.prepare("SELECT COUNT(*) AS count FROM sqlite_master WHERE type = 'table' AND name = 'users'").get()
+      .count,
+    0
+  );
+  migrated.close();
 });
