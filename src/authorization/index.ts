@@ -13,8 +13,8 @@ export function authorization() {
       return (await currentUser())?.id ?? null;
     },
     async findActiveUser(userId) {
-      return prisma.user.findUnique({
-        where: { id: userId },
+      return prisma.user.findFirst({
+        where: { id: userId, deletedAt: null },
         select: { id: true, role: true, isActive: true }
       });
     },

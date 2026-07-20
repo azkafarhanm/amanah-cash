@@ -89,8 +89,8 @@ export function buildAuthOptions(
           profile: isVerifiedGoogleProfile(profile) ? profile : undefined,
           users: {
             async findByNormalizedEmail(email) {
-              return prisma.user.findUnique({
-                where: { email },
+              return prisma.user.findFirst({
+                where: { email, deletedAt: null },
                 select: { id: true, email: true, isActive: true }
               });
             }
@@ -107,7 +107,11 @@ export function buildAuthOptions(
           },
           select: { userId: true }
         });
-        return isGoogleAccountBindingValid(decision.user.id, linkedAccount?.userId ?? null);
+        const bindingValid = isGoogleAccountBindingValid(decision.user.id, linkedAccount?.userId ?? null);
+        if (bindingValid) {
+          await prisma.user.update({ where: { id: decision.user.id }, data: { lastLoginAt: new Date() } });
+        }
+        return bindingValid;
       },
       async session({ session, user }) {
         if (session.user) {

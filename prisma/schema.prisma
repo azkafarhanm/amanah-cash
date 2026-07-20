@@ -20,11 +20,26 @@ model User {
   image         String?
   role          Role
   isActive      Boolean   @default(false) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  lastLoginAt   DateTime? @map("last_login_at")
+  deletedAt     DateTime? @map("deleted_at")
   accounts      Account[]
   sessions      Session[]
   students      Student[] @relation("OperatorStudents")
 
   @@map("users")
+}
+
+model OperatorAudit {
+  id         String   @id @default(cuid())
+  operatorId String   @map("operator_id")
+  actorId    String   @map("actor_id")
+  action     String
+  summary    String
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([operatorId, createdAt(sort: Desc)], map: "ix_operator_audit_operator")
+  @@map("operator_audit")
 }
 
 model Account {

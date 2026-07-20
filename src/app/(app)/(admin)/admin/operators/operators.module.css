@@ -1,0 +1,25 @@
+.toolbar, .form, .detail, .audit { display: grid; gap: var(--space-4); }
+.toolbar { grid-template-columns: minmax(12rem, 1fr) auto auto; align-items: end; }
+.field { display: grid; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
+.input, .select { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: 1px solid var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); }
+.tableWrap { overflow-x: auto; border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.table { width: 100%; border-collapse: collapse; }
+.table th, .table td { padding: var(--space-4); border-bottom: 1px solid var(--color-border-default); text-align: left; white-space: nowrap; }
+.table th { color: var(--color-text-secondary); font: var(--type-label); }
+.table td { font: var(--type-body); }
+.link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.actions, .pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; }
+.button { border: 1px solid var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); }
+.danger { border: 1px solid var(--color-error-foreground); color: var(--color-error-foreground); background: var(--color-background-surface); }
+.panel { padding: var(--space-6); border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.message, .error { padding: var(--space-4); border-radius: var(--shape-control); font: var(--type-body); }
+.message { color: var(--color-success-foreground); background: var(--color-success-background); }
+.error { color: var(--color-error-foreground); background: var(--color-error-background); }
+.definition { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.definition div { display: grid; gap: var(--space-2); }
+.definition dt { color: var(--color-text-secondary); font: var(--type-label); }
+.definition dd { margin: 0; font: var(--type-body); }
+.auditItem { padding-block: var(--space-2); border-bottom: 1px solid var(--color-border-default); }
+.auditItem p { margin: 0; }
+@media (max-width: 48rem) { .toolbar, .definition { grid-template-columns: 1fr; } }

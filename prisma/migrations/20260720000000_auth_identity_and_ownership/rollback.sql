@@ -2,6 +2,7 @@ PRAGMA foreign_keys = OFF;
 BEGIN IMMEDIATE;
 
 DROP TRIGGER IF EXISTS trg_users_preserve_active_operator_ownership;
+DROP TRIGGER IF EXISTS trg_users_preserve_operator_ownership_on_delete;
 DROP TRIGGER IF EXISTS trg_students_owner_update;
 DROP TRIGGER IF EXISTS trg_students_owner_insert;
 
@@ -24,12 +25,14 @@ DROP TABLE students;
 ALTER TABLE previous_students RENAME TO students;
 CREATE UNIQUE INDEX uq_students_name_ci ON students (name COLLATE NOCASE);
 
+DROP TABLE IF EXISTS operator_audit;
+
 DROP TABLE sessions;
 DROP TABLE accounts;
 DROP TABLE users;
 
 DELETE FROM schema_migrations
-WHERE version = '002_auth_identity_and_ownership.sql';
+WHERE version IN ('002_auth_identity_and_ownership.sql', '003_operator_management.sql');
 
 COMMIT;
 PRAGMA foreign_keys = ON;

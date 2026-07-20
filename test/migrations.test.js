@@ -47,7 +47,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
   const firstSnapshot = schemaSnapshot(first.connection);
   assert.deepEqual(appliedMigrations(first.connection), [
     { version: "001_initial_schema.sql" },
-    { version: "002_auth_identity_and_ownership.sql" }
+    { version: "002_auth_identity_and_ownership.sql" },
+    { version: "003_operator_management.sql" }
   ]);
   first.close();
 
@@ -55,7 +56,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
   assert.deepEqual(schemaSnapshot(second.connection), firstSnapshot);
   assert.deepEqual(appliedMigrations(second.connection), [
     { version: "001_initial_schema.sql" },
-    { version: "002_auth_identity_and_ownership.sql" }
+    { version: "002_auth_identity_and_ownership.sql" },
+    { version: "003_operator_management.sql" }
   ]);
   second.close();
 });
@@ -129,6 +131,13 @@ test("Prisma migration mirror matches the executable migration", () => {
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260720000000_auth_identity_and_ownership/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/002_auth_identity_and_ownership.sql"), "utf8")
+  );
+});
+
+test("Operator Management migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260720010000_operator_management/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/003_operator_management.sql"), "utf8")
   );
 });
 

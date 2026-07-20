@@ -53,7 +53,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     .all()
     .map(({ name }) => name);
 
-  assert.deepEqual(tables, ["accounts", "schema_migrations", "sessions", "students", "transactions", "users"]);
+  assert.deepEqual(tables, ["accounts", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
 
   const columns = Object.fromEntries(
     tables.map((table) => [table, tableInfo(table).map(({ name, type, notnull, pk }) => ({ name, type, notnull, pk }))])
@@ -65,7 +65,10 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "email_verified", type: "TEXT", notnull: 0, pk: 0 },
     { name: "image", type: "TEXT", notnull: 0, pk: 0 },
     { name: "role", type: "TEXT", notnull: 1, pk: 0 },
-    { name: "is_active", type: "INTEGER", notnull: 1, pk: 0 }
+    { name: "is_active", type: "INTEGER", notnull: 1, pk: 0 },
+    { name: "created_at", type: "TEXT", notnull: 1, pk: 0 },
+    { name: "last_login_at", type: "TEXT", notnull: 0, pk: 0 },
+    { name: "deleted_at", type: "TEXT", notnull: 0, pk: 0 }
   ]);
   assert.deepEqual(columns.accounts.map(({ name }) => name), [
     "user_id", "type", "provider", "provider_account_id", "refresh_token", "access_token",
@@ -78,6 +81,7 @@ test("schema contains only the approved strict persistence tables and columns", 
   ]);
   assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id"]);
   assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "created_at"]);
+  assert.deepEqual(columns.operator_audit.map(({ name }) => name), ["id", "operator_id", "actor_id", "action", "summary", "created_at"]);
 
   const strictness = database.connection
     .prepare("PRAGMA table_list")
@@ -87,6 +91,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     .sort(([left], [right]) => left.localeCompare(right));
   assert.deepEqual(strictness, [
     ["accounts", 1],
+    ["operator_audit", 1],
     ["schema_migrations", 1],
     ["sessions", 1],
     ["students", 1],
@@ -243,10 +248,12 @@ test("approved indexes have the required uniqueness, collation, columns, and dir
     .map(({ name }) => name);
   assert.deepEqual(namedIndexes, [
     "ix_accounts_user",
+    "ix_operator_audit_operator",
     "ix_sessions_expires",
     "ix_sessions_user",
     "ix_students_operator",
     "ix_transactions_student_history",
+    "ix_users_operator_list",
     "uq_students_name_ci",
     "uq_users_email"
   ]);

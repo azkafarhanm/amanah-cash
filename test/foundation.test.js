@@ -26,13 +26,13 @@ after(async () => {
   database.close();
 });
 
-test("schema creates only approved financial and authentication persistence tables", () => {
+test("schema creates only approved financial, authentication, and Operator persistence tables", () => {
   const tables = database.connection
     .prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY name")
     .all()
     .map(({ name }) => name);
 
-  assert.deepEqual(tables, ["accounts", "schema_migrations", "sessions", "students", "transactions", "users"]);
+  assert.deepEqual(tables, ["accounts", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
   assert.equal(database.connection.prepare("PRAGMA table_info(students)").all().some(({ name }) => name === "balance"), false);
   assert.equal(database.connection.prepare("PRAGMA table_info(transactions)").all().some(({ name }) => name === "balance"), false);
 });
