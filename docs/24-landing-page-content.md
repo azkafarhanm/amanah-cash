@@ -31,7 +31,7 @@ If implementation or product behavior changes, affected content must be reviewed
 - Application screenshots retain the approved in-product labels `Setor` and `Tarik` where those labels appear in the real interface.
 - Use `Rupiah` in explanatory prose and `Rp` in formatted example values.
 - Dates use Indonesian formatting and time uses the 24-hour system.
-- Describe current behavior directly. Do not imply authentication, roles, reporting, analytics, payment processing, fund custody, offline transactions, synchronization, or other unapproved capabilities.
+- Describe implemented behavior directly. Approved authentication, role, and privacy claims must follow ADR-001 through ADR-003 and must not imply that deferred UI or reports already exist.
 - Never add statistics, testimonials, customer names, certifications, urgency, or unsupported security claims.
 - Never replace authentic product evidence with fabricated dashboards or notifications.
 - Text in this document is final unless explicitly marked `Pending Product Decision` or as an implementation placeholder.
@@ -40,7 +40,7 @@ If implementation or product behavior changes, affected content must be reviewed
 
 | CTA key | Final visible label | Destination | Use |
 |---------|---------------------|-------------|-----|
-| `cta.primary.product-entry` | `Mulai menggunakan` | `Pending Product Decision` | Header, Hero, Final CTA |
+| `cta.primary.product-entry` | `Mulai menggunakan` | `/login` | Header, Hero, Final CTA |
 | `cta.workflow` | `Lihat cara kerja` | `#cara-kerja` | Hero secondary action |
 | `cta.preview` | `Lihat tampilan aplikasi` | `#pratinjau-aplikasi` | Workflow |
 | `cta.features` | `Jelajahi fitur` | `#fitur` | Solution |
@@ -76,11 +76,11 @@ Implementation rules:
 
 **CTA Destination:**
 
-- Product identity `Amanah Cash` → `Pending Product Decision`.
+- Product identity `Amanah Cash` → `/`.
 - `Cara kerja` → `#cara-kerja`.
 - `Fitur` → `#fitur`.
 - `Tanya jawab` → `#tanya-jawab`.
-- `Mulai menggunakan` → `Pending Product Decision`.
+- `Mulai menggunakan` → `/login`.
 
 **Icons:** Brand mark → `Pending Product Decision`. The visible product name `Amanah Cash` is required. Do not substitute a Lucide icon for the brand.
 
@@ -88,7 +88,7 @@ Implementation rules:
 
 **Accessibility Notes:** The product identity link accessible name is `Amanah Cash — Beranda`. If the approved brand mark is displayed beside the visible product name, treat the mark as decorative. The primary navigation has the accessible label `Navigasi utama`. Current-page indication is unnecessary for same-page anchors. The primary CTA name remains identical at every occurrence.
 
-**Implementation Notes:** Use the exact navigation composition defined by the Blueprint. Do not add pricing, company, blog, login, social, or unapproved destination links.
+**Implementation Notes:** Use the exact navigation composition defined by the Blueprint. `/login` is reached only through the approved primary CTA; do not add a separate Login, pricing, company, blog, social, or unapproved destination link.
 
 ### 4.2 Hero
 
@@ -109,7 +109,7 @@ Implementation rules:
 
 **CTA Destination:**
 
-- `Mulai menggunakan` → `Pending Product Decision`.
+- `Mulai menggunakan` → `/login`.
 - `Lihat cara kerja` → `#cara-kerja`.
 
 **Icons:** Omitted.
@@ -439,7 +439,7 @@ Icons reinforce visible text and do not function as security badges.
 
 **CTA Destination:**
 
-- `Mulai menggunakan` → `Pending Product Decision`.
+- `Mulai menggunakan` → `/login`.
 - `Lihat cara kerja` → `#cara-kerja`.
 
 **Icons:** Omitted.

@@ -1,9 +1,9 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -20,7 +20,7 @@ Roadmap milestones and delivery sprints are distinct planning units. The current
 - Keep Balance derived from complete Transaction history.
 - Test financial integrity before adding presentation refinements.
 - Treat mobile as the primary verification viewport.
-- Do not add offline behavior, authentication, reporting, or other excluded scope during the MVP milestones. Authentication may begin only in its separately approved dedicated Sprint.
+- Do not add offline behavior or other excluded scope during financial MVP milestones. Authentication and authorization proceed only through separately approved dedicated sprints.
 - A milestone is complete only when its listed criteria are verified.
 
 ### 2.1 Current Sprint 1 Execution Boundary
@@ -382,7 +382,7 @@ This is the Deployment phase in which production hosting and database compatibil
 
 No milestone includes:
 
-- Authentication, user accounts, actor attribution, roles, or multi-tenancy. Auth.js with Database Sessions remains the approved long-term solution, but implementation requires a separately approved dedicated Authentication Sprint outside these MVP milestones.
+- Password authentication, public registration, password recovery, provider-assigned roles, Transaction actor attribution, and routine Platform Admin financial access.
 - Offline data or Transaction synchronization.
 - Transaction edit, deletion, notes, categories, reporting, or export.
 - Student deletion or bulk operations.
@@ -390,3 +390,17 @@ No milestone includes:
 - Microservices, event sourcing, CQRS, message queues, background workers, caches, read replicas, multiple databases, distributed transactions, service mesh, Kubernetes, or API gateway.
 
 Any such work requires a separately approved change to product requirements and is not part of this roadmap.
+
+## 15. Dedicated Authentication and Authorization Track
+
+This approved track is separate from the numbered financial MVP milestones:
+
+1. Review the physical identity, Google linkage, database-session, and Student-ownership schema.
+2. Implement Platform Admin provisioning and deactivation.
+3. Implement Auth.js Google login and registered-email admission.
+4. Protect `/app` and implement logout/session expiry.
+5. Enforce role and Student ownership on every server operation.
+6. Implement assignment and transfer operations.
+7. Verify security, privacy, denial paths, and accessibility.
+
+Every implementation step requires an approved sprint contract. No step may introduce a placeholder route, unscoped financial query, or administrative financial bypass.

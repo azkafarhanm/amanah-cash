@@ -80,7 +80,7 @@ The current **Sprint 1 — Project Bootstrap** precedes every Landing Page miles
 - Visual authority: `docs/18-design-tokens.md` implemented as the canonical Tailwind/CSS token layer.
 - Icon authority: approved Lucide icons named in the Content Specification.
 
-Auth.js with the Database Session Strategy remains the approved long-term authentication solution. Authentication implementation is deferred to a dedicated Authentication Sprint and is not part of the Sprint 1 technical baseline. Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+Auth.js with Google as the only provider and the Database Session Strategy is the approved authentication architecture. Its implementation belongs to a dedicated Authentication Sprint and is not part of the Sprint 1 technical baseline.
 
 Sprint 1 targets Local Development only. It does not deploy to Vercel or select a production hosting or persistence operations strategy. Production deployment decisions are deferred to the Deployment phase; no external database or persistence-architecture change is authorized by this plan.
 
@@ -93,7 +93,7 @@ Sprint 1 targets Local Development only. It does not deploy to Vercel or select 
 - FAQ disclosure and motion reveal boundaries are the expected Client Components. Static section content, navigation links, figures, cards, and Footer remain Server Components.
 - Next.js Route Handlers live in `app/api/**/route.ts`. They implement approved backend operations only and are not used to generate static Landing Page copy.
 - Prisma access remains server-only and must not be imported into Client Components. The public Landing Page does not query or mutate SQLite.
-- Sprint 1 contains no authentication boundary, Auth.js dependency, authentication Route Handler, authentication configuration, or authentication schema. Those belong exclusively to the future dedicated Authentication Sprint.
+- Sprint 1 contains no authentication boundary, dependency, Route Handler, configuration, or schema. Those belong exclusively to an approved dedicated Authentication Sprint.
 - Sprint 1 validation is local. It may run a local production build for verification, but it does not configure or perform production deployment.
 - No technology beyond the approved Sprint 1 baseline and the already approved Lucide icon source is authorized by this plan. Deferred target technologies are not Sprint 1 dependencies.
 
@@ -324,7 +324,7 @@ These components remain Server Components. Navigation uses Next.js internal-link
 - `Lihat cara kerja` reaches `#cara-kerja`.
 - Hero screenshot uses the required approved state, alternative text, intrinsic dimensions, and no real data.
 - Footer renders only verified link groups; the Resource group remains absent while its destination is pending.
-- No badge, statistic, customer logo, login link, pricing link, or unsupported navigation is present.
+- No badge, statistic, customer logo, separate Login link, pricing link, or unsupported navigation is present. The approved primary CTA may target `/login` only after that route is implemented and verified.
 
 ### Milestone 3 — Problems, Solution, and Workflow
 

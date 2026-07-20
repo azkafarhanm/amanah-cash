@@ -1,11 +1,11 @@
 # Amanah Cash — Accessibility Guidelines
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -123,7 +123,9 @@ Announce that the application is checking whether the Transaction was saved. Dis
 - Confirmations explain financial consequence, not technical implementation.
 - Errors say what happened and what the operator can do next.
 - Avoid jargon, unexplained abbreviations, ambiguous icons, and time-limited interaction.
-- Do not introduce CAPTCHAs, complex passwords, or authentication UI without approved requirements.
+- Authentication uses one clearly named Google action and must not present password, Sign Up, Forgot Password, or password-reset controls.
+- Authentication loading, denial, expired-session, and retry states are announced without exposing sensitive technical details.
+- The unregistered-account message clearly directs the visitor to contact Platform Admin.
 
 ## 13. Verification Matrix
 

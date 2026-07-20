@@ -2,7 +2,7 @@
 
 ## Project Purpose
 
-Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. A single Operator creates Students, records Deposits and Withdrawals, and views Balances derived from immutable Transaction history. Approved documents in `docs/` remain authoritative.
+Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. Authenticated Operators manage only assigned Students; Platform Admin manages the platform without routine financial-data access. Balances derive from immutable Transaction history. Approved documents in `docs/` remain authoritative.
 
 ## Current Implementation State
 
@@ -25,12 +25,12 @@ Milestone 1 — Project Foundation is implemented. The repository retains the ru
 ## Current Handover
 
 - **Current milestone:** Development Roadmap Milestone 1 — Project Foundation remains implemented. Landing Page Implementation Plan Milestone 1 is complete, and Milestone 2 is in progress.
-- **Current sprint:** Sprint 7 — Header Product Identity Foundation is implemented and validated.
+- **Current sprint:** Authentication Architecture Documentation is complete; no Authentication implementation has begun.
 - **Active branch:** `feat/landing-page`.
-- **Work completed:** Retained the Sprint 1–6 foundations and replaced the empty Header slot with a minimal Server Component containing one Product Identity link to `/` with accessible name `Amanah Cash — Beranda`. It reuses `Logo` and `PageContainer`, meets the approved touch-target and focus contracts, and adds no CTA, navigation landmark, fragment link, authentication route, placeholder, or future composition hook. Production rendering, build, TypeScript, lint, and the full 29-test suite pass.
-- **Current architecture decisions:** `/` is the public Landing Page and permanent Product Identity destination; `/login` is the approved primary CTA and authentication-entry destination; successful authentication leads to `/app`; Desktop Header Navigation must not render until `#cara-kerja`, `#fitur`, and `#tanya-jawab` exist. Use the `geist` package through `next/font/local`, keep the existing `--font-geist-sans` CSS variable contract with `font.family.sans` fallback, and retain CSS custom properties as the canonical token layer. Keep current Footer, Hero, and Header foundations server-rendered; defer CTA wiring until `/login` exists, navigation until its targets exist, and authentication, Hero evidence, Prisma, API Routes, remaining Landing Page sections, and production deployment to separately approved work.
-- **Current blockers:** The installed Next.js dependency tree reports two moderate PostCSS advisories for which npm offers only an unsafe breaking downgrade; this does not block local bootstrap validation but requires upstream monitoring before release.
-- **Next recommended task:** Define the next small Milestone 2 sprint only around an available dependency: do not render the primary CTA before `/login` exists, Desktop Header or Footer navigation before their fragment targets exist, or Hero evidence before the approved Student Detail asset and synthetic inputs exist.
+- **Work completed:** Retained all Sprint 1–7 implementation unchanged and synchronized authoritative documentation for Google-only Auth.js authentication, pre-provisioned users, `PLATFORM_ADMIN`/`OPERATOR` authorization, exactly-one Operator ownership per Student, and privacy-first administrative separation. ADR-001 through ADR-003 are accepted. No code, schema, migration, route, or UI was changed.
+- **Current architecture decisions:** Auth.js uses Google only and Database Sessions. Platform Admin pre-provisions Operator Full Name, Google Email, and `OPERATOR` role; unregistered/inactive Google emails are denied. Roles are `PLATFORM_ADMIN` and `OPERATOR`; initial Platform Admin bootstrap remains an implementation contract. `/` is public, `/login` owns authentication, and successful login leads to protected `/app`. Every Student belongs to exactly one Operator. Operators access only assigned Student financial data. Platform Admin manages Operators, assignments, transfers, settings, and maintenance but has no routine financial-data access. Authentication implementation and physical schema remain deferred to approved implementation sprints. Desktop Header Navigation remains deferred until its fragment targets exist.
+- **Current blockers:** Authentication implementation is not authorized until the physical identity/session/ownership schema, migration of existing Students, session/cookie lifetimes, and initial Platform Admin bootstrap are approved. The installed Next.js dependency tree also reports two moderate PostCSS advisories requiring upstream monitoring before release.
+- **Next recommended task:** Approve the physical identity, Auth.js Google-linkage, database-session, and exactly-one Student ownership schema contract before implementing Authentication. Do not render the primary CTA before `/login` is functional.
 
 ## MVP Scope
 
@@ -41,25 +41,30 @@ Included:
 - View correct Balance and progressively loaded Transaction history.
 - PWA installation and mobile-first responsive operation.
 - Explicit validation, loading, empty, failure, and retry states.
+- Google-only authentication, pre-provisioned users, two roles, and server-enforced Student ownership are approved architecture but not yet implemented.
 
 Excluded:
 
-- Authentication, accounts, multiple users, roles, and actor attribution from current MVP behavior and its foundation.
+- Password login, public registration, Sign Up, Forgot Password, password reset, provider-assigned roles, and Transaction actor attribution.
 - Offline data or Transaction synchronization.
 - Transaction or Student editing and deletion.
-- Notes, categories, reports, exports, notifications, and bulk operations.
+- Notes, categories, report implementation, exports, notifications, and bulk operations. Operator-scoped reporting permission is approved for a future separately scoped feature.
 - Multiple currencies and distributed infrastructure.
 
-## Deferred Architecture Decisions
+## Authentication and Authorization Decisions
 
-- Auth.js with the Database Session Strategy is the approved long-term authentication solution, but authentication is deferred to a dedicated Authentication Sprint outside the MVP foundation.
-- Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+- Auth.js, Google-only authentication, and Database Sessions are locked decisions; implementation remains deferred to a dedicated approved sprint.
+- Platform Admin provisions and deactivates users and assigns/transfers Students. Google verifies identity only; Amanah Cash owns roles and authorization.
+- Roles are exactly `PLATFORM_ADMIN` and `OPERATOR`.
+- Every Student belongs to exactly one Operator; transfer changes current responsibility without changing immutable Transaction history.
+- Physical auth/session/ownership schema, package versions, cookie/session lifetimes, secrets, and migrations require a reviewed implementation contract.
 - Sprint 1 targets Local Development only and uses the approved local SQLite database.
 - Vercel deployment is not part of Sprint 1. The production deployment strategy is deferred to the Deployment phase; Sprint 1 must not introduce an external database or change the approved persistence architecture.
 
 ## Domain Terminology
 
-- **Operator:** sole MVP user; no identity is persisted.
+- **Platform Admin:** manages users, assignments, configuration, and maintenance without routine financial-data access.
+- **Operator:** manages financial data only for assigned Students.
 - **Student:** aggregate root whose entrusted funds are tracked.
 - **Deposit:** money entrusted to the Student; increases Balance.
 - **Withdrawal:** money returned by the Student; decreases Balance.
@@ -83,6 +88,9 @@ Keep Deposit and Withdrawal terminology exactly as approved. UI text must state 
 10. Retry reuses the original Transaction UUID and must not create a duplicate.
 11. Progressive history loading never changes Balance calculation.
 12. Auditability means financial-event traceability, not actor attribution.
+13. Only active, pre-provisioned Google emails may authenticate.
+14. Authorization is server-enforced from Amanah Cash role and current Student ownership.
+15. Privacy outranks administrative visibility; Platform Admin has no implicit financial-data bypass.
 
 ## Architecture Summary
 
@@ -102,7 +110,7 @@ Single Relational Database
 - Application coordinates approved use cases and outcomes.
 - Domain owns terminology and invariants.
 - Persistence owns queries, locks, atomic writes, and history access.
-- Database stores only Students and Transactions as product entities.
+- Student and Transaction remain the financial source entities; identity/session persistence must remain separate from financial truth.
 - The service worker supports PWA delivery, not offline data behavior.
 
 ## Data Model
@@ -127,6 +135,8 @@ There is no Balance column or table, currency column, actor column, update times
 - Preserve form input on correctable error.
 - Do not show success before persistence confirmation or queue offline writes.
 - Keep 320px–480px mobile viewports primary and touch targets at least 44px.
+- Scope every protected Student and Transaction operation by active user, role, and current ownership on the server.
+- Keep financial data out of sessions, cookies, logs, analytics, and administrative screens.
 
 ## AI Must Never
 
@@ -137,7 +147,7 @@ There is no Balance column or table, currency column, actor column, update times
 - Put authoritative business logic in UI code.
 - Use floating-point money.
 - Split Withdrawal checking and insertion across transaction boundaries.
-- Add authentication outside a separately approved Authentication Sprint, or add offline sync, multi-currency, reporting, or distributed infrastructure.
+- Add authentication outside a separately approved Authentication Sprint, password authentication, public registration, an administrative financial bypass, offline sync, multi-currency, reporting implementation, or distributed infrastructure.
 - Bypass tests, database constraints, review, or documentation synchronization.
 
 ## AI Should Always Preserve
@@ -167,6 +177,9 @@ There is no Balance column or table, currency column, actor column, update times
 | `docs/09-development-roadmap.md` | Delivery milestones |
 | `docs/10-engineering-rules.md` | Engineering standards |
 | `docs/11-development-workflow.md` | Implementation workflow |
+| `docs/26-adr-authentication.md` | Locked authentication decision |
+| `docs/27-adr-authorization-and-roles.md` | Locked roles and ownership decision |
+| `docs/28-adr-financial-data-privacy.md` | Locked privacy decision |
 
 ## Before Changing Anything
 

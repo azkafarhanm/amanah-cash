@@ -1,9 +1,9 @@
 # Amanah Cash — Domain Model
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -15,12 +15,16 @@ This document defines the Amanah Cash MVP domain model. It derives from:
 - `docs/02-non-functional-requirements.md`
 - `docs/03-business-rules.md`
 
-The model contains only concepts required to create students, record deposits and withdrawals, reproduce balances, and display transaction history.
+The model defines the financial aggregate and the identity, role, and ownership concepts required to protect it.
 
 ## 2. Domain Overview
 
 ```text
-Student (aggregate root)
+PlatformUser
+  ├── PLATFORM_ADMIN
+  └── OPERATOR ── owns 0..* Students
+
+Student (financial aggregate root; exactly one Operator)
   │
   └── 0..* Transaction
           ├── Deposit: money entrusted to the student
@@ -87,6 +91,17 @@ Invariants:
 - A withdrawal cannot produce a negative balance.
 - After persistence, a Transaction cannot be edited or deleted through an application operation.
 - A Transaction is persisted completely or not at all.
+
+### 3.3 PlatformUser and Role
+
+PlatformUser is an Amanah Cash authorization identity provisioned by Platform Admin before access is granted. Its conceptual attributes are stable identity, Full Name, normalized Google Email, Role, active status, and creation time. The physical schema remains an Authentication implementation decision.
+
+- Role is exactly `PLATFORM_ADMIN` or `OPERATOR`.
+- Google Email is unique after approved normalization.
+- Only an active provisioned user may start or retain authorized access.
+- Google verifies identity and never overrides the Amanah Cash role.
+- `PLATFORM_ADMIN` manages Operators, assignments, transfers, configuration, and maintenance without routine financial-data permission.
+- `OPERATOR` manages financial records only for assigned Students.
 
 ## 4. Value Types
 
@@ -169,11 +184,18 @@ This contract maps vocabulary only. It does not change Transaction direction, Ba
 - A Transaction cannot exist without its Student.
 - Removing a Student with Transactions is prohibited.
 
-This relationship provides financial traceability without introducing an account, ledger, currency, operator, or audit-user entity that is outside MVP scope.
+This relationship provides financial traceability without introducing an account ledger, currency, or Transaction actor entity.
+
+### 5.2 Operator to Student
+
+- One Operator owns zero or more Students.
+- Every Student belongs to exactly one Operator.
+- Ownership controls access to the Student, Transactions, Balance, history, and Operator-scoped reports.
+- Transfer changes current responsibility without rewriting, duplicating, deleting, or reattributing Transactions.
 
 ## 6. Aggregate Boundary
 
-Student is the only aggregate root in the MVP. The aggregate consistency boundary is one Student and that Student's financial events.
+Student remains the financial aggregate root. PlatformUser and Student ownership form a separate authorization boundary and do not alter the Student financial consistency boundary.
 
 Commands that change financial history must enter through the Student boundary:
 
@@ -220,15 +242,16 @@ Transaction history is ordered newest first. Older Transactions may be retrieved
 The MVP domain model intentionally excludes:
 
 - Stored Balance entity or balance field.
-- User, role, authentication, and actor-attribution entities.
+- Password credentials, public registration, password recovery, and provider-assigned roles.
+- Transaction actor attribution.
 - Currency selection or exchange rates.
 - Transaction edit, deletion, category, tag, note, or description.
 - Student deletion.
 - Offline state or synchronization concepts.
 
-These exclusions preserve the approved single-operator, single-currency, append-only MVP.
+These exclusions preserve Google-only authentication, Amanah Cash authorization, minimal identity collection, and append-only financial history.
 
-Auth.js with the Database Session Strategy is the approved long-term authentication solution, but authentication concepts remain outside this MVP Domain Model. A dedicated Authentication Sprint must define its own approved model before introducing `User`, `Account`, `Session`, `VerificationToken`, or any other authentication entity. Sprint 1 creates none of them.
+Auth.js with Google and the Database Session Strategy is approved. The physical identity, provider-linkage, and session schema remains deferred to its implementation design.
 
 ## 9. Design Decisions
 
@@ -241,7 +264,8 @@ Auth.js with the Database Session Strategy is the approved long-term authenticat
 | Currency is not stored per Transaction | The MVP supports only IDR, so a repeated currency field adds no operational value. |
 | All financial writes are serialized per Student | Deposit and withdrawal ordering must be deterministic, and withdrawal validation must remain correct under concurrency. |
 | History retrieval is separate from balance calculation | Progressive loading improves presentation performance without weakening financial correctness. |
-| No actor entity exists | MVP auditability covers financial event traceability, not actor attribution. |
+| No Transaction actor entity exists | Authentication and authorization do not change immutable financial event traceability. |
+| One Operator per Student | Current ownership is the financial-data authorization boundary. |
 
 ## 10. Traceability
 

@@ -65,6 +65,7 @@ Auth.js with Database Sessions remains the approved long-term authentication sol
 | [Development Roadmap](docs/09-development-roadmap.md) | Nine delivery milestones |
 | [Engineering Rules](docs/10-engineering-rules.md) | Contributor standards |
 | [Development Workflow](docs/11-development-workflow.md) | Requirement-to-release workflow |
+| [Authentication and Authorization TDS](docs/29-technical-design-authentication-authorization.md) | Implementation contract for identity, sessions, roles, and ownership |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 

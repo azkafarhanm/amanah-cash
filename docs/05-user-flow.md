@@ -1,9 +1,9 @@
 # Amanah Cash — User Flows
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -34,6 +34,12 @@ Global rules for every flow:
 
 ## 3. Screen-Level Navigation
 
+Public and protected route ownership:
+
+```text
+/ (Landing Page) → /login (Google authentication) → /app (protected application)
+```
+
 ```text
 [Student List]
       │ select Student
@@ -49,7 +55,26 @@ Browser Back:
 
 Create Student is a focused form presented from Student List, not an additional primary screen. Search is part of Student List. This preserves the three-screen inventory in FR-3.4.2.
 
-## 4. First-Time Use
+## 4. Authentication and Access
+
+```text
+Landing Page → Login → Google authentication → Check active provisioned email
+                                              ├─ Match → database session → /app
+                                              └─ No match/inactive → Access Denied
+```
+
+- An authenticated visitor opening `/login` proceeds to `/app`.
+- An unauthenticated or expired-session visitor opening `/app` proceeds to `/login` without protected data.
+- Logout invalidates the database session before returning to `/`.
+- Browser Back never restores authorized access after logout or expiration.
+- `/login` has no Sign Up, password, Forgot Password, or password-reset path.
+- The denied state tells the visitor that the account is not registered and to contact Platform Admin.
+
+### 4.1 Provision, Deactivate, Assign, and Transfer
+
+Platform Admin provisions a user with Full Name, Google Email, and Role and may deactivate an Operator. Platform Admin assigns each Student to exactly one Operator and may transfer that ownership. Transfer changes subsequent access without changing Transaction history.
+
+## 5. First-Time Application Use
 
 References: FR-3.1.1, FR-3.1.2, FR-3.4.2
 
@@ -66,7 +91,7 @@ References: FR-3.1.1, FR-3.1.2, FR-3.4.2
               --> Student List failure flow (Section 13.1)
 ```
 
-The first-time state presents one primary next action: Add Student. It does not introduce onboarding pages, account setup, or configuration.
+The first-time state for an authenticated Operator presents one primary next action: Add Student. Authentication and account provisioning occur before this application state.
 
 ## 5. Create Student
 

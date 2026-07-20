@@ -1,9 +1,9 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -16,7 +16,7 @@ This document defines the logical relational database design for the Amanah Cash
 - `docs/03-business-rules.md`
 - `docs/04-domain-model.md`
 
-The design is intentionally limited to Student and Transaction persistence. The approved MVP implementation uses SQLite. This document defines only the SQLite behavior required to preserve the approved rules; it does not define hosting infrastructure.
+The implemented financial design remains limited to Student and Transaction persistence. Approved identity, session, role, and Student-ownership concepts require a future physical schema extension. This document records its constraints without modifying or prescribing the current schema.
 
 ## 2. Design Principles
 
@@ -41,6 +41,12 @@ students
 - One row in `students` may have zero or more rows in `transactions`.
 - Every row in `transactions` references exactly one existing Student.
 - A Student referenced by a Transaction cannot be deleted.
+
+### 3.1 Pending Authentication and Ownership Schema Contract
+
+A separately reviewed schema revision must define the provisioned platform user (Full Name, unique normalized Google Email, role, active status), Auth.js database sessions and required Google-provider linkage, and exactly-one Operator ownership for every Student. It must define deactivation/session revocation and migrate existing Students without temporary unowned access.
+
+The schema must not add passwords, public-registration tokens, Balance persistence, Transaction actor attribution, or routine Platform Admin financial access. No physical table or column name is approved here.
 
 ## 4. Table: `students`
 
@@ -85,7 +91,7 @@ The database implementation may omit `ix_students_name_ci` when `uq_students_nam
 | `amount` | Signed 64-bit integer | No | None | Positive whole Rupiah (`IDR`) |
 | `created_at` | Timestamp with time zone | No | Database current timestamp | Persistence time |
 
-No `updated_at`, `deleted_at`, currency, actor, note, category, or balance column is present. These fields are unnecessary or explicitly outside the MVP.
+No `updated_at`, `deleted_at`, currency, actor, note, category, or balance column is present. Authentication does not add Transaction actor attribution.
 
 ### 5.2 Constraints
 
@@ -245,7 +251,7 @@ SQLite schema triggers independently reject Transaction update and deletion if a
 
 | Decision | Rationale |
 |----------|-----------|
-| Two tables only | Student and Transaction are the only persisted MVP entities. |
+| Financial entities remain Student and Transaction | Authentication persistence is separate and cannot become a second financial source of truth. |
 | UUID primary keys | The approved SRS requires automatically generated UUID identities. |
 | Signed 64-bit integer amount | Whole-Rupiah values require exact integer storage; 64-bit range avoids premature custom monetary types. |
 | Timestamp with time zone | Financial events need an unambiguous persistence time for traceability and ordering. |

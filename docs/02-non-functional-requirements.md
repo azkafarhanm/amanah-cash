@@ -1,9 +1,9 @@
 # Amanah Cash — Non-Functional Requirements
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -83,7 +83,7 @@ These targets measure interaction efficiency. They are not network or backend la
 - Every financial event has a unique transaction identifier, student reference, type, whole-Rupiah amount, and creation timestamp.
 - Transactions are append-only and cannot be edited or deleted through application operations.
 - A balance must always be reproducible from its transaction records.
-- Actor attribution is not required for the single-operator MVP.
+- Authentication does not add actor attribution to immutable Transaction events.
 
 ## 7. PWA and Device Support
 
@@ -106,11 +106,33 @@ These targets measure interaction efficiency. They are not network or backend la
 - The application must report network failure explicitly rather than implying that a transaction was saved offline.
 - No MVP requirement depends on offline storage or synchronization behavior.
 
-## 9. Open Measurement Baseline
+## 9. Security, Authorization, and Privacy
+
+### NFR-9.1: Server-Enforced Authorization
+
+- Every protected request validates the database session, active user, role, and applicable Student ownership on the server.
+- Client visibility and filtering are never authorization controls.
+- Missing or stale authorization context fails closed.
+
+### NFR-9.2: Financial Data Privacy
+
+- An Operator receives financial data only for assigned Students.
+- Platform Admin has no routine access to Transaction history, Balances, financial reports, or Student financial data.
+- Authentication sessions, cookies, logs, analytics, and administrative screens do not contain unnecessary financial data.
+
+### NFR-9.3: Authentication Security
+
+- Auth.js uses Google only and database-backed sessions.
+- Provider and session secrets are server-only.
+- Production cookies are HTTP-only and secure, with an explicitly reviewed same-site policy.
+- Authentication and logout retain Auth.js CSRF and provider-protocol protections.
+- Errors do not disclose tokens, secrets, database internals, or unnecessary account-existence information.
+
+## 10. Open Measurement Baseline
 
 Concrete network-latency targets, supported-browser versions, and production data-volume thresholds require an agreed deployment and test baseline. They must be defined before this document can move from Draft to Approved.
 
-## 10. Traceability
+## 11. Traceability
 
 | NFR | Related Functional Requirements |
 |-----|---------------------------------|
@@ -125,3 +147,4 @@ Concrete network-latency targets, supported-browser versions, and production dat
 | NFR-6.1 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3, FR-3.3.1 |
 | NFR-7.1 | FR-3.4.1 |
 | NFR-7.2 | FR-3.4.3 |
+| NFR-9.1–9.3 | FR-7.1, FR-7.2 |

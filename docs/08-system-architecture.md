@@ -1,9 +1,9 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -37,8 +37,8 @@ This document defines the implementation architecture for the approved Amanah Ca
            v
 ┌──────────────────────┐
 │ Relational Database  │
-│ Students + immutable │
-│ Transactions         │
+│ Identity boundary +  │
+│ financial records    │
 └──────────────────────┘
 ```
 
@@ -147,7 +147,8 @@ Client validation improves speed but never replaces server validation.
 
 The single relational database:
 
-- Stores only `students` and `transactions` MVP entities.
+- Stores `students` and immutable `transactions` as the financial source entities.
+- After its separately reviewed schema is implemented, stores provisioned users, provider linkage, database sessions, roles, and Student ownership outside the financial source of truth.
 - Enforces primary keys, foreign keys, required values, type checks, positive Amount, and Student-name uniqueness.
 - Restricts Student deletion when Transactions exist.
 - Supports append-only Transaction access for the application.
@@ -155,7 +156,7 @@ The single relational database:
 - Computes exact whole-Rupiah Balance from all persisted Transactions.
 - Supports deterministic newest-first history retrieval.
 
-It does not store Balance, authentication data, offline state, or a second financial representation.
+It does not store Balance, offline state, or a second financial representation. Authentication data must not contain financial values.
 
 ## 8. Validation Responsibilities
 
@@ -372,9 +373,17 @@ MVP security is limited to approved integrity protections:
 - Use stable Transaction UUIDs for duplicate prevention and retry safety.
 - Return only the data required by approved screens.
 
-There is no authentication, user authorization, account, role, OAuth, JWT, actor attribution, or multi-tenant boundary in the MVP.
+### 13.1 Authentication
 
-Auth.js with the Database Session Strategy is the approved long-term authentication solution, but it is not part of the MVP foundation. Its installation, configuration, Route Handlers, persistence entities, and behavior are deferred to a dedicated Authentication Sprint. Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+Auth.js uses Google only and the Database Session Strategy. `/` is public, `/login` owns authentication, and `/app` is protected. A Google identity is admitted only when its normalized email matches an active pre-provisioned user. There is no password authentication or public account self-service. Google verifies identity; Amanah Cash determines authorization.
+
+### 13.2 Authorization
+
+Every protected operation resolves the active PlatformUser and role on the server. `PLATFORM_ADMIN` reaches dedicated administration operations. `OPERATOR` operations additionally require current ownership of the target Student. Presentation filtering is not a security boundary, and Persistence must scope data before returning it.
+
+### 13.3 Privacy
+
+Platform Admin manages the platform but has no routine route to Transaction history, Balances, financial reports, or Student financial data. There is no implicit administrator financial bypass. Financial data must not enter sessions, cookies, administrative UI, logs, analytics, or authentication errors. Authentication does not add Transaction actor attribution.
 
 ## 14. Deployment
 
@@ -415,10 +424,13 @@ Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues
 | Progressive history separate from Balance | Improves presentation performance without weakening correctness | NFR-4.1; BR-UI-002–003 |
 | PWA with no offline data flow | Provides approved installation model without offline scope | FR-3.4.1; NFR-7.1; BR-PWA-001 |
 | Technology-neutral boundaries | Framework selection is not an approved product requirement | Simplicity Over Generality |
+| Auth.js, Google only, database sessions | Verify identity without application passwords | ADR-001 |
+| Amanah Cash roles and Student ownership | Identity provider does not authorize financial data | ADR-002 |
+| Administrative/financial separation | Privacy outranks administrative visibility | ADR-003 |
 
 ## 16. MVP Fit and Evolution
 
-This architecture fits the MVP because it has one request path, one deployable server, one database, two persisted entities, and no distributed coordination. Domain and persistence boundaries still allow internal replacement of client, server, or database technology without changing approved rules.
+This architecture retains one deployable server and one relational database without distributed coordination. Student and Transaction remain the financial source entities; identity/session persistence is isolated from financial truth. Domain and persistence boundaries still allow internal replacement of technology without changing approved rules.
 
 Future evolution means changing an implementation behind an existing boundary when an approved requirement demands it. This document does not pre-design or authorize future features.
 

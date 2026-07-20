@@ -96,11 +96,41 @@ The check required by BR-BAL-004 and the recording of its withdrawal must behave
 
 Every balance must be reproducible from immutable transaction records. Each financial event is traceable through its transaction identifier, student reference, type, amount, and timestamp.
 
-### BR-AUD-002: MVP Audit Boundary
+### BR-AUD-002: Audit Boundary
 
-Auditability in the single-operator MVP covers financial event traceability only. Authentication, multi-user support, and actor attribution are outside the MVP scope.
+Authentication identifies a user and authorization scopes access, but immutable Transaction traceability remains event-based. This decision does not add actor attribution to Transaction records.
 
-## 7. Presentation Rules
+## 7. Identity, Ownership, and Privacy Rules
+
+### BR-AUTH-001: Google Is the Only Authentication Provider
+
+Auth.js authenticates through Google only. Password login and public account self-service do not exist.
+
+### BR-AUTH-002: Provisioning Precedes Access
+
+Authentication grants access only when the normalized Google email matches an active user provisioned by Platform Admin.
+
+### BR-AUTHZ-001: Amanah Cash Owns Authorization
+
+Google verifies identity. Amanah Cash determines active status, role, Student ownership, and permitted operations.
+
+### BR-AUTHZ-002: One Student Has One Operator
+
+Every Student is assigned to exactly one Operator. Transfer replaces the responsible Operator without changing Transaction history.
+
+### BR-AUTHZ-003: Operator Access Is Ownership-Scoped
+
+An Operator may read or change financial data only for currently assigned Students.
+
+### BR-PRIV-001: Administration Does Not Imply Financial Access
+
+Platform Admin may manage Operators, assignments, transfers, configuration, and maintenance but may not routinely access Operator financial data.
+
+### BR-PRIV-002: Authorization Fails Closed
+
+If an active user, valid role, or required Student ownership cannot be established, access is denied.
+
+## 8. Presentation Rules
 
 ### BR-UI-001: Transaction Direction Is Explicit
 
@@ -117,7 +147,7 @@ Transaction history is presented newest first. Older entries may be loaded progr
 
 The UI must not imply that the balance is based only on currently displayed history.
 
-## 8. PWA and Connectivity Rules
+## 9. PWA and Connectivity Rules
 
 ### BR-PWA-001: Offline Transactions Are Not Supported
 
@@ -127,7 +157,7 @@ Offline capability and offline synchronization are outside the MVP. The applicat
 
 The application must satisfy supported-browser installability requirements. An automatic browser install prompt is not guaranteed; installation guidance may be provided instead.
 
-## 9. Requirement Traceability
+## 10. Requirement Traceability
 
 | Business Rule | Functional Requirements |
 |---------------|-------------------------|
@@ -140,6 +170,8 @@ The application must satisfy supported-browser installability requirements. An a
 | BR-BAL-001–003 | FR-3.1.2, FR-3.1.4, FR-3.3.1 |
 | BR-BAL-004–005 | FR-3.2.2 |
 | BR-AUD-001–002 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3 |
+| BR-AUTH-001–002 | FR-7.1 |
+| BR-AUTHZ-001–003, BR-PRIV-001–002 | FR-7.2 |
 | BR-UI-001 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3 |
 | BR-UI-002–003 | FR-3.1.4, FR-3.2.3, FR-3.3.1 |
 | BR-PWA-001–002 | FR-3.4.1, Error Handling, Scope Boundary |

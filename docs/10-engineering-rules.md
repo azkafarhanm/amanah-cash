@@ -1,9 +1,9 @@
 # Amanah Cash — Engineering Rules
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -28,7 +28,7 @@ This document defines engineering standards for contributors implementing the ap
 - Prefer direct, readable code over generic frameworks created inside the project.
 - Add a dependency only when it has a clear current responsibility and a lower maintenance cost than a local implementation.
 
-Do not introduce distributed infrastructure, offline synchronization, authentication, reporting, or other excluded scope during MVP implementation. Auth.js with Database Sessions is the approved long-term authentication solution, but it may be installed or modeled only in a separately approved Authentication Sprint. Sprint 1 must not install Auth.js or create authentication schema.
+Do not introduce distributed infrastructure, offline synchronization, or other excluded scope during financial MVP work. Auth.js with Google and Database Sessions may be implemented only in a separately approved Authentication Sprint.
 
 Sprint 1 is a Local Development bootstrap only. Use the approved local SQLite database; do not deploy to Vercel, configure production persistence hosting and operations, introduce an external database, or modify the persistence architecture. Production deployment decisions belong to the Deployment phase.
 
@@ -77,6 +77,16 @@ Business rules must be visible in Domain code or explicit persistence constraint
 | Domain | Terms, invariants, Balance formula, Transaction direction, aggregate rules | Transport, framework, database product, screen state |
 | Persistence | Tables, queries, constraints, locks, atomic writes, history cursor | Product presentation or independent business behavior |
 | Database | Durable Students and Transactions, integrity constraints, atomic commit | Stored Balance, UI state, actor identity, offline state |
+
+Authentication and authorization add these mandatory boundaries:
+
+- authenticate through Auth.js and Google only;
+- validate the database session and active Amanah Cash user on the server;
+- derive role and Student ownership from Amanah Cash, never Google claims;
+- scope every Operator read and write to currently assigned Students in Application/Persistence;
+- deny by default when identity, role, active status, or ownership is missing;
+- never use client filtering as authorization; and
+- never grant Platform Admin an implicit financial-data bypass.
 
 Business logic inside UI components is prohibited. UI code may validate input format for feedback but must defer authoritative decisions to the server and Domain layer.
 
@@ -167,6 +177,9 @@ The following are prohibited:
 - Over-engineering or abstractions for hypothetical reuse.
 - Features, fields, flows, or infrastructure outside approved MVP scope.
 - Bypassing database constraints because equivalent client validation exists.
+- Unscoped Student or Transaction access after authorization is introduced.
+- Financial data in authentication sessions, cookies, logs, analytics, or administrative screens.
+- Password authentication, public registration, or password recovery.
 
 ## 14. Review Questions
 
@@ -179,3 +192,5 @@ Before considering work complete, verify:
 5. Are concurrency and retry behavior safe?
 6. Is the implementation simpler than available alternatives with the same correctness?
 7. Are tests and documentation synchronized?
+8. Does every protected operation enforce role and current Student ownership on the server?
+9. Does the change preserve administrative and financial-data separation?

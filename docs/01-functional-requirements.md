@@ -1,9 +1,9 @@
 # Amanah Cash — Functional Requirements (SRS)
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -21,7 +21,8 @@ Amanah Cash is a Progressive Web App for managing entrusted student funds. It en
 
 | Term | Definition |
 |------|------------|
-| **Operator** | The user who records deposits and withdrawals and views student balances. |
+| **Platform Admin** | The user who provisions Operators, assigns Students, and manages the platform without routine access to financial data. |
+| **Operator** | The user who manages financial records only for assigned Students. |
 | **Student** | A person whose entrusted funds are tracked by the system. |
 | **Deposit** | A record of funds entrusted to a student (money going out from the operator's perspective). |
 | **Withdrawal** | A record of funds returned by a student (money coming in from the operator's perspective). |
@@ -53,16 +54,30 @@ Every functional requirement in this document is grounded in the following princ
 
 ## 2. User Roles
 
-### 2.1 Operator
+### 2.1 Platform Admin
 
-The operator is the sole user role in the MVP. There is no authentication, multi-user support, role-based access control, or actor attribution in the MVP scope. Financial auditability is provided by traceable transaction records, not by identifying who performed an action.
+The Platform Admin provisions and deactivates Operators, assigns and transfers Students, manages system settings, and maintains the platform. Platform Admin does not routinely access Operator Transaction history, Balances, financial reports, or Student financial data.
 
-Auth.js with the Database Session Strategy is the approved long-term authentication solution, but it does not change this MVP behavior. Authentication is deferred to a dedicated Authentication Sprint. Sprint 1 must not install Auth.js or create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema.
+### 2.2 Operator
+
+An Operator manages Transactions, Balances, financial history, and approved reports only for Students assigned to that Operator.
 
 **Capabilities:**
 - Create, view, and search student records
 - Record deposits and withdrawals
 - View computed balances and transaction history
+
+### 2.3 Authentication and Provisioning
+
+- Auth.js uses Google as the only provider and the Database Session Strategy.
+- There is no email/password login, public registration, Sign Up, Forgot Password, or password reset.
+- Only a Platform Admin can provision an Operator using Full Name, Google Email, and the `OPERATOR` role.
+- Login succeeds only when the normalized Google email matches an active provisioned user.
+- Google verifies identity; Amanah Cash determines role and Student access.
+
+### 2.4 Student Assignment
+
+Every Student belongs to exactly one Operator. Platform Admin may assign or transfer a Student. Transfer changes responsibility and access; it does not change immutable Transaction history.
 
 ---
 
@@ -91,19 +106,20 @@ Auth.js with the Database Session Strategy is the approved long-term authenticat
 
 #### FR-3.1.2: View Student List
 
-**Description:** The operator can view a list of all students.
+**Description:** The operator can view a list of assigned students.
 
 **Principles:** Mobile First (1), Minimal Cognitive Load (11), Speed of Operation (3)
 
 **Acceptance Criteria:**
-- The list displays each student's name and current balance.
+- The list displays each assigned student's name and current balance.
+- Students assigned to another Operator are not returned.
 - The list is sorted alphabetically by name.
 - Each list item is tappable to navigate to the student detail view.
 - The student list can become usable without waiting for any student's complete transaction history to be loaded.
 
 #### FR-3.1.3: Search Student
 
-**Description:** The operator can search for a student by name.
+**Description:** The operator can search assigned Students by name.
 
 **Principles:** Fast Input (4), Speed of Operation (3), Mobile First (1)
 
@@ -111,13 +127,14 @@ Auth.js with the Database Session Strategy is the approved long-term authenticat
 - A search input is visible on the student list screen.
 - Search results update after each input change without requiring a submit action.
 - Search is case-insensitive and matches partial name input.
+- Search never returns a Student assigned to another Operator.
 - Search uses the same normalized student names used for uniqueness validation.
 - The search field is accessible with a single tap from the primary screen.
 - The keyboard appears automatically when the search field is focused on mobile.
 
 #### FR-3.1.4: View Student Detail
 
-**Description:** The operator can view a student's complete financial summary.
+**Description:** The operator can view the complete financial summary of an assigned Student.
 
 **Principles:** Trust by Design (10), Minimal Cognitive Load (11), Single Source of Truth (5)
 
@@ -128,6 +145,7 @@ Auth.js with the Database Session Strategy is the approved long-term authenticat
 - Each transaction in the list shows: type (deposit/withdrawal), amount, and timestamp.
 - Each transaction clearly communicates the direction of money: a deposit is money entrusted to the student, while a withdrawal is money returned by the student.
 - The displayed balance is computed from the complete transaction history and must not be derived only from the currently loaded or displayed entries.
+- Access is denied when the Student is not currently assigned to the Operator.
 
 ---
 
@@ -336,13 +354,30 @@ Student List → Tap Add → Enter Name → Confirm → Student Detail
 
 ---
 
-## 7. Scope Boundary
+## 7. Authentication and Authorization Requirements
+
+### FR-7.1: Google Login
+
+- `/login` offers Google authentication only.
+- A registered, active user receives a database-backed session and proceeds to `/app`.
+- An unregistered or inactive Google email is denied with a friendly contact-the-Platform-Administrator message.
+
+### FR-7.2: Server Authorization
+
+- `/app` and protected operations require a valid server-validated session.
+- Every Student and financial operation enforces current Student ownership on the server.
+- Platform Admin administrative capabilities do not grant routine financial-data access.
+- Missing role, inactive status, or missing ownership denies access by default.
+
+## 8. Scope Boundary
 
 The following are explicitly **out of scope** for the MVP and will not be implemented as part of MVP work. A deferred architecture is mentioned only where a separate Project Owner decision has approved it.
 
 | Feature | Reason for Exclusion |
 |---------|---------------------|
-| Authentication / multi-user / actor attribution | Not required for the single-operator MVP; Auth.js with Database Sessions is deferred to a dedicated Authentication Sprint, and MVP auditability covers financial event traceability |
+| Email/password and account self-service | Google-only login; no public registration, Sign Up, Forgot Password, or password reset |
+| Routine Platform Admin financial-data access | Privacy and administrative separation prohibit it |
+| Transaction actor attribution | Authentication does not change immutable financial-event traceability |
 | Offline sync | Deferred to post-MVP (Principle 2) |
 | Transaction editing or deletion | Preserves audit integrity (Principle 10) |
 | Reports or exports | Not required for day-one operation (Principle 6) |
