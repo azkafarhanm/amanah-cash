@@ -5,24 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "prebuild": "prisma generate",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
     "prisma:format": "prisma format",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
+    "pretest": "prisma generate",
+    "pretypecheck": "prisma generate",
     "typecheck": "tsc --noEmit",
-    "test": "node --test"
+    "test": "tsx --test test/*.test.js test/*.test.ts"
   },
   "dependencies": {
+    "@next-auth/prisma-adapter": "1.0.7",
+    "@prisma/adapter-better-sqlite3": "7.8.0",
     "@prisma/client": "7.8.0",
+    "better-sqlite3": "12.11.1",
     "geist": "1.7.2",
     "next": "16.2.10",
+    "next-auth": "4.24.14",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",
+    "@types/better-sqlite3": "7.6.13",
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
@@ -31,9 +39,15 @@
     "eslint-config-next": "16.2.10",
     "prisma": "7.8.0",
     "tailwindcss": "4.3.3",
+    "tsx": "4.23.1",
     "typescript": "5.9.3"
   },
   "engines": {
     "node": ">=24.0.0"
+  },
+  "overrides": {
+    "next-auth": {
+      "uuid": "11.1.1"
+    }
   }
 }

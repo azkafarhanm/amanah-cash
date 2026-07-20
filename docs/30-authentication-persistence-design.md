@@ -75,11 +75,11 @@ The migration deliberately attempts no automatic data backfill and creates no Us
 
 There is no seed file and no automatic User creation. The future `SUPER_ADMIN_EMAIL` bootstrap operation can create a User because the schema provides required normalized `email`, required `name`, required `PLATFORM_ADMIN` role, and explicit `isActive`. The environment variable is not consumed in this sprint. `SUPER_ADMIN_EMAIL` is not stored as a separate field and does not create a `SUPER_ADMIN` role.
 
-## 7. Operational notes for the Auth.js sprint
+## 7. Auth.js integration notes
 
-- Auth.js integration must use the generated Prisma client and the approved database-session strategy.
+- Auth.js integration uses the generated Prisma client and the approved database-session strategy. See [Authentication Implementation](31-authentication-implementation.md).
 - Admission logic must link Google to an existing active User; it must not rely on the adapter to create a provisioned User.
 - Because `name` and `role` are required and role has no default, an unintended generic adapter `createUser` call fails closed.
 - Provider-token retention must follow the TDS. Nullable Account token fields exist for adapter compatibility; their presence does not authorize retaining offline credentials.
-- The runtime must continue enabling SQLite foreign keys and use the existing single-writer boundary.
+- The runtime SQLite driver enables foreign keys and retains the existing single-writer persistence boundary.
 - The separately approved populated-database ownership mapping must be completed before production migration.
