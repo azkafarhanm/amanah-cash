@@ -1,6 +1,6 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -38,7 +38,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 | Milestone | Name | Status | Primary Requirements |
 |-----------|------|--------|----------------------|
 | 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
-| 2 | Student Management | Complete | FR-3.1.1–3.1.3 |
+| 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
 | 3 | Transaction Foundation and Deposit | Next | FR-3.2.1 |
 | 4 | Balance and Atomic Withdrawal | Outstanding | FR-3.2.2, FR-3.3.1 |
 | 5 | Student Detail and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3 |
@@ -372,6 +372,7 @@ This is the Deployment phase in which production hosting and database compatibil
 | FR-3.1.2 View Student List | 2 | 8 |
 | FR-3.1.3 Search Student | 2 | 8 |
 | FR-3.1.4 View Student Detail | 5 | 8 |
+| FR-3.1.5 Edit and Transfer Student | 2 | 8 |
 | FR-3.2.1 Record Deposit | 3 | 8 |
 | FR-3.2.2 Record Withdrawal | 4 | 8 |
 | FR-3.2.3 View Transaction History | 5 | 8 |

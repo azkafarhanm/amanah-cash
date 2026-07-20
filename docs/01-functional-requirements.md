@@ -1,6 +1,6 @@
 # Amanah Cash — Functional Requirements (SRS)
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -56,14 +56,14 @@ Every functional requirement in this document is grounded in the following princ
 
 ### 2.1 Platform Admin
 
-The Platform Admin provisions and deactivates Operators, assigns and transfers Students, manages system settings, and maintains the platform. Platform Admin does not routinely access Operator Transaction history, Balances, financial reports, or Student financial data.
+The Platform Admin provisions and deactivates Operators; creates, edits, assigns, and transfers Student records; manages system settings; and maintains the platform. Platform Admin does not routinely access Operator Transaction history, Balances, financial reports, or Student financial data.
 
 ### 2.2 Operator
 
 An Operator manages Transactions, Balances, financial history, and approved reports only for Students assigned to that Operator.
 
 **Capabilities:**
-- Create, view, and search student records
+- View and search currently assigned Student records
 - Record deposits and withdrawals
 - View computed balances and transaction history
 
@@ -87,46 +87,53 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 
 #### FR-3.1.1: Create Student
 
-**Description:** The operator can create a new student record.
+**Description:** The Platform Admin can create a Student and assign exactly one active Operator.
 
 **Fields:**
 | Field | Type | Required | Constraints |
 |-------|------|----------|-------------|
 | Name | Text | Yes | Normalized, non-empty, max 100 characters |
+| Operator | User reference | Yes | Existing active, non-deleted user with role `OPERATOR` |
+| Status | Enum | Yes | `ACTIVE`, `INACTIVE`, or `ARCHIVED` |
+| Notes | Text | No | Trimmed, max 500 characters |
 
 **Principles:** Minimal Data Collection (9), Simplicity Over Generality (8)
 
 **Acceptance Criteria:**
 - The system accepts a student name and persists the record.
 - The system assigns a unique identifier automatically.
-- The system records the creation timestamp automatically.
+- The system records creation and update timestamps automatically.
+- The system rejects a missing, inactive, deleted, or non-Operator assignee.
 - The system rejects empty or whitespace-only names.
 - Before validation, the system trims leading and trailing whitespace and collapses consecutive internal whitespace to a single space.
 - The system rejects duplicate normalized names using case-insensitive comparison.
 
 #### FR-3.1.2: View Student List
 
-**Description:** The operator can view a list of assigned students.
+**Description:** The Platform Admin can view all Students; an Operator can view only currently assigned Students.
 
 **Principles:** Mobile First (1), Minimal Cognitive Load (11), Speed of Operation (3)
 
 **Acceptance Criteria:**
-- The list displays each assigned student's name and current balance.
+- The list displays Student name, assigned Operator, status, and creation date.
+- Until the financial milestones are delivered, the balance column displays the literal non-financial placeholder `Belum tersedia` and performs no Balance or Transaction query.
 - Students assigned to another Operator are not returned.
-- The list is sorted alphabetically by name.
+- The list is ordered newest first with a stable identifier tie-breaker.
+- Search, filtering, and pagination execute server-side with ten Students per page.
 - Each list item is tappable to navigate to the student detail view.
 - The student list can become usable without waiting for any student's complete transaction history to be loaded.
 
 #### FR-3.1.3: Search Student
 
-**Description:** The operator can search assigned Students by name.
+**Description:** Users can search visible Students by partial Student or Operator name and filter by Student status.
 
 **Principles:** Fast Input (4), Speed of Operation (3), Mobile First (1)
 
 **Acceptance Criteria:**
 - A search input is visible on the student list screen.
-- Search results update after each input change without requiring a submit action.
+- Search and status filters are applied through the list filter form.
 - Search is case-insensitive and matches partial name input.
+- Platform Admin search also matches the assigned Operator name.
 - Search never returns a Student assigned to another Operator.
 - Search uses the same normalized student names used for uniqueness validation.
 - The search field is accessible with a single tap from the primary screen.
@@ -146,6 +153,18 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 - Each transaction clearly communicates the direction of money: a deposit is money entrusted to the student, while a withdrawal is money returned by the student.
 - The displayed balance is computed from the complete transaction history and must not be derived only from the currently loaded or displayed entries.
 - Access is denied when the Student is not currently assigned to the Operator.
+- Until the financial milestones are delivered, the implemented detail page shows identity, assignment, lifecycle metadata, notes, and an explicit static financial-summary placeholder without querying Balance or Transactions.
+
+#### FR-3.1.5: Edit and Transfer Student
+
+**Description:** The Platform Admin can edit a Student's name, notes, status, and assigned Operator.
+
+**Acceptance Criteria:**
+- Editing applies the same validation as creation.
+- Reassignment accepts only an existing active, non-deleted Operator.
+- Reassignment immediately changes the current ownership scope without changing Transaction history.
+- Operators cannot edit Student identity, lifecycle status, notes, or assignment.
+- Student deletion remains outside MVP scope.
 
 ---
 
@@ -394,10 +413,11 @@ The following are explicitly **out of scope** for the MVP and will not be implem
 
 | ID | Requirement | Validation |
 |----|-------------|------------|
-| FR-3.1.1 | Create Student | Student record persists with unique ID and timestamp |
-| FR-3.1.2 | View Student List | List displays all students with computed balances |
-| FR-3.1.3 | Search Student | Instant case-insensitive filtering by name |
+| FR-3.1.1 | Create Student | Valid Student management data persists with required active Operator ownership |
+| FR-3.1.2 | View Student List | Role-scoped, server-paginated list displays management data and an explicit pre-financial placeholder |
+| FR-3.1.3 | Search Student | Case-insensitive Student/Operator-name search and status filtering preserve visibility scope |
 | FR-3.1.4 | View Student Detail | Correct full-history balance displayed; transaction entries may load progressively |
+| FR-3.1.5 | Edit and Transfer Student | Platform Admin updates validated fields and ownership follows reassignment |
 | FR-3.2.1 | Record Deposit | Positive amount recorded; balance updates immediately |
 | FR-3.2.2 | Record Withdrawal | Positive amount recorded if balance sufficient; balance updates immediately |
 | FR-3.2.3 | View Transaction History | Newest-first history with progressive access to all transactions |

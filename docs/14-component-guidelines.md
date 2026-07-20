@@ -1,11 +1,11 @@
 # Amanah Cash — Component Guidelines
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -159,7 +159,7 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 
 `ScreenHeader + AddStudentAction + StudentSearchInput + StudentListState + CreateStudentOverlay`.
 
-Search remains immediately reachable. Rows are alphabetical. List loading, first-time empty, search empty, and system failure are mutually clear. Virtualization or infinite scrolling is not introduced without a measured data-volume requirement.
+Search remains immediately reachable. The delivered management list is newest-first and uses server-side ten-row pagination; alphabetical ordering remains a future financial-screen specification and must not be documented as current behavior. List loading, first-time empty, search empty, and system failure are mutually clear. Virtualization or infinite scrolling is not introduced without a measured data-volume requirement.
 
 ### 5.2 Student Detail
 

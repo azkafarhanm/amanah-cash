@@ -71,7 +71,7 @@ SQLite relational database and invariant triggers
 - Deactivation and deletion revoke database sessions. Database triggers prevent either operation from orphaning Students.
 - Every Student has one required `operatorId`. Only active, non-deleted Operators may be assigned.
 - Student transfer is currently a direct ownership update. Transfer history is intentionally deferred.
-- Student statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. Inactive is temporary operational exclusion; archived is historical organizational retention. Neither deletes the Student or future financial history.
+- Student statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. They are management labels and filters only in the current module; they do not independently change visibility or authorization. Neither deletes the Student or future financial history.
 - Student names remain normalized and unique case-insensitively under the approved database rule.
 - Student and Operator search and pagination execute server-side with ten records per page.
 - Operator list queries are scoped by the authorized Operator ID. Operator detail additionally uses the centralized masked ownership policy.
@@ -94,6 +94,7 @@ There is no Balance table or column, currency column, Transaction actor attribut
 - Financial Transactions, deposits, withdrawals, and balance calculation are not implemented.
 - Student balance and financial-summary values are placeholders only.
 - Student ownership transfer history is not recorded; only current ownership is authoritative.
+- Student create/edit Server Action validation redirects do not restore submitted invalid values; the form reloads default or persisted values.
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
 - A populated database predating mandatory ownership still requires an explicit Student-to-Operator mapping; the ownership migration intentionally refuses to invent one.
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.

@@ -1,15 +1,17 @@
 # Amanah Cash — Wireframes
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-20
 
 ---
 
 ## 1. Purpose
 
 This document defines structured-text wireframes for the Amanah Cash MVP. It contains no visual assets and introduces no screens beyond the approved functional requirements.
+
+These wireframes describe the target financial Operator workflow. The delivered Student Management module adds role-specific Platform Admin list/create/detail/edit pages and read-only, ownership-scoped Operator list/detail pages. Its list Balance and detail financial summary are explicit placeholders until the financial milestones. See `docs/35-student-management-implementation.md` for the current route and behavior contract.
 
 ## 2. Mobile-First Frame
 

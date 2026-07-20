@@ -1,11 +1,11 @@
 # Amanah Cash — Design Review Checklist
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -99,7 +99,7 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 ### Student List
 
 - [ ] Search is reachable with one tap and filters after input changes.
-- [ ] Students are alphabetical and each row shows name and Balance.
+- [ ] The delivered management list is newest-first and each row shows name, Operator, status, creation date, and the explicit `Belum tersedia` Balance placeholder.
 - [ ] The complete row is a clear navigation target.
 - [ ] First-time, no-results, loading, and failure states are distinct.
 - [ ] No-results does not confuse search with Student creation.

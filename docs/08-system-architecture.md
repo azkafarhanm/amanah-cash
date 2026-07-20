@@ -1,6 +1,6 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -62,7 +62,7 @@ Relational Database
 
 Runs in the PWA client and is responsible for:
 
-- The three approved screens and Create Student overlay.
+- Role-specific Student management screens: Platform Admin list/create/detail/edit and Operator-owned list/detail.
 - Mobile-first layout, navigation, loading, empty, and error states.
 - Immediate input-format validation and inline feedback.
 - Explicit Deposit and Withdrawal direction.
@@ -76,8 +76,8 @@ The client does not calculate the authoritative Balance, enforce concurrency, or
 
 Runs on the server and coordinates the approved use cases:
 
-- Create Student.
-- List and search Students.
+- Create, edit, assign, and transfer Students for Platform Admin.
+- List, search, filter, and paginate Students within the caller's visibility scope.
 - Load Student Detail and Balance.
 - Record Deposit.
 - Record Withdrawal.
@@ -91,6 +91,7 @@ It validates request shape, invokes Domain rules, establishes transaction bounda
 Runs on the server and owns approved business meaning and invariants:
 
 - StudentName normalization and validity.
+- Student notes, lifecycle status, and active-Operator assignment validity.
 - Whole-Rupiah Amount validity.
 - Deposit and Withdrawal direction.
 - Append-only Transaction semantics.
@@ -105,6 +106,7 @@ The Domain layer has no dependency on client screens, transport details, or a da
 Runs on the server and translates application operations into database access:
 
 - Student and Transaction storage.
+- Active-Operator ownership checks and ownership-scoped Student queries.
 - Case-insensitive Student uniqueness.
 - Complete-history Balance aggregation.
 - Stable progressive-history queries.
@@ -148,7 +150,7 @@ Client validation improves speed but never replaces server validation.
 The single relational database:
 
 - Stores `students` and immutable `transactions` as the financial source entities.
-- After its separately reviewed schema is implemented, stores provisioned users, provider linkage, database sessions, roles, and Student ownership outside the financial source of truth.
+- Stores provisioned users, provider linkage, database sessions, roles, and Student ownership outside the financial source of truth.
 - Enforces primary keys, foreign keys, required values, type checks, positive Amount, and Student-name uniqueness.
 - Restricts Student deletion when Transactions exist.
 - Supports append-only Transaction access for the application.
@@ -177,7 +179,7 @@ Validation is intentionally repeated at trust boundaries. Client validation impr
 
 ### 9.1 Create Student
 
-One database transaction normalizes and inserts the Student. The unique index resolves concurrent duplicate creation. Failure commits nothing.
+One database transaction inserts normalized Student management data with a required valid Operator owner. The unique index resolves concurrent duplicate names, while ownership triggers reject inactive, deleted, or non-Operator assignees. Failure commits nothing. Edit uses the same validation and atomically updates management fields; reassignment changes the current ownership edge.
 
 ### 9.2 Deposit
 
@@ -235,13 +237,25 @@ References: FR-3.1.1
 ```text
 Client input
   → client format validation
-  → server normalization and validation
+  → server normalization and validation of name, notes, status, and active Operator
   → database insert with unique-name constraint
   → committed Student or explicit validation/system failure
   → Student Detail
 ```
 
-### 11.2 Record Deposit
+### 11.2 Edit and Transfer Student
+
+References: FR-3.1.5
+
+```text
+Platform Admin input
+  → server revalidates all management fields and active Operator ownership
+  → database updates Student and modification timestamp
+  → current ownership authorization immediately follows operator_id
+  → committed Student or explicit validation/conflict/not-found outcome
+```
+
+### 11.3 Record Deposit
 
 References: FR-3.2.1, FR-3.3.1
 
@@ -257,7 +271,7 @@ Whole-Rupiah input
   → Student Detail
 ```
 
-### 11.3 Record Withdrawal
+### 11.4 Record Withdrawal
 
 References: FR-3.2.2, FR-3.3.1
 
@@ -278,7 +292,7 @@ Whole-Rupiah input
   → Student Detail
 ```
 
-### 11.4 Load Student
+### 11.5 Load Student
 
 References: FR-3.1.2, FR-3.1.4, FR-3.3.1
 
@@ -293,7 +307,7 @@ Client requests Student Detail
 
 No provisional Balance is produced if the complete-history query fails.
 
-### 11.5 Load History
+### 11.6 Load History
 
 References: FR-3.2.3
 
@@ -307,7 +321,7 @@ Client sends Student identity + optional stable cursor
 
 The existing Balance and loaded history remain visible during progressive loading.
 
-### 11.6 Retry Transaction
+### 11.7 Retry Transaction
 
 References: FR-3.2.1, FR-3.2.2; NFR-5.1
 
@@ -323,7 +337,7 @@ Submission outcome unknown
   → explicit committed or failed outcome
 ```
 
-### 11.7 Validation Failure
+### 11.8 Validation Failure
 
 ```text
 Invalid input
@@ -334,7 +348,7 @@ Invalid input
 
 Database constraint conflicts are translated into the corresponding approved validation outcome.
 
-### 11.8 System Failure
+### 11.9 System Failure
 
 ```text
 Operation fails

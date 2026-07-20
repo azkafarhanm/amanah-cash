@@ -1,6 +1,6 @@
 # Amanah Cash — Domain Model
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -45,7 +45,11 @@ Student is the aggregate root and identifies the person whose entrusted funds ar
 |-----------|-------------|----------|---------|
 | `id` | StudentId (UUID) | Yes | Stable system-generated identity |
 | `name` | StudentName | Yes | Normalized display and search name |
+| `operator_id` | UserId | Yes | Current active Operator owner |
+| `status` | StudentStatus | Yes | `ACTIVE`, `INACTIVE`, or `ARCHIVED` |
+| `notes` | StudentNotes | No | Trimmed operational note, at most 500 characters |
 | `created_at` | Timestamp | Yes | Time the student record was created |
+| `updated_at` | Timestamp | Yes | Time management data last changed |
 
 Responsibilities:
 
@@ -60,8 +64,11 @@ Invariants:
 - Leading and trailing whitespace is removed.
 - Consecutive internal whitespace is represented by one space.
 - The normalized name is unique under case-insensitive comparison.
+- Exactly one existing, active, non-deleted Operator owns the Student.
+- Status is one of `ACTIVE`, `INACTIVE`, or `ARCHIVED`.
+- Notes are absent or contain at most 500 trimmed characters.
 - A Student referenced by a Transaction cannot be deleted.
-- Student editing and deletion are not supported by the MVP.
+- Platform Admin may edit Student management data and transfer ownership; Student deletion is not supported by the MVP.
 
 ### 3.2 Transaction
 
@@ -214,17 +221,26 @@ The aggregate boundary does not require loading every Transaction into applicati
 
 1. Normalize the supplied name.
 2. Validate required length and content rules.
-3. Enforce case-insensitive uniqueness.
-4. Create the Student with a generated identity and timestamp.
+3. Normalize and validate optional notes, status, and required Operator assignment.
+4. Confirm that the assignee is an existing active, non-deleted Operator.
+5. Enforce case-insensitive name uniqueness.
+6. Create the Student with generated identity and timestamps.
 
-### 7.2 Record Deposit
+### 7.2 Edit and Transfer Student
+
+1. Confirm that the Student exists.
+2. Apply the same name, notes, status, and Operator validation used for creation.
+3. Persist the management changes and update the modification timestamp.
+4. If ownership changes, authorization follows the new `operator_id` immediately; Transaction history is unchanged.
+
+### 7.3 Record Deposit
 
 1. Validate a positive whole-Rupiah amount.
 2. Serialize the financial write for the Student.
 3. Append one immutable deposit Transaction.
 4. Derive the updated balance from the complete history.
 
-### 7.3 Record Withdrawal
+### 7.4 Record Withdrawal
 
 1. Validate a positive whole-Rupiah amount.
 2. Serialize the financial write for the Student.
@@ -233,7 +249,7 @@ The aggregate boundary does not require loading every Transaction into applicati
 5. Otherwise, append one immutable withdrawal in the same atomic operation.
 6. Derive the updated balance from the complete history.
 
-### 7.4 Read Transaction History
+### 7.5 Read Transaction History
 
 Transaction history is ordered newest first. Older Transactions may be retrieved progressively using stable ordering, while Balance continues to use all persisted Transactions.
 
@@ -251,7 +267,7 @@ The MVP domain model intentionally excludes:
 
 These exclusions preserve Google-only authentication, Amanah Cash authorization, minimal identity collection, and append-only financial history.
 
-Auth.js with Google and the Database Session Strategy is approved. The physical identity, provider-linkage, and session schema remains deferred to its implementation design.
+Auth.js with Google and the Database Session Strategy is implemented. The physical schema includes identity, provider linkage, database sessions, required Student ownership, lifecycle state, notes, and management timestamps without adding financial actor attribution.
 
 ## 9. Design Decisions
 
@@ -266,12 +282,15 @@ Auth.js with Google and the Database Session Strategy is approved. The physical 
 | History retrieval is separate from balance calculation | Progressive loading improves presentation performance without weakening financial correctness. |
 | No Transaction actor entity exists | Authentication and authorization do not change immutable financial event traceability. |
 | One Operator per Student | Current ownership is the financial-data authorization boundary. |
+| Student lifecycle is explicit | Status classifies retained records without deleting them or independently changing authorization. |
+| Ownership transfer updates one edge | Authorization follows current responsibility while immutable Transaction history remains unchanged. |
 
 ## 10. Traceability
 
 | Domain Concern | Source Rules |
 |----------------|--------------|
 | Student identity and normalized name | FR-3.1.1; BR-STU-001–003 |
+| Student lifecycle, notes, and ownership maintenance | FR-3.1.1, FR-3.1.5; BR-STU-005–007; BR-AUTHZ-002–003 |
 | Student retention | BR-STU-004 |
 | Whole-Rupiah values | NFR-3.1; BR-MON-001–003 |
 | Transaction direction | FR-3.2.1, FR-3.2.2; BR-TXN-001–002 |

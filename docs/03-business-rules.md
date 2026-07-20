@@ -1,9 +1,9 @@
 # Amanah Cash — Business Rules
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-17
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -31,6 +31,18 @@ Two students cannot have the same normalized name under case-insensitive compari
 ### BR-STU-004: Student Records Are Not Deleted
 
 Student deletion is not available in the MVP. A student referenced by transaction history must remain identifiable.
+
+### BR-STU-005: Student Lifecycle Is Explicit
+
+Every Student has one of `ACTIVE`, `INACTIVE`, or `ARCHIVED` status. The current module treats these as management labels and list filters; status alone does not change visibility or authorization. Platform Admin may change among the approved states. No status deletes the Student or changes historical Transactions.
+
+### BR-STU-006: Student Notes Are Optional and Bounded
+
+Student notes are optional, trimmed before persistence, and limited to 500 characters. Empty notes are stored as absent rather than as meaningful whitespace.
+
+### BR-STU-007: Only Platform Admin Maintains Student Records
+
+Platform Admin creates and edits Student identity, notes, lifecycle status, and Operator assignment. Operators have read access to currently assigned Students and do not maintain Student records.
 
 ## 3. Monetary Rules
 
@@ -116,7 +128,7 @@ Google verifies identity. Amanah Cash determines active status, role, Student ow
 
 ### BR-AUTHZ-002: One Student Has One Operator
 
-Every Student is assigned to exactly one Operator. Transfer replaces the responsible Operator without changing Transaction history.
+Every Student is assigned to exactly one existing, active, non-deleted Operator. Transfer replaces the responsible Operator without changing Transaction history.
 
 ### BR-AUTHZ-003: Operator Access Is Ownership-Scoped
 
@@ -161,8 +173,9 @@ The application must satisfy supported-browser installability requirements. An a
 
 | Business Rule | Functional Requirements |
 |---------------|-------------------------|
-| BR-STU-001–003 | FR-3.1.1, FR-3.1.3 |
+| BR-STU-001–003 | FR-3.1.1, FR-3.1.3, FR-3.1.5 |
 | BR-STU-004 | Scope Boundary: Student deletion |
+| BR-STU-005–007 | FR-3.1.1, FR-3.1.2, FR-3.1.5 |
 | BR-MON-001–003 | FR-3.2.1, FR-3.2.2, FR-3.3.1 |
 | BR-TXN-001 | FR-3.2.1 |
 | BR-TXN-002 | FR-3.2.2 |

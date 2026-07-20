@@ -1,17 +1,19 @@
 # Amanah Cash — MVP Screen Specifications
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
 ## 1. Purpose
 
 This document converts the approved screen inventory into implementation-ready presentation specifications. It extends the User Flows, Wireframes, UI Design System, Component Guidelines, Design Tokens, and Interaction States without redefining their business rules.
+
+The screen inventory below is the target financial Operator experience. The current Student Management delivery uses dedicated Platform Admin list/create/detail/edit pages plus read-only, ownership-scoped Operator list/detail pages. Search and status filters submit to server-side ten-row pagination, lists are newest-first, and financial values remain explicit placeholders. Current behavior is authoritative in `docs/35-student-management-implementation.md` until the financial screen milestones replace those placeholders.
 
 The MVP has exactly three primary screens:
 

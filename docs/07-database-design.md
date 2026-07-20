@@ -1,6 +1,6 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -58,7 +58,11 @@ A populated legacy database requires an approved Student-to-Operator mapping bef
 |--------|--------------|------|---------|-------------|
 | `id` | UUID | No | Generated UUID | Primary key |
 | `name` | Variable text, maximum 100 characters | No | None | Normalized student name |
+| `notes` | Variable text (application maximum 500 characters) | Yes | Null | Optional trimmed operational note |
+| `status` | Restricted text or enum | No | `ACTIVE` | `ACTIVE`, `INACTIVE`, or `ARCHIVED` |
+| `operator_id` | User identifier | No | None | Current owning Operator |
 | `created_at` | Timestamp with time zone | No | Database current timestamp | Creation time |
+| `updated_at` | Timestamp with time zone | No | Supplied on create; maintained on update | Last management update time |
 
 ### 4.2 Constraints
 
@@ -68,6 +72,9 @@ A populated legacy database requires an approved Student-to-Operator mapping bef
 | `ck_students_name_not_blank` | `name` is not empty after normalization | Enforces required name |
 | `ck_students_name_length` | Character length is between 1 and 100 | Enforces approved name length |
 | `uq_students_name_ci` | Unique case-insensitive normalized `name` | Prevents visually duplicate Student records |
+| `fk_students_operator` | `operator_id` references `users.id` with delete restricted | Prevents orphaned ownership |
+| `trg_students_owner_*` and User lifecycle guard | Assignee must be active, non-deleted, and have role `OPERATOR` | Enforces valid ownership on insert/update and Operator lifecycle changes |
+| `trg_students_status_*` | Status is one of the three approved values | Enforces Student lifecycle vocabulary |
 
 Name normalization—trimming outer whitespace and collapsing consecutive internal whitespace—occurs before insertion. Database uniqueness must use a deterministic case-insensitive comparison compatible with the application's comparison. The stored `name` is the normalized display value; an additional raw-name column is not retained.
 
@@ -78,6 +85,8 @@ Name normalization—trimming outer whitespace and collapsing consecutive intern
 | `pk_students` | `id` | Yes | Primary-key lookup |
 | `uq_students_name_ci` | Case-insensitive expression over normalized `name` | Yes | Duplicate prevention and exact normalized-name lookup |
 | `ix_students_name_ci` | Case-insensitive expression over normalized `name` | No | Alphabetical listing and name search where the chosen database requires a separate search index |
+| `ix_students_operator` | `operator_id` | No | Ownership-scoped Operator reads |
+| `ix_students_management_list` | `status`, `operator_id`, `created_at DESC` | No | Management filtering and newest-first pagination |
 
 The database implementation may omit `ix_students_name_ci` when `uq_students_name_ci` supports the required ordering and search access paths. This avoids redundant indexes.
 
@@ -216,7 +225,7 @@ No soft-delete column is added because soft deletion would allow a persisted fin
 
 ## 9. Student Retention
 
-The application exposes create and read operations for Students, but no update or delete operation. The foreign key uses restricted deletion so a referenced Student cannot be removed even outside the application flow without first violating or explicitly overriding the relationship.
+The application exposes Platform Admin create/update operations and role-scoped Student reads, but no Student delete operation. Updating `operator_id` transfers current ownership without mutating Transaction history. Restricted foreign keys prevent deletion of referenced Students and Operators with assigned Students.
 
 ## 10. Progressive History Retrieval
 

@@ -1,6 +1,6 @@
 # Amanah Cash — User Flows
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -40,6 +40,13 @@ Public and protected route ownership:
 / (Landing Page) → /login (Google authentication) → /app (protected application)
 ```
 
+The implemented Student Management routes are role-specific:
+
+```text
+Platform Admin: /admin/students → /admin/students/new or /admin/students/:id
+Operator:       /operator/students → /operator/students/:id (owned Students only)
+```
+
 ```text
 [Student List]
       │ select Student
@@ -53,7 +60,7 @@ Browser Back:
 [Transaction Entry] --> [Student Detail] --> [Student List]
 ```
 
-Create Student is a focused form presented from Student List, not an additional primary screen. Search is part of Student List. This preserves the three-screen inventory in FR-3.4.2.
+The three-screen flow below remains the target financial workflow. In the delivered Student Management module, Platform Admin creation uses a dedicated page, edit is presented from admin detail, list filters submit as server queries, and Operator pages are read-only. Student lists and details show explicit financial placeholders until the Transaction and Balance milestones are delivered.
 
 ## 4. Authentication and Access
 
@@ -84,29 +91,30 @@ References: FR-3.1.1, FR-3.1.2, FR-3.4.2
   --> {Load outcome}
         ├── Success, no Students
         │     --> [Empty state: "No students yet"]
-        │     --> <Tap Add Student>
-        │     --> Create Student flow (Section 5)
+        │     --> {Role}
+        │           ├── Platform Admin --> <Open Add Student> --> Create Student flow (Section 5.1)
+        │           └── Operator       --> Remain in read-only empty state
         │
         └── System failure
               --> Student List failure flow (Section 13.1)
 ```
 
-The first-time state for an authenticated Operator presents one primary next action: Add Student. Authentication and account provisioning occur before this application state.
+The Platform Admin can add the first Student after at least one active Operator exists. An Operator cannot create a Student and receives a read-only empty state when no Students are currently assigned. Authentication and account provisioning occur before this application state.
 
-## 5. Create Student
+### 5.1 Create Student
 
 References: FR-3.1.1, FR-3.1.2
 
 ```text
-[Student List]
-  --> <Tap Add Student>                         Tap 1
-  --> [Create Student form]
-  --> <Enter name>
-  --> <Tap Confirm>                             Tap 2
+[Admin Student List]
+  --> <Open Add Student>
+  --> [Create Student page]
+  --> <Enter name, select active Operator and status, optionally enter notes>
+  --> <Tap Confirm>
   --> {Client validation}
         ├── Invalid
         │     --> Show inline validation error
-        │     --> Preserve entered name
+        │     --> Browser validation preserves entered values
         │     --> Remain on form
         │
         └── Valid
@@ -114,16 +122,15 @@ References: FR-3.1.1, FR-3.1.2
               --> Submit once
               --> {Persistence outcome}
                     ├── Success
-                    │     --> Close form
-                    │     --> [Student Detail: new Student]
+                    │     --> [Admin Student Detail: new Student]
                     │
                     ├── Duplicate after normalization
                     │     --> Show duplicate-name error
-                    │     --> Remain on form
+                    │     --> Reload create form with default values
                     │
                     └── System failure
-                          --> Show failure with Retry
-                          --> Remain on form
+                          --> Show explicit error state with Retry
+                          --> Do not imply that a Student was created
 ```
 
 Validation:
@@ -133,6 +140,27 @@ Validation:
 - Reject an empty normalized name.
 - Reject a normalized name longer than 100 characters.
 - Reject a case-insensitive duplicate normalized name.
+- Require an existing active, non-deleted Operator.
+- Accept only `ACTIVE`, `INACTIVE`, or `ARCHIVED` status.
+- Trim optional notes and reject notes longer than 500 characters.
+
+Browser-native validation preserves input in place. The current Server Action redirects after a server-side Student validation error, so submitted create values are not restored; an unexpected failure enters the route error state. This is a documented interaction-state limitation rather than a persistence or validation guarantee.
+
+### 5.2 Edit and Transfer Student
+
+References: FR-3.1.5
+
+```text
+[Admin Student Detail]
+  --> <Open Edit>
+  --> <Change name, notes, status, or active Operator>
+  --> <Tap Save>
+  --> Server applies creation validation
+        ├── Invalid --> Show explicit validation outcome; persist nothing
+        └── Valid   --> Update Student --> [Admin Student Detail]
+```
+
+Changing the Operator immediately changes current ownership. The previous Operator loses list/detail visibility, the new Operator gains it, and Transaction history remains unchanged. Operators have no edit or transfer action.
 
 ## 6. Search Student
 
@@ -140,10 +168,10 @@ References: FR-3.1.2, FR-3.1.3, FR-3.1.4
 
 ```text
 [Student List]
-  --> <Tap Search>                              Tap 1
-  --> Keyboard opens
-  --> <Type partial name>
-  --> Results update after each input change
+  --> <Enter partial Student or Operator name>
+  --> <Optionally select status>
+  --> <Tap Apply>
+  --> Server applies visibility scope, search, filter, and pagination
   --> {Matching result exists?}
         ├── Yes
         │     --> <Tap Student>                 Tap 2
@@ -154,7 +182,7 @@ References: FR-3.1.2, FR-3.1.3, FR-3.1.4
               --> <Change or clear search>
 ```
 
-Search is partial and case-insensitive. It uses the same normalized StudentName representation as duplicate detection. Clearing the query restores the alphabetical Student list.
+Search is partial and case-insensitive. Platform Admin results may match Student or assigned Operator name; Operator results remain ownership-scoped. Status filtering is independent of the text query. Clearing filters restores the newest-first visible list, paginated at ten Students per page.
 
 ## 7. View Student Detail
 
@@ -164,19 +192,18 @@ References: FR-3.1.4, FR-3.2.3, FR-3.3.1
 [Student List]
   --> <Tap Student>
   --> [Student Detail: loading]
-  --> Load Student + complete-history Balance + first history page
+  --> Load visible Student management data
   --> {Load outcome}
         ├── Success
-        │     --> Show Student name
-        │     --> Show correct full-history Balance
-        │     --> Show newest Transactions or empty history state
-        │     --> Enable Deposit and Withdrawal actions
+        │     --> Show name, Operator, status, dates, and notes
+        │     --> Show static financial-summary placeholder
+        │     --> Platform Admin may edit; Operator remains read-only
         │
         └── System failure
               --> Student Detail failure flow (Section 13.2)
 ```
 
-The Balance area does not display a value derived from a partial history page. If the correct Balance is not available, it remains in a loading or error state rather than showing a provisional amount.
+This is the delivered non-financial detail state. Milestone 5 replaces the placeholder with the authoritative complete-history Balance and progressive Transaction history; no subtotal of visible rows may be shown as Balance.
 
 ## 8. Record Deposit
 
@@ -432,6 +459,7 @@ References: FR-3.4.2
 |------|-------------------------|
 | First-time use | FR-3.1.1, FR-3.1.2, FR-3.4.2 |
 | Create Student | FR-3.1.1, FR-3.1.2 |
+| Edit and transfer Student | FR-3.1.5 |
 | Search Student | FR-3.1.2, FR-3.1.3, FR-3.1.4 |
 | View Student Detail | FR-3.1.4, FR-3.2.3, FR-3.3.1 |
 | Record Deposit | FR-3.1.4, FR-3.2.1, FR-3.3.1 |
