@@ -1,6 +1,6 @@
 # Amanah Cash
 
-Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. It provides a deliberately small workflow for creating Students, recording Deposits and Withdrawals, and reproducing every Balance from immutable Transaction history.
+Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform currently provides Google authentication, centralized role and ownership authorization, Operator account management, and Student management. Deposits, Withdrawals, and derived Balance are the next financial delivery phase.
 
 ## Problem Statement
 
@@ -27,27 +27,34 @@ See [Product Principles](docs/00-product-principles.md).
 PWA Presentation → Server Application → Domain → Persistence → Relational Database
 ```
 
-The MVP uses one client, one server deployable, and one database. Student is the aggregate root. Transactions are append-only. Balance is calculated from complete history and never persisted independently.
+The MVP uses one Next.js application, one server boundary, and one relational database. Student is the aggregate root. Every Student belongs to exactly one active Operator, and current ownership scopes Operator access. Future Transactions are append-only; Balance will be calculated from complete history and never persisted independently.
 
 ## MVP Scope
 
 Included:
 
-- Create, list, search, and view Students.
-- Record whole-IDR Deposits and Withdrawals.
-- Prevent negative Balance.
-- Load newest-first Transaction history progressively.
+- Google-only authentication for active, pre-provisioned accounts.
+- Centralized Platform Admin, Operator, and Student-ownership authorization.
+- Platform Admin management of Operator accounts and Student assignments.
+- Create, edit, list, search, filter, paginate, and view Students.
+- Operator visibility limited to currently assigned Students.
 - Responsive PWA operation and explicit interaction states.
+
+Planned financial scope:
+
+- Record whole-IDR Deposits and Withdrawals.
+- Prevent negative Balance through atomic validation.
+- Derive Balance from complete immutable Transaction history.
+- Load newest-first Transaction history progressively.
 
 Excluded:
 
-- Authentication, multi-user behavior, roles, and actor attribution from current MVP behavior and its foundation.
 - Offline synchronization.
-- Transaction or Student editing and deletion.
-- Reports, exports, notes, categories, notifications, and bulk operations.
+- Transaction editing/deletion and Student deletion.
+- Reports, exports, Transaction notes/categories, notifications, and bulk operations.
 - Multiple currencies and distributed infrastructure.
 
-Auth.js with Database Sessions remains the approved long-term authentication solution, but its installation, configuration, and schema are deferred to a dedicated Authentication Sprint. Sprint 1 is limited to Local Development project bootstrap with SQLite; production deployment decisions are deferred to the Deployment phase.
+Auth.js with Google and Database Sessions is implemented. Platform Admin provisions Operator identities; Amanah Cash owns roles, activation, and authorization. Platform Admin has no routine financial-data access. SQLite remains the current approved persistence target, while production deployment decisions remain deferred to the Deployment phase.
 
 ## Documentation Map
 
@@ -68,18 +75,22 @@ Auth.js with Database Sessions remains the approved long-term authentication sol
 | [Authentication and Authorization TDS](docs/29-technical-design-authentication-authorization.md) | Implementation contract for identity, sessions, roles, and ownership |
 | [Authentication Persistence Design](docs/30-authentication-persistence-design.md) | Prisma identity schema, ownership constraints, and migration decisions |
 | [Authentication Implementation](docs/31-authentication-implementation.md) | Google admission, database sessions, routes, helpers, and environment contract |
+| [Authorization Implementation](docs/32-authorization-implementation.md) | Central role and ownership enforcement |
+| [Application Shell Architecture](docs/33-application-shell-architecture.md) | Authenticated shell and role navigation |
+| [Operator Management Implementation](docs/34-operator-management-implementation.md) | Operator account lifecycle and audit behavior |
+| [Student Management Implementation](docs/35-student-management-implementation.md) | Student lifecycle, assignment, and visibility |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 
 ## Development Roadmap
 
-The roadmap covers Project Foundation, Student Management, Deposit, Balance and Withdrawal, progressive history, interaction states, safe retry, verification, and production readiness. Each milestone defines scope, dependencies, deliverables, and completion criteria.
+Project Foundation and Student Management are complete, alongside the dedicated authentication, authorization, App Shell, and Operator Management track. The next recommended sprint begins Transaction Foundation and Deposit, followed by Balance and atomic Withdrawal, progressive history, interaction states, safe retry, verification, and production readiness.
 
 ## Contributing
 
 Contributions must trace to approved requirements, preserve append-only history and derived Balance, respect architecture layers, include relevant verification, and synchronize documentation. Follow the [Engineering Rules](docs/10-engineering-rules.md) and [Development Workflow](docs/11-development-workflow.md).
 
-Framework-specific setup commands will be documented only after implementation technology is approved.
+Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run prisma:validate`, and `npm run build` before handing off an implementation sprint. Every sprint must also synchronize `AI_CONTEXT.md` and relevant implementation documentation.
 
 ## License
 

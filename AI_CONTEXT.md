@@ -16,6 +16,7 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. Plat
 - Authenticated App Shell with role-aware navigation, protected route groups, loading, empty, forbidden, not-found, and error states.
 - Operator Management: list, search, pagination, create, detail, edit, activation/deactivation, assignment-safe logical deletion, last-login tracking, audit summaries, protected APIs, documentation, and tests.
 - Student Management: admin list/create/detail/edit, Operator assignment and reassignment, active/inactive/archived status, notes, search, pagination, Operator-scoped list/detail, protected APIs, documentation, database constraints, and tests.
+- Canonical handoff, changelog, README, and delivery roadmap synchronized with the implemented platform and the next Financial Transactions sprint.
 
 ## Current Implementation Status
 
@@ -76,6 +77,7 @@ SQLite relational database and invariant triggers
 - Operator list queries are scoped by the authorized Operator ID. Operator detail additionally uses the centralized masked ownership policy.
 - Current Balance and financial summaries are explicit static placeholders. No Transaction or balance query has been introduced.
 - Financial Transactions remain append-only. Balance will be derived from complete persisted history and never stored as an authoritative column or cache.
+- `AI_CONTEXT.md` is the canonical engineering handoff. Every implementation sprint must also assess and synchronize `CHANGELOG.md`, README, and roadmap status before completion.
 
 ## Data Model Status
 

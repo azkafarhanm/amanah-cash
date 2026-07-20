@@ -1,6 +1,6 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. The current **Sprint 1 — Project Bootstrap** prepares the approved Next.js development foundation only; it does not redefine Roadmap Milestone 1 or begin a later product or Landing Page milestone.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation and Student Management are complete. The separate authentication, authorization, App Shell, and Operator Management track is also complete. The next recommended sprint is Transaction Foundation and Deposit.
 
 ## 2. Delivery Rules
 
@@ -20,26 +20,32 @@ Roadmap milestones and delivery sprints are distinct planning units. The current
 - Keep Balance derived from complete Transaction history.
 - Test financial integrity before adding presentation refinements.
 - Treat mobile as the primary verification viewport.
-- Do not add offline behavior or other excluded scope during financial MVP milestones. Authentication and authorization proceed only through separately approved dedicated sprints.
+- Do not add offline behavior or other excluded scope during financial MVP milestones. Reuse the implemented authentication and centralized authorization layers.
 - A milestone is complete only when its listed criteria are verified.
+- Every implementation sprint must synchronize `AI_CONTEXT.md`, `CHANGELOG.md`, and any affected README or roadmap status.
 
-### 2.1 Current Sprint 1 Execution Boundary
+### 2.1 Current Delivery Status
 
-The current **Sprint 1 — Project Bootstrap** is limited to Local Development project bootstrap using the approved local SQLite database. It must not install Auth.js; create an authentication Route Handler; create `User`, `Account`, `Session`, `VerificationToken`, or any authentication schema; deploy to Vercel; configure production hosting; introduce an external database; or make a production deployment decision. These constraints govern the current sprint without changing the completed scope or acceptance criteria of Roadmap Milestone 1.
+- Milestone 1 — Project Foundation: complete.
+- Milestone 2 — Student Management: complete under the approved multi-user ownership architecture.
+- Dedicated authentication and authorization track: complete through provisioning, login, session enforcement, role/ownership enforcement, assignment, and transfer behavior.
+- Application Shell and Operator Management: complete.
+- Milestones 3–9: outstanding.
+- Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
 ## 3. Milestone Overview
 
-| Milestone | Name | Primary Requirements |
-|-----------|------|----------------------|
-| 1 | Project Foundation | FR-3.4.1–3.4.3 |
-| 2 | Student Management | FR-3.1.1–3.1.3 |
-| 3 | Transaction Foundation and Deposit | FR-3.2.1 |
-| 4 | Balance and Atomic Withdrawal | FR-3.2.2, FR-3.3.1 |
-| 5 | Student Detail and Progressive History | FR-3.1.4, FR-3.2.3 |
-| 6 | Validation and Interaction States | FR-3.1.1, FR-3.2.1–3.2.2 |
-| 7 | Failure Handling and Safe Retry | FR-3.2.1–3.2.2; NFR-5.1–5.2 |
-| 8 | Verification and Quality | All FR and NFR |
-| 9 | Production Readiness | FR-3.4.1–3.4.3; NFR Sections 5–8 |
+| Milestone | Name | Status | Primary Requirements |
+|-----------|------|--------|----------------------|
+| 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
+| 2 | Student Management | Complete | FR-3.1.1–3.1.3 |
+| 3 | Transaction Foundation and Deposit | Next | FR-3.2.1 |
+| 4 | Balance and Atomic Withdrawal | Outstanding | FR-3.2.2, FR-3.3.1 |
+| 5 | Student Detail and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3 |
+| 6 | Validation and Interaction States | Outstanding for financial flows | FR-3.1.1, FR-3.2.1–3.2.2 |
+| 7 | Failure Handling and Safe Retry | Outstanding | FR-3.2.1–3.2.2; NFR-5.1–5.2 |
+| 8 | Verification and Quality | Outstanding | All FR and NFR |
+| 9 | Production Readiness | Outstanding | FR-3.4.1–3.4.3; NFR Sections 5–8 |
 
 ## 4. Milestone 1 — Project Foundation
 
@@ -71,7 +77,7 @@ Establish the smallest runnable client, server, and relational database foundati
 
 - Client communicates with the single server boundary.
 - Server communicates with the single relational database.
-- Schema creates only `students` and `transactions` product tables.
+- Schema contains the approved Student, Transaction, identity/session, and Operator-audit tables without Balance persistence.
 - No Balance persistence or excluded infrastructure exists.
 - PWA metadata is valid and the application shell launches in supported browser context.
 
@@ -79,14 +85,17 @@ Establish the smallest runnable client, server, and relational database foundati
 
 ### Goal
 
-Enable the operator to create, list, and search Students.
+Enable Platform Admin to manage Students and assignments while Operators view only their assigned Students.
 
 ### Scope
 
 - StudentName normalization and validation.
 - Case-insensitive uniqueness.
-- Create Student overlay and outcomes.
-- Alphabetical Student list.
+- Platform Admin create and edit Student outcomes.
+- Required active-Operator assignment and reassignment.
+- Active, inactive, and archived Student status plus optional notes.
+- Operator-owned Student list and detail access.
+- Server-side paginated Student list.
 - Partial case-insensitive search.
 - First-time, empty-list, empty-search, loading, and failure states.
 
@@ -94,8 +103,8 @@ Enable the operator to create, list, and search Students.
 
 - Create Student use case and persistence.
 - Student list and search reads.
-- Student List UI and Create Student overlay.
-- Tests for valid, empty, too-long, normalized, and duplicate names.
+- Admin and Operator Student list/detail UI plus Admin create/edit UI.
+- Tests for validation, active Operator assignment, ownership transfer, visibility, search, and pagination.
 
 ### Dependencies
 
@@ -103,10 +112,10 @@ Enable the operator to create, list, and search Students.
 
 ### Completion Criteria
 
-- FR-3.1.1, FR-3.1.2, and FR-3.1.3 acceptance criteria pass.
+- Student Management tests and authorization isolation tests pass.
 - Concurrent duplicate creation is prevented by the database unique constraint.
 - Search and uniqueness use the same normalized representation.
-- No Student edit or delete operation exists.
+- Student edit and ownership reassignment exist; Student deletion and financial workflows do not.
 
 ## 6. Milestone 3 — Transaction Foundation and Deposit
 
@@ -393,7 +402,7 @@ Any such work requires a separately approved change to product requirements and 
 
 ## 15. Dedicated Authentication and Authorization Track
 
-This approved track is separate from the numbered financial MVP milestones:
+This approved track is separate from the numbered financial MVP milestones and is now implemented:
 
 1. Review the physical identity, Google linkage, database-session, and Student-ownership schema.
 2. Implement Platform Admin provisioning and deactivation.
@@ -403,4 +412,4 @@ This approved track is separate from the numbered financial MVP milestones:
 6. Implement assignment and transfer operations.
 7. Verify security, privacy, denial paths, and accessibility.
 
-Every implementation step requires an approved sprint contract. No step may introduce a placeholder route, unscoped financial query, or administrative financial bypass.
+All seven steps are complete. Future financial work must reuse these boundaries. No step may introduce an unscoped financial query or administrative financial bypass.
