@@ -79,7 +79,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "user_id", type: "TEXT", notnull: 1, pk: 0 },
     { name: "expires", type: "TEXT", notnull: 1, pk: 0 }
   ]);
-  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id"]);
+  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at"]);
   assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "created_at"]);
   assert.deepEqual(columns.operator_audit.map(({ name }) => name), ["id", "operator_id", "actor_id", "action", "summary", "created_at"]);
 
@@ -251,6 +251,7 @@ test("approved indexes have the required uniqueness, collation, columns, and dir
     "ix_operator_audit_operator",
     "ix_sessions_expires",
     "ix_sessions_user",
+    "ix_students_management_list",
     "ix_students_operator",
     "ix_transactions_student_history",
     "ix_users_operator_list",

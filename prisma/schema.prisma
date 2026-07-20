@@ -12,6 +12,12 @@ enum Role {
   OPERATOR
 }
 
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -75,7 +81,10 @@ model Session {
 model Student {
   id           String        @id
   name         String
+  notes        String?
+  status       StudentStatus @default(ACTIVE)
   createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
   operatorId   String        @map("operator_id")
   operator     User          @relation("OperatorStudents", fields: [operatorId], references: [id], onDelete: Restrict, onUpdate: NoAction)
   transactions Transaction[]

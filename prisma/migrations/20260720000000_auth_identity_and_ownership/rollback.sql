@@ -3,6 +3,9 @@ BEGIN IMMEDIATE;
 
 DROP TRIGGER IF EXISTS trg_users_preserve_active_operator_ownership;
 DROP TRIGGER IF EXISTS trg_users_preserve_operator_ownership_on_delete;
+DROP TRIGGER IF EXISTS trg_students_updated_at;
+DROP TRIGGER IF EXISTS trg_students_status_update;
+DROP TRIGGER IF EXISTS trg_students_status_insert;
 DROP TRIGGER IF EXISTS trg_students_owner_update;
 DROP TRIGGER IF EXISTS trg_students_owner_insert;
 
@@ -32,7 +35,7 @@ DROP TABLE accounts;
 DROP TABLE users;
 
 DELETE FROM schema_migrations
-WHERE version IN ('002_auth_identity_and_ownership.sql', '003_operator_management.sql');
+WHERE version IN ('002_auth_identity_and_ownership.sql', '003_operator_management.sql', '004_student_management.sql');
 
 COMMIT;
 PRAGMA foreign_keys = ON;

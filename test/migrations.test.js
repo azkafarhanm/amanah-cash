@@ -48,7 +48,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
   assert.deepEqual(appliedMigrations(first.connection), [
     { version: "001_initial_schema.sql" },
     { version: "002_auth_identity_and_ownership.sql" },
-    { version: "003_operator_management.sql" }
+    { version: "003_operator_management.sql" },
+    { version: "004_student_management.sql" }
   ]);
   first.close();
 
@@ -57,7 +58,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
   assert.deepEqual(appliedMigrations(second.connection), [
     { version: "001_initial_schema.sql" },
     { version: "002_auth_identity_and_ownership.sql" },
-    { version: "003_operator_management.sql" }
+    { version: "003_operator_management.sql" },
+    { version: "004_student_management.sql" }
   ]);
   second.close();
 });
@@ -138,6 +140,13 @@ test("Operator Management migration mirror matches the executable migration", ()
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260720010000_operator_management/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/003_operator_management.sql"), "utf8")
+  );
+});
+
+test("Student Management migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260720020000_student_management/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/004_student_management.sql"), "utf8")
   );
 });
 
