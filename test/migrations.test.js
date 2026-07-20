@@ -49,7 +49,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "001_initial_schema.sql" },
     { version: "002_auth_identity_and_ownership.sql" },
     { version: "003_operator_management.sql" },
-    { version: "004_student_management.sql" }
+    { version: "004_student_management.sql" },
+    { version: "005_transaction_engine.sql" }
   ]);
   first.close();
 
@@ -59,7 +60,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "001_initial_schema.sql" },
     { version: "002_auth_identity_and_ownership.sql" },
     { version: "003_operator_management.sql" },
-    { version: "004_student_management.sql" }
+    { version: "004_student_management.sql" },
+    { version: "005_transaction_engine.sql" }
   ]);
   second.close();
 });
@@ -150,10 +152,45 @@ test("Student Management migration mirror matches the executable migration", () 
   );
 });
 
+test("Transaction Engine migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260720030000_transaction_engine/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/005_transaction_engine.sql"), "utf8")
+  );
+});
+
+test("Transaction Engine migration refuses to invent provenance for legacy financial rows", () => {
+  const directory = makeTemporaryDirectory("transaction-provenance");
+  const databasePath = join(directory, "amanah-cash.sqlite");
+  const stagedMigrations = join(directory, "staged-migrations");
+  mkdirSync(stagedMigrations);
+  for (const filename of ["001_initial_schema.sql", "002_auth_identity_and_ownership.sql", "003_operator_management.sql", "004_student_management.sql"]) {
+    writeFileSync(join(stagedMigrations, filename), readFileSync(resolve(root, "migrations", filename), "utf8"));
+  }
+  const staged = openDatabase({ databasePath, migrationsPath: stagedMigrations });
+  staged.connection.prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator', 'Operator', 'operator@example.com', 'OPERATOR', 1)").run();
+  staged.connection.prepare("INSERT INTO students (id, name, operator_id) VALUES ('student-1', 'Alya', 'operator')").run();
+  staged.connection.prepare("INSERT INTO transactions (id, student_id, type, amount) VALUES ('legacy', 'student-1', 'deposit', 1000)").run();
+  staged.close();
+
+  assert.throws(() => openDatabase({ databasePath, migrationsPath: resolve(root, "migrations") }), /CHECK constraint failed/);
+  const connection = new DatabaseSync(databasePath);
+  try {
+    assert.deepEqual(appliedMigrations(connection).at(-1), { version: "004_student_management.sql" });
+    assert.deepEqual(connection.prepare("SELECT id, type, amount FROM transactions").all().map((row) => ({ ...row })), [{ id: "legacy", type: "deposit", amount: 1000 }]);
+  } finally {
+    connection.close();
+  }
+});
+
 test("identity migration rollback preserves financial rows", () => {
   const directory = makeTemporaryDirectory("identity-rollback");
   const databasePath = join(directory, "amanah-cash.sqlite");
-  const migrated = openDatabase({ databasePath, migrationsPath: resolve(root, "migrations") });
+  const identityMigrations = join(directory, "identity-migrations");
+  mkdirSync(identityMigrations);
+  writeFileSync(join(identityMigrations, "001_initial_schema.sql"), readFileSync(resolve(root, "migrations/001_initial_schema.sql"), "utf8"));
+  writeFileSync(join(identityMigrations, "002_auth_identity_and_ownership.sql"), readFileSync(resolve(root, "migrations/002_auth_identity_and_ownership.sql"), "utf8"));
+  const migrated = openDatabase({ databasePath, migrationsPath: identityMigrations });
   migrated.connection
     .prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator', 'Operator', 'operator@example.com', 'OPERATOR', 1)")
     .run();

@@ -1,15 +1,15 @@
 # Technical Design Specification — Transaction Foundation
 
-**Status:** Approved architecture contract; implementation not started
+**Status:** Approved architecture contract; implemented by the Transaction Engine sprint
 **Date:** 2026-07-20
 **Owners:** Solution Architecture, Security, and Engineering
 **Applies to:** Deposit, Withdrawal, Correction, Transaction edit/delete/restore, persisted Balance, financial audit, and Student ownership-transfer audit
 
 ## 1. Purpose, authority, and sprint boundary
 
-This specification makes [ADR-004](36-adr-transaction-balance-and-audit.md) implementation-ready without creating code or changing the database. It inherits the authentication, authorization, and privacy controls in [ADR-001](26-adr-authentication.md), [ADR-002](27-adr-authorization-and-roles.md), [ADR-003](28-adr-financial-data-privacy.md), and the [Authentication and Authorization TDS](29-technical-design-authentication-authorization.md).
+This specification made [ADR-004](36-adr-transaction-balance-and-audit.md) implementation-ready and remains the normative contract for the implementation documented in [Transaction Engine Implementation](38-transaction-engine-implementation.md). It inherits the authentication, authorization, and privacy controls in [ADR-001](26-adr-authentication.md), [ADR-002](27-adr-authorization-and-roles.md), [ADR-003](28-adr-financial-data-privacy.md), and the [Authentication and Authorization TDS](29-technical-design-authentication-authorization.md).
 
-Normative terms `MUST`, `MUST NOT`, `SHOULD`, and `MAY` define the next Transaction Engine contract. This sprint explicitly contains no implementation, migration, Prisma change, API, Server Action, or UI work.
+Normative terms `MUST`, `MUST NOT`, `SHOULD`, and `MAY` define the Transaction Engine contract. The original architecture sprint contained no implementation; the subsequent bounded implementation sprint added persistence and protected APIs without adding financial UI or future features.
 
 ## 2. Domain model
 

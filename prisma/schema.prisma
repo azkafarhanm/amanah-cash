@@ -18,20 +18,43 @@ enum StudentStatus {
   ARCHIVED
 }
 
+enum TransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  CORRECTION
+}
+
+enum CorrectionDirection {
+  INCREASE
+  DECREASE
+}
+
+enum FinancialAuditEventType {
+  CREATE
+  EDIT
+  DELETE
+  RESTORE
+  OWNERSHIP_TRANSFER
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique(map: "uq_users_email")
-  emailVerified DateTime? @map("email_verified")
-  image         String?
-  role          Role
-  isActive      Boolean   @default(false) @map("is_active")
-  createdAt     DateTime  @default(now()) @map("created_at")
-  lastLoginAt   DateTime? @map("last_login_at")
-  deletedAt     DateTime? @map("deleted_at")
-  accounts      Account[]
-  sessions      Session[]
-  students      Student[] @relation("OperatorStudents")
+  id                   String                @id @default(cuid())
+  name                 String
+  email                String                @unique(map: "uq_users_email")
+  emailVerified        DateTime?             @map("email_verified")
+  image                String?
+  role                 Role
+  isActive             Boolean               @default(false) @map("is_active")
+  createdAt            DateTime              @default(now()) @map("created_at")
+  lastLoginAt          DateTime?             @map("last_login_at")
+  deletedAt            DateTime?             @map("deleted_at")
+  accounts             Account[]
+  sessions             Session[]
+  students             Student[]             @relation("OperatorStudents")
+  createdTransactions  Transaction[]         @relation("TransactionCreator")
+  updatedTransactions  Transaction[]         @relation("TransactionUpdater")
+  deletedTransactions  Transaction[]         @relation("TransactionDeleter")
+  financialAuditEvents FinancialAuditEvent[] @relation("FinancialAuditActor")
 
   @@map("users")
 }
@@ -79,28 +102,76 @@ model Session {
 }
 
 model Student {
-  id           String        @id
-  name         String
-  notes        String?
-  status       StudentStatus @default(ACTIVE)
-  createdAt    DateTime      @default(now()) @map("created_at")
-  updatedAt    DateTime      @updatedAt @map("updated_at")
-  operatorId   String        @map("operator_id")
-  operator     User          @relation("OperatorStudents", fields: [operatorId], references: [id], onDelete: Restrict, onUpdate: NoAction)
-  transactions Transaction[]
+  id                   String                @id
+  name                 String
+  notes                String?
+  status               StudentStatus         @default(ACTIVE)
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+  operatorId           String                @map("operator_id")
+  operator             User                  @relation("OperatorStudents", fields: [operatorId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  transactions         Transaction[]
+  financialAuditEvents FinancialAuditEvent[]
+  balance              BigInt                @default(0)
+  financialVersion     Int                   @default(0) @map("financial_version")
 
   @@index([operatorId], map: "ix_students_operator")
   @@map("students")
 }
 
 model Transaction {
-  id        String   @id
-  studentId String   @map("student_id")
-  type      String
-  amount    BigInt
-  createdAt DateTime @default(now()) @map("created_at")
-  student   Student  @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  id                  String                @id
+  studentId           String                @map("student_id")
+  type                TransactionType
+  amount              BigInt
+  correctionDirection CorrectionDirection?  @map("correction_direction")
+  reason              String?
+  occurredAt          DateTime              @map("occurred_at")
+  createdAt           DateTime              @default(now()) @map("created_at")
+  createdBy           String                @map("created_by")
+  updatedAt           DateTime              @map("updated_at")
+  updatedBy           String                @map("updated_by")
+  revision            Int                   @default(1)
+  deletedAt           DateTime?             @map("deleted_at")
+  deletedBy           String?               @map("deleted_by")
+  student             Student               @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  creator             User                  @relation("TransactionCreator", fields: [createdBy], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  updater             User                  @relation("TransactionUpdater", fields: [updatedBy], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  deleter             User?                 @relation("TransactionDeleter", fields: [deletedBy], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  auditEvents         FinancialAuditEvent[]
 
-  @@index([studentId, createdAt(sort: Desc), id(sort: Desc)], map: "ix_transactions_student_history")
+  @@index([studentId, occurredAt(sort: Desc), id(sort: Desc)], map: "ix_transactions_student_history")
+  @@index([studentId, deletedAt, occurredAt(sort: Desc), id(sort: Desc)], map: "ix_transactions_student_active_history")
+  @@index([studentId, type, occurredAt(sort: Desc)], map: "ix_transactions_student_type_date")
   @@map("transactions")
+}
+
+model FinancialAuditEvent {
+  id                  String                  @id
+  commandId           String                  @unique(map: "uq_financial_audit_command") @map("command_id")
+  commandPayloadHash  String                  @map("command_payload_hash")
+  eventType           FinancialAuditEventType @map("event_type")
+  actorId             String                  @map("actor_id")
+  actorRole           Role                    @map("actor_role")
+  studentId           String                  @map("student_id")
+  transactionId       String?                 @map("transaction_id")
+  transactionRevision Int?                    @map("transaction_revision")
+  reason              String?
+  beforeSnapshot      String?                 @map("before_snapshot")
+  afterSnapshot       String?                 @map("after_snapshot")
+  balanceBefore       BigInt?                 @map("balance_before")
+  balanceAfter        BigInt?                 @map("balance_after")
+  balanceDelta        BigInt?                 @map("balance_delta")
+  oldOperatorId       String?                 @map("old_operator_id")
+  newOperatorId       String?                 @map("new_operator_id")
+  occurredAt          DateTime                @default(now()) @map("occurred_at")
+  schemaVersion       Int                     @default(1) @map("schema_version")
+  correlationId       String                  @map("correlation_id")
+  actor               User                    @relation("FinancialAuditActor", fields: [actorId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  student             Student                 @relation(fields: [studentId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+  transaction         Transaction?            @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: NoAction)
+
+  @@index([studentId, occurredAt(sort: Desc), id(sort: Desc)], map: "ix_financial_audit_student")
+  @@index([transactionId, transactionRevision], map: "ix_financial_audit_transaction_revision")
+  @@map("financial_audit_events")
 }

@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, and the separate authentication, authorization, App Shell, and Operator Management track are complete. Transaction Foundation architecture is finalized in ADR-004 and the Transaction Foundation TDS. The next recommended sprint is Transaction Engine implementation.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, and the Transaction Engine are complete. The next recommended sprint is Reconciliation and Financial Reads.
 
 ## 2. Delivery Rules
 
@@ -30,8 +30,8 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Milestone 2 — Student Management: complete under the approved multi-user ownership architecture.
 - Dedicated authentication and authorization track: complete through provisioning, login, session enforcement, role/ownership enforcement, assignment, and transfer behavior.
 - Application Shell and Operator Management: complete.
-- Transaction Foundation architecture: complete; no implementation, migration, Prisma, API, or UI change was made.
-- Milestones 3–9: outstanding.
+- Transaction Engine: complete at domain, persistence, protected API, audit, rollback, and test levels; financial UI remains outside this milestone.
+- Milestones 4–9: outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
 ## 3. Milestone Overview
@@ -40,7 +40,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 |-----------|------|--------|----------------------|
 | 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
 | 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
-| 3 | Transaction Engine | Next | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
+| 3 | Transaction Engine | Complete | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
 | 4 | Reconciliation and Financial Reads | Outstanding | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
 | 5 | Financial Presentation and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
 | 6 | Validation and Interaction States | Outstanding for financial flows | FR-3.2.1–FR-3.2.7 |

@@ -32,8 +32,8 @@ test("schema creates only approved financial, authentication, and Operator persi
     .all()
     .map(({ name }) => name);
 
-  assert.deepEqual(tables, ["accounts", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
-  assert.equal(database.connection.prepare("PRAGMA table_info(students)").all().some(({ name }) => name === "balance"), false);
+  assert.deepEqual(tables, ["accounts", "financial_audit_events", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
+  assert.equal(database.connection.prepare("PRAGMA table_info(students)").all().some(({ name }) => name === "balance"), true);
   assert.equal(database.connection.prepare("PRAGMA table_info(transactions)").all().some(({ name }) => name === "balance"), false);
 });
 

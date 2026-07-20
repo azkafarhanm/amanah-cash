@@ -41,10 +41,13 @@ function insertStudent(id, name, operatorId = "operator-1") {
     .run(id, name, operatorId);
 }
 
-function insertTransaction(id, studentId, type, amount) {
+function insertTransaction(id, studentId, type, amount, correctionDirection = null, reason = null) {
+  const owner = database.connection.prepare("SELECT operator_id FROM students WHERE id = ?").get(studentId)?.operator_id ?? "operator-1";
   return database.connection
-    .prepare("INSERT INTO transactions (id, student_id, type, amount) VALUES (?, ?, ?, ?)")
-    .run(id, studentId, type, amount);
+    .prepare(`INSERT INTO transactions
+      (id, student_id, type, amount, correction_direction, reason, occurred_at, created_by, updated_at, updated_by)
+      VALUES (?, ?, ?, ?, ?, ?, '2026-07-20T08:00:00.000Z', ?, '2026-07-20T08:00:00.000Z', ?)`)
+    .run(id, studentId, type, amount, correctionDirection, reason, owner, owner);
 }
 
 test("schema contains only the approved strict persistence tables and columns", () => {
@@ -53,7 +56,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     .all()
     .map(({ name }) => name);
 
-  assert.deepEqual(tables, ["accounts", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
+  assert.deepEqual(tables, ["accounts", "financial_audit_events", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
 
   const columns = Object.fromEntries(
     tables.map((table) => [table, tableInfo(table).map(({ name, type, notnull, pk }) => ({ name, type, notnull, pk }))])
@@ -79,8 +82,9 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "user_id", type: "TEXT", notnull: 1, pk: 0 },
     { name: "expires", type: "TEXT", notnull: 1, pk: 0 }
   ]);
-  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at"]);
-  assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "created_at"]);
+  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at", "balance", "financial_version"]);
+  assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "correction_direction", "reason", "occurred_at", "created_at", "created_by", "updated_at", "updated_by", "revision", "deleted_at", "deleted_by"]);
+  assert.deepEqual(columns.financial_audit_events.map(({ name }) => name), ["id", "command_id", "command_payload_hash", "event_type", "actor_id", "actor_role", "student_id", "transaction_id", "transaction_revision", "reason", "before_snapshot", "after_snapshot", "balance_before", "balance_after", "balance_delta", "old_operator_id", "new_operator_id", "occurred_at", "schema_version", "correlation_id"]);
   assert.deepEqual(columns.operator_audit.map(({ name }) => name), ["id", "operator_id", "actor_id", "action", "summary", "created_at"]);
 
   const strictness = database.connection
@@ -91,6 +95,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     .sort(([left], [right]) => left.localeCompare(right));
   assert.deepEqual(strictness, [
     ["accounts", 1],
+    ["financial_audit_events", 1],
     ["operator_audit", 1],
     ["schema_migrations", 1],
     ["sessions", 1],
@@ -154,39 +159,29 @@ test("primary keys are required and reject duplicate identities", () => {
   assert.throws(() => insertStudent("student-1", "Bima"), /UNIQUE constraint failed: students\.id/);
   assert.throws(() => insertStudent(null, "Citra"), /NOT NULL constraint failed: students\.id/);
 
-  insertTransaction("transaction-1", "student-1", "deposit", 1000);
+  insertTransaction("transaction-1", "student-1", "DEPOSIT", 1000);
   assert.throws(
-    () => insertTransaction("transaction-1", "student-1", "withdrawal", 500),
+    () => insertTransaction("transaction-1", "student-1", "WITHDRAWAL", 500),
     /UNIQUE constraint failed: transactions\.id/
   );
   assert.throws(
-    () => insertTransaction(null, "student-1", "deposit", 1000),
+    () => insertTransaction(null, "student-1", "DEPOSIT", 1000),
     /NOT NULL constraint failed: transactions\.id/
   );
 });
 
 test("foreign key requires an existing student and restricts referenced deletion", () => {
   assert.equal(database.connection.prepare("PRAGMA foreign_keys").get().foreign_keys, 1);
-  assert.deepEqual(plainRows(database.connection.prepare("PRAGMA foreign_key_list(transactions)").all()), [
-    {
-      id: 0,
-      seq: 0,
-      table: "students",
-      from: "student_id",
-      to: "id",
-      on_update: "NO ACTION",
-      on_delete: "RESTRICT",
-      match: "NONE"
-    }
-  ]);
+  const transactionForeignKeys = plainRows(database.connection.prepare("PRAGMA foreign_key_list(transactions)").all());
+  assert.ok(transactionForeignKeys.some(({ table, from, to, on_delete }) => table === "students" && from === "student_id" && to === "id" && on_delete === "RESTRICT"));
 
   assert.throws(
-    () => insertTransaction("orphan", "missing-student", "deposit", 1000),
+    () => insertTransaction("orphan", "missing-student", "DEPOSIT", 1000),
     /FOREIGN KEY constraint failed/
   );
 
   insertStudent("student-1", "Alya");
-  insertTransaction("transaction-1", "student-1", "deposit", 1000);
+  insertTransaction("transaction-1", "student-1", "DEPOSIT", 1000);
   assert.throws(
     () => database.connection.prepare("DELETE FROM students WHERE id = ?").run("student-1"),
     /FOREIGN KEY constraint failed/
@@ -214,31 +209,49 @@ test("student names are unique case-insensitively", () => {
 
 test("transaction type accepts only approved terminology", () => {
   insertStudent("student-1", "Alya");
-  insertTransaction("deposit", "student-1", "deposit", 1000);
-  insertTransaction("withdrawal", "student-1", "withdrawal", 500);
+  insertTransaction("deposit", "student-1", "DEPOSIT", 1000);
+  insertTransaction("withdrawal", "student-1", "WITHDRAWAL", 500);
+  insertTransaction("correction", "student-1", "CORRECTION", 25, "INCREASE", "Rekonsiliasi");
 
-  for (const [index, type] of ["Deposit", "transfer", "", null].entries()) {
+  for (const [index, type] of ["deposit", "transfer", "", null].entries()) {
     assert.throws(() => insertTransaction(`invalid-type-${index}`, "student-1", type, 1000));
   }
 
   assert.deepEqual(
     plainRows(database.connection.prepare("SELECT type FROM transactions ORDER BY id").all()),
-    [{ type: "deposit" }, { type: "withdrawal" }]
+    [{ type: "CORRECTION" }, { type: "DEPOSIT" }, { type: "WITHDRAWAL" }]
   );
 });
 
 test("transaction amount accepts positive whole Rupiah and rejects invalid storage", () => {
   insertStudent("student-1", "Alya");
-  insertTransaction("valid", "student-1", "deposit", 1);
+  insertTransaction("valid", "student-1", "DEPOSIT", 1);
 
   const invalidAmounts = [0, -1, null, 1.5, "not-a-number", 9223372036854775808n];
   for (const [index, amount] of invalidAmounts.entries()) {
-    assert.throws(() => insertTransaction(`invalid-amount-${index}`, "student-1", "deposit", amount));
+    assert.throws(() => insertTransaction(`invalid-amount-${index}`, "student-1", "DEPOSIT", amount));
   }
 
   assert.deepEqual(plainRows(database.connection.prepare("SELECT id, amount FROM transactions").all()), [
     { id: "valid", amount: 1 }
   ]);
+});
+
+test("financial constraints enforce Balance, Correction shape, soft deletion, and immutable audit", () => {
+  insertStudent("student-1", "Alya");
+  assert.throws(() => database.connection.prepare("UPDATE students SET balance = -1 WHERE id = 'student-1'").run(), /CHECK constraint failed/);
+  assert.throws(() => insertTransaction("bad-deposit", "student-1", "DEPOSIT", 100, "INCREASE", null), /CHECK constraint failed/);
+  assert.throws(() => insertTransaction("bad-correction", "student-1", "CORRECTION", 100, "INCREASE", null), /CHECK constraint failed/);
+
+  insertTransaction("transaction-1", "student-1", "DEPOSIT", 100);
+  assert.throws(() => database.connection.prepare("DELETE FROM transactions WHERE id = 'transaction-1'").run(), /cannot be hard deleted/);
+  database.connection.prepare(`INSERT INTO financial_audit_events
+    (id, command_id, command_payload_hash, event_type, actor_id, actor_role, student_id, transaction_id,
+     transaction_revision, after_snapshot, balance_before, balance_after, balance_delta, correlation_id)
+    VALUES ('audit-1', 'command-1', ?, 'CREATE', 'operator-1', 'OPERATOR', 'student-1', 'transaction-1',
+      1, '{}', 0, 100, 100, 'correlation-1')`).run("a".repeat(64));
+  assert.throws(() => database.connection.prepare("UPDATE financial_audit_events SET correlation_id = 'changed' WHERE id = 'audit-1'").run(), /immutable/);
+  assert.throws(() => database.connection.prepare("DELETE FROM financial_audit_events WHERE id = 'audit-1'").run(), /cannot be deleted/);
 });
 
 test("approved indexes have the required uniqueness, collation, columns, and direction", () => {
@@ -248,13 +261,18 @@ test("approved indexes have the required uniqueness, collation, columns, and dir
     .map(({ name }) => name);
   assert.deepEqual(namedIndexes, [
     "ix_accounts_user",
+    "ix_financial_audit_student",
+    "ix_financial_audit_transaction_revision",
     "ix_operator_audit_operator",
     "ix_sessions_expires",
     "ix_sessions_user",
     "ix_students_management_list",
     "ix_students_operator",
+    "ix_transactions_student_active_history",
     "ix_transactions_student_history",
+    "ix_transactions_student_type_date",
     "ix_users_operator_list",
+    "uq_financial_audit_command",
     "uq_students_name_ci",
     "uq_users_email"
   ]);
@@ -280,7 +298,7 @@ test("approved indexes have the required uniqueness, collation, columns, and dir
       .map(({ name, desc }) => ({ name, desc })),
     [
       { name: "student_id", desc: 0 },
-      { name: "created_at", desc: 1 },
+      { name: "occurred_at", desc: 1 },
       { name: "id", desc: 1 }
     ]
   );

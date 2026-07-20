@@ -1,7 +1,7 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.6
-**Status:** Approved target design; not implemented
+**Version:** 1.7
+**Status:** Implemented Transaction Engine persistence design
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
 
@@ -9,7 +9,7 @@
 
 This document defines the logical relational target for the Transaction Foundation. It is constrained by the Functional Requirements, Non-Functional Requirements, Business Rules, Domain Model, ADR-003, ADR-004, and the Transaction Foundation TDS.
 
-The current database still contains the pre-Transaction-Engine `students` and `transactions` schema. This architecture sprint creates no migration, Prisma change, generated client, trigger, table, column, or data backfill. Physical DDL and migration sequencing belong to the next implementation sprint and must preserve the logical contract below.
+The database implements this design through migration `005_transaction_engine.sql` and its Prisma mirror. The physical schema, constraints, indexes, immutable-audit triggers, and fail-closed legacy-row migration policy are documented in [Transaction Engine Implementation](38-transaction-engine-implementation.md).
 
 Authentication, session, Operator management, and current Student ownership persistence remain as documented in [Authentication Persistence Design](30-authentication-persistence-design.md).
 
@@ -218,11 +218,9 @@ Student deletion remains unsupported and foreign keys restrict removal while Tra
 - does not update Transaction rows, Balance, or financial version; and
 - immediately changes routine financial visibility through current ownership authorization.
 
-## 12. Implementation and migration gate
+## 12. Implementation and migration outcome
 
-The next sprint must produce a separately reviewed physical migration/backfill plan. It must address existing Transaction rows, initial Student Balance/version, removal or replacement of pre-existing append-only triggers, actor backfill policy, rollback feasibility, audit bootstrap, constraint ordering, backups, and reconciliation verification.
-
-No physical database change is authorized by this document alone.
+The implementation adds Balance/version with zero defaults, replaces the unused legacy Transaction table, creates the lifecycle and audit schema, and verifies constraint ordering and reconciliation indexes. Because no application workflow previously created trustworthy financial provenance, the migration requires the legacy Transaction table to be empty and rolls back if it is not. It never invents actor or audit evidence. Backup and any exceptional legacy-data recovery remain deployment responsibilities.
 
 ## 13. Traceability
 
