@@ -51,5 +51,4 @@ Every Student belongs to exactly one active Operator. Creating or transferring o
 
 - Existing unscoped Student queries must not be reused after authorization is implemented.
 - The physical User, session, role, and Student-ownership schema requires a separately reviewed database design and migration before implementation.
-- Actor attribution to immutable Transactions is not introduced by this decision.
-
+- This authorization decision does not itself define financial actor attribution. ADR-004 now requires server-derived actor evidence for Transaction lifecycle and financial audit while preserving this ADR's ownership boundary.

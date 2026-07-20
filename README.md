@@ -1,6 +1,6 @@
 # Amanah Cash
 
-Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform currently provides Google authentication, centralized role and ownership authorization, Operator account management, and Student management. Deposits, Withdrawals, and derived Balance are the next financial delivery phase.
+Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform currently provides Google authentication, centralized role and ownership authorization, Operator account management, and Student management. Transaction Foundation architecture is approved; the Transaction Engine is not implemented.
 
 ## Problem Statement
 
@@ -8,13 +8,13 @@ Entrusted student funds require fast daily recording without weakening financial
 
 ## Solution
 
-Transaction history is the single financial source of truth. The Operator records whole-Rupiah Deposits and Withdrawals; the application derives Balance from complete history and loads older Transactions progressively.
+Operators record whole-Rupiah Deposit, Withdrawal, and Correction events after they occur; Amanah Cash does not connect to banking or payment gateways. The approved Transaction Engine atomically couples Transaction lifecycle state, persisted Student Balance, and immutable financial audit evidence.
 
 ## Core Principles
 
 - Mobile-first PWA delivery.
 - Fast input and minimal cognitive load.
-- Append-only financial event traceability.
+- Audited financial lifecycle traceability.
 - Intentionally small MVP scope.
 - Simplicity over generality.
 - Production-grade correctness and explicit failures.
@@ -27,7 +27,7 @@ See [Product Principles](docs/00-product-principles.md).
 PWA Presentation → Server Application → Domain → Persistence → Relational Database
 ```
 
-The MVP uses one Next.js application, one server boundary, and one relational database. Student is the aggregate root. Every Student belongs to exactly one active Operator, and current ownership scopes Operator access. Future Transactions are append-only; Balance will be calculated from complete history and never persisted independently.
+The MVP uses one Next.js application, one server boundary, and one relational database. Student is the aggregate root. Every Student belongs to exactly one active Operator, and current ownership scopes Operator access to the Student's complete financial record. The approved target persists `Student.balance`; every Transaction create/edit/soft-delete/restore updates Transaction state, Balance/version, and immutable audit in one atomic database transaction.
 
 ## MVP Scope
 
@@ -42,16 +42,16 @@ Included:
 
 Planned financial scope:
 
-- Record whole-IDR Deposits and Withdrawals.
-- Prevent negative Balance through atomic validation.
-- Derive Balance from complete immutable Transaction history.
+- Record whole-IDR Deposits, Withdrawals, and reasoned Corrections.
+- Edit, soft-delete, and restore Transactions with immutable actor/reason/before-after audit evidence.
+- Persist non-negative Student Balance through atomic financial operations.
 - Load newest-first Transaction history progressively.
 
 Excluded:
 
 - Offline synchronization.
-- Transaction editing/deletion and Student deletion.
-- Reports, exports, Transaction notes/categories, notifications, and bulk operations.
+- Hard Transaction deletion and Student deletion.
+- Transaction transfer, schedules, monthly allowance, categories, attachments, approval workflow, Reports, Export, analytics, notifications, and bulk operations remain unimplemented extension scope.
 - Multiple currencies and distributed infrastructure.
 
 Auth.js with Google and Database Sessions is implemented. Platform Admin provisions Operator identities; Amanah Cash owns roles, activation, and authorization. Platform Admin has no routine financial-data access. SQLite remains the current approved persistence target, while production deployment decisions remain deferred to the Deployment phase.
@@ -79,16 +79,18 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Application Shell Architecture](docs/33-application-shell-architecture.md) | Authenticated shell and role navigation |
 | [Operator Management Implementation](docs/34-operator-management-implementation.md) | Operator account lifecycle and audit behavior |
 | [Student Management Implementation](docs/35-student-management-implementation.md) | Student lifecycle, assignment, and visibility |
+| [Transaction, Balance, and Audit ADR](docs/36-adr-transaction-balance-and-audit.md) | Locked financial ownership, lifecycle, Balance, audit, and concurrency decisions |
+| [Transaction Foundation TDS](docs/37-technical-design-transaction-foundation.md) | Implementation-ready Transaction Engine architecture, failures, security, reporting implications, diagrams, and extensions |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 
 ## Development Roadmap
 
-Project Foundation and Student Management are complete, alongside the dedicated authentication, authorization, App Shell, and Operator Management track. The next recommended sprint begins Transaction Foundation and Deposit, followed by Balance and atomic Withdrawal, progressive history, interaction states, safe retry, verification, and production readiness.
+Project Foundation and Student Management are complete, alongside authentication, authorization, App Shell, and Operator Management. Transaction Foundation architecture is finalized. The next recommended sprint implements the Transaction Engine without reopening its domain, Balance, audit, security, concurrency, or lifecycle decisions.
 
 ## Contributing
 
-Contributions must trace to approved requirements, preserve append-only history and derived Balance, respect architecture layers, include relevant verification, and synchronize documentation. Follow the [Engineering Rules](docs/10-engineering-rules.md) and [Development Workflow](docs/11-development-workflow.md).
+Contributions must trace to approved requirements, preserve atomic persisted-Balance reconciliation, controlled Transaction lifecycle, immutable audit, ownership/privacy boundaries, architecture layers, relevant verification, and synchronized documentation. Follow the [Engineering Rules](docs/10-engineering-rules.md) and [Development Workflow](docs/11-development-workflow.md).
 
 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run prisma:validate`, and `npm run build` before handing off an implementation sprint. Every sprint must also synchronize `AI_CONTEXT.md` and relevant implementation documentation.
 

@@ -1,6 +1,6 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -65,7 +65,7 @@ Runs in the PWA client and is responsible for:
 - Role-specific Student management screens: Platform Admin list/create/detail/edit and Operator-owned list/detail.
 - Mobile-first layout, navigation, loading, empty, and error states.
 - Immediate input-format validation and inline feedback.
-- Explicit Deposit and Withdrawal direction.
+- Explicit Deposit, Withdrawal, and Correction direction/effect.
 - Preventing repeated submission while a request is in progress.
 - Progressive transaction-history interaction.
 - Never presenting a partial-history balance as authoritative.
@@ -81,6 +81,9 @@ Runs on the server and coordinates the approved use cases:
 - Load Student Detail and Balance.
 - Record Deposit.
 - Record Withdrawal.
+- Record Correction.
+- Edit, soft-delete, and restore Transactions.
+- Append financial and ownership-transfer audit evidence.
 - Load progressive Transaction history.
 - Resolve or safely retry a Transaction submission.
 
@@ -93,9 +96,9 @@ Runs on the server and owns approved business meaning and invariants:
 - StudentName normalization and validity.
 - Student notes, lifecycle status, and active-Operator assignment validity.
 - Whole-Rupiah Amount validity.
-- Deposit and Withdrawal direction.
-- Append-only Transaction semantics.
-- Balance formula.
+- Deposit, Withdrawal, and Correction effect.
+- Controlled Transaction lifecycle and immutable audit semantics.
+- Persisted Balance formula and reconciliation invariant.
 - Non-negative Balance rule.
 - Student aggregate boundary.
 
@@ -108,11 +111,11 @@ Runs on the server and translates application operations into database access:
 - Student and Transaction storage.
 - Active-Operator ownership checks and ownership-scoped Student queries.
 - Case-insensitive Student uniqueness.
-- Complete-history Balance aggregation.
+- Persisted Balance/version updates and reconciliation aggregation.
 - Stable progressive-history queries.
 - SQLite financial-write serialization through `BEGIN IMMEDIATE`.
-- Atomic Deposit and Withdrawal persistence.
-- Stable Transaction UUID lookup for retry resolution.
+- Atomic Transaction lifecycle, Balance/version, and audit persistence.
+- Stable command/Transaction identity lookup for retry resolution.
 
 Database-specific behavior remains behind this layer.
 
@@ -137,7 +140,7 @@ The server is the authoritative boundary for all application operations. It:
 - Revalidates all client input.
 - Applies Domain invariants.
 - Controls access to Persistence.
-- Computes Balance from complete persisted history.
+- Reads persisted Balance and reconciles it against active Transaction effects when explicitly required.
 - Opens, commits, and rolls back database transactions.
 - Serializes financial writes for each Student.
 - Maps validation, conflict, not-found, and system outcomes into explicit responses.
@@ -149,16 +152,16 @@ Client validation improves speed but never replaces server validation.
 
 The single relational database:
 
-- Stores `students` and immutable `transactions` as the financial source entities.
+- Stores persisted Student Balance/version, controlled-mutable Transactions, and immutable FinancialAuditEvents.
 - Stores provisioned users, provider linkage, database sessions, roles, and Student ownership outside the financial source of truth.
 - Enforces primary keys, foreign keys, required values, type checks, positive Amount, and Student-name uniqueness.
 - Restricts Student deletion when Transactions exist.
-- Supports append-only Transaction access for the application.
+- Supports audited Transaction create/edit/soft-delete/restore access while prohibiting hard delete.
 - Provides single-writer serialization through `BEGIN IMMEDIATE` and atomic commit or rollback.
-- Computes exact whole-Rupiah Balance from all persisted Transactions.
+- Updates exact whole-Rupiah Balance atomically with every financial mutation.
 - Supports deterministic newest-first history retrieval.
 
-It does not store Balance, offline state, or a second financial representation. Authentication data must not contain financial values.
+It does not store offline state or financial data in authentication records. Persisted Balance and active Transaction effects are intentionally redundant but atomically coupled and reconcilable under ADR-004.
 
 ## 8. Validation Responsibilities
 
@@ -168,10 +171,11 @@ It does not store Balance, offline state, or a second financial representation. 
 | Name normalization and length | Preview and feedback | Authoritative normalization and validation | Length constraint |
 | Case-insensitive uniqueness | No | Convert conflict to domain outcome | Unique index |
 | Whole-Rupiah Amount | Immediate feedback | Authoritative validation | Integer type and positive check |
-| Transaction type | Fixed by entry mode | Allow only approved type | Type check |
+| Transaction type/effect | Fixed by entry mode | Allow approved type and Correction direction only | Type/direction checks |
 | Existing Student | No | Map missing Student outcome | Foreign key and lookup inside the immediate transaction |
-| Sufficient Balance | Informative only | Invoke atomic operation | Serialized full-history check and insert |
-| Duplicate retry | Disable repeated tap | Reuse logical Transaction UUID | Transaction primary key |
+| Sufficient Balance | Informative only | Calculate proposed persisted Balance | Serialized Balance/version check and update |
+| Revision | No authority | Require expected current revision | Conflict guard |
+| Duplicate retry | Disable repeated tap | Reuse command and Transaction identity | Unique command/audit identity |
 
 Validation is intentionally repeated at trust boundaries. Client validation improves interaction speed; server and database validation protect correctness.
 
@@ -183,31 +187,35 @@ One database transaction inserts normalized Student management data with a requi
 
 ### 9.2 Deposit
 
-One `BEGIN IMMEDIATE` SQLite transaction acquires the write reservation, verifies the Student, inserts one complete Deposit, and commits. Every financial write uses the same serialization protocol.
+One `BEGIN IMMEDIATE` SQLite transaction acquires the write reservation, rechecks actor/current ownership/Student status, inserts Deposit, increments persisted Balance/version, appends CREATE audit, and commits.
 
 ### 9.3 Withdrawal
 
 One database transaction:
 
 1. Starts `BEGIN IMMEDIATE` before reading the Student or Balance.
-2. Calculates Balance from all persisted Transactions.
+2. Reloads persisted Balance inside the transaction.
 3. Rejects the request if Amount exceeds Balance.
-4. Otherwise inserts the Withdrawal.
-5. Commits the operation.
+4. Otherwise inserts Withdrawal, decrements Balance, increments version, and appends CREATE audit.
+5. Commits the complete operation.
 
 Validation and insertion are not split across transactions.
 
-### 9.4 SQLite Process and Retry Contract
+### 9.4 Correction, Edit, Delete, and Restore
+
+Every lifecycle command uses the same Student serialization and authorization boundary. Correction applies explicit signed effect; Edit applies `newEffect - oldEffect`; Delete applies `-oldEffect` and sets deletion metadata; Restore applies `+currentEffect` and clears deletion metadata. Each rejects a negative proposed Balance and commits Transaction state, Balance/version, and immutable audit together.
+
+### 9.5 SQLite Process and Retry Contract
 
 The MVP runs one active server process against one SQLite database file. All database access passes through that server's Persistence layer; multiple server writers and external direct writers are unsupported. SQLite may serialize writes for different Students because its physical lock is database-wide. This still satisfies the Domain guarantee that writes for the same Student are serialized.
 
-The connection sets `PRAGMA busy_timeout = 5000`. Exhausted lock acquisition returns the retryable unavailable outcome without an automatic server retry and without beginning a financial read or insert. The client preserves the logical Transaction UUID. Unknown commit outcomes are resolved by UUID lookup before the same submission may be retried, following Database Design Section 7.4.
+The connection sets `PRAGMA busy_timeout = 5000`. Exhausted lock acquisition returns retryable unavailable without automatic delta replay. The client preserves command ID and, for create, Transaction UUID. Unknown commit outcomes are resolved by command ID before retry.
 
-### 9.5 Read Operations
+### 9.6 Read Operations
 
-Student reads, Balance queries, and history-page queries do not mutate state. Balance and history may be requested separately, but Balance always uses complete history.
+Student, Balance, history, and authorized audit reads do not mutate state. Balance is read from persisted Student state independently of history pagination.
 
-## 10. Balance Calculation Flow
+## 10. Balance Lifecycle Flow
 
 References: FR-3.1.2, FR-3.1.4, FR-3.3.1; NFR-3.1–3.3; BR-BAL-001–005
 
@@ -216,17 +224,14 @@ Client requests Student Balance
         ↓
 Application validates Student identity
         ↓
-Persistence selects all Transactions for Student
-        ↓
-Database aggregates:
-  deposits - withdrawals
+Persistence reads persisted Student Balance
         ↓
 Server returns exact whole-Rupiah Balance
         ↓
 Client renders Balance separately from history page
 ```
 
-There is no Balance write path. After a successful Deposit or Withdrawal, the response or following read uses the same complete-history calculation.
+There is no independent Balance write path. Transaction create/edit/delete/restore calculates a signed delta and updates Balance only inside its atomic command. Reconciliation separately aggregates non-deleted Transaction effects and treats mismatch as an integrity incident.
 
 ## 11. Data Flows
 
@@ -250,7 +255,8 @@ References: FR-3.1.5
 ```text
 Platform Admin input
   → server revalidates all management fields and active Operator ownership
-  → database updates Student and modification timestamp
+  → require transfer reason when operator_id changes
+  → database updates Student and appends privacy-minimized OWNERSHIP_TRANSFER audit atomically
   → current ownership authorization immediately follows operator_id
   → committed Student or explicit validation/conflict/not-found outcome
 ```
@@ -265,9 +271,9 @@ Whole-Rupiah input
   → server/domain validation
   → BEGIN IMMEDIATE
   → verify Student
-  → insert immutable Deposit
+  → insert Deposit + update Balance/version + append CREATE audit
   → commit
-  → calculate/return updated Balance
+  → return committed Balance
   → Student Detail
 ```
 
@@ -281,18 +287,32 @@ Whole-Rupiah input
   → server/domain validation
   → BEGIN IMMEDIATE
   → verify Student
-  → calculate full-history Balance
+  → read persisted Balance
   → sufficient? ── no → rollback + Insufficient balance
        │
        yes
        ↓
-  insert immutable Withdrawal
+  insert Withdrawal + update Balance/version + append CREATE audit
   → commit
-  → calculate/return updated Balance
+  → return committed Balance
   → Student Detail
 ```
 
-### 11.5 Load Student
+### 11.5 Correct, Edit, Delete, or Restore
+
+References: FR-3.2.4–FR-3.2.7, FR-3.3.1–FR-3.3.2
+
+```text
+Owned active Student + lifecycle command + expected revision + command ID
+  → serialize Student and recheck authorization/status
+  → load current Transaction when required
+  → calculate signed delta and proposed Balance
+  → reject stale revision, invalid lifecycle, or negative Balance
+  → mutate Transaction + Balance/version + immutable audit
+  → commit or roll back the complete unit
+```
+
+### 11.6 Load Student
 
 References: FR-3.1.2, FR-3.1.4, FR-3.3.1
 
@@ -300,14 +320,14 @@ References: FR-3.1.2, FR-3.1.4, FR-3.3.1
 Client requests Student Detail
   → server validates Student identity
   → persistence loads Student
-  → database computes complete-history Balance
+  → database reads persisted Student Balance
   → persistence loads newest history page
   → client renders correct Balance and available history
 ```
 
-No provisional Balance is produced if the complete-history query fails.
+No provisional or page-derived Balance is produced. An explicit reconciliation failure is an integrity outcome, not a substitute Balance.
 
-### 11.6 Load History
+### 11.7 Load History
 
 References: FR-3.2.3
 
@@ -321,23 +341,23 @@ Client sends Student identity + optional stable cursor
 
 The existing Balance and loaded history remain visible during progressive loading.
 
-### 11.7 Retry Transaction
+### 11.8 Retry Transaction
 
-References: FR-3.2.1, FR-3.2.2; NFR-5.1
+References: FR-3.2.1–FR-3.2.7; NFR-5.1
 
 ```text
 Submission outcome unknown
-  → server looks up original Transaction UUID
-  → exists? ── yes → return committed result
+  → server looks up original command ID
+  → committed? ── yes → return recorded result
        │
        no
        ↓
-  retry same logical submission with same UUID
-  → primary key prevents duplicate event
+  retry same logical submission with same command ID
+  → unique audit/command identity prevents duplicate delta
   → explicit committed or failed outcome
 ```
 
-### 11.8 Validation Failure
+### 11.9 Validation Failure
 
 ```text
 Invalid input
@@ -348,7 +368,7 @@ Invalid input
 
 Database constraint conflicts are translated into the corresponding approved validation outcome.
 
-### 11.9 System Failure
+### 11.10 System Failure
 
 ```text
 Operation fails
@@ -366,10 +386,14 @@ No system failure silently writes partial data or queues an offline operation.
 |------------------|-----------------|-----------------|
 | Input validation | No write; return specific failure | Preserve input; show inline message |
 | Duplicate Student | No Student created | Show duplicate-name message |
-| Insufficient Balance | Roll back; no Withdrawal | Preserve Amount; show insufficient balance |
+| Insufficient/negative proposed Balance | Roll back complete lifecycle command | Preserve safe input; show validation outcome |
 | Student not found | No write | Show load or submission failure |
+| Inactive/archived Student | No mutation; financial state is read-only | Explain unavailable action without exposing internals |
+| Wrong Operator | Mask as not found; no write | Same outcome as missing resource |
+| Stale revision/lifecycle conflict | No write | Reload authorized state before another command |
+| Audit or Balance/version failure | Roll back Transaction mutation | Never report success |
 | History-page failure | No state change | Keep Balance/history; retry failed page |
-| Transaction outcome unknown | Resolve original UUID before retry | Disable repeated action while resolving |
+| Transaction outcome unknown | Resolve original command ID before retry | Disable repeated action while resolving |
 | Database/network/unexpected failure | Roll back where applicable; explicit failure | Never report success; offer safe Retry |
 
 Errors do not expose database internals. Diagnostic logging may record technical failure details, while the operator receives a concise actionable message.
@@ -381,10 +405,10 @@ MVP security is limited to approved integrity protections:
 - Treat every client value as untrusted and revalidate it on the server.
 - Prevent direct client access to the database.
 - Use parameterized persistence operations rather than combining input with database commands.
-- Limit application database capabilities to approved reads, Student inserts, and Transaction inserts.
-- Deny application mutation or deletion of persisted Transactions.
+- Limit application database capabilities to approved ownership-scoped reads and reviewed Student/Transaction lifecycle commands.
+- Permit Transaction edit/soft-delete/restore only through the atomic Student aggregate boundary; deny hard delete and audit mutation.
 - Use the approved SQLite `BEGIN IMMEDIATE` transaction protocol for financial integrity.
-- Use stable Transaction UUIDs for duplicate prevention and retry safety.
+- Use unique command IDs plus expected Transaction revision, and stable Transaction UUID for create, for conflict/retry safety.
 - Return only the data required by approved screens.
 
 ### 13.1 Authentication
@@ -397,7 +421,7 @@ Every protected operation resolves the active PlatformUser and role on the serve
 
 ### 13.3 Privacy
 
-Platform Admin manages the platform but has no routine route to Transaction history, Balances, financial reports, or Student financial data. There is no implicit administrator financial bypass. Financial data must not enter sessions, cookies, administrative UI, logs, analytics, or authentication errors. Authentication does not add Transaction actor attribution.
+Platform Admin manages the platform but has no routine route to Transaction history, Balances, financial reports, or Student financial audit data. There is no implicit administrator financial bypass. Financial data must not enter sessions, cookies, administrative UI, logs, analytics, or authentication errors. Financial actor attribution is resolved server-side and stored only in authorized Transaction/audit evidence. Ownership-transfer audit shown to Platform Admin omits Balance and Transaction details.
 
 ## 14. Deployment
 
@@ -432,19 +456,21 @@ Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues
 | One server deployable | Smallest unit that centralizes validation and financial integrity | Principles 6–8, 12 |
 | One SQLite database | Matches the implemented foundation and approved tables, constraints, serialization, and atomic writes | Database Design Sections 3–11 |
 | Layered internals | Separates UI, use-case orchestration, rules, and persistence without distributed complexity | Domain Model Sections 3–7 |
-| Server-authoritative financial operations | Client state cannot enforce concurrency or append-only history | NFR-3.2–3.3; BR-TXN-004–005 |
-| Per-Student transaction boundary | Non-negative Balance is scoped to one Student aggregate | BR-BAL-004–005; Domain Model Section 6 |
-| Query Balance on demand | Preserves Transaction history as single source of truth | FR-3.3.1; BR-BAL-001–003 |
-| Progressive history separate from Balance | Improves presentation performance without weakening correctness | NFR-4.1; BR-UI-002–003 |
+| Server-authoritative financial operations | Client state cannot enforce ownership, revision, concurrency, Balance, or audit | NFR-3.2–3.4; BR-TXN-005–009 |
+| Per-Student transaction boundary | Non-negative persisted Balance is scoped to one Student aggregate | BR-BAL-004–006; Domain Model Section 6 |
+| Persist Balance on Student | Fast reads are atomically coupled to Transaction effects and reconciliation | ADR-004; FR-3.3.1 |
+| Immutable FinancialAuditEvent | Mutable Transactions require durable actor/reason/before-after evidence | ADR-004; FR-3.3.2 |
+| Progressive history separate from Balance | Balance reads do not depend on incomplete history pages | NFR-4.1; BR-UI-002–003 |
 | PWA with no offline data flow | Provides approved installation model without offline scope | FR-3.4.1; NFR-7.1; BR-PWA-001 |
 | Technology-neutral boundaries | Framework selection is not an approved product requirement | Simplicity Over Generality |
 | Auth.js, Google only, database sessions | Verify identity without application passwords | ADR-001 |
 | Amanah Cash roles and Student ownership | Identity provider does not authorize financial data | ADR-002 |
 | Administrative/financial separation | Privacy outranks administrative visibility | ADR-003 |
+| Transaction, Balance, and audit strategy | Complete financial lifecycle is atomic, auditable, and ownership-scoped | ADR-004 |
 
 ## 16. MVP Fit and Evolution
 
-This architecture retains one deployable server and one relational database without distributed coordination. Student and Transaction remain the financial source entities; identity/session persistence is isolated from financial truth. Domain and persistence boundaries still allow internal replacement of technology without changing approved rules.
+This architecture retains one deployable server and one relational database without distributed coordination. Student Balance, Transaction state, and FinancialAuditEvent form the financial consistency model; identity/session persistence remains isolated from financial data. Domain and persistence boundaries still allow internal replacement of technology without changing approved rules.
 
 Future evolution means changing an implementation behind an existing boundary when an approved requirement demands it. This document does not pre-design or authorize future features.
 
@@ -453,10 +479,10 @@ Future evolution means changing an implementation behind an existing boundary wh
 | Architecture Concern | Requirements and Rules |
 |----------------------|------------------------|
 | Student operations | FR-3.1.1–3.1.4; BR-STU-001–004 |
-| Transaction writes | FR-3.2.1–3.2.2; BR-TXN-001–005 |
+| Transaction lifecycle writes | FR-3.2.1–FR-3.2.7; BR-TXN-001–009 |
 | History reads | FR-3.2.3; NFR-4.1; BR-UI-002–003 |
-| Balance calculation | FR-3.3.1; NFR-3.1–3.3; BR-BAL-001–005 |
-| Retry safety | NFR-5.1–5.2; Database Design Section 7.4 |
-| Financial traceability | NFR-6.1; BR-AUD-001–002 |
+| Balance lifecycle | FR-3.3.1; NFR-3.1–3.4; BR-BAL-001–006 |
+| Retry safety | NFR-5.1–5.2; Database Design Section 8.3 |
+| Financial traceability | FR-3.3.2; NFR-6.1–6.2; BR-AUD-001–004 |
 | PWA and responsive client | FR-3.4.1–3.4.3; NFR-7.1–7.2 |
 | Offline exclusion | NFR Section 8; BR-PWA-001 |

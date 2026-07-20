@@ -25,7 +25,7 @@ The existing SQLite migration runner remains the application-startup migration a
 | `VerificationToken` | Omitted | Google-only OAuth does not use email magic links or verification tokens |
 | `Authenticator` | Omitted | WebAuthn/passkeys are outside the approved Google-only architecture |
 | `Student.operatorId` | Required FK to `User`, delete restricted | Every Student has exactly one current owner and cannot become orphaned |
-| `Transaction` | Unchanged | Authentication must not add actor attribution or alter immutable financial history |
+| `Transaction` | Unchanged by the authentication migration | Transaction Foundation actor/lifecycle changes are governed separately by ADR-004 and must not enter authentication/session data |
 
 Prisma model names stay compatible with the Auth.js Prisma adapter. `@@map` and `@map` preserve the project's lowercase snake-case SQLite convention. No password, password reset, registration, permission, tenant, MFA, audit-log, balance, or Transaction-actor field is introduced.
 

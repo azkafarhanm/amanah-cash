@@ -1,6 +1,6 @@
 # Amanah Cash — Accessibility Guidelines
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
@@ -73,7 +73,7 @@ Amanah Cash targets WCAG 2.2 Level AA for all approved workflows. Accessibility 
 - The Balance label is associated with its exact value and state.
 - Loading Balance is announced as loading; failure does not expose a provisional number.
 - Transaction timestamps have understandable accessible names even if visually abbreviated.
-- Append-only history has no misleading edit or delete affordance.
+- Edit, soft delete, and restore controls must have explicit accessible names, state, reason requirements, and Balance-effect warnings; soft delete must never be announced as permanent removal.
 
 ## 9. Dynamic States
 

@@ -1,9 +1,9 @@
 # Amanah Cash — Development Workflow
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -47,7 +47,7 @@ Output: a concise requirement statement and traceability list.
 
 1. Inspect existing code and approved documentation.
 2. Define affected layers and transaction boundaries.
-3. Preserve Student aggregate, append-only Transactions, and derived Balance.
+3. Preserve Student aggregate, persisted-Balance reconciliation, controlled Transaction lifecycle, and immutable financial audit.
 4. Prefer the smallest design that satisfies the requirement.
 5. Record risks involving money, concurrency, retry, persistence, or migration.
 
@@ -195,10 +195,10 @@ Every pull request must include:
 - [ ] Change is authorized by approved documentation.
 - [ ] No product feature or business rule was invented.
 - [ ] Layer responsibilities are preserved.
-- [ ] Balance remains derived from complete Transaction history.
-- [ ] Financial history remains append-only.
+- [ ] Persisted Balance remains atomically synchronized and reconcilable with non-deleted Transaction effects.
+- [ ] Transaction edit/soft-delete/restore preserves immutable audit; no hard-delete path exists.
 - [ ] Monetary values remain whole IDR.
-- [ ] Withdrawal check and insertion remain atomic.
+- [ ] Transaction mutation, Balance/version update, and audit append remain atomic.
 - [ ] Retry cannot create an unintended duplicate.
 - [ ] Validation exists at appropriate boundaries.
 - [ ] Errors are explicit and do not expose internals.
@@ -218,7 +218,7 @@ Apply the items relevant to the change:
 - [ ] Verify invalid zero, negative, decimal, non-numeric, and out-of-range Amounts.
 - [ ] Record a valid Withdrawal.
 - [ ] Verify insufficient Balance creates no Transaction.
-- [ ] Confirm Balance equals complete persisted history.
+- [ ] Confirm persisted Balance equals all non-deleted Transaction effects and audit explains every committed transition.
 - [ ] Load older history until complete and preserve newest-first order.
 - [ ] Verify history-page failure does not alter Balance.
 - [ ] Verify Retry does not duplicate a Transaction.

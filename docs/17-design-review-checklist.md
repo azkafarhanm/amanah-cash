@@ -1,6 +1,6 @@
 # Amanah Cash — Design Review Checklist
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
@@ -39,12 +39,12 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 
 ## 4. Product Truth and Financial Integrity — Blocking
 
-- [ ] Balance is visibly authoritative and based on complete persisted history.
+- [ ] Balance is visibly authoritative, committed persisted Student state, and never derived from a partial page.
 - [ ] No partial, cached, optimistic, or displayed-page Balance is presented as authoritative.
 - [ ] Deposit says money entrusted to the Student and Balance increases.
 - [ ] Withdrawal says money returned by the Student and Balance decreases.
 - [ ] Whole-IDR formatting is exact and has no decimal affordance.
-- [ ] Transactions have no edit, delete, or soft-delete affordance.
+- [ ] Edit, soft delete, restore, and Correction affordances follow approved lifecycle state, reason, revision, authorization, and audit requirements; no hard-delete affordance exists.
 - [ ] Success appears only after persistence is confirmed.
 - [ ] Unknown outcomes are resolved safely and never imply success.
 - [ ] Offline/network failure does not imply queued or saved Transactions.

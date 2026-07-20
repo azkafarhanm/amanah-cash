@@ -1,6 +1,6 @@
 # Amanah Cash — Non-Functional Requirements
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -13,7 +13,7 @@ This document defines the non-functional requirements for the Amanah Cash MVP. F
 
 ## 2. Requirement Priorities
 
-Financial correctness and data integrity take priority over presentation speed. Performance optimizations must never calculate a balance from an incomplete transaction set or permit an invalid withdrawal.
+Financial correctness and data integrity take priority over presentation speed. Performance optimizations must never expose an uncommitted Balance, bypass Student serialization, omit audit evidence, or permit a negative Balance.
 
 ## 3. Financial Correctness
 
@@ -25,16 +25,23 @@ Financial correctness and data integrity take priority over presentation speed. 
 
 ### NFR-3.2: Balance Correctness
 
-- A displayed balance must equal the sum of all persisted deposits minus the sum of all persisted withdrawals for that student.
+- A displayed balance must equal the persisted `Student.balance` committed by the Transaction Engine.
+- Persisted Balance must equal the sum of effects of all non-deleted Deposits, Withdrawals, and Corrections for the Student.
 - Progressive transaction-history loading must not affect balance correctness.
 - After a transaction is reported as successfully recorded, subsequent balance presentation must include it.
 - The system must never report a withdrawal as successful if the resulting balance would be negative.
 
 ### NFR-3.3: Concurrent Integrity
 
-- Balance validation and withdrawal recording must behave atomically.
+- Transaction create/edit/delete/restore, Balance update, Student financial-version update, and audit append must behave atomically.
 - Concurrent transaction requests must preserve a correct, non-negative balance.
-- A failed transaction must not partially change the financial history.
+- A failed transaction must not partially change Transaction state, Balance, version, or audit history.
+
+### NFR-3.4: Reconciliation Integrity
+
+- Persisted Balance must be reproducible from non-deleted Transaction effects.
+- Reconciliation mismatch is an integrity incident and must not trigger silent repair.
+- Transaction and audit revisions must preserve enough evidence to explain every committed Balance transition.
 
 ## 4. Performance and Responsiveness
 
@@ -42,7 +49,7 @@ Financial correctness and data integrity take priority over presentation speed. 
 
 - Student Detail may load recent transactions before older transactions.
 - The operator must be able to progressively load older entries until the complete history is available.
-- Balance computation must use the complete persisted history, not only entries currently loaded in the UI.
+- Balance presentation reads persisted Student Balance and must never derive a provisional value from entries currently loaded in the UI.
 
 ### NFR-4.2: Interactive Search
 
@@ -81,9 +88,18 @@ These targets measure interaction efficiency. They are not network or backend la
 ### NFR-6.1: Financial Event Traceability
 
 - Every financial event has a unique transaction identifier, student reference, type, whole-Rupiah amount, and creation timestamp.
-- Transactions are append-only and cannot be edited or deleted through application operations.
-- A balance must always be reproducible from its transaction records.
-- Authentication does not add actor attribution to immutable Transaction events.
+- Every financial mutation has a unique command identity, Student, server-derived actor, event type, revision, whole-IDR delta, and commit timestamp.
+- Transaction edit, soft delete, and restore preserve immutable before/after audit evidence.
+- Financial audit records are append-only and cannot be edited or deleted through application operations.
+- A Balance must always be reproducible from non-deleted Transaction effects and explainable through audit events.
+
+### NFR-6.2: Audit Durability and Privacy
+
+- Audit append must commit atomically with the financial or ownership mutation it describes.
+- Audit failure must roll back the domain mutation.
+- Financial audit payloads follow current Student ownership and ADR-003 privacy restrictions.
+- Ownership-transfer audit is visible to authorized administrators without exposing financial values.
+- Audit payload schemas are versioned for future event and metadata expansion.
 
 ## 7. PWA and Device Support
 
@@ -138,13 +154,14 @@ Concrete network-latency targets, supported-browser versions, and production dat
 |-----|---------------------------------|
 | NFR-3.1 | FR-3.2.1, FR-3.2.2, FR-3.3.1 |
 | NFR-3.2 | FR-3.1.2, FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.3.1 |
-| NFR-3.3 | FR-3.2.2, FR-3.3.1 |
+| NFR-3.3 | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
+| NFR-3.4 | FR-3.2.3–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
 | NFR-4.1 | FR-3.1.4, FR-3.2.3, FR-3.3.1 |
 | NFR-4.2 | FR-3.1.1, FR-3.1.2, FR-3.1.3 |
 | NFR-4.3 | FR-3.1.1, FR-3.1.3, FR-3.2.1, FR-3.2.2 |
-| NFR-5.1 | FR-3.2.1, FR-3.2.2 |
-| NFR-5.2 | FR-3.2.1, FR-3.2.2 |
-| NFR-6.1 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3, FR-3.3.1 |
+| NFR-5.1 | FR-3.2.1–FR-3.2.7 |
+| NFR-5.2 | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
+| NFR-6.1–6.2 | FR-3.1.4, FR-3.1.5, FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
 | NFR-7.1 | FR-3.4.1 |
 | NFR-7.2 | FR-3.4.3 |
 | NFR-9.1–9.3 | FR-7.1, FR-7.2 |

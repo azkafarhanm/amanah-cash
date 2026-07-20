@@ -26,7 +26,8 @@ Administrative status does not imply financial-data access. Maintenance paths mu
 - Scope authorization on the server for every protected operation.
 - Return only data authorized for the current Operator.
 - Avoid financial data in authentication sessions, client-readable cookies, logs, analytics, error reports, and administrative screens.
-- Treat Student transfer as a controlled ownership change; preserve immutable financial history.
+- Store allowlisted financial mutation evidence only in the dedicated ownership-scoped FinancialAuditEvent store defined by ADR-004; it is not a general application log or administrative screen.
+- Treat Student transfer as a controlled, audited ownership change; preserve all Transaction rows and financial audit evidence without exposing them to Platform Admin.
 - Review any exceptional-access proposal as a new architecture and privacy decision before implementation.
 
 ## Consequences
@@ -34,4 +35,3 @@ Administrative status does not imply financial-data access. Maintenance paths mu
 - Platform maintenance may require privacy-preserving diagnostics rather than direct record inspection.
 - Reports are Operator-scoped; platform-wide financial reports are not authorized.
 - Backups, operational access, retention, incident response, and legal exceptional access need explicit deployment/security procedures before production.
-

@@ -1,6 +1,6 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -11,13 +11,13 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation and Student Management are complete. The separate authentication, authorization, App Shell, and Operator Management track is also complete. The next recommended sprint is Transaction Foundation and Deposit.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, and the separate authentication, authorization, App Shell, and Operator Management track are complete. Transaction Foundation architecture is finalized in ADR-004 and the Transaction Foundation TDS. The next recommended sprint is Transaction Engine implementation.
 
 ## 2. Delivery Rules
 
 - Complete milestones in dependency order.
 - Preserve exact whole-Rupiah arithmetic from the first financial implementation.
-- Keep Balance derived from complete Transaction history.
+- Keep persisted Student Balance atomically synchronized and reconcilable with non-deleted Transaction effects.
 - Test financial integrity before adding presentation refinements.
 - Treat mobile as the primary verification viewport.
 - Do not add offline behavior or other excluded scope during financial MVP milestones. Reuse the implemented authentication and centralized authorization layers.
@@ -30,6 +30,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Milestone 2 — Student Management: complete under the approved multi-user ownership architecture.
 - Dedicated authentication and authorization track: complete through provisioning, login, session enforcement, role/ownership enforcement, assignment, and transfer behavior.
 - Application Shell and Operator Management: complete.
+- Transaction Foundation architecture: complete; no implementation, migration, Prisma, API, or UI change was made.
 - Milestones 3–9: outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
@@ -39,11 +40,11 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 |-----------|------|--------|----------------------|
 | 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
 | 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
-| 3 | Transaction Foundation and Deposit | Next | FR-3.2.1 |
-| 4 | Balance and Atomic Withdrawal | Outstanding | FR-3.2.2, FR-3.3.1 |
-| 5 | Student Detail and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3 |
-| 6 | Validation and Interaction States | Outstanding for financial flows | FR-3.1.1, FR-3.2.1–3.2.2 |
-| 7 | Failure Handling and Safe Retry | Outstanding | FR-3.2.1–3.2.2; NFR-5.1–5.2 |
+| 3 | Transaction Engine | Next | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
+| 4 | Reconciliation and Financial Reads | Outstanding | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
+| 5 | Financial Presentation and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
+| 6 | Validation and Interaction States | Outstanding for financial flows | FR-3.2.1–FR-3.2.7 |
+| 7 | Failure Handling and Safe Retry | Outstanding | FR-3.2.1–FR-3.2.7; NFR-5.1–5.2 |
 | 8 | Verification and Quality | Outstanding | All FR and NFR |
 | 9 | Production Readiness | Outstanding | FR-3.4.1–3.4.3; NFR Sections 5–8 |
 
@@ -117,75 +118,78 @@ Enable Platform Admin to manage Students and assignments while Operators view on
 - Search and uniqueness use the same normalized representation.
 - Student edit and ownership reassignment exist; Student deletion and financial workflows do not.
 
-## 6. Milestone 3 — Transaction Foundation and Deposit
+## 6. Milestone 3 — Transaction Engine
 
 ### Goal
 
-Persist traceable, append-only Deposit events using whole-Rupiah amounts.
+Implement the complete ownership-scoped Transaction lifecycle, persisted Balance, and immutable financial audit as one atomic engine.
 
 ### Scope
 
-- TransactionId, TransactionType, and RupiahAmount domain types.
-- Positive whole-Rupiah validation.
-- Deposit application use case.
+- Deposit, Withdrawal, and Correction types/effects.
+- Transaction create, edit, soft delete, and restore lifecycle.
+- Persisted Student Balance and financial version.
+- Immutable `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and privacy-minimized `OWNERSHIP_TRANSFER` audit.
+- Positive whole-Rupiah, Correction direction/reason, lifecycle, and non-negative Balance validation.
 - SQLite `BEGIN IMMEDIATE` financial-write serialization.
-- Deposit Transaction Entry mode and direction text.
-- Append-only Persistence access and SQLite triggers against Transaction update and deletion.
+- Expected Transaction revision and unique command-ID idempotency.
+- Transaction, Balance/version, and audit atomic rollback.
+- Physical migration/backfill and reconciliation verification designed under the approved implementation gate.
 
 ### Deliverables
 
-- Atomic Deposit persistence.
-- Append-only Transaction access boundary.
-- Deposit Transaction Entry UI.
-- Tests for valid, zero, negative, decimal, non-numeric, and out-of-range Amounts.
-- Tests proving a failed Deposit leaves no partial event.
+- Transaction Engine domain/application/persistence boundaries.
+- Reviewed physical schema and reversible migration for Balance/version, lifecycle metadata, and financial audit.
+- Atomic lifecycle commands without UI scope.
+- Tests for every effect/delta, status/ownership failure, revision conflict, soft-delete/restore state, command replay, concurrency, rollback, audit, overflow, and reconciliation invariant.
 
 ### Dependencies
 
-- Milestone 1 Transaction schema and Persistence boundary.
+- ADR-004 and Transaction Foundation TDS.
+- Milestone 1 Transaction schema and Persistence boundary, which require reviewed evolution.
 - Milestone 2 Student identity and retrieval.
 
 ### Completion Criteria
 
-- FR-3.2.1 acceptance criteria pass.
-- Deposit direction is explicit and Balance effect is positive.
-- A Deposit is reported successful only after commit.
-- Application paths cannot edit or delete a persisted Transaction.
+- FR-3.2.1–FR-3.2.7 and FR-3.3.1–FR-3.3.2 engine acceptance criteria pass at service/persistence level.
+- Every successful mutation commits Transaction state, non-negative Balance/version, and immutable audit together.
+- No hard-delete path exists.
+- Ownership and ACTIVE Student status are rechecked inside the write transaction.
+- Repeated command IDs cannot apply a Balance delta twice.
 
-## 7. Milestone 4 — Balance and Atomic Withdrawal
+## 7. Milestone 4 — Reconciliation and Financial Reads
 
 ### Goal
 
-Provide exact complete-history Balance calculation and concurrency-safe Withdrawal.
+Expose correct ownership-scoped financial reads and prove persisted Balance reconciliation.
 
 ### Scope
 
-- Exact integer Balance aggregation.
-- Zero Balance for a Student with no Transactions.
-- Withdrawal Transaction Entry mode and direction text.
-- Locked full-history Balance check and Withdrawal insert in one transaction.
-- Concurrent financial-write behavior.
+- Persisted Balance read independent of history pagination.
+- Reconciliation aggregation across non-deleted Deposit, Withdrawal, and Correction effects.
+- Active, deleted/restored, and audit-history read contracts.
+- Stable newest-first business-time history and cursor pagination.
+- Ownership-transfer visibility behavior.
 
 ### Deliverables
 
-- Complete-history Balance query.
-- Atomic Withdrawal application use case.
-- Withdrawal UI including current Balance and insufficient-balance outcome.
-- Concurrency tests for simultaneous Deposits and Withdrawals on one Student.
-- Concurrency test confirming all writes preserve correct per-Student histories under SQLite's single-writer boundary.
+- Ownership-scoped Balance/Transaction/audit read services.
+- Explicit reconciliation command/report for verification use, without automatic repair.
+- Progressive history query and continuation contract.
+- Tests for filtering, ordering, deletion state, transfer visibility, and reconciliation mismatch detection.
 
 ### Dependencies
 
-- Milestone 3 Transaction model, append-only persistence, and SQLite write-serialization protocol.
+- Milestone 3 Transaction Engine, audit, persisted Balance, and serialization protocol.
 
 ### Completion Criteria
 
-- FR-3.2.2 and FR-3.3.1 acceptance criteria pass.
-- No accepted sequence of concurrent requests produces a negative Balance.
-- Balance equals all Deposits minus all Withdrawals.
-- No Balance column, cache, or summary table exists.
+- FR-3.2.3 and FR-3.3.1–FR-3.3.2 read/reconciliation criteria pass.
+- Persisted Balance equals non-deleted Transaction effects.
+- Mismatch is surfaced as an integrity incident and never repaired silently.
+- Platform Admin has no routine financial read or audit bypass.
 
-## 8. Milestone 5 — Student Detail and Progressive History
+## 8. Milestone 5 — Financial Presentation and Progressive History
 
 ### Goal
 
@@ -194,8 +198,9 @@ Present correct Student financial detail while loading Transaction history progr
 ### Scope
 
 - Student Detail loading and error states.
-- Correct full-history Balance presentation.
-- Newest-first Transaction items with type, direction, Amount, and timestamp.
+- Correct persisted Balance presentation.
+- Newest-first Transaction items with type, effect, Amount, business time, revision, and lifecycle state.
+- Deposit, Withdrawal, Correction, edit, soft-delete, restore, and audit interactions defined from approved requirements.
 - Stable cursor-based older-history retrieval.
 - Empty history, loading-older, end-of-history, and page-failure states.
 
@@ -205,19 +210,19 @@ Present correct Student financial detail while loading Transaction history progr
 - Progressive history query and continuation contract.
 - Student Detail and Transaction History UI.
 - Tests for deterministic ordering, equal timestamps, and appended events between page requests.
-- Tests proving history pagination does not affect Balance.
+- Tests proving history pagination does not affect persisted Balance.
 
 ### Dependencies
 
 - Milestone 2 Student navigation.
-- Milestone 4 authoritative Balance calculation.
+- Milestone 4 authoritative Balance/read contracts.
 
 ### Completion Criteria
 
 - FR-3.1.4 and FR-3.2.3 acceptance criteria pass.
 - Older history can be loaded until complete.
 - No provisional or page-derived Balance is displayed.
-- No Transaction item offers edit or delete actions.
+- Transaction lifecycle actions are available only when ownership, Student status, Transaction state, and revision permit them.
 
 ## 9. Milestone 6 — Validation and Interaction States
 
@@ -231,7 +236,7 @@ Make all approved validation and interaction states consistent, fast, and mobile
 - Approved inline error messages.
 - Loading placeholders and disabled submission states.
 - Input preservation after failure.
-- Deposit and Withdrawal direction clarity.
+- Deposit, Withdrawal, and directional Correction effect clarity.
 - Browser Back and Cancel behavior.
 - Touch targets and mobile keyboard behavior.
 
@@ -264,7 +269,7 @@ Handle persistence, network, and unexpected failures without silent loss, partia
 - Explicit server failure outcomes.
 - Database rollback behavior.
 - Student List, Student Detail, history-page, and Transaction failure UI.
-- Stable Transaction UUID resolution and retry.
+- Unique lifecycle command ID resolution and retry, with a stable Transaction UUID for create commands.
 - Unknown commit-outcome handling.
 - Explicit offline/network failure with no offline queue.
 
@@ -374,27 +379,33 @@ This is the Deployment phase in which production hosting and database compatibil
 | FR-3.1.4 View Student Detail | 5 | 8 |
 | FR-3.1.5 Edit and Transfer Student | 2 | 8 |
 | FR-3.2.1 Record Deposit | 3 | 8 |
-| FR-3.2.2 Record Withdrawal | 4 | 8 |
-| FR-3.2.3 View Transaction History | 5 | 8 |
-| FR-3.3.1 Compute Balance | 4 | 8 |
+| FR-3.2.2 Record Withdrawal | 3 | 8 |
+| FR-3.2.3 View Transaction History | 4 and 5 | 8 |
+| FR-3.2.4 Record Correction | 3 | 8 |
+| FR-3.2.5 Edit Transaction | 3 and 5 | 8 |
+| FR-3.2.6 Soft Delete Transaction | 3 and 5 | 8 |
+| FR-3.2.7 Restore Transaction | 3 and 5 | 8 |
+| FR-3.3.1 Maintain Balance | 3 and 4 | 8 |
+| FR-3.3.2 Record Financial Audit | 3 and 4 | 8 |
 | FR-3.4.1 PWA Installation | 1 and 9 | 8 and 9 |
 | FR-3.4.2 Navigation | 1 and 6 | 8 |
 | FR-3.4.3 Responsive Layout | 1 and 6 | 8 |
-| NFR-3.1–3.3 Financial correctness | 3 and 4 | 8 |
+| NFR-3.1–3.4 Financial correctness | 3 and 4 | 8 |
 | NFR-4.1 Progressive history | 5 | 8 |
 | NFR-4.2 Interactive search | 2 | 8 |
 | NFR-4.3 Workflow usability | 6 | 8 |
 | NFR-5.1–5.2 Reliability | 7 | 8 |
-| NFR-6.1 Traceability | 3–5 | 8 |
+| NFR-6.1–6.2 Traceability | 3–5 | 8 |
 | NFR-7.1–7.2 PWA and responsive interaction | 1, 6, and 9 | 8 and 9 |
 
 ## 14. Explicitly Excluded Work
 
 No milestone includes:
 
-- Password authentication, public registration, password recovery, provider-assigned roles, Transaction actor attribution, and routine Platform Admin financial access.
+- Password authentication, public registration, password recovery, provider-assigned roles, and routine Platform Admin financial access.
 - Offline data or Transaction synchronization.
-- Transaction edit, deletion, notes, categories, reporting, or export.
+- Hard Transaction deletion.
+- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, Dashboard, Reports, Export, and analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS.
 - Student deletion or bulk operations.
 - Multiple currencies.
 - Microservices, event sourcing, CQRS, message queues, background workers, caches, read replicas, multiple databases, distributed transactions, service mesh, Kubernetes, or API gateway.

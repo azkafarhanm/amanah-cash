@@ -1,6 +1,6 @@
 # Amanah Cash — User Flows
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -23,7 +23,7 @@ This document defines the Amanah Cash MVP user flows. It translates the approved
 
 Global rules for every flow:
 
-- Balance is shown only from the complete persisted transaction history.
+- Balance is shown from committed persisted Student state and never from a partial history page.
 - A progressively loaded history never becomes the balance source.
 - Deposit means money entrusted to the student and increases balance.
 - Withdrawal means money returned by the student and decreases balance.
@@ -160,7 +160,7 @@ References: FR-3.1.5
         └── Valid   --> Update Student --> [Admin Student Detail]
 ```
 
-Changing the Operator immediately changes current ownership. The previous Operator loses list/detail visibility, the new Operator gains it, and Transaction history remains unchanged. Operators have no edit or transfer action.
+Changing the Operator immediately changes current ownership. The previous Operator loses list/detail visibility, the new Operator gains it, and Transaction rows/Balance remain unchanged. The current v1.3 form does not collect a transfer reason or append ownership audit; ADR-004 makes both mandatory for the Transaction Engine migration. Operators have no edit or transfer action.
 
 ## 6. Search Student
 
@@ -203,7 +203,7 @@ References: FR-3.1.4, FR-3.2.3, FR-3.3.1
               --> Student Detail failure flow (Section 13.2)
 ```
 
-This is the delivered non-financial detail state. Milestone 5 replaces the placeholder with the authoritative complete-history Balance and progressive Transaction history; no subtotal of visible rows may be shown as Balance.
+This is the delivered non-financial detail state. Milestone 5 replaces the placeholder with authoritative persisted Balance and progressive Transaction history; no subtotal of visible rows may be shown as Balance.
 
 ## 8. Record Deposit
 
@@ -429,14 +429,14 @@ References: FR-3.2.1, FR-3.2.2
         │     --> [Retry same submission] or [Edit amount]
         │
         └── Unknown commit outcome
-              --> Resolve original Transaction UUID
+              --> Resolve original command ID
               --> {Transaction exists?}
                     ├── Yes
                     │     --> Treat as success
                     │     --> [Student Detail with updated Balance]
                     │
                     └── No
-                          --> Allow Retry using same Transaction UUID
+                          --> Allow Retry using same command ID and, for create, Transaction UUID
 ```
 
 The retry action reuses the original logical submission identity. Repeated taps are disabled while a submission or outcome-resolution request is in progress. This prevents an unintended duplicate Transaction.

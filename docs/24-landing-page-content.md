@@ -1,11 +1,11 @@
 # Amanah Cash — Landing Page Content Specification
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Content Specification
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -22,16 +22,18 @@ Content authority order:
 
 If implementation or product behavior changes, affected content must be reviewed against the higher authorities before publication. Developers must not improvise replacement copy.
 
+Transaction Foundation copy now reflects the approved target architecture in ADR-004. Because the Transaction Engine is not implemented, sections claiming Deposit, Withdrawal, Correction, persisted Balance, edit, soft delete, restore, audit, Reports, or Export MUST remain unpublished until the corresponding implementation and truthfulness review pass. The currently shipped Landing Page must continue to describe only implemented behavior.
+
 ## 2. Global Content Rules
 
 - All visible copy uses Bahasa Indonesia and natural sentence case.
 - The document language is `id-ID`.
 - Use `Amanah Cash`, `transaksi keuangan siswa`, `pemasukan`, `pengeluaran`, `saldo`, and `riwayat transaksi` consistently.
-- Apply `docs/04-domain-model.md` Section 4.6: public `pemasukan` means Deposit/Setoran into the tracked Student Balance, and public `pengeluaran` means Withdrawal/Penarikan from that Balance. These terms do not describe the operator's accounting revenue, expense, or cash position.
+- Apply `docs/04-domain-model.md` Section 4.7: public `pemasukan` means Deposit/Setoran into the tracked Student Balance, and public `pengeluaran` means Withdrawal/Penarikan from that Balance. These terms do not describe the operator's accounting revenue, expense, or cash position.
 - Application screenshots retain the approved in-product labels `Setor` and `Tarik` where those labels appear in the real interface.
 - Use `Rupiah` in explanatory prose and `Rp` in formatted example values.
 - Dates use Indonesian formatting and time uses the 24-hour system.
-- Describe implemented behavior directly. Approved authentication, role, and privacy claims must follow ADR-001 through ADR-003 and must not imply that deferred UI or reports already exist.
+- Describe implemented behavior directly. Approved authentication, role, privacy, and Transaction Foundation claims must follow ADR-001 through ADR-004 and must not imply that deferred financial UI, Reports, or Export already exist.
 - Never add statistics, testimonials, customer names, certifications, urgency, or unsupported security claims.
 - Never replace authentic product evidence with fabricated dashboards or notifications.
 - Text in this document is final unless explicitly marked `Pending Product Decision` or as an implementation placeholder.
@@ -170,7 +172,7 @@ Icons are decorative because each item has a visible title.
 
 **Purpose:** Connect the recognized problems to approved product behavior.
 
-**Content Goal:** Explain how consistent Student-centered records, complete-history Balance, explicit transaction direction, and ordered history improve clarity.
+**Content Goal:** Explain how consistent Student-centered records, committed persisted Balance, explicit Transaction effect, and ordered auditable history improve clarity.
 
 **Final Heading:** `Satu alur yang lebih mudah dipahami`
 
@@ -336,14 +338,14 @@ Icons are decorative.
 
 **Final Heading:** `Kepercayaan dibangun dari catatan yang jelas`
 
-**Final Subheading:** `Setiap saldo dapat dijelaskan melalui riwayat transaksi yang mendasarinya.`
+**Final Subheading:** `Setiap perubahan saldo dapat dijelaskan melalui transaksi aktif dan catatan audit yang mendasarinya.`
 
 **Supporting Copy:**
 
 | Principle | Final title | Final description |
 |-----------|-------------|-------------------|
-| 1 | `Saldo berasal dari riwayat lengkap` | `Perhitungan menggunakan seluruh transaksi yang tersimpan, bukan hanya transaksi yang sedang terlihat.` |
-| 2 | `Transaksi membentuk catatan berurutan` | `Setoran dan Penarikan tersimpan sebagai riwayat yang tidak dapat diedit atau dihapus melalui aplikasi.` |
+| 1 | `Saldo berubah bersama transaksi` | `Transaksi, saldo siswa, dan catatan audit disimpan sebagai satu perubahan yang utuh.` |
+| 2 | `Perubahan tetap dapat ditelusuri` | `Edit, penghapusan lunak, dan pemulihan transaksi menyimpan pelaku, alasan, serta keadaan sebelum dan sesudah.` |
 | 3 | `Arah transaksi dinyatakan dengan jelas` | `Aplikasi menjelaskan apakah dana dititipkan kepada siswa atau dikembalikan oleh siswa.` |
 | 4 | `Keberhasilan menunggu penyimpanan` | `Transaksi hanya dinyatakan berhasil setelah penyimpanan dikonfirmasi.` |
 | 5 | `Kegagalan tidak disamarkan` | `Kesalahan dan hasil yang belum pasti ditampilkan secara eksplisit agar tindakan tidak diulang sebelum hasilnya diketahui.` |
@@ -354,8 +356,8 @@ Icons are decorative.
 
 **Icons:**
 
-- `History` — Saldo berasal dari riwayat lengkap.
-- `ListChecks` — Transaksi membentuk catatan berurutan.
+- `History` — Saldo berubah bersama transaksi.
+- `ListChecks` — Perubahan tetap dapat ditelusuri.
 - `ArrowLeftRight` — Arah transaksi dinyatakan dengan jelas.
 - `DatabaseZap` — Keberhasilan menunggu penyimpanan.
 - `CircleAlert` — Kegagalan tidak disamarkan.
@@ -382,7 +384,7 @@ Icons reinforce visible text and do not function as security badges.
 
 #### 1. Apa itu Amanah Cash?
 
-`Amanah Cash adalah aplikasi pencatatan transaksi keuangan siswa. Aplikasi ini membantu operator sekolah mencatat Setoran dan Penarikan, melihat saldo, serta menelusuri riwayat transaksi setiap siswa.`
+`Amanah Cash adalah aplikasi pencatatan transaksi keuangan siswa. Aplikasi ini membantu operator sekolah mencatat Setoran, Penarikan, dan Koreksi beralasan, melihat saldo, serta menelusuri perubahan transaksi setiap siswa.`
 
 #### 2. Siapa yang dapat menggunakan Amanah Cash?
 
@@ -390,11 +392,11 @@ Icons reinforce visible text and do not function as security badges.
 
 #### 3. Transaksi apa yang dapat dicatat?
 
-`Amanah Cash mencatat Setoran, yaitu dana yang dititipkan kepada siswa, dan Penarikan, yaitu dana yang dikembalikan oleh siswa. Setiap jumlah menggunakan Rupiah utuh.`
+`Amanah Cash mencatat Setoran, Penarikan, dan Koreksi beralasan yang secara jelas menambah atau mengurangi saldo. Setiap jumlah menggunakan Rupiah utuh.`
 
 #### 4. Bagaimana saldo siswa dihitung?
 
-`Saldo dihitung dari seluruh Setoran dikurangi seluruh Penarikan yang tersimpan untuk siswa tersebut. Saldo tidak disimpan atau diubah secara manual.`
+`Saldo disimpan pada data siswa dan hanya berubah bersama transaksi dalam satu operasi yang utuh. Nilainya dapat diperiksa kembali dari seluruh transaksi aktif siswa.`
 
 #### 5. Apakah Amanah Cash dapat digunakan melalui ponsel?
 
@@ -406,7 +408,7 @@ Icons reinforce visible text and do not function as security badges.
 
 #### 7. Apakah transaksi dapat diedit atau dihapus?
 
-`Tidak melalui aplikasi. Riwayat hanya bertambah melalui transaksi baru agar saldo tetap dapat ditelusuri dari catatan transaksi yang tersimpan.`
+`Dapat. Edit, penghapusan lunak, dan pemulihan transaksi selalu memperbarui saldo secara utuh dan mencatat pelaku, alasan, serta perubahan sebelum dan sesudah. Transaksi tidak dihapus permanen.`
 
 **CTA Labels:** Omitted.
 
@@ -554,12 +556,12 @@ Icons reinforce visible text and do not function as security badges.
 | Narrative and section purpose | `docs/22-landing-page-strategy.md` Sections 6–8; `docs/23-landing-page-blueprint.md` Section 6 |
 | Student search and list | FR-3.1.2–3.1.3; `docs/19-screen-specifications.md` Section 3 |
 | Student Detail, Balance, and history | FR-3.1.4, FR-3.2.3, FR-3.3.1; `docs/19-screen-specifications.md` Section 4 |
-| Setoran and Penarikan | FR-3.2.1–3.2.2; `docs/19-screen-specifications.md` Section 5 |
-| Complete-history Balance | Product Principle 5; FR-3.3.1; BR-BAL-001–005 |
-| Append-only Transactions | FR-3.2.3; BR-TXN-003 |
+| Setoran, Penarikan, and Koreksi | FR-3.2.1–FR-3.2.4; `docs/37-technical-design-transaction-foundation.md` Section 3 |
+| Persisted reconcilable Balance | Product Principle 5; FR-3.3.1; BR-BAL-001–006 |
+| Audited Transaction lifecycle | FR-3.2.5–FR-3.2.7, FR-3.3.2; BR-TXN-005–009; BR-AUD-001–004 |
 | PWA and mobile behavior | Product Principles 1–2; FR-3.4.1–3.4.3 |
 | Offline limitation | Product Principle 2; `docs/19-screen-specifications.md`; `docs/20-interaction-states.md` Section 9 |
-| Persistence and explicit outcomes | BR-TXN-001–005; `docs/20-interaction-states.md` Sections 7, 11–12 |
+| Persistence and explicit outcomes | BR-TXN-001–009; `docs/20-interaction-states.md` Sections 7, 11–12 |
 | Accessibility and media alternatives | `docs/16-accessibility-guidelines.md`; `docs/23-landing-page-blueprint.md` Section 8 |
 
 ## 8. Remaining Content Decisions

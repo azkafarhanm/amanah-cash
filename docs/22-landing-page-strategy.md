@@ -1,11 +1,11 @@
 # Amanah Cash — Landing Page Strategy
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -35,7 +35,7 @@ Preferred product terminology:
 - pencatatan keuangan siswa;
 - transparansi transaksi.
 
-The cross-layer terminology contract in `docs/04-domain-model.md` Section 4.6 governs meaning. In public narrative, `pemasukan` maps to Deposit/Setoran and `pengeluaran` maps to Withdrawal/Penarikan from the perspective of movement into or out of the tracked Student Balance, not the operator's accounting revenue, expense, or cash position.
+The cross-layer terminology contract in `docs/04-domain-model.md` Section 4.7 governs meaning. In public narrative, `pemasukan` maps to Deposit/Setoran and `pengeluaran` maps to Withdrawal/Penarikan from the perspective of movement into or out of the tracked Student Balance, not the operator's accounting revenue, expense, or cash position.
 
 Avoid making `uang titipan`, `uang saku boarding`, or equivalent boarding-specific phrases the primary product definition. Such language may appear only when a specific, approved example genuinely requires it.
 
@@ -248,10 +248,10 @@ Business value must be presented as a practical outcome, not an unverified perfo
 | Manual bookkeeping challenge | Amanah Cash value direction |
 |------------------------------|-----------------------------|
 | Records may be scattered or dependent on one person's method | One consistent Student-centered transaction record |
-| Balance may require repeated manual arithmetic | Balance derived from complete transaction history |
+| Balance may require repeated manual arithmetic | Persisted Balance changes atomically with Transactions and remains reconcilable |
 | Transaction direction can be unclear | Explicit pemasukan and pengeluaran meaning |
 | Finding an old entry may take time | Ordered, searchable context and transaction history |
-| Failures or corrections can be ambiguous | Explicit operation outcomes and append-only history |
+| Failures or corrections can be ambiguous | Explicit outcomes, controlled Transaction lifecycle, and immutable audit evidence |
 
 The comparison must respect existing manual processes and the people using them. Do not describe teachers as careless or outdated.
 
@@ -348,7 +348,7 @@ Do not inflate small behaviors into separate platform capabilities.
 
 Lead with approved integrity principles:
 
-- Balance is derived from complete transaction history.
+- Persisted Balance is atomically maintained and reconcilable from active Transaction effects.
 - Transactions form traceable financial records.
 - Pemasukan and pengeluaran directions are explicit.
 - A Transaction is shown as successful only after persistence is confirmed.

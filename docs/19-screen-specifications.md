@@ -1,6 +1,6 @@
 # Amanah Cash — MVP Screen Specifications
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
@@ -31,7 +31,7 @@ Create Student remains a responsive overlay owned by Student List. Dashboard, Re
 - Communicate Quiet Confidence. Do not introduce playful, trendy, glossy, ornamental, marketing, crypto, or startup-dashboard treatments.
 - Render one centered vertical column using `screen.shell.*` tokens.
 - Use Bahasa Indonesia, `id-ID`, Indonesian dates, and 24-hour time.
-- Follow `docs/04-domain-model.md` Section 4.6: `Setor`/`Setoran` map to Domain Deposit, and `Tarik`/`Penarikan` map to Domain Withdrawal. English Domain terminology is not production UI copy.
+- Follow `docs/04-domain-model.md` Section 4.7: `Setor`/`Setoran` map to Domain Deposit, `Tarik`/`Penarikan` map to Domain Withdrawal, and `Koreksi` maps to Domain Correction with explicit direction/reason. English Domain terminology is not production UI copy.
 - Use browser Back/forward semantics.
 - Do not use a sidebar, bottom navigation, floating action button, dashboard grid, or desktop-only function.
 - Page loading uses Skeleton Loading. Submission uses Button Loading.
@@ -171,11 +171,11 @@ After Create Student succeeds:
 
 ### 4.1 User Goal
 
-Understand one Student's authoritative financial position, review immutable history, and start a Deposit or Withdrawal.
+Understand one Student's authoritative financial position, review auditable Transaction history, and start an approved financial action.
 
 ### 4.2 Screen Purpose
 
-Student Detail is the financial trust surface. It presents Student identity, complete-history Balance, equal Deposit/Withdrawal actions, and newest-first Transaction history.
+Student Detail is the financial trust surface. It presents Student identity, committed persisted Balance, financial actions, and newest-first Transaction history.
 
 References: FR-3.1.4, FR-3.2.3, FR-3.3.1; NFR-3.1–3.3, NFR-4.1; BR-BAL-001–005, BR-UI-001–003; User Flows Sections 7, 10, 12.3, 13.2–13.3; Wireframes Section 8.
 
@@ -261,11 +261,11 @@ When the Student has no Transactions:
 
 ### 4.10 Populated State
 
-- Display exact complete-history Balance immediately.
+- Display exact committed persisted Balance immediately.
 - Show Transactions newest first.
 - Each TransactionItem contains type, explicit direction, whole-Rupiah amount, and Indonesian date plus 24-hour time.
 - Deposit uses `color.deposit.*`; Withdrawal uses `color.withdrawal.*`, never error color.
-- Do not provide edit, delete, swipe, overflow, or correction actions.
+- Transaction edit, soft-delete, restore, and Correction are approved architecture capabilities, but their concrete controls and interaction composition require the Transaction Engine presentation sprint. Hard delete remains prohibited.
 - Show `Muat transaksi lama` while more history exists; remove it when complete.
 
 ### 4.11 Success State
@@ -286,7 +286,7 @@ After a confirmed Deposit or Withdrawal:
 - Deposit and Withdrawal navigate to the matching Transaction Entry mode.
 - Load Older uses Button Loading local to the history footer.
 - Retain existing content and scroll position while older history loads.
-- Full-history Balance never depends on visible history pages.
+- Persisted Balance never depends on visible history pages.
 
 ### 4.13 Token References
 
@@ -415,7 +415,7 @@ Transaction Entry has no normal empty-data state. If required Student or mode co
 - Confirm uses Button Loading and becomes unavailable immediately after activation.
 - Cancel and browser Back return to Student Detail without financial effect.
 - Insufficient Balance is authoritative only after the atomic server operation.
-- Unknown commit outcome transitions to the master Unknown Transaction Outcome state and reuses the original Transaction UUID.
+- Unknown commit outcome transitions to the master Unknown Transaction Outcome state and reuses the original command ID plus Transaction UUID for create.
 
 ### 5.13 Token References
 

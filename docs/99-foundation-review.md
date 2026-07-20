@@ -1,5 +1,7 @@
 # Amanah Cash Foundation Review
 
+> Historical review notice (2026-07-20): this document records the pre-Transaction-Foundation review. Its derived-Balance, append-only Transaction, no-actor, and no-soft-delete conclusions are superseded by ADR-004 and the Transaction Foundation TDS. Authentication, authorization, privacy, PWA, and foundation findings remain historical evidence; this file is not an active financial architecture authority.
+
 **Status:** Foundation Audit  
 **Audit date:** 18 July 2026  
 **Scope:** Approved product, engineering, application UI, and landing-page foundation documentation

@@ -9,7 +9,7 @@ Student Management provides Platform Admin write access and ownership-scoped Ope
 
 Every Student has one required `operatorId`. Creation and editing accept only an existing, active, non-deleted Operator. Changing `operatorId` immediately transfers ownership, so existing ownership authorization automatically follows the new assignment. Database foreign keys and ownership triggers prevent orphaning or assignment to an inactive account.
 
-Statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. The current module uses them as management labels and list filters only; status does not independently change visibility or authorization. Platform Admin may move a Student among any of the three states. Status does not delete the Student or its future financial history. Transfer history is intentionally deferred.
+Statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. The current module uses them as management labels and list filters only; status does not independently change visibility or authorization. Platform Admin may move a Student among any of the three states. Status does not delete the Student or its future financial history. Ownership-transfer reason/audit is approved by ADR-004 but remains unimplemented until the Transaction Engine migration.
 
 ## Interfaces
 

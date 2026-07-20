@@ -1,6 +1,6 @@
 # Amanah Cash — Component Guidelines
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
@@ -84,7 +84,7 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 ### 4.6 Balance Display
 
 - Labels the value as Balance and uses tabular numerals.
-- Shows a value only when based on complete persisted history.
+- Shows a value only when it is the committed persisted Student Balance.
 - Uses skeleton/loading or explicit error instead of a provisional amount.
 - Immediately displays the authoritative value after successful persistence.
 - Never animates, interpolates, counts, or transitions between Balance values.
@@ -101,7 +101,7 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 
 - Shows Deposit/Withdrawal, explicit direction, whole-IDR amount, and timestamp.
 - Uses newest-first ordering provided by the approved data contract.
-- Has no edit, delete, overflow, swipe, or correction actions.
+- Transaction lifecycle actions may exist only under FR-3.2.4–FR-3.2.7. They must expose Correction direction/reason, distinguish edit/soft delete/restore, and require explicit confirmation appropriate to their Balance effect. Component design remains a future implementation sprint.
 - Uses text and icon/shape in addition to color.
 
 ### 4.9 Direction Summary
@@ -194,7 +194,7 @@ The mode cannot change accidentally within the form. Confirm wording includes th
 
 - All MVP interface copy uses Bahasa Indonesia only. Multilingual support is out of scope.
 - Use the `id-ID` locale, Indonesian date formatting, and 24-hour time.
-- Follow the cross-layer terminology contract in `docs/04-domain-model.md` Section 4.6. Preserve English Domain terms in requirements, code, and traceability; use only the approved Bahasa Indonesia UI terms and final strings from `docs/19-screen-specifications.md` for visible interface copy.
+- Follow the cross-layer terminology contract in `docs/04-domain-model.md` Section 4.7. Preserve English Domain terms in requirements, code, and traceability; use only the approved Bahasa Indonesia UI terms and final strings from `docs/19-screen-specifications.md` for visible interface copy.
 - Use sentence case and active voice.
 - Buttons name the action; headings name the context.
 - Explain consequence before financial confirmation.

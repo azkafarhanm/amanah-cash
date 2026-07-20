@@ -1,11 +1,11 @@
 # Amanah Cash — Canonical Engineering Handoff
 
 **Last updated:** 2026-07-20  
-**Current delivery state:** Student Management implemented and verified
+**Current delivery state:** Transaction Foundation architecture approved; Transaction Engine implementation not started
 
 ## Project Purpose
 
-Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. Platform Admin manages accounts, Student records, and assignments without routine financial-data access. Authenticated Operators may access only Students currently assigned to them. Future balances derive from immutable Transaction history and must never be stored independently. Approved documents in `docs/` remain authoritative.
+Amanah Cash is a mobile-first PWA for recording financial events after they occur; it does not connect to banks or payment gateways. Platform Admin manages accounts, Student records, and assignments without routine financial-data access. Authenticated Operators may access only currently assigned Students. The approved target atomically couples controlled Transaction lifecycle, persisted Student Balance, and immutable financial audit. Approved documents in `docs/` remain authoritative.
 
 ## Completed Milestones
 
@@ -16,7 +16,8 @@ Amanah Cash is a mobile-first PWA for managing funds entrusted to Students. Plat
 - Authenticated App Shell with role-aware navigation, protected route groups, loading, empty, forbidden, not-found, and error states.
 - Operator Management: list, search, pagination, create, detail, edit, activation/deactivation, assignment-safe logical deletion, last-login tracking, audit summaries, protected APIs, documentation, and tests.
 - Student Management: admin list/create/detail/edit, Operator assignment and reassignment, active/inactive/archived status, notes, search, pagination, Operator-scoped list/detail, protected APIs, documentation, database constraints, and tests.
-- Canonical handoff, changelog, README, and delivery roadmap synchronized with the implemented platform and the next Financial Transactions sprint.
+- Transaction Foundation architecture finalized in ADR-004 and the Transaction Foundation TDS, covering Deposit, Withdrawal, Correction, edit, soft delete, restore, persisted Balance, audit, failure/security/reporting implications, sequence diagrams, and future extension boundaries.
+- Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
 
@@ -59,7 +60,7 @@ SQLite relational database and invariant triggers
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
 - `src/components/app-shell/` remains the only authenticated application chrome.
 - `src/components/ui/` remains the shared design-system primitive layer.
-- Student and Transaction are the future financial source entities. Identity, account lifecycle, and audit data remain separate from financial truth.
+- The approved financial target uses Student persisted Balance/version, Student-owned Transactions, and immutable FinancialAuditEvents. Identity, account lifecycle, and authentication/session data remain separate from financial data.
 
 ## Important Implementation Decisions
 
@@ -76,73 +77,77 @@ SQLite relational database and invariant triggers
 - Student and Operator search and pagination execute server-side with ten records per page.
 - Operator list queries are scoped by the authorized Operator ID. Operator detail additionally uses the centralized masked ownership policy.
 - Current Balance and financial summaries are explicit static placeholders. No Transaction or balance query has been introduced.
-- Financial Transactions remain append-only. Balance will be derived from complete persisted history and never stored as an authoritative column or cache.
+- Student owns every Transaction; Transaction has no Operator owner. Current `operatorId` scopes the entire financial record and transfer changes visibility without rewriting Transactions.
+- Target Transaction types are `DEPOSIT`, `WITHDRAWAL`, and `CORRECTION`. Correction has explicit increase/decrease direction and required reason.
+- Target Transactions support controlled edit, soft delete, and restore. Transaction identity, Student, creation actor, and creation time remain immutable; hard delete is prohibited.
+- Target `Student.balance` is persisted, non-negative, and changed only by the Transaction Engine. Every mutation updates Transaction state, Balance/version, and immutable audit atomically.
+- `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and privacy-minimized `OWNERSHIP_TRANSFER` are audited. Financial audit follows Student ownership; Platform Admin sees no Balance/Transaction payload through transfer audit.
+- Financial mutations are allowed only for an `ACTIVE` Student owned by the current active Operator. Inactive and archived Students are financially read-only.
+- Every mutation uses a unique command ID and expected revision where applicable; retry cannot apply a Balance delta twice.
 - `AI_CONTEXT.md` is the canonical engineering handoff. Every implementation sprint must also assess and synchronize `CHANGELOG.md`, README, and roadmap status before completion.
 
 ## Data Model Status
 
 `User`: Google identity, exact role, active state, creation time, last login time, and logical deletion time. Operator lifecycle events are recorded in `operator_audit`.
 
-`Student`: UUID, normalized unique name, optional notes, `ACTIVE`/`INACTIVE`/`ARCHIVED` status, creation and update times, and one required active Operator owner.
+`Student` (implemented): UUID, normalized unique name, optional notes, `ACTIVE`/`INACTIVE`/`ARCHIVED` status, creation/update times, and one required active Operator owner. Target Transaction Engine adds persisted non-negative whole-IDR `balance` and monotonic `financialVersion`.
 
-`Transaction`: UUID, required Student, `deposit` or `withdrawal`, positive whole-IDR amount, and creation time. Transaction application workflows are not implemented.
+`Transaction` (current schema only): UUID, required Student, `deposit` or `withdrawal`, positive whole-IDR amount, and creation time. No Transaction application workflow exists.
 
-There is no Balance table or column, currency column, Transaction actor attribution, Transaction update timestamp, or Transaction soft deletion.
+`Transaction` (approved target): Student-owned `DEPOSIT`/`WITHDRAWAL`/`CORRECTION`, amount, Correction direction/reason, business occurrence time, creation/latest actor metadata, revision, and soft-delete metadata. `FinancialAuditEvent` is the immutable target evidence entity. No target currency column exists because IDR is fixed.
 
 ## Known Limitations
 
-- Financial Transactions, deposits, withdrawals, and balance calculation are not implemented.
+- Transaction Engine, persisted Balance, financial audit, Deposit, Withdrawal, Correction, edit, soft delete, and restore are architecture only and not implemented.
 - Student balance and financial-summary values are placeholders only.
-- Student ownership transfer history is not recorded; only current ownership is authoritative.
+- Student ownership transfer audit is approved but not implemented; only current ownership is currently persisted.
 - Student create/edit Server Action validation redirects do not restore submitted invalid values; the form reloads default or persisted values.
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
 - A populated database predating mandatory ownership still requires an explicit Student-to-Operator mapping; the ownership migration intentionally refuses to invent one.
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.
 - SQLite is the approved current persistence target; production deployment topology remains deferred.
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
-- No reporting, exports, categories, notifications, bulk operations, dashboard analytics, or distributed infrastructure exist.
+- No reporting, exports, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, dashboard analytics, or distributed infrastructure exist.
 
 ## Outstanding Work
 
-- Implement Financial Transactions without changing the established Student ownership boundary.
-- Add Deposit and Withdrawal application workflows using positive whole-IDR integers.
-- Enforce append-only Transaction behavior and idempotent retry by Transaction UUID.
-- Implement per-Student financial write serialization and atomic non-negative Withdrawal validation.
-- Derive Balance from complete Transaction history independently of progressive history pages.
-- Add Operator-only owned-Student financial views; do not add a Platform Admin financial bypass.
-- Add transaction-specific loading, empty, validation, failure, retry, and concurrency tests.
+- Plan and implement the physical Transaction Engine schema/migration under the Database Design implementation gate, including existing-row/backfill, trigger replacement, rollback, and reconciliation verification.
+- Implement Deposit, Withdrawal, Correction, edit, soft delete, restore, persisted Balance/version, financial audit, command idempotency, and expected-revision conflicts exactly as ADR-004/TDS specify.
+- Reuse current ownership authorization and recheck active Operator/current ownership/ACTIVE Student status inside every financial write transaction.
+- Add domain, persistence, concurrency, rollback, audit, reconciliation, security, and idempotency tests before presentation integration.
+- Add Operator-only financial reads later without a Platform Admin financial bypass.
 - Review production deployment, database topology, backups, OAuth configuration, dependency advisories, and Platform Admin bootstrap in their separately approved phases.
 
 ## Next Recommended Sprint
 
-Implement **Financial Transactions** as the next bounded sprint.
+Implement the **Transaction Engine** as the next bounded sprint.
 
-The sprint should add Operator-owned Deposit and Withdrawal workflows, immutable Transaction history, exact whole-IDR arithmetic, atomic overdraft prevention, idempotent retries, and derived Balance. Every financial read and write must reuse current Student ownership authorization. Platform Admin must remain unable to access routine financial data. Student CRUD, ownership transfer history, reporting, and dashboard analytics should not be expanded during that sprint.
+The sprint should implement the reviewed physical schema/migration plus Domain/Application/Persistence contracts for the complete lifecycle. It must not reopen type/effect, Balance, audit, ownership, status, security, retry, concurrency, rollback, or extension decisions. UI, API expansion, Reports, Export, Dashboard, analytics, and future extension implementation remain outside that bounded engine sprint unless separately planned.
 
 ## Core Business Rules to Preserve
 
 1. IDR is the only currency and amounts have no decimal part.
-2. Transactions are append-only.
-3. Balance is all Deposits minus all Withdrawals for one Student and is never stored independently.
-4. A Withdrawal cannot make Balance negative.
-5. Withdrawal validation and insertion occur in one atomic database transaction.
-6. All financial writes for one Student share the per-Student serialization boundary.
-7. A failed operation leaves no partial financial event.
-8. Success is reported only after persistence commits.
-9. Retry reuses the original Transaction UUID and cannot create a duplicate.
-10. Progressive history loading never changes Balance calculation.
-11. Authorization is server-enforced from the Amanah Cash role and current Student ownership.
-12. Privacy outranks administrative visibility; Platform Admin has no financial-data bypass.
+2. MVP types are Deposit, Withdrawal, and reasoned directional Correction; unknown types fail closed.
+3. Student owns Transactions; current Student ownership controls the complete financial record.
+4. Persisted Student Balance equals all non-deleted Transaction effects and is never changed independently.
+5. No financial mutation may produce a negative Balance.
+6. Create/edit/soft-delete/restore, Balance/version, command idempotency, and immutable audit commit or roll back together.
+7. Edit cannot change Transaction identity, Student, creation actor, or creation time; hard delete is prohibited.
+8. Financial writes for one Student share a serialization boundary and recheck ownership/status inside it.
+9. Every lifecycle command is auditable; audit failure rolls back the mutation.
+10. Success is reported only after commit; retry reuses command ID and cannot apply a delta twice.
+11. Progressive history loading never changes persisted Balance; reconciliation mismatch is an integrity incident.
+12. Authorization is server-enforced from current ownership, and Platform Admin has no financial-data bypass.
 
 ## AI Must Never
 
-- Modify `docs/00-product-principles.md`; it is immutable.
+- Modify locked product principles without an explicit Project Owner decision and synchronized ADR/traceability update.
 - Duplicate authentication, role, or ownership authorization inside a feature.
 - Invent an administrative financial bypass.
-- Persist or cache authoritative Balance.
-- Add Transaction mutation or soft deletion.
+- Change Student Balance outside the approved atomic Transaction Engine.
+- Hard-delete Transaction or FinancialAuditEvent history, or mutate immutable Transaction identity/ownership/creation fields.
 - Use floating-point money.
-- Split Withdrawal checking and insertion across transaction boundaries.
+- Split Transaction lifecycle, Balance/version, idempotency, or audit writes across transaction boundaries.
 - Put authoritative business logic in UI code.
 - Add password authentication, public registration, offline financial sync, multiple currencies, reporting implementation, or distributed infrastructure without a separately approved sprint.
 - Bypass tests, database constraints, review, documentation synchronization, or this canonical handoff update.
@@ -151,12 +156,12 @@ The sprint should add Operator-owned Deposit and Withdrawal workflows, immutable
 
 | Document | Authority |
 |----------|-----------|
-| `docs/00-product-principles.md` | Immutable principles |
+| `docs/00-product-principles.md` | Locked product principles |
 | `docs/01-functional-requirements.md` | Capabilities and acceptance criteria |
 | `docs/02-non-functional-requirements.md` | Correctness, reliability, and PWA constraints |
 | `docs/03-business-rules.md` | Authoritative business rules |
 | `docs/04-domain-model.md` | Entities and invariants |
-| `docs/07-database-design.md` | Schema and financial integrity |
+| `docs/07-database-design.md` | Implemented foundation plus approved Transaction Engine target schema/integrity contract |
 | `docs/08-system-architecture.md` | Architecture responsibilities |
 | `docs/09-development-roadmap.md` | Delivery milestones |
 | `docs/10-engineering-rules.md` | Engineering standards |
@@ -168,6 +173,8 @@ The sprint should add Operator-owned Deposit and Withdrawal workflows, immutable
 | `docs/33-application-shell-architecture.md` | Implemented App Shell |
 | `docs/34-operator-management-implementation.md` | Implemented Operator Management |
 | `docs/35-student-management-implementation.md` | Implemented Student Management |
+| `docs/36-adr-transaction-balance-and-audit.md` | Accepted Transaction, persisted Balance, audit, lifecycle, concurrency, and ownership decisions |
+| `docs/37-technical-design-transaction-foundation.md` | Implementation-ready Transaction Engine architecture and extension boundaries |
 
 ## Sprint Completion Rule
 

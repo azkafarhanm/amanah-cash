@@ -1,11 +1,11 @@
 # Amanah Cash — Master Interaction States
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -87,7 +87,7 @@ Indicate that required page or section data is being retrieved without inventing
 - Prefer component-shaped Skeleton Loading.
 - Do not use an application-wide spinner when stable structure is known.
 - Prevent stale requests from replacing newer results.
-- Balance becomes visible only when the complete-history value is authoritative.
+- Balance becomes visible only when the committed persisted Student value is authoritative.
 
 ### Motion Constraints
 
@@ -130,7 +130,7 @@ Indicate that one button-initiated operation is in progress and prevent repeated
 ### Developer Implementation Rules
 
 - Use one in-flight logical submission identity.
-- Transaction retry reuses the original Transaction UUID.
+- Transaction retry reuses the original command ID and, for create, Transaction UUID.
 - Button Loading must not be simulated with a fixed delay.
 
 ### Motion Constraints
@@ -244,7 +244,7 @@ Allow a failed operation to be attempted again only when retry is safe.
 ### Interaction Rules
 
 - Reads may retry the failed request.
-- Transaction writes reuse the original logical Transaction UUID.
+- Transaction writes reuse the original logical command ID and create Transaction UUID.
 - Unknown outcomes must be resolved before allowing a write retry.
 - Disable repeated Retry while the request is active.
 
@@ -264,7 +264,7 @@ Allow a failed operation to be attempted again only when retry is safe.
 ### Developer Implementation Rules
 
 - Retry must be idempotent where required.
-- Do not create a new Transaction UUID for the same logical submission.
+- Do not create a new command ID or create Transaction UUID for the same logical submission.
 - Do not offer Retry when it could duplicate or corrupt an operation.
 
 ### Motion Constraints
@@ -385,7 +385,7 @@ Confirm an operation only after its authoritative success condition is met.
 
 - The server response or verified follow-up read is authoritative.
 - Do not use optimistic financial success.
-- Ensure the updated Balance uses complete persisted history.
+- Ensure the updated Balance is the committed result of the atomic Transaction Engine command.
 
 ### Motion Constraints
 
@@ -410,7 +410,7 @@ Protect financial integrity when the client cannot determine whether a submitted
 ### Interaction Rules
 
 - Disable Confirm and duplicate Retry.
-- Preserve mode, Amount, Student context, and original Transaction UUID.
+- Preserve mode, Amount, Student context, command ID, and create Transaction UUID.
 - Query the server for the original UUID.
 - Do not allow editing that could disguise the same logical submission while resolution is active.
 
@@ -428,7 +428,7 @@ Protect financial integrity when the client cannot determine whether a submitted
 
 ### Developer Implementation Rules
 
-- Resolve by original Transaction UUID before any retry.
+- Resolve by original command ID before any retry.
 - Reuse the same UUID if a confirmed-not-committed operation is retried.
 - Never infer failure from timeout alone.
 - Never show an optimistic Balance.

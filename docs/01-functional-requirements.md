@@ -1,6 +1,6 @@
 # Amanah Cash — Functional Requirements (SRS)
 
-**Version:** 1.3
+**Version:** 1.4
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -15,7 +15,7 @@ This document specifies the complete Software Requirements Specification (SRS) f
 
 ### 1.2 Scope
 
-Amanah Cash is a Progressive Web App for managing entrusted student funds. It enables an operator to track deposits and withdrawals for individual students. The system computes balances exclusively from the transaction history — no balance is ever stored manually.
+Amanah Cash is a Progressive Web App for recording entrusted Student funds after events occur. It enables an Operator to record Deposit, Withdrawal, and reasoned Correction Transactions for assigned Students. Persisted Student Balance changes only through the atomic Transaction Engine and is never entered or edited independently.
 
 ### 1.3 Definitions
 
@@ -26,10 +26,11 @@ Amanah Cash is a Progressive Web App for managing entrusted student funds. It en
 | **Student** | A person whose entrusted funds are tracked by the system. |
 | **Deposit** | A record of funds entrusted to a student (money going out from the operator's perspective). |
 | **Withdrawal** | A record of funds returned by a student (money coming in from the operator's perspective). |
-| **Balance** | The net amount currently entrusted to a student, computed as total deposits minus total withdrawals. |
-| **Transaction** | A single deposit or withdrawal event recorded in the system. |
+| **Balance** | The persisted current whole-IDR amount for a Student, changed only by an atomic financial operation and reconcilable from active Transactions. |
+| **Transaction** | A recorded Deposit, Withdrawal, or Correction belonging to one Student. Transactions may be edited, soft-deleted, and restored with immutable audit evidence. |
+| **Correction** | An explicit reasoned increase or decrease used to adjust a discovered ledger discrepancy. |
 | **Currency** | Indonesian Rupiah (`IDR`). All monetary values are whole Rupiah with no decimal amount. |
-| **Auditability** | Traceability of financial events through immutable transaction records. Actor attribution is not part of the MVP. |
+| **Auditability** | Immutable evidence of financial creation and mutation, including actor, reason, before/after state, Balance transition, and time. |
 
 ### 1.4 Product Principles Mapping
 
@@ -41,7 +42,7 @@ Every functional requirement in this document is grounded in the following princ
 | PWA | The application is installable and works in a browser context. |
 | Speed of Operation | Workflows use the fewest possible steps. |
 | Fast Input | Common operations (search, deposit, withdrawal) require minimal taps. |
-| Single Source of Truth | Balances are computed, never stored. |
+| Single Source of Truth | Transaction state, persisted Student Balance, and immutable audit evidence change atomically and remain reconcilable. |
 | Small MVP Scope | Only core operational features are included. |
 | No Scope Creep | No features beyond those listed are in scope. |
 | Simplicity Over Generality | The system solves the specific problem of entrusted fund tracking. |
@@ -77,7 +78,7 @@ An Operator manages Transactions, Balances, financial history, and approved repo
 
 ### 2.4 Student Assignment
 
-Every Student belongs to exactly one Operator. Platform Admin may assign or transfer a Student. Transfer changes responsibility and access; it does not change immutable Transaction history.
+Every Student belongs to exactly one Operator. Platform Admin may assign or transfer a Student. Transfer changes responsibility and access; it does not rewrite Transaction rows or Balance and appends privacy-minimized ownership audit.
 
 ---
 
@@ -151,7 +152,7 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 - The detail view displays transactions newest first and may load older entries progressively.
 - Each transaction in the list shows: type (deposit/withdrawal), amount, and timestamp.
 - Each transaction clearly communicates the direction of money: a deposit is money entrusted to the student, while a withdrawal is money returned by the student.
-- The displayed balance is computed from the complete transaction history and must not be derived only from the currently loaded or displayed entries.
+- The displayed Balance is the committed persisted Student value and must not be derived from only the currently loaded or displayed entries.
 - Access is denied when the Student is not currently assigned to the Operator.
 - Until the financial milestones are delivered, the implemented detail page shows identity, assignment, lifecycle metadata, notes, and an explicit static financial-summary placeholder without querying Balance or Transactions.
 
@@ -162,7 +163,7 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 **Acceptance Criteria:**
 - Editing applies the same validation as creation.
 - Reassignment accepts only an existing active, non-deleted Operator.
-- Reassignment immediately changes the current ownership scope without changing Transaction history.
+- Reassignment requires a non-empty reason, immediately changes current ownership scope without rewriting Transaction rows or Balance, and appends privacy-minimized ownership audit atomically.
 - Operators cannot edit Student identity, lifecycle status, notes, or assignment.
 - Student deletion remains outside MVP scope.
 
@@ -183,7 +184,7 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 
 **Acceptance Criteria:**
 - The system accepts a positive whole-Rupiah amount and creates a deposit transaction.
-- The system records the student reference, amount, type (deposit), and timestamp automatically.
+- The system records the Student reference, amount, type, business occurrence time, creation actor, and system timestamp.
 - The system rejects zero, negative, non-numeric, or decimal amounts.
 - After recording, the student's computed balance updates immediately.
 - The deposit action is accessible from the student detail view with a single tap.
@@ -202,7 +203,7 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 
 **Acceptance Criteria:**
 - The system accepts a positive whole-Rupiah amount and creates a withdrawal transaction.
-- The system records the student reference, amount, type (withdrawal), and timestamp automatically.
+- The system records the Student reference, amount, type, business occurrence time, creation actor, and system timestamp.
 - The system rejects zero, negative, non-numeric, or decimal amounts.
 - The system does not allow a withdrawal that would make the balance negative.
 - Balance validation and withdrawal recording behave as one atomic operation, including when multiple requests occur concurrently.
@@ -218,27 +219,84 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 
 **Acceptance Criteria:**
 - The transaction list displays transactions newest first and supports progressive loading of older entries.
-- Each entry shows: type (deposit/withdrawal), amount, and timestamp.
+- Each entry shows type (Deposit, Withdrawal, or Correction), amount/effect, business occurrence time, and current lifecycle state.
 - The list is scrollable if the loaded transactions exceed the screen height.
 - The operator can continue loading older entries until the complete history is available.
-- Transactions are append-only and cannot be edited or deleted through any application operation.
+- Active, soft-deleted, edited, and restored states are distinguishable according to the authorized history/audit view.
+
+#### FR-3.2.4: Record Correction
+
+**Description:** The Operator can record a reasoned Correction for an assigned active Student.
+
+**Acceptance Criteria:**
+- Correction requires a positive whole-Rupiah amount, explicit `INCREASE` or `DECREASE` direction, and non-empty reason.
+- Increase raises Balance; decrease lowers Balance.
+- A decrease Correction that would make Balance negative is rejected.
+- Correction creation, Balance update, financial-version update, and audit append commit atomically.
+- Correction is displayed and reported as Correction, not relabeled as Deposit or Withdrawal.
+
+#### FR-3.2.5: Edit Transaction
+
+**Description:** The current Operator can edit an active Transaction for an assigned active Student.
+
+**Acceptance Criteria:**
+- Edit requires the current Transaction revision, a unique command identifier, and a non-empty reason.
+- Approved mutable fields are type, amount, Correction direction/reason, business occurrence time, and separately approved descriptive metadata.
+- Transaction identity, Student ownership, creation actor, and creation time cannot be edited.
+- Balance changes by `new effect - old effect`; a negative result is rejected.
+- Transaction update, Balance update, revision increment, and immutable before/after audit append commit atomically.
+
+#### FR-3.2.6: Soft Delete Transaction
+
+**Description:** The current Operator can remove an active Transaction from current financial state without permanently removing history.
+
+**Acceptance Criteria:**
+- Delete requires the current revision, a unique command identifier, and a non-empty reason.
+- Delete sets deletion metadata and removes the Transaction's effect from Balance.
+- Delete is rejected when the resulting Balance would be negative.
+- No application operation permanently deletes a Transaction or financial audit event.
+- Deletion, Balance update, revision increment, and audit append commit atomically.
+
+#### FR-3.2.7: Restore Transaction
+
+**Description:** The current Operator can restore a soft-deleted Transaction for an assigned active Student.
+
+**Acceptance Criteria:**
+- Restore requires the current revision, a unique command identifier, and a non-empty reason.
+- Restore clears deletion metadata and reapplies the Transaction's current effect.
+- Restore is rejected when the resulting Balance would be negative.
+- Restoration, Balance update, revision increment, and audit append commit atomically.
 
 ---
 
 ### 3.3 Financial Calculations
 
-#### FR-3.3.1: Compute Balance
+#### FR-3.3.1: Maintain Balance
 
-**Description:** The system computes a student's balance from the complete transaction history.
+**Description:** The system maintains a Student's persisted Balance as part of every atomic financial mutation.
 
 **Principles:** Single Source of Truth (5), Trust by Design (10), Production Ready (12)
 
 **Acceptance Criteria:**
-- Balance = sum of all deposits minus sum of all withdrawals for the student.
-- The balance is computed on demand, never read from a stored field.
-- The balance is always consistent with the transaction history.
+- Balance equals the sum of effects of all non-deleted Transactions: Deposits, Withdrawals, and signed Corrections.
+- Balance is stored on Student and cannot be changed outside the Transaction Engine.
+- Every Transaction create/edit/delete/restore updates Balance in the same database transaction.
+- Balance is always non-negative and reconcilable from active Transactions.
+- A mismatch between persisted Balance and reconstructed Transaction effects is an integrity incident and is never repaired silently.
 - The balance uses exact whole-Rupiah arithmetic; no monetary rounding is performed.
 - The balance uses every persisted transaction, regardless of how much transaction history is currently loaded in the UI.
+
+#### FR-3.3.2: Record Financial Audit
+
+**Description:** The system records immutable evidence for every financial mutation and Student ownership transfer.
+
+**Acceptance Criteria:**
+- `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and `OWNERSHIP_TRANSFER` are logged.
+- Financial events identify the server-derived actor, Student, optional Transaction, command, revision, reason where required, before/after state, Balance transition, and commit time.
+- Audit append occurs in the same database transaction as the corresponding domain mutation.
+- Audit records cannot be edited or deleted through the application.
+- Ownership-transfer audit is privacy-minimized and does not disclose Balance or Transaction details to Platform Admin.
+- Audit payloads are versioned so future event types and approved metadata can be added without changing historical meaning.
 
 ---
 
@@ -292,7 +350,13 @@ The data model supports the functional requirements above. Full schema details a
 |-------|------|-------|
 | id | UUID | Primary key, auto-generated |
 | name | String | Normalized, unique (case-insensitive), max 100 chars |
+| operator_id | User ID | Current active Operator ownership boundary |
+| status | Enum | `ACTIVE`, `INACTIVE`, or `ARCHIVED` |
+| notes | String? | Optional, trimmed, max 500 chars |
+| balance | Integer | Target persisted non-negative whole-IDR Balance, default `0` |
+| financial_version | Integer | Target monotonic financial mutation version |
 | created_at | Timestamp | Auto-generated on creation |
+| updated_at | Timestamp | Management update time |
 
 ### 4.2 Transaction
 
@@ -300,11 +364,21 @@ The data model supports the functional requirements above. Full schema details a
 |-------|------|-------|
 | id | UUID | Primary key, auto-generated |
 | student_id | UUID | Foreign key to Student |
-| type | Enum | `deposit` or `withdrawal` |
+| type | Enum | `deposit`, `withdrawal`, or `correction` |
 | amount | Integer | Positive whole Rupiah (`IDR`) |
-| created_at | Timestamp | Auto-generated on creation |
+| correction_direction | Enum? | `increase`/`decrease` for Correction only |
+| reason | String? | Current reason required for Correction |
+| occurred_at | Timestamp | Business occurrence time |
+| created_at / created_by | Timestamp / User ID | Immutable creation evidence |
+| updated_at / updated_by | Timestamp / User ID | Latest revision evidence |
+| revision | Integer | Optimistic lifecycle revision |
+| deleted_at / deleted_by | Timestamp? / User ID? | Soft-delete state |
 
-**Note:** There is no Balance entity. Balances are computed from transactions (Single Source of Truth — Principle 5).
+### 4.3 Financial Audit Event
+
+The target immutable audit entity records command/event identity, actor, Student, optional Transaction/revision, reason, versioned before/after state, Balance transition, ownership transition where applicable, and commit time. It has no application update/delete lifecycle.
+
+**Implementation note:** Balance/version, expanded Transaction lifecycle fields, and FinancialAuditEvent are approved target architecture only. The current v1.3 schema remains unchanged until the next reviewed implementation migration.
 
 ---
 
@@ -328,7 +402,19 @@ Student List → Tap Student → Student Detail → Tap Withdrawal → Enter Amo
 **Steps:** 3 taps + 1 amount entry
 **Usability target:** Under 5 seconds, excluding network delay
 
-### 5.3 Search and View a Student
+### 5.3 Correct or Mutate a Transaction
+
+```text
+Owned active Student → Choose Correction/Edit/Delete/Restore
+→ Enter approved values and required reason
+→ Server rechecks ownership/status/revision
+→ Transaction + Balance/version + audit commit atomically
+→ Return committed outcome
+```
+
+Concrete presentation controls are deferred to the Transaction Engine presentation sprint; this flow defines domain behavior only.
+
+### 5.4 Search and View a Student
 
 ```
 Student List → Tap Search → Type Name → Tap Student → Student Detail
@@ -337,7 +423,7 @@ Student List → Tap Search → Type Name → Tap Student → Student Detail
 **Steps:** 2 taps + typing
 **Usability target:** Under 3 seconds, excluding network delay
 
-### 5.4 Add a New Student
+### 5.5 Add a New Student
 
 ```
 Student List → Tap Add → Enter Name → Confirm → Student Detail
@@ -396,9 +482,7 @@ The following are explicitly **out of scope** for the MVP and will not be implem
 |---------|---------------------|
 | Email/password and account self-service | Google-only login; no public registration, Sign Up, Forgot Password, or password reset |
 | Routine Platform Admin financial-data access | Privacy and administrative separation prohibit it |
-| Transaction actor attribution | Authentication does not change immutable financial-event traceability |
 | Offline sync | Deferred to post-MVP (Principle 2) |
-| Transaction editing or deletion | Preserves audit integrity (Principle 10) |
 | Reports or exports | Not required for day-one operation (Principle 6) |
 | Categories or tags on transactions | Adds complexity without immediate value (Principle 8) |
 | Notes or descriptions on transactions | Minimal Data Collection (Principle 9) |
@@ -421,7 +505,12 @@ The following are explicitly **out of scope** for the MVP and will not be implem
 | FR-3.2.1 | Record Deposit | Positive amount recorded; balance updates immediately |
 | FR-3.2.2 | Record Withdrawal | Positive amount recorded if balance sufficient; balance updates immediately |
 | FR-3.2.3 | View Transaction History | Newest-first history with progressive access to all transactions |
-| FR-3.3.1 | Compute Balance | Balance = deposits - withdrawals; computed on demand |
+| FR-3.2.4 | Record Correction | Reasoned increase/decrease commits with Balance and audit atomically |
+| FR-3.2.5 | Edit Transaction | Approved fields, Balance delta, revision, and before/after audit commit atomically |
+| FR-3.2.6 | Soft Delete Transaction | Effect is removed without permanent history loss |
+| FR-3.2.7 | Restore Transaction | Deleted effect is reapplied with immutable audit evidence |
+| FR-3.3.1 | Maintain Balance | Persisted Balance changes only with atomic Transaction lifecycle operations |
+| FR-3.3.2 | Record Financial Audit | Every financial mutation and ownership transfer appends immutable evidence atomically |
 | FR-3.4.1 | PWA Installation | Application is installable and launches standalone |
 | FR-3.4.2 | Navigation | Core workflows follow their documented tap counts |
 | FR-3.4.3 | Responsive Layout | Usable on mobile (primary) and desktop (secondary) |

@@ -1,6 +1,6 @@
 # Amanah Cash — Engineering Rules
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -14,7 +14,7 @@ This document defines engineering standards for contributors implementing the ap
 ## 2. Project Philosophy
 
 - Correct financial behavior is more important than implementation convenience.
-- Transaction history is the single source of financial truth.
+- Transaction state, persisted Student Balance, and immutable FinancialAuditEvent must remain atomically consistent and reconcilable.
 - Simplicity is a constraint, not an optional preference.
 - Mobile operation is primary; desktop is secondary.
 - Explicit outcomes are preferred over hidden behavior.
@@ -34,39 +34,49 @@ Sprint 1 is a Local Development bootstrap only. Use the approved local SQLite da
 
 ## 4. Domain-First Development
 
-- Name code after approved domain terms: Student, Transaction, Deposit, Withdrawal, RupiahAmount, and Balance.
+- Name code after approved domain terms: Student, Transaction, Deposit, Withdrawal, Correction, RupiahAmount, Balance, and FinancialAuditEvent.
 - Implement invariants in the Domain layer before connecting presentation behavior.
 - Keep application orchestration separate from domain decisions.
 - Keep database details behind the Persistence layer.
 - Treat Student as the aggregate root for financial writes.
-- Serialize Deposit and Withdrawal writes per Student.
+- Serialize every financial lifecycle write per Student.
 
 Business rules must be visible in Domain code or explicit persistence constraints. Hidden business rules are prohibited.
 
 ## 5. Financial Integrity
 
-### 5.1 Append-Only Transactions
+### 5.1 Controlled Transaction Lifecycle
 
-- A persisted Transaction must not be edited or deleted through application behavior.
-- Application database access must not permit Transaction update, deletion, or truncation.
-- Do not add soft deletion, correction mutation, or an alternate financial-history path.
-- A Transaction write must either commit completely or leave no financial event.
+- Create, edit, soft delete, and restore must use the approved Student aggregate command boundary.
+- Transaction `studentId`, identity, creation actor, and creation time are immutable.
+- Edit requires active state, expected revision, reason, and before/after audit.
+- Delete is soft; hard delete/truncation is prohibited.
+- A deleted Transaction must be restored before edit.
+- Every mutation must either commit Transaction, Balance/version, and audit completely or leave all unchanged.
 
-### 5.2 Derived Balance
+### 5.2 Persisted and Reconcilable Balance
 
-- Balance must always equal all Deposits minus all Withdrawals for one Student.
-- Balance must be calculated from complete persisted Transaction history.
-- Balance must not be stored in a column, cache, summary table, client state treated as authoritative, or other independent financial representation.
-- Progressive history pages must never become the input to Balance calculation.
+- Persisted Student Balance must equal all non-deleted Deposit, Withdrawal, and signed Correction effects.
+- Balance must not be edited directly or trusted from client state.
+- Every Balance delta is calculated by the Domain and applied inside the Transaction lifecycle database transaction.
+- Reconciliation may aggregate active effects, but mismatch must be reported as an integrity incident and never repaired silently.
+- Progressive history pages must never become the input to Balance presentation.
 - Use exact whole-Rupiah integer arithmetic; do not use floating-point money.
 
 ### 5.3 Atomic Financial Writes
 
-- Every Deposit and Withdrawal must use the approved SQLite `BEGIN IMMEDIATE` serialization protocol in Database Design Section 7.
-- Withdrawal Balance validation and insertion must occur in one database transaction.
+- Every create/edit/delete/restore must use the approved SQLite `BEGIN IMMEDIATE` serialization protocol in Database Design Section 8.
+- Ownership/status recheck, lifecycle validation, Transaction mutation, Balance/version update, and audit append occur in one database transaction.
 - Application-side checks may assist the UI but are not the integrity boundary.
 - A Transaction is successful only after commit succeeds.
-- Unknown commit outcomes must be resolved through the original Transaction UUID before retry.
+- Unknown commit outcomes must be resolved through the original command ID before retry.
+
+### 5.4 Immutable Financial Audit
+
+- Append `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and `OWNERSHIP_TRANSFER` evidence according to ADR-004.
+- Never expose an audit update/delete product operation.
+- Derive actor and Balance transition on the server; never trust client audit fields.
+- Audit append failure rolls back the corresponding mutation.
 
 ## 6. Layer Responsibilities
 
@@ -74,9 +84,9 @@ Business rules must be visible in Domain code or explicit persistence constraint
 |-------|------|--------------|
 | Presentation | Screens, input feedback, loading, empty, error, navigation, submission state | Business rules, authoritative Balance, database access |
 | Application | Use-case orchestration, request outcomes, transaction coordination | UI layout, database-specific queries, new business policy |
-| Domain | Terms, invariants, Balance formula, Transaction direction, aggregate rules | Transport, framework, database product, screen state |
+| Domain | Terms, effects, lifecycle, Balance delta, revision, audit requirements, aggregate rules | Transport, framework, database product, screen state |
 | Persistence | Tables, queries, constraints, locks, atomic writes, history cursor | Product presentation or independent business behavior |
-| Database | Durable Students and Transactions, integrity constraints, atomic commit | Stored Balance, UI state, actor identity, offline state |
+| Database | Durable Students/Balance/version, Transactions, FinancialAuditEvents, constraints, atomic commit | UI state, client authority, offline state |
 
 Authentication and authorization add these mandatory boundaries:
 
@@ -94,8 +104,8 @@ Business logic inside UI components is prohibited. UI code may validate input fo
 
 - Client: immediate format feedback and repeated-submit prevention.
 - Server/Application: request shape and explicit outcome mapping.
-- Domain: authoritative StudentName, RupiahAmount, Transaction direction, and Balance invariants.
-- Persistence/Database: uniqueness, referential integrity, allowed type, positive Amount, atomicity, and append-only protection.
+- Domain: authoritative StudentName, RupiahAmount, Transaction effect/lifecycle, Balance delta, revision, and audit invariants.
+- Persistence/Database: uniqueness, referential integrity, allowed type/direction, positive Amount, lifecycle shape, version conflict, atomicity, soft-delete retention, and immutable audit protection.
 
 Never trust client validation as sufficient. Convert database constraint conflicts into approved domain or validation outcomes.
 
@@ -113,11 +123,11 @@ Never trust client validation as sufficient. Convert database constraint conflic
 
 ## 9. Naming Conventions
 
-- Follow the authoritative cross-layer terminology contract in Domain Model Section 4.6.
+- Follow the authoritative cross-layer terminology contract in Domain Model Section 4.7.
 - Use approved domain names without synonyms.
 - Use `Student` for the aggregate root and `Transaction` for a financial event.
-- Use `deposit` and `withdrawal` for persisted Transaction types.
-- Name Balance values as derived or calculated when ambiguity is possible.
+- Use `deposit`, `withdrawal`, and `correction` for persisted Transaction types.
+- Name Balance values as persisted, proposed, before, after, delta, or reconciled as applicable.
 - Use `amount` for positive whole-Rupiah Transaction input.
 - Use `created_at` for persistence timestamps and `student_id` for the Transaction foreign key.
 - Use names that describe responsibility, not framework mechanics.
@@ -141,13 +151,13 @@ Every behavior change requires verification proportional to its risk.
 
 Minimum expectations:
 
-- Domain tests for normalization, whole-Rupiah Amounts, Transaction direction, and Balance formula.
-- Persistence tests for constraints, append-only access, rollback, locking, and retry UUID behavior.
+- Domain tests for normalization, whole-Rupiah Amounts, Transaction effects, lifecycle deltas, non-negative Balance, revision, and audit requirements.
+- Persistence tests for constraints, edit/soft-delete/restore, immutable audit, rollback, locking, command idempotency, and reconciliation behavior.
 - Concurrency tests for simultaneous financial writes to one Student.
 - Concurrency tests proving SQLite serialization preserves correct independent histories for different Students.
 - Application tests for explicit validation and failure outcomes.
 - Presentation tests for loading, empty, validation, failure, retry, and progressive-history states.
-- End-to-end tests for Create Student, Deposit, Withdrawal, Balance, search, and history.
+- End-to-end tests for Create Student, Deposit, Withdrawal, Correction, Transaction lifecycle, Balance, audit, search, and history.
 - Mobile-primary manual verification at 320px–480px and desktop-secondary verification.
 
 Tests must include happy paths and relevant failure paths. Do not disable, skip, or weaken a test to make a change pass.
@@ -168,10 +178,11 @@ The following are prohibited:
 
 - Hidden business rules.
 - Business logic inside UI components.
-- Persisted or cached authoritative Balance.
-- Editing, deleting, or soft-deleting financial history.
+- Direct or client-authoritative Balance mutation outside the Transaction Engine.
+- Hard-deleting Transaction or FinancialAuditEvent history.
+- Editing a deleted Transaction without restore or mutating immutable Transaction identity/Student/creation fields.
 - Floating-point monetary calculations.
-- Non-atomic Withdrawal validation and insertion.
+- Non-atomic Transaction, Balance/version, and audit mutation.
 - Silent failure or optimistic success before commit.
 - Premature optimization without an observed requirement.
 - Over-engineering or abstractions for hypothetical reuse.
@@ -186,7 +197,7 @@ The following are prohibited:
 Before considering work complete, verify:
 
 1. Which approved requirement authorizes the change?
-2. Does the change preserve append-only history and derived Balance?
+2. Does the change preserve persisted-Balance reconciliation, non-negative state, soft-delete retention, and immutable audit?
 3. Is business logic in the correct layer?
 4. Are validation and failure outcomes explicit at every boundary?
 5. Are concurrency and retry behavior safe?

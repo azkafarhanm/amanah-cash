@@ -1,6 +1,6 @@
 # Amanah Cash — Wireframes
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -145,7 +145,7 @@ References: FR-3.1.2, FR-3.1.3
 ```
 
 - The full Student row is one touch target of at least 44px height.
-- Every Balance is derived from that Student's complete persisted history.
+- Every Balance comes from committed persisted Student state and is reconcilable with active Transaction effects.
 - The list need not load transaction-history pages to display Balance.
 - Search filters after each input change without a submit button.
 
@@ -265,7 +265,7 @@ References: FR-3.1.4, FR-3.2.3, FR-3.3.1
 │                                      │
 │ Balance                              │
 │ Rp 75.000                            │
-│ Based on complete transaction history│
+│ Committed Student Balance             │
 ├──────────────────────────────────────┤
 │ [ Deposit ]       [ Withdrawal ]     │
 ├──────────────────────────────────────┤
@@ -286,7 +286,7 @@ References: FR-3.1.4, FR-3.2.3, FR-3.3.1
 - Balance is visually separate from the currently loaded history.
 - Every Transaction item shows type, direction, amount, and timestamp.
 - Deposit uses a plus sign and Withdrawal a minus sign in addition to text; meaning does not depend on color.
-- No Transaction item has edit or delete actions.
+- Future Transaction lifecycle affordances must follow FR-3.2.5–FR-3.2.7, require reason/revision, distinguish soft delete from permanent removal, and expose audit consequences. Their UI is not designed in this architecture sprint.
 - Load Older Transactions has at least a 44px height.
 
 ### 8.2 Empty History
@@ -461,7 +461,7 @@ For an unknown commit outcome, the state instead reads:
 │ [ Actions disabled ]                   │
 ```
 
-Retry reuses the original logical Transaction identity. The UI never reports success until the persisted result is confirmed.
+Retry reuses the original command identity and, for create, Transaction identity. The UI never reports success until the persisted result is confirmed.
 
 ## 10. Error-State Rules
 

@@ -65,7 +65,9 @@ The server separates these logical services:
 | Authorization policy | Validate role and ownership | Trust a client-supplied role or owner ID |
 | Admin service | Provision/deactivate users; assign/transfer Students | Read balances, Transactions, history, or reports |
 | Operator service | Execute ownership-scoped Student and financial operations | Issue an unscoped Student/Transaction query |
-| Audit service | Record security and administrative events | Record tokens, provider credentials, financial values, or Student names |
+| Security/admin audit service | Record authentication, security, and administrative events | Record tokens, provider credentials, financial values, or unnecessary Student identity |
+
+ADR-004 defines a separate ownership-scoped FinancialAuditEvent service that necessarily records allowlisted financial before/after evidence. It must not reuse security logs, enter authentication/session payloads, or become visible through Platform Admin financial access.
 
 ## 3. Authentication Flow
 
@@ -324,7 +326,7 @@ Role validation and ownership validation are separate. Passing one never implies
 flowchart TD
     O[Current active OPERATOR user ID] --> S[Students where current owner = user ID]
     S --> T[Transactions joined through authorized Student]
-    T --> B[Balance derived from complete authorized history]
+    T --> B[Persisted Balance within authorized Student scope]
     T --> H[Authorized transaction history]
     S --> R[Reports limited to authorized Students]
 ```
@@ -338,7 +340,7 @@ The current Student-to-Operator association is the sole financial ownership auth
 - Reports: start from the set of Students currently owned by the Operator, then derive only their data.
 - Counts, search suggestions, exports if ever approved, error details, and pagination cursors follow the same scope and must not reveal cross-owner existence.
 
-Ownership is not copied into the session, client state, Transaction record, or report cache. A Student transfer changes the current authorization edge only; it does not edit, duplicate, delete, or reattribute immutable Transaction history.
+Ownership is not copied into the session, client state, Transaction record, or report cache. A Student transfer changes the current authorization edge only; it does not edit, duplicate, delete, or reattribute Transaction rows or Balance. ADR-004 additionally requires a privacy-minimized ownership-transfer audit event.
 
 ### 9.1 Transfer contract
 
@@ -357,7 +359,7 @@ The transfer transaction must:
 
 Financial writes and ownership transfer for the same Student must serialize. A financial write rechecks ownership inside its transaction. The ordering determines the valid result: if the write commits first, it was authorized under the old owner; if transfer commits first, the old owner's write is denied. No request may pass an early ownership check and commit after a conflicting transfer without revalidation.
 
-After transfer, the old Operator's next query returns no Student or financial data; the new Operator can access the complete immutable history and derived Balance. Previously rendered client data must be cleared on authorization failure and protected responses must not be cached.
+After transfer, the old Operator's next query returns no Student or financial data; the new Operator can access the complete retained Transaction/audit history and persisted Balance. Previously rendered client data must be cleared on authorization failure and protected responses must not be cached.
 
 ## 10. Security Considerations
 
@@ -564,7 +566,7 @@ sequenceDiagram
         Old->>S: Subsequent Student request
         S-->>Old: Denied / not exposed
         New->>S: Subsequent Student request
-        S-->>New: Authorized complete immutable history
+        S-->>New: Authorized complete retained Transaction and audit history
     else Stale owner or invalid destination
         S->>D: Roll back
         S-->>B: Conflict/validation failure
@@ -587,7 +589,7 @@ Implementation is accepted only when automated integration/security tests demons
 - every Student, Transaction, Balance, history, and report read/write is ownership-scoped;
 - `PLATFORM_ADMIN` cannot retrieve Operator financial data through UI, API, server action, direct identifiers, reports, or reused repositories;
 - transfer/write concurrency cannot commit a write under stale ownership;
-- transfer preserves immutable Transactions and grants subsequent access only to the new Operator;
+- transfer preserves Transaction rows, Balance, and financial audit evidence and grants subsequent access only to the new Operator;
 - CSRF/origin, unsafe redirect, replay, callback-tampering, and session-fixation tests fail safely;
 - protected responses are not cached by browser/shared/service-worker caches;
 - logs and errors contain no prohibited secrets or financial data; and

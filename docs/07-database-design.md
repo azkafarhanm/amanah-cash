@@ -1,294 +1,238 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.5
-**Status:** Approved
+**Version:** 1.6
+**Status:** Approved target design; not implemented
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
 
----
+## 1. Purpose and architecture boundary
 
-## 1. Purpose
+This document defines the logical relational target for the Transaction Foundation. It is constrained by the Functional Requirements, Non-Functional Requirements, Business Rules, Domain Model, ADR-003, ADR-004, and the Transaction Foundation TDS.
 
-This document defines the logical relational database design for the Amanah Cash MVP. It implements the approved requirements in:
+The current database still contains the pre-Transaction-Engine `students` and `transactions` schema. This architecture sprint creates no migration, Prisma change, generated client, trigger, table, column, or data backfill. Physical DDL and migration sequencing belong to the next implementation sprint and must preserve the logical contract below.
 
-- `docs/01-functional-requirements.md`
-- `docs/02-non-functional-requirements.md`
-- `docs/03-business-rules.md`
-- `docs/04-domain-model.md`
+Authentication, session, Operator management, and current Student ownership persistence remain as documented in [Authentication Persistence Design](30-authentication-persistence-design.md).
 
-The implemented design includes Student and Transaction persistence plus the approved Auth.js-compatible identity, database-session, and Student-ownership persistence extension. Authentication behavior remains outside this database design. See [Authentication Persistence Design](30-authentication-persistence-design.md) for the physical identity model and migration decisions.
+## 2. Design principles
 
-## 2. Design Principles
+1. Student is the financial aggregate and current ownership boundary.
+2. `Student.balance` is persisted and changes only with an atomic Transaction lifecycle command.
+3. Balance equals all non-deleted Transaction effects and never becomes negative.
+4. Transaction mutation, Balance/version update, command idempotency, and immutable audit append commit or roll back together.
+5. Transaction delete is soft; FinancialAuditEvent is append-only and never deleted through product behavior.
+6. Monetary values use exact whole-IDR signed 64-bit integer arithmetic with explicit overflow checks.
+7. Business occurrence time, system commit time, actor, revision, and deletion state remain distinguishable.
+8. Every financial query is scopeable through current Student ownership.
 
-1. Transaction history is the only persisted source for financial calculations.
-2. No balance column, cache table, or independently maintained balance value exists.
-3. Monetary values use exact whole-Rupiah integer storage.
-4. Transactions are append-only for the application.
-5. Financial writes are serialized per Student.
-6. Balance validation and withdrawal insertion are one atomic database operation.
-7. Indexes support case-insensitive student lookup and progressive transaction history without adding product features.
-
-## 3. Entity Relationship
+## 3. Logical relationships
 
 ```text
-students
-  id PK
-   │
-   └──< transactions
-          student_id FK → students.id
+users (OPERATOR) 1 ───< students
+                          ├── persisted balance + financial_version
+                          ├──< transactions
+                          └──< financial_audit_events
+
+transactions.student_id ──> students.id (immutable, delete restricted)
+financial_audit_events.student_id ──> students.id (delete restricted)
+financial_audit_events.transaction_id ──> transactions.id (nullable, delete restricted)
 ```
 
-- One row in `students` may have zero or more rows in `transactions`.
-- Every row in `transactions` references exactly one existing Student.
-- A Student referenced by a Transaction cannot be deleted.
+Transaction has no Operator ownership column. Current `students.operator_id` scopes all financial reads and writes. Ownership transfer changes one Student relationship and appends privacy-minimized audit; it does not rewrite Transactions or Balance.
 
-### 3.1 Authentication and Ownership Schema Contract
+## 4. Target changes to `students`
 
-The approved physical schema revision defines the provisioned User (Full Name, unique normalized Google Email, role, active status), Auth.js Account linkage, database Sessions, and exactly-one active Operator ownership for every Student. Account and Session rows cascade with their User. User deletion is restricted while Students are owned. Database triggers prevent ownership by an inactive or non-Operator User.
+Existing identity and management columns remain. The Transaction Engine target adds:
 
-The schema adds no passwords, public-registration tokens, VerificationToken table, Balance persistence, Transaction actor attribution, or routine Platform Admin financial access. The migration creates no users and consumes no `SUPER_ADMIN_EMAIL`; it only prepares the User fields required by the future explicit bootstrap operation.
+| Column | Logical type | Null | Default | Contract |
+|---|---|---|---|---|
+| `balance` | Signed 64-bit integer | No | `0` | Current non-negative whole-IDR Balance |
+| `financial_version` | Non-negative integer | No | `0` | Increments once for every committed financial mutation |
 
-A populated legacy database requires an approved Student-to-Operator mapping before migration. The implemented migration fails atomically rather than inventing ownership when legacy Student rows exist.
+Required controls:
 
-## 4. Table: `students`
+- `balance >= 0` database check;
+- `financial_version >= 0` database check;
+- application write boundary that never exposes direct Balance assignment;
+- ownership/status reload inside the same database transaction as every financial mutation; and
+- ownership/status/Balance lookup indexes justified by measured query plans, not speculative duplication.
 
-### 4.1 Columns
+Existing Student management updates do not change `financial_version`. Ownership transfer does not change Balance/version because it changes visibility, not financial state, but it must append `OWNERSHIP_TRANSFER` audit atomically with `operator_id`.
 
-| Column | Logical Type | Null | Default | Description |
-|--------|--------------|------|---------|-------------|
-| `id` | UUID | No | Generated UUID | Primary key |
-| `name` | Variable text, maximum 100 characters | No | None | Normalized student name |
-| `notes` | Variable text (application maximum 500 characters) | Yes | Null | Optional trimmed operational note |
-| `status` | Restricted text or enum | No | `ACTIVE` | `ACTIVE`, `INACTIVE`, or `ARCHIVED` |
-| `operator_id` | User identifier | No | None | Current owning Operator |
-| `created_at` | Timestamp with time zone | No | Database current timestamp | Creation time |
-| `updated_at` | Timestamp with time zone | No | Supplied on create; maintained on update | Last management update time |
-
-### 4.2 Constraints
-
-| Constraint | Definition | Purpose |
-|------------|------------|---------|
-| `pk_students` | Primary key on `id` | Stable Student identity |
-| `ck_students_name_not_blank` | `name` is not empty after normalization | Enforces required name |
-| `ck_students_name_length` | Character length is between 1 and 100 | Enforces approved name length |
-| `uq_students_name_ci` | Unique case-insensitive normalized `name` | Prevents visually duplicate Student records |
-| `fk_students_operator` | `operator_id` references `users.id` with delete restricted | Prevents orphaned ownership |
-| `trg_students_owner_*` and User lifecycle guard | Assignee must be active, non-deleted, and have role `OPERATOR` | Enforces valid ownership on insert/update and Operator lifecycle changes |
-| `trg_students_status_*` | Status is one of the three approved values | Enforces Student lifecycle vocabulary |
-
-Name normalization—trimming outer whitespace and collapsing consecutive internal whitespace—occurs before insertion. Database uniqueness must use a deterministic case-insensitive comparison compatible with the application's comparison. The stored `name` is the normalized display value; an additional raw-name column is not retained.
-
-### 4.3 Indexes
-
-| Index | Columns or Expression | Unique | Purpose |
-|-------|-----------------------|--------|---------|
-| `pk_students` | `id` | Yes | Primary-key lookup |
-| `uq_students_name_ci` | Case-insensitive expression over normalized `name` | Yes | Duplicate prevention and exact normalized-name lookup |
-| `ix_students_name_ci` | Case-insensitive expression over normalized `name` | No | Alphabetical listing and name search where the chosen database requires a separate search index |
-| `ix_students_operator` | `operator_id` | No | Ownership-scoped Operator reads |
-| `ix_students_management_list` | `status`, `operator_id`, `created_at DESC` | No | Management filtering and newest-first pagination |
-
-The database implementation may omit `ix_students_name_ci` when `uq_students_name_ci` supports the required ordering and search access paths. This avoids redundant indexes.
-
-## 5. Table: `transactions`
+## 5. Target `transactions` contract
 
 ### 5.1 Columns
 
-| Column | Logical Type | Null | Default | Description |
-|--------|--------------|------|---------|-------------|
-| `id` | UUID | No | Generated UUID | Primary key and financial event identity |
-| `student_id` | UUID | No | None | Owning Student |
-| `type` | Restricted text or enum | No | None | `deposit` or `withdrawal` |
-| `amount` | Signed 64-bit integer | No | None | Positive whole Rupiah (`IDR`) |
-| `created_at` | Timestamp with time zone | No | Database current timestamp | Persistence time |
+| Column | Logical type | Null | Contract |
+|---|---|---|---|
+| `id` | UUID | No | Stable Transaction identity and create retry identity |
+| `student_id` | UUID | No | Immutable owning Student |
+| `type` | Restricted text/enum | No | `deposit`, `withdrawal`, or `correction` |
+| `amount` | Signed 64-bit integer | No | Positive whole IDR |
+| `correction_direction` | Restricted text/enum | Conditional | `increase`/`decrease` for Correction; null otherwise |
+| `reason` | Bounded text | Conditional | Required for Correction; current approved reason |
+| `occurred_at` | UTC timestamp | No | Business event time supplied by Operator |
+| `created_at` / `created_by` | UTC timestamp / User ID | No | Immutable creation evidence |
+| `updated_at` / `updated_by` | UTC timestamp / User ID | No | Latest revision evidence |
+| `revision` | Positive integer | No | Starts at 1; increments on edit/delete/restore |
+| `deleted_at` / `deleted_by` | UTC timestamp / User ID | Conditional | Both null while active; both set while deleted |
 
-No `updated_at`, `deleted_at`, currency, actor, note, category, or balance column is present. Authentication does not add Transaction actor attribution.
+Currency is fixed to IDR and is not repeated per row. Transaction `student_id`, `id`, `created_at`, and `created_by` are immutable.
 
 ### 5.2 Constraints
 
-| Constraint | Definition | Purpose |
-|------------|------------|---------|
-| `pk_transactions` | Primary key on `id` | Stable event identity and duplicate retry protection |
-| `fk_transactions_student` | `student_id` references `students.id` with delete restricted | Prevents orphaned Transactions and Student deletion |
-| `ck_transactions_type` | `type IN ('deposit', 'withdrawal')` | Limits direction to approved terminology |
-| `ck_transactions_amount_positive` | `amount > 0` | Rejects zero and negative values |
-
-The integer type rejects fractional storage. Input parsing must reject decimal and non-numeric input before the insert. Values outside the signed 64-bit range are invalid because they cannot be represented by the approved storage type.
+- Primary key on `id`.
+- Restricted foreign key from `student_id` to Student.
+- Type restricted to the three MVP values.
+- `amount > 0`.
+- Correction requires direction and reason; non-Correction rows reject Correction direction.
+- `revision >= 1`.
+- Deletion timestamp/actor are both null or both non-null.
+- Actor references retain historical identity according to the User logical-deletion policy.
+- Database and application prevent `student_id` mutation.
 
 ### 5.3 Indexes
 
-| Index | Columns | Unique | Purpose |
-|-------|---------|--------|---------|
-| `pk_transactions` | `id` | Yes | Event lookup and retry deduplication |
-| `ix_transactions_student_history` | `student_id`, `created_at DESC`, `id DESC` | No | Stable newest-first progressive history |
+The implementation plan must provide and verify:
 
-The trailing `id` provides deterministic ordering when multiple Transactions have the same timestamp. A history cursor uses the pair `(created_at, id)` rather than an offset, so progressively loading older entries remains stable as new events are appended.
+- stable Student history retrieval ordered by `occurred_at DESC, id DESC`;
+- current operational history filtered by `deleted_at IS NULL`;
+- owned-Student type/date reporting paths;
+- Transaction lookup constrained by Student; and
+- reconciliation aggregation over active Transactions.
 
-The same student-leading index supports locating a Student's complete transaction set for balance aggregation. No balance-specific index or summary table is added because the MVP requires balance to derive from source Transactions.
+Cursor pagination uses `(occurred_at, id)`. Offset pagination is not approved for growing financial history.
 
-## 6. Balance Query
+## 6. Target `financial_audit_events` contract
 
-Balance is calculated from every Transaction for one Student:
+FinancialAuditEvent is the immutable evidence store.
 
-```sql
-SELECT COALESCE(
-  SUM(
-    CASE
-      WHEN type = 'deposit' THEN amount
-      WHEN type = 'withdrawal' THEN -amount
-    END
-  ),
-  0
-) AS balance
-FROM transactions
-WHERE student_id = :student_id;
-```
+| Column group | Contract |
+|---|---|
+| Identity | Unique audit `id`; unique `command_id` |
+| Classification | `event_type`: `create`, `edit`, `delete`, `restore`, `ownership_transfer`; payload `schema_version` |
+| Actor/scope | `actor_id`, `actor_role`, `student_id`, nullable `transaction_id`, nullable Transaction revision |
+| Explanation | Required `reason` where the domain requires it; safe `correlation_id` |
+| Evidence | Deterministic versioned `before_snapshot` and `after_snapshot` of allowlisted fields |
+| Balance | Nullable `balance_before`, `balance_after`, `balance_delta` for financial events |
+| Ownership | Nullable `old_operator_id`, `new_operator_id` for transfer events |
+| Time | Database commit timestamp |
 
-Requirements:
+Constraints enforce the valid shape for each event type. Ownership-transfer rows contain ownership fields and omit financial snapshots/Balance. Transaction rows require Transaction identity and Balance evidence. Audit rows have no update/delete product path.
 
-- The result uses exact integer arithmetic.
-- A Student with no Transactions has balance `0`.
-- The query is independent of transaction-history pagination.
-- The result is not persisted as a separate balance value.
+Snapshots must not contain credentials, sessions, raw request bodies, unrelated personal data, or fields that would give Platform Admin a financial-data bypass. A physical JSON or normalized representation is an implementation decision, but deterministic serialization and schema versioning are mandatory.
 
-## 7. Atomic Financial Writes
-
-### 7.1 SQLite Write Serialization and Process Boundary
-
-SQLite does not provide row-level `SELECT ... FOR UPDATE` locks. The MVP therefore uses `BEGIN IMMEDIATE` as the approved physical write-serialization mechanism. Acquiring the immediate transaction before any Student lookup or Balance query reserves SQLite's single-writer boundary; every Deposit and Withdrawal waits for or follows the preceding financial write. This database-wide serialization is stronger than the Domain requirement that writes for the same Student be serialized and preserves deterministic ordering and non-negative Balance correctness.
-
-For Sprint 1, this contract applies to Local Development using the approved local SQLite database. Sprint 1 does not select or implement production persistence hosting and operations, introduce an external database, or revise this persistence architecture. Production deployment decisions are deferred to the Deployment phase.
-
-The supported MVP process boundary is:
-
-- one active Amanah Cash server process owns one SQLite database file;
-- all application reads and writes pass through that server's Persistence layer;
-- no second server process, direct writer, shared-network-filesystem writer, or external application may write the database file; and
-- scaling to multiple writer processes requires a separately approved architecture revision before deployment.
-
-All application paths that append a financial Transaction use the same `BEGIN IMMEDIATE` protocol. SQLite may serialize writes for different Students at the physical database boundary; independence between different Students is not an MVP correctness or performance guarantee.
-
-### 7.2 Deposit Transaction
+## 7. Balance effects and reconciliation
 
 ```text
-BEGIN IMMEDIATE
-  1. Acquire SQLite's write reservation before reading the target Student.
-  2. Fail if the Student does not exist.
-  3. Insert the complete deposit row.
-  4. Commit.
-COMMIT
+active deposit                       +amount
+active withdrawal                    -amount
+active correction/increase           +amount
+active correction/decrease           -amount
+soft-deleted Transaction              0
 ```
 
-The immediate transaction gives financial writes a deterministic database order. The Student lookup, insert, and commit are one unit; failure rolls back the event completely.
-
-### 7.3 Withdrawal Transaction
-
-```text
-BEGIN IMMEDIATE
-  1. Acquire SQLite's write reservation before reading the target Student.
-  2. Fail if the Student does not exist.
-  3. Calculate balance from every persisted Transaction for the Student.
-  4. If withdrawal amount is greater than balance, roll back without inserting.
-  5. Otherwise, insert the complete withdrawal row.
-  6. Commit.
-COMMIT
-```
-
-The immediate transaction ensures another Deposit or Withdrawal cannot begin its financial read/write sequence until the current operation commits or rolls back. Therefore, Balance validation and Withdrawal insertion observe one serialized history and behave atomically.
-
-Application-side validation without this database transaction is insufficient and must not be used as the financial integrity boundary.
-
-### 7.4 Failure Behavior
-
-- Any error before commit rolls back the complete write.
-- A failed withdrawal creates no Transaction row.
-- A transaction is reported as successful only after commit succeeds.
-- A lost connection or unknown commit outcome must be resolved by looking up the same Transaction UUID before retrying.
-- The system generates one Transaction UUID for a logical submission and reuses it when resolving or retrying that submission. The primary key prevents the same event from being inserted twice.
-- The SQLite connection must execute `PRAGMA busy_timeout = 5000` when it opens. If `BEGIN IMMEDIATE` still returns `SQLITE_BUSY` after that bounded wait, no financial read or insert has occurred; the server returns the approved retryable unavailable outcome and does not automatically retry or create a new submission.
-- A safe user retry reuses the original Transaction UUID. After an unknown commit outcome, Persistence first looks up that UUID: an existing matching Transaction resolves as success; absence permits the same logical submission to run again; an unavailable lookup remains an unknown outcome and must not be presented as failure or success.
-
-This retry behavior satisfies the requirement that a safe retry must not create an unintended duplicate without adding a separate idempotency entity or field.
-
-## 8. Append-Only Transaction Model
-
-SQLite has no table-level application roles or `GRANT`/`REVOKE` permissions. Append-only behavior is therefore enforced at both available MVP boundaries:
-
-- the application Persistence interface exposes only `SELECT` and `INSERT` operations for `transactions`; it exposes no `UPDATE`, `DELETE`, or replacement operation; and
-- the SQLite schema installs `trg_transactions_no_update` (`BEFORE UPDATE`) and `trg_transactions_no_delete` (`BEFORE DELETE`) on `transactions`; each aborts the statement with `RAISE(ABORT, 'transactions are append-only')`.
-
-The application exposes no operation that updates or deletes a Transaction. Corrections, reversals, administrative mutation, and transaction deletion remain outside MVP scope.
-
-Schema migrations are controlled maintenance operations. A migration may replace append-only triggers only inside an exclusive migration transaction while the application server is stopped, and it must restore the protection before the application reopens the database. This operational ability does not create an MVP product capability to mutate financial events.
-
-No soft-delete column is added because soft deletion would allow a persisted financial event to be excluded from balance calculation and would weaken the append-only source of truth.
-
-## 9. Student Retention
-
-The application exposes Platform Admin create/update operations and role-scoped Student reads, but no Student delete operation. Updating `operator_id` transfers current ownership without mutating Transaction history. Restricted foreign keys prevent deletion of referenced Students and Operators with assigned Students.
-
-## 10. Progressive History Retrieval
-
-History is retrieved newest first with a fixed page size selected by the application. The database contract is:
+Current Balance reads select `students.balance`. Reconciliation independently aggregates active Transaction effects:
 
 ```sql
-SELECT id, student_id, type, amount, created_at
+SELECT COALESCE(SUM(
+  CASE
+    WHEN type = 'deposit' THEN amount
+    WHEN type = 'withdrawal' THEN -amount
+    WHEN type = 'correction' AND correction_direction = 'increase' THEN amount
+    WHEN type = 'correction' AND correction_direction = 'decrease' THEN -amount
+  END
+), 0)
 FROM transactions
 WHERE student_id = :student_id
-  AND (
-    :cursor_created_at IS NULL
-    OR (created_at, id) < (:cursor_created_at, :cursor_id)
-  )
-ORDER BY created_at DESC, id DESC
-LIMIT :page_size;
+  AND deleted_at IS NULL;
 ```
 
-The first request has no cursor. Each later request uses the `(created_at, id)` pair from the last row of the previous page. Page size is a presentation and performance setting, not a domain rule.
+This query is a verification/reconciliation path, not the routine Balance write path. Mismatch with `students.balance` is an integrity incident. Automatic repair is prohibited until a separately audited recovery design is approved.
 
-Balance is queried separately from this page and always uses complete persisted history.
+## 8. Atomic financial-write protocol
 
-## 11. Application Persistence Access Boundary
+### 8.1 Serialization
 
-The application-owned Persistence interface permits:
+The current SQLite target uses `BEGIN IMMEDIATE` before Student, ownership, status, Transaction, command, or Balance reads. This reserves the single-writer boundary. A future database must use an equivalent Student row lock or compare-and-set using `financial_version`.
 
-| Table | SELECT | INSERT | UPDATE | DELETE |
-|-------|--------|--------|--------|--------|
-| `students` | Yes | Yes | No | No |
-| `transactions` | Yes | Yes | No | No |
+The supported SQLite process boundary remains one active server process and one database file with no external writer. Physical serialization across different Students is acceptable; logical correctness remains per Student.
 
-SQLite schema triggers independently reject Transaction update and deletion if a prohibited statement bypasses that interface. `BEGIN IMMEDIATE` must remain available on the application connection. No product request may execute arbitrary SQL or obtain the underlying connection.
+### 8.2 Command sequence
 
-## 12. Design Decisions
+Inside one database transaction:
 
-| Decision | Rationale |
-|----------|-----------|
-| Financial entities remain Student and Transaction | Authentication persistence is separate and cannot become a second financial source of truth. |
-| UUID primary keys | The approved SRS requires automatically generated UUID identities. |
-| Signed 64-bit integer amount | Whole-Rupiah values require exact integer storage; 64-bit range avoids premature custom monetary types. |
-| Timestamp with time zone | Financial events need an unambiguous persistence time for traceability and ordering. |
-| Database-generated timestamps | A single database clock gives persisted events a consistent time source. |
-| Normalized name stored once | The raw input has no operational value; one value supports display, uniqueness, and search. |
-| Case-insensitive unique name index | Duplicate prevention must remain correct under concurrent Student creation. |
-| Restricted Student deletion | Transaction history must always retain a valid Student reference. |
-| No balance column or table | Persisting balance would create a second financial source of truth. |
-| SQLite `BEGIN IMMEDIATE` write serialization | It preserves deterministic ordering and the non-negative invariant within the approved single-process SQLite boundary. |
-| Serialize deposits and withdrawals | Every financial event receives a deterministic order within one Student aggregate. |
-| Append-only Persistence boundary and triggers | SQLite triggers reinforce the absence of application edit and delete operations without relying on unavailable table roles. |
-| Composite history index and cursor | It supports deterministic progressive loading while Transactions are appended. |
-| Stable Transaction UUID on retry | The existing primary key prevents duplicate logical submissions without another MVP field. |
+1. Resolve current session actor.
+2. Lock/reload Student, current ownership, status, Balance, and financial version.
+3. Require current active Operator ownership and `ACTIVE` Student status.
+4. Resolve unique command ID; return its committed result when idempotently repeated.
+5. Validate input and expected Transaction revision.
+6. Calculate old effect, new effect, signed delta, and proposed Balance.
+7. Reject integer overflow or proposed Balance below zero.
+8. Insert/update Transaction lifecycle state.
+9. Update Balance and increment financial version with a version guard.
+10. Append FinancialAuditEvent.
+11. Commit and only then report success.
 
-## 13. Constraint and Rule Traceability
+Deposit uses `+amount`; Withdrawal uses `-amount`; Correction uses signed direction; Edit uses `newEffect - oldEffect`; Delete uses `-oldEffect`; Restore uses `+currentEffect`.
 
-| Database Element | Source Rules |
-|------------------|--------------|
-| `students.name` checks and unique index | FR-3.1.1; BR-STU-001–003 |
-| Restricted Student deletion | BR-STU-004 |
-| `transactions.type` check | BR-TXN-001–003 |
-| Integer positive `amount` | NFR-3.1; BR-MON-001–003 |
-| Transaction primary key and required columns | NFR-6.1; BR-TXN-003 |
-| Append-only Persistence boundary and triggers | FR-3.2.3; BR-TXN-004; BR-AUD-001 |
-| Atomic insert and rollback | NFR-3.3, NFR-5.2; BR-TXN-005 |
-| Balance query | FR-3.3.1; BR-BAL-001–003 |
-| SQLite write serialization and atomic withdrawal | FR-3.2.2; NFR-3.3; BR-BAL-004–005 |
-| History index and cursor | FR-3.2.3; NFR-4.1; BR-UI-002–003 |
-| Stable retry UUID | NFR-5.1 |
+### 8.3 Rollback and retry
+
+Any validation, authorization, revision, constraint, lock, overflow, Transaction, Balance, audit, or commit failure rolls back the entire unit. No partial audit event may claim a rolled-back mutation.
+
+Every command carries a unique command ID. Create also carries its stable Transaction UUID. After an unknown commit outcome, retry first resolves command ID:
+
+- committed matching command: return recorded outcome;
+- absent command: retry the same command;
+- same ID with different payload: integrity conflict;
+- unavailable lookup: outcome remains unknown.
+
+## 9. Lifecycle persistence behavior
+
+| Operation | Required current row | Row change | Balance change |
+|---|---|---|---:|
+| Create | None | Insert revision 1, active | New effect |
+| Edit | Active + expected revision | Update approved fields; revision++ | New effect − old effect |
+| Delete | Active + expected revision | Set deletion fields; revision++ | −old effect |
+| Restore | Deleted + expected revision | Clear deletion fields; revision++ | +current effect |
+
+Edit of deleted, delete of deleted, restore of active, stale revision, missing Transaction, and negative proposed Balance fail without writes. Same-command replay is handled through idempotency, not by weakening lifecycle validation.
+
+## 10. Read and reporting implications
+
+- Student Detail reads current Balance from Student independently of paginated history.
+- Operational history defaults to non-deleted rows.
+- Authorized audit views can reconstruct all revisions from FinancialAuditEvent.
+- Dashboard totals may aggregate ownership-scoped Student Balance.
+- Future reports/exports use `occurred_at` for business periods and retain `created_at` for recording latency/audit.
+- Deleted/restored evidence remains available to audit/reconciliation datasets.
+- Platform-wide financial queries are prohibited by ADR-003.
+
+No Dashboard, Report, Export, or analytics implementation is part of this design sprint.
+
+## 11. Student retention and ownership transfer
+
+Student deletion remains unsupported and foreign keys restrict removal while Transactions/audit exist. Ownership transfer:
+
+- updates only `students.operator_id` and Student management timestamp;
+- appends `OWNERSHIP_TRANSFER` with old/new Operator, actor, reason, and time in the same transaction;
+- does not update Transaction rows, Balance, or financial version; and
+- immediately changes routine financial visibility through current ownership authorization.
+
+## 12. Implementation and migration gate
+
+The next sprint must produce a separately reviewed physical migration/backfill plan. It must address existing Transaction rows, initial Student Balance/version, removal or replacement of pre-existing append-only triggers, actor backfill policy, rollback feasibility, audit bootstrap, constraint ordering, backups, and reconciliation verification.
+
+No physical database change is authorized by this document alone.
+
+## 13. Traceability
+
+| Database concern | Authority |
+|---|---|
+| Persisted Balance/version | FR-3.3.1; BR-BAL-001–006; ADR-004 |
+| Transaction types/effects | FR-3.2.1–FR-3.2.4; BR-TXN-001–004 |
+| Edit/delete/restore lifecycle | FR-3.2.5–FR-3.2.7; BR-TXN-005–008 |
+| Atomic mutation/rollback | NFR-3.3, NFR-5.2; BR-TXN-009 |
+| Immutable audit | FR-3.3.2; NFR-6.1–6.2; BR-AUD-001–004 |
+| Ownership/status authorization | FR-7.2; NFR-9.1–9.2; BR-AUTHZ-001–004; ADR-003 |
+| Retry/idempotency | NFR-5.1; BR-BAL-006 |
+| Progressive history | FR-3.2.3; NFR-4.1; BR-UI-002–003 |

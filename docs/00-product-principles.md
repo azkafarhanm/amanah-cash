@@ -1,9 +1,9 @@
 # Amanah Cash — Product Principles
 
-**Version:** 1.0
+**Version:** 1.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-03
+**Last Updated:** 2026-07-20
 
 ---
 
@@ -45,9 +45,9 @@ This document defines the core principles that guide every product decision in A
 
 ## 5. Single Source of Truth
 
-**Description:** Financial balances are never stored or maintained manually. Every balance displayed by the system must be derived exclusively from the complete transaction history. The transaction history is the only authoritative source for all financial calculations.
+**Description:** Financial state changes through one atomic Transaction Engine. The current Balance is persisted on the Student for operational reads, while every committed mutation updates the Transaction, Student Balance, and immutable financial audit evidence together. Balance must always equal the effects of active Transactions and is never edited independently.
 
-**Rationale:** Maintaining a single source of truth eliminates inconsistencies, prevents synchronization issues, and guarantees that every financial state can always be reproduced, verified, and audited. This principle ensures data integrity across the application and serves as the foundation for future reporting, reconciliation, and financial transparency.
+**Rationale:** Persisting Balance improves operational and future reporting reads, but it is safe only when the Transaction set, Balance, and audit evidence share one atomic consistency boundary. Reconciliation can reproduce Balance from active Transactions, and immutable audit events explain every create, edit, delete, restore, and ownership transfer.
 
 ---
 
@@ -85,7 +85,7 @@ This document defines the core principles that guide every product decision in A
 
 ## 10. Trust by Design
 
-**Description:** Every transaction, state change, and user action must be transparent, auditable, and unambiguous. The system never performs hidden actions or presents unclear states. Every balance must always be explainable by its transaction history. Financial data must always be transparent and traceable.
+**Description:** Every transaction, edit, soft delete, restore, ownership transfer, state change, and user action must be transparent, attributable, auditable, and unambiguous. The system never performs hidden actions or presents unclear states. Every Balance must be explainable by active Transactions and immutable audit evidence.
 
 **Rationale:** The product name, Amanah, embodies trust. Users must have complete confidence that the system behaves predictably and that every action is accounted for. In a financial system, trust is built on the guarantee that any balance can be traced back to its underlying transactions. Trust is not a feature; it is the foundation.
 

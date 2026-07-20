@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Authenticated App Shell with role-aware navigation, protected Admin and Operator route groups, and shared loading, empty, forbidden, not-found, and error states.
 - Complete Operator Management with server-side search and pagination, inactive-by-default provisioning, activation/deactivation, assignment-safe logical deletion, session revocation, last-login tracking, audit summaries, protected APIs, UI, documentation, migrations, and tests.
 - Complete Student Management with Platform Admin creation/editing, active-Operator assignment and reassignment, active/inactive/archived statuses, notes, server-side search and pagination, Operator-owned list/detail access, protected APIs, UI states, documentation, migrations, and tests.
+- Accepted ADR-004 for Student-owned Transactions, persisted Student Balance, Deposit/Withdrawal/Correction effects, controlled edit/soft-delete/restore, immutable financial audit, command idempotency, and per-Student atomicity.
+- Approved the implementation-ready Transaction Foundation technical design covering domain/lifecycle contracts, Balance consistency and rollback, audit, failures, authorization, reporting implications, sequence diagrams, and reserved extension points.
 - Canonical engineering handoff requirements in `AI_CONTEXT.md`, including sprint status, architecture, decisions, limitations, outstanding work, and next-sprint guidance.
 
 ### Changed
@@ -26,6 +28,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Updated authentication admission and authorization lookups to exclude logically deleted users and record successful Operator login time.
 - Replaced Student financial values with explicit static placeholders until the Financial Transactions sprint; no balance or Transaction query is performed.
 - Synchronized README, roadmap, changelog, and canonical AI handoff with the implemented Operator and Student modules.
+- Superseded the pre-Transaction-Foundation derived-Balance, append-only Transaction, no-actor, and no-soft-delete architecture with the locked ADR-004 model across requirements, rules, domain, database target, system architecture, roadmap, engineering workflow, privacy/authorization references, and affected future-content specifications.
+- Kept Transaction Foundation architecture-only: no application code, migration, Prisma model, API, or UI change is included.
 
 ## [1.0.0] - 2026-07-17
 

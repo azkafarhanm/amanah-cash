@@ -1,6 +1,6 @@
 # Amanah Cash — Business Rules
 
-**Version:** 1.1
+**Version:** 1.2
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-20
@@ -70,47 +70,75 @@ A withdrawal records money returned by a student. It decreases the student's bal
 
 ### BR-TXN-003: Required Transaction Data
 
-Every transaction has a unique identifier, student reference, type, positive whole-Rupiah amount, and creation timestamp.
+Every Transaction has a unique identifier, immutable Student reference, approved type, positive whole-Rupiah amount, business occurrence time, creation actor/time, current revision, and lifecycle metadata.
 
-### BR-TXN-004: Transactions Are Append-Only
+### BR-TXN-004: Correction Is Explicit
 
-After a transaction has been recorded successfully, it cannot be edited or deleted through any application operation.
+A Correction is an explicit `INCREASE` or `DECREASE`, requires a reason, and changes Balance in that direction. It must not be represented as a Deposit or Withdrawal.
 
-### BR-TXN-005: No Partial Transaction
+### BR-TXN-005: Transaction Editing Preserves Evidence
 
-A transaction is either recorded completely or not recorded at all. A failed attempt must not leave a partial financial event.
+An active Transaction may be edited only within its Student aggregate. Editing cannot change Transaction identity, Student, creation actor, or creation time. Every edit requires a reason, increments revision, applies the difference between new and old effects, and appends immutable before/after audit evidence atomically.
+
+### BR-TXN-006: Transaction Delete Is Soft
+
+Delete sets lifecycle metadata and removes the Transaction's effect from current Balance. It never permanently removes the Transaction or its audit history. A deleted Transaction cannot be edited until restored.
+
+### BR-TXN-007: Transaction Restore Reapplies Effect
+
+Restore clears deletion metadata and reapplies the Transaction's current effect. Delete and restore require a reason, expected revision, unique command identity, and immutable audit event.
+
+### BR-TXN-008: Student Assignment Is Immutable on Transaction
+
+Transaction edit cannot change `studentId`. A future Transaction Transfer is a separate cross-aggregate operation and is not implemented in MVP scope.
+
+### BR-TXN-009: No Partial Financial Mutation
+
+Transaction create, edit, delete, or restore; Student Balance update; financial-version update; and audit append either commit together or roll back together.
 
 ## 5. Balance Rules
 
 ### BR-BAL-001: Balance Formula
 
-A student's balance equals the sum of every deposit for that student minus the sum of every withdrawal for that student.
+A Student's persisted Balance equals the sum of effects of every non-deleted Transaction: Deposit `+amount`, Withdrawal `-amount`, and Correction `±amount` according to direction.
 
-### BR-BAL-002: Transaction History Is Authoritative
+### BR-BAL-002: Balance Is Persisted but Not Independently Editable
 
-Balance is derived from persisted transaction history and is never manually entered or maintained as an independent financial value.
+`Student.balance` is persisted for operational reads. No application operation may set it directly; only the Transaction Engine may change it as part of an atomic financial mutation.
 
-### BR-BAL-003: Complete History Determines Balance
+### BR-BAL-003: Active Transactions Reconcile Balance
 
-The balance calculation includes every persisted transaction for the student. Progressive loading of history in the UI does not change or limit the calculation.
+Persisted Balance must reconcile to all non-deleted Transaction effects. Progressive history loading does not change Balance. A mismatch is an integrity incident and is not repaired silently.
 
 ### BR-BAL-004: Balance Cannot Be Negative
 
-A withdrawal is invalid if recording it would make the student's balance negative.
+Any financial mutation is invalid if its proposed Balance would be negative.
 
-### BR-BAL-005: Withdrawal Is Atomic
+### BR-BAL-005: Every Balance Change Is Atomic
 
-The check required by BR-BAL-004 and the recording of its withdrawal must behave as one atomic operation. Concurrent requests must not allow a negative balance.
+Student serialization, authorization/status recheck, Transaction mutation, Balance/version update, and audit append behave as one database transaction. Concurrent requests must not lose updates or allow a negative Balance.
+
+### BR-BAL-006: Retry Is Idempotent
+
+Every financial mutation has a unique command identity. Repeating a committed command returns its recorded outcome without applying its Balance effect again. Reusing an identity with a different payload is an integrity conflict.
 
 ## 6. Auditability Rules
 
 ### BR-AUD-001: Financial Event Traceability
 
-Every balance must be reproducible from immutable transaction records. Each financial event is traceable through its transaction identifier, student reference, type, amount, and timestamp.
+Every Balance must be reproducible from non-deleted Transaction effects and explainable through immutable financial audit events.
 
-### BR-AUD-002: Audit Boundary
+### BR-AUD-002: Required Financial Audit Events
 
-Authentication identifies a user and authorization scopes access, but immutable Transaction traceability remains event-based. This decision does not add actor attribution to Transaction records.
+`CREATE`, `EDIT`, `DELETE`, `RESTORE`, and `OWNERSHIP_TRANSFER` are audited. Financial audit records include the server-derived actor, Student, optional Transaction, revision, command identity, required reason, before/after state, Balance transition, commit time, and schema version as appropriate.
+
+### BR-AUD-003: Audit Is Immutable and Atomic
+
+Financial audit records cannot be edited or deleted through application behavior. Audit append commits atomically with the mutation it describes; audit failure rolls back the mutation.
+
+### BR-AUD-004: Ownership Audit Preserves Privacy
+
+Student ownership transfer records old/new Operator, actor, reason, and time without disclosing Balance or Transaction details to Platform Admin. Financial audit payloads remain scoped by current Student ownership.
 
 ## 7. Identity, Ownership, and Privacy Rules
 
@@ -134,6 +162,10 @@ Every Student is assigned to exactly one existing, active, non-deleted Operator.
 
 An Operator may read or change financial data only for currently assigned Students.
 
+### BR-AUTHZ-004: Only Active Students Accept Financial Mutations
+
+Financial reads remain ownership-scoped for every Student status. Deposit, Withdrawal, Correction, edit, delete, and restore are allowed only for an `ACTIVE` Student. `INACTIVE` and `ARCHIVED` Students are read-only until Platform Admin changes status.
+
 ### BR-PRIV-001: Administration Does Not Imply Financial Access
 
 Platform Admin may manage Operators, assignments, transfers, configuration, and maintenance but may not routinely access Operator financial data.
@@ -146,10 +178,11 @@ If an active user, valid role, or required Student ownership cannot be establish
 
 ### BR-UI-001: Transaction Direction Is Explicit
 
-Wherever a deposit or withdrawal is entered or displayed, the UI must communicate its direction:
+Wherever a financial Transaction is entered or displayed, the UI must communicate its type and Balance effect:
 
 - Deposit: money entrusted to the student; balance increases.
 - Withdrawal: money returned by the student; balance decreases.
+- Correction: explicit increase or decrease with a visible reason.
 
 ### BR-UI-002: Newest Transactions Appear First
 
@@ -176,15 +209,15 @@ The application must satisfy supported-browser installability requirements. An a
 | BR-STU-001–003 | FR-3.1.1, FR-3.1.3, FR-3.1.5 |
 | BR-STU-004 | Scope Boundary: Student deletion |
 | BR-STU-005–007 | FR-3.1.1, FR-3.1.2, FR-3.1.5 |
-| BR-MON-001–003 | FR-3.2.1, FR-3.2.2, FR-3.3.1 |
+| BR-MON-001–003 | FR-3.2.1–FR-3.2.7, FR-3.3.1 |
 | BR-TXN-001 | FR-3.2.1 |
 | BR-TXN-002 | FR-3.2.2 |
-| BR-TXN-003–005 | FR-3.2.1, FR-3.2.2, FR-3.2.3 |
-| BR-BAL-001–003 | FR-3.1.2, FR-3.1.4, FR-3.3.1 |
-| BR-BAL-004–005 | FR-3.2.2 |
-| BR-AUD-001–002 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3 |
+| BR-TXN-003–009 | FR-3.2.1–FR-3.2.7 |
+| BR-BAL-001–003 | FR-3.1.2, FR-3.1.4, FR-3.2.1–FR-3.2.7, FR-3.3.1 |
+| BR-BAL-004–006 | FR-3.2.1–FR-3.2.7, FR-3.3.1 |
+| BR-AUD-001–004 | FR-3.1.5, FR-3.2.1–FR-3.2.7, FR-3.3.2 |
 | BR-AUTH-001–002 | FR-7.1 |
-| BR-AUTHZ-001–003, BR-PRIV-001–002 | FR-7.2 |
-| BR-UI-001 | FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3 |
+| BR-AUTHZ-001–004, BR-PRIV-001–002 | FR-7.2 |
+| BR-UI-001 | FR-3.1.4, FR-3.2.1–FR-3.2.7 |
 | BR-UI-002–003 | FR-3.1.4, FR-3.2.3, FR-3.3.1 |
 | BR-PWA-001–002 | FR-3.4.1, Error Handling, Scope Boundary |
