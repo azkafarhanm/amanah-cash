@@ -1,0 +1,96 @@
+.shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-areas: "header" "main" "footer";
+  grid-template-rows: var(--app-header-height) 1fr auto;
+  background: var(--color-background-canvas);
+}
+
+.skipLink {
+  position: fixed;
+  inset-block-start: var(--space-2);
+  inset-inline-start: var(--space-2);
+  z-index: var(--z-skip-link);
+  translate: 0 -200%;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--shape-control);
+  background: var(--color-action-primary);
+  color: var(--color-text-inverse);
+}
+
+.skipLink:focus { translate: 0; }
+
+.header {
+  grid-area: header;
+  position: sticky;
+  inset-block-start: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-inline: var(--layout-gutter-mobile);
+  border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  background: var(--color-background-surface);
+}
+
+.menuButton,
+.logoutButton {
+  min-height: var(--control-height-minimum);
+  min-width: var(--control-height-minimum);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font: var(--type-label);
+  cursor: pointer;
+}
+
+.menuButton:focus-visible,
+.logoutButton:focus-visible,
+.brand:focus-visible,
+.sidebar a:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.brand { color: inherit; text-decoration: none; }
+
+.account { margin-inline-start: auto; display: flex; align-items: center; gap: var(--space-4); }
+.accountCopy { display: none; text-align: end; }
+.accountCopy > span:first-child { font: var(--type-label); }
+.logoutButton { padding-inline: var(--space-4); }
+
+.sidebar {
+  position: fixed;
+  inset-block: var(--app-header-height) 0;
+  inset-inline-start: 0;
+  z-index: var(--z-sidebar);
+  width: min(var(--app-sidebar-width), calc(100vw - var(--space-12)));
+  padding: var(--space-4);
+  border-inline-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  background: var(--color-background-surface);
+  translate: -100% 0;
+  transition: translate var(--motion-duration-panel) var(--motion-ease-standard);
+}
+
+.sidebar[data-open="true"] { translate: 0; }
+.sidebar nav, .sidebar ul { display: grid; gap: var(--space-2); }
+.sidebar ul { margin: 0; padding: 0; list-style: none; }
+.sidebar a { display: flex; align-items: center; gap: var(--space-4); min-height: var(--control-height-minimum); padding-inline: var(--space-4); border-radius: var(--shape-control); color: var(--color-text-secondary); font: var(--type-label); text-decoration: none; }
+.sidebar a:hover { background: var(--color-background-subtle); color: var(--color-text-primary); }
+.sidebar a[aria-current="page"] { background: var(--color-primary-subtle); color: var(--color-action-primary); }
+.sidebar svg { width: var(--navigation-icon-size); height: var(--navigation-icon-size); flex: none; }
+
+.scrim { position: fixed; inset: var(--app-header-height) 0 0; z-index: var(--z-scrim); border: 0; background: var(--color-overlay); cursor: pointer; }
+.main { grid-area: main; min-width: 0; padding: var(--layout-gutter-mobile); }
+.footer { grid-area: footer; padding: var(--space-4) var(--layout-gutter-mobile); border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default); color: var(--color-text-secondary); font: var(--type-supporting); text-align: center; }
+
+@media (min-width: 48rem) {
+  .shell { grid-template-areas: "header header" "sidebar main" "sidebar footer"; grid-template-columns: var(--app-sidebar-width) minmax(0, 1fr); }
+  .header { padding-inline: var(--layout-gutter-wide); }
+  .menuButton, .scrim { display: none; }
+  .sidebar { grid-area: sidebar; position: sticky; inset-block-start: var(--app-header-height); width: auto; height: calc(100vh - var(--app-header-height)); translate: 0; }
+  .main { padding: var(--app-content-padding); }
+  .accountCopy { display: grid; gap: var(--space-0-5); justify-items: end; }
+}

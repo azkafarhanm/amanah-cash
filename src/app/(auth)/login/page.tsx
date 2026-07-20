@@ -17,9 +17,7 @@ export default async function LoginPage() {
   return (
     <main className="authPage">
       <section className="authCard" aria-labelledby="login-title">
-        <Link href="/" className="authBrand">
-          Amanah Cash
-        </Link>
+        <Link href="/" className="authBrand">Amanah Cash</Link>
         <h1 id="login-title">Masuk</h1>
         <p>Gunakan akun Google yang telah didaftarkan oleh Administrator Platform.</p>
         <LoginButton />

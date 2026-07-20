@@ -7,7 +7,7 @@ const root = resolve(import.meta.dirname, "..");
 const readSource = (path) => readFileSync(resolve(root, path), "utf8");
 
 test("the root route renders only the structural LandingPage shell", () => {
-  const route = readSource("src/app/page.tsx");
+  const route = readSource("src/app/(public)/page.tsx");
 
   assert.match(route, /return <LandingPage \/>/);
   assert.doesNotMatch(

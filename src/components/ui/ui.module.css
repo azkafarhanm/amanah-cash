@@ -111,3 +111,126 @@
   font: var(--type-section-title);
   letter-spacing: var(--letter-spacing-tight);
 }
+
+.contentWrapper {
+  width: var(--size-full);
+  max-width: var(--app-content-max);
+  margin-inline: auto;
+  display: grid;
+  gap: var(--layout-section-gap);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.sectionHeaderCopy {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.sectionHeaderCopy p,
+.emptyState h2,
+.emptyState p,
+.errorState h1,
+.errorState p {
+  margin: 0;
+}
+
+.sectionHeaderCopy p,
+.emptyState p {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.errorState {
+  width: min(var(--size-full), var(--error-state-max-width));
+  margin: auto;
+  display: grid;
+  justify-items: start;
+  gap: var(--space-4);
+}
+
+.errorState h1 { font: var(--type-screen-title); }
+.errorState p { color: var(--color-text-secondary); font: var(--type-body); }
+.errorStateIcon { display: grid; place-items: center; width: var(--error-icon-size); height: var(--error-icon-size); border-radius: var(--radius-full); color: var(--color-error-foreground); background: var(--color-error-background); font: var(--type-section-title); }
+.errorStateLink { display: inline-flex; align-items: center; min-height: var(--control-height-minimum); color: var(--color-action-primary); font: var(--type-button); }
+
+.sectionHeaderAction {
+  flex: none;
+}
+
+.emptyState {
+  min-height: var(--empty-state-min-height);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.emptyStateIcon {
+  color: var(--color-action-primary);
+  font-size: var(--font-size-32);
+  line-height: var(--line-height-unit);
+}
+
+.emptyState h2 {
+  font: var(--type-section-title);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--status-badge-height);
+  padding-inline: var(--space-2);
+  border-radius: var(--radius-full);
+  font: var(--type-label);
+  color: var(--status-badge-foreground);
+  background: var(--status-badge-background);
+}
+
+.statusBadgeNeutral {
+  --status-badge-foreground: var(--color-text-secondary);
+  --status-badge-background: var(--color-background-subtle);
+}
+
+.statusBadgeSuccess {
+  --status-badge-foreground: var(--color-success-foreground);
+  --status-badge-background: var(--color-success-background);
+}
+
+.statusBadgeWarning {
+  --status-badge-foreground: var(--color-warning-foreground);
+  --status-badge-background: var(--color-warning-background);
+}
+
+.statusBadgeDanger {
+  --status-badge-foreground: var(--color-error-foreground);
+  --status-badge-background: var(--color-error-background);
+}
+
+.loadingSkeleton {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.loadingSkeleton span {
+  display: block;
+  min-height: var(--skeleton-line-height);
+  border-radius: var(--radius-md);
+  background: linear-gradient(var(--gradient-angle-horizontal), var(--color-neutral-100), var(--color-neutral-200), var(--color-neutral-100));
+  background-size: var(--skeleton-background-size) var(--size-full);
+  animation: skeleton-loading var(--motion-duration-loading) linear infinite;
+}
+
+.loadingSkeleton span:last-child {
+  width: var(--skeleton-last-line-width);
+}
+
+@keyframes skeleton-loading {
+  to { background-position: calc(var(--skeleton-background-size) * var(--direction-reverse)) 0; }
+}
