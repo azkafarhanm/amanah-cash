@@ -18,6 +18,7 @@ const adminNavigation: readonly NavigationItem[] = [
   { label: "Dashboard", href: "/admin", icon: "dashboard" },
   { label: "Operator", href: "/admin/operators", icon: "operators" },
   { label: "Penugasan Siswa", href: "/admin/students", icon: "students" },
+  { label: "Laporan", href: "/admin/reports", icon: "reports" },
   { label: "Pengaturan", href: "/admin/settings", icon: "settings" }
 ];
 

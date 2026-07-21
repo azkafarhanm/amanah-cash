@@ -1,9 +1,9 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.7
+**Version:** 1.10
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-21
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, and the MVP QA sprint are complete. The next recommended product sprint is Reconciliation and Financial Reads.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, and Reporting Foundation sprints are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
 
 ## 2. Delivery Rules
 
@@ -33,6 +33,8 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Transaction Engine and Operator Transaction UI: complete at domain, persistence, protected API, read projection, presentation, audit, rollback, accessibility, and test levels.
 - UX Polish and Placeholder Consistency sprint: complete; every sidebar destination resolves, planned modules use one placeholder primitive, data states are contextual, and mobile list tables use labeled record cards.
 - MVP Quality Assurance and Business Workflow Validation: complete with five defects fixed, regression coverage added, and a `READY WITH MINOR LIMITATIONS` recommendation documented in `docs/41-mvp-quality-assurance-report.md`.
+- Dashboard and Analytics Foundation: complete as a read-only presentation layer with privacy-safe Admin aggregates, ownership-scoped Operator metrics, reusable cards, bounded activity reads, responsive loading/empty states, and regression coverage. No authorization, ownership, schema, or financial-write behavior changed.
+- Reporting Foundation: complete and UX-polished with privacy-safe Admin activity reports, ownership-scoped Operator financial history, composable Jakarta-period filters with pending/disabled feedback, contextual empty states, explanatory zero summaries, accessible responsive tables, Student detail timelines, and an export adapter contract. No export or financial write was introduced.
 - Milestone 4 is partial: Balance/history reads are complete; reconciliation and audit-history reads remain outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
@@ -407,7 +409,7 @@ No milestone includes:
 - Password authentication, public registration, password recovery, provider-assigned roles, and routine Platform Admin financial access.
 - Offline data or Transaction synchronization.
 - Hard Transaction deletion.
-- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, Dashboard, Reports, Export, and analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS.
+- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, Export, and advanced historical analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS. Implemented Dashboard and Reporting Foundations remain read-only projections.
 - Student deletion or bulk operations.
 - Multiple currencies.
 - Microservices, event sourcing, CQRS, message queues, background workers, caches, read replicas, multiple databases, distributed transactions, service mesh, Kubernetes, or API gateway.

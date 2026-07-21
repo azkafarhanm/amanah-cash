@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-21
-**Current delivery state:** MVP QA complete; READY WITH MINOR LIMITATIONS; reconciliation and financial-audit reads are next
+**Last updated:** 2026-07-22
+**Current delivery state:** Reporting Foundation complete; READY WITH MINOR LIMITATIONS; exports, reconciliation/audit presentation, and deployment remain
 
 ## Project Purpose
 
@@ -21,6 +21,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Transaction UI implemented on Operator Student Detail with committed Balance overview, newest-first filtered cursor history, Deposit/Withdrawal/Correction forms, edit, soft delete, restore, safe retry identity, mobile responsiveness, and accessible dialogs.
 - UX Polish implemented with one reusable planned-feature placeholder, complete sidebar route outcomes, richer dashboard previews, contextual empty/search states, ownership-scoped Operator list balances, responsive table cards, differentiated error states, and layout-stable skeletons.
 - MVP Quality Assurance completed across authentication, administration, Student ownership, every Transaction lifecycle mutation, long-chain Balance reconciliation, authorization routes, UI states, database integrity, and performance smoke checks. Five confirmed defects were fixed with regression coverage; see `docs/41-mvp-quality-assurance-report.md`.
+- Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
+- Reporting Foundation implemented and UX-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct first-use/search/filter empty states, explanatory zero summaries, pending/disabled filter feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
@@ -35,13 +37,17 @@ Operator Student Detail now reads persisted Balance and ownership-scoped Transac
 
 Every current sidebar route now resolves to either an implemented module or `FeaturePlaceholder`; roadmap features never fall through to generic 404. Operator Student lists show ownership-scoped persisted Balance and transaction-count context. Admin Student lists intentionally omit Balance. Empty data, no search results, loading, validation, unauthorized, forbidden, missing-resource, planned-feature, and unexpected-error states have separate presentation contracts.
 
+`/admin` is now an administrative dashboard containing only Operator/Student counts, current assignments, Operator audit summaries, and privacy-minimized ownership changes. `/operator` is an operational dashboard whose every Student and Transaction query is scoped by the authenticated Operator ID. It sums persisted owned Student balances and never reconstructs Balance from history.
+
+`/admin/reports` now provides paginated Operator lifecycle, initial assignment, and privacy-minimized ownership reports without financial fields. `/operator/reports` provides ownership-scoped active Transaction reports and `/operator/reports/students/[id]` provides read-only Student timelines. Report summaries group persisted active Transactions and reuse the centralized `effect` function; they never reconstruct Student Balance. Exact persisted audit `balanceAfter` is shown only when a visible Transaction revision has matching authorized evidence.
+
 Latest verification:
 
 - Prisma format, validation, and client generation: passed.
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 100 passed, 0 failed.
+- Automated tests: 109 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -67,7 +73,11 @@ SQLite relational database and invariant triggers
 - `src/transactions/` owns exact-IDR validation, lifecycle effects, idempotency, serialization, Balance/version changes, and immutable financial audit.
 - `src/transactions/read-service.ts` owns the read-only ownership-scoped Balance/history projection and stable cursor contract.
 - `src/components/transactions/` owns financial presentation, filters, dialogs, accessibility, and API invocation without authoritative business logic.
-- `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; dashboards reuse its future-capability mode.
+- `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; implemented dashboards no longer use it.
+- `src/dashboard/` owns the fixed-query, read-only Admin and Operator dashboard projections.
+- `src/components/dashboard/` owns reusable statistic, trend, summary, activity, quick-action, grid, and skeleton presentation components.
+- `src/reports/` owns report filter normalization, export-neutral Admin/Operator read projections, result contracts, and the future export adapter boundary.
+- `src/components/reports/` owns report filters, summaries, semantic responsive tables, pagination, loading, error, and empty presentation.
 - `src/app/(app)/(admin)/` contains protected Platform Admin pages and Server Actions.
 - `src/app/(app)/(operator)/` contains protected Operator pages.
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
@@ -90,6 +100,8 @@ SQLite relational database and invariant triggers
 - Student and Operator search and pagination execute server-side with ten records per page.
 - Operator list queries are scoped by the authorized Operator ID. Operator detail additionally uses the centralized masked ownership policy.
 - Financial presentation is implemented for owned Operator Student detail and list summaries; authoritative Balance is persisted and changed only by the Transaction Engine.
+- Dashboard presentation is read-only. Admin projections never select financial detail; Operator projections require the server-derived current Operator ID, aggregate persisted owned balances, and bound recent activity to six rows.
+- Reporting presentation is read-only. Operational rows default to non-deleted Transactions, all financial reads follow current Student ownership, Jakarta business periods use `occurredAt`, summaries reuse centralized Transaction effect semantics, and database pagination precedes rendering. Admin reports contain administrative facts only.
 - Student owns every Transaction; Transaction has no Operator owner. Current `operatorId` scopes the entire financial record and transfer changes visibility without rewriting Transactions.
 - Implemented Transaction types are `DEPOSIT`, `WITHDRAWAL`, and `CORRECTION`. Correction has explicit increase/decrease direction and required reason.
 - Transactions support controlled edit, soft delete, and restore. Transaction identity, Student, creation actor, and creation time remain immutable; database triggers prohibit hard delete.
@@ -117,8 +129,8 @@ SQLite relational database and invariant triggers
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.
 - SQLite is the approved current persistence target; production deployment topology remains deferred.
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
-- No reporting, exports, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, dashboard analytics, or distributed infrastructure exist.
-- Dashboard analytics, centralized cross-Student transactions, reports, and settings remain roadmap modules represented by explicit placeholders rather than 404 pages.
+- No exports, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, or distributed infrastructure exist.
+- Centralized cross-Student transactions and settings remain roadmap modules represented by explicit placeholders rather than 404 pages. Reporting routes are implemented.
 
 ## Outstanding Work
 
@@ -130,7 +142,7 @@ SQLite relational database and invariant triggers
 
 Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint.
 
-The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Reports, Export, Dashboard, analytics, and future extension implementation remain outside that bounded sprint.
+The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Export, advanced analytics, and future extension implementation remain outside that bounded sprint.
 
 ## Core Business Rules to Preserve
 
@@ -187,6 +199,7 @@ The sprint should add ownership-scoped audit-history and reconciliation contract
 | `docs/39-transaction-ui-implementation.md` | Implemented financial overview, history, filters, forms, lifecycle dialogs, accessibility, and UI tests |
 | `docs/40-ux-polish-and-placeholder-strategy.md` | Implemented placeholder architecture, state taxonomy, navigation outcomes, mobile behavior, and accessibility |
 | `docs/41-mvp-quality-assurance-report.md` | Executed QA matrix, confirmed defects and regressions, known limitations, and release recommendation |
+| `docs/42-dashboard-implementation.md` | Dashboard read model, reusable cards, performance, authorization/privacy boundaries, and verification |
 
 ## Sprint Completion Rule
 

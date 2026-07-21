@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Reporting Foundation
+
+- Replaced the Operator report placeholder with ownership-scoped financial reports supporting Student/type/status/search filters, Asia/Jakarta Today/Week/Month/custom periods, controlled sorting, summaries, and database pagination.
+- Added read-only Student report detail with timeline metadata, Correction context, revisions, actor attribution, and exact persisted audit Balance-after evidence when available.
+- Added privacy-safe Admin reports for Operator lifecycle activity, initial Student assignments, and minimized ownership changes without Transaction, Balance, or financial-audit payload access.
+- Added reusable accessible filters, summaries, semantic responsive tables, contextual empty/error/loading states, and a future PDF/Excel/CSV adapter contract without implementing exports.
+- Polished Reporting UX with distinct first-use/search/filter empty states and reset actions, explanatory zero-value summaries, role-appropriate search hints, contextual disabled filter controls, pending feedback, table captions/sort semantics, consistent badges, and clearer responsive loading/table presentation.
+- Added real SQLite regression coverage for ownership isolation, soft-delete exclusion, filters, Jakarta dates, pagination, summary accuracy, Admin privacy, and export-neutral/read-only boundaries.
+
+### Dashboard Foundation
+
+- Replaced Admin and Operator dashboard placeholders with production read-only dashboards using fixed-count aggregate and bounded activity projections.
+- Added ownership-scoped Operator Student counts, managed persisted Balance, Asia/Jakarta daily Deposit/Withdrawal totals, recent Transactions, updated Students, and quick links to existing workflows.
+- Added privacy-safe Admin Operator/Student counts, Student distribution, Operator audit activity, ownership changes, latest assignments, and administrative quick actions without financial-detail access.
+- Added reusable statistic, trend, summary, activity, quick-action, grid, and skeleton dashboard components with mobile single-column behavior and accessible labelled regions.
+- Added real SQLite dashboard regression coverage proving cross-Operator Balance and activity isolation, Admin financial privacy, empty projections, read-only boundaries, fixed query limits, responsiveness, and accessibility.
+
 ### Fixed
 
 - Made Student ownership reassignment require a reason and atomically append immutable privacy-minimized `OWNERSHIP_TRANSFER` audit evidence; injected audit failure now rolls back the owner update.

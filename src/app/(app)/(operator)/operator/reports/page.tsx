@@ -1,17 +1,16 @@
-import Link from "next/link";
-import { ContentWrapper, FeaturePlaceholder, SectionHeader } from "@/components/ui";
+import { currentOperator } from "@/authorization";
+import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
+import { reportReadService } from "@/reports/read-service";
+import type { ReportQuery } from "@/reports/types";
 
-export default function ReportsPage() {
-  return (
-    <ContentWrapper>
-      <SectionHeader title="Laporan" description="Pelaporan keuangan terkontrol untuk data yang Anda kelola." />
-      <FeaturePlaceholder
-        title="Modul Laporan"
-        description="Laporan dan ekspor merupakan bagian roadmap setelah rekonsiliasi serta pembacaan audit keuangan selesai."
-        status="PLANNED"
-        estimatedAvailability="Setelah milestone rekonsiliasi dan audit keuangan"
-        action={<Link href="/operator">Kembali ke Dashboard</Link>}
-      />
-    </ContentWrapper>
-  );
+export default async function ReportsPage({ searchParams }: { searchParams: Promise<ReportQuery> }) {
+  const [operator, query] = await Promise.all([currentOperator(), searchParams]);
+  const report = await reportReadService().operator(operator.id, query);
+  return <ContentWrapper>
+    <SectionHeader title="Laporan Keuangan" description="Riwayat keuangan hanya untuk Siswa yang saat ini ditugaskan kepada Anda." />
+    <ReportFilters filters={report.filters} students={report.students} basePath="/operator/reports" />
+    <ReportSummary result={report} />
+    <OperatorReportTable result={report} basePath="/operator/reports" detailBasePath="/operator/reports/students" />
+  </ContentWrapper>;
 }

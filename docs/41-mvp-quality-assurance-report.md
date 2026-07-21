@@ -52,7 +52,7 @@ The isolated end-to-end financial chain produced a final persisted Balance of `2
 - Live Google OAuth depends on deployment credentials and callback registration; QA exercised the production admission/session code in automation and the isolated development login flow over HTTP.
 - Physical mobile-browser, standalone PWA installation, production data-volume targets, backup/restore, hosting topology, and deployment diagnostics require the Milestone 9 environment baseline.
 - Platform Admin bootstrap remains deployment-specific. SQLite remains the approved current persistence target.
-- Reports, exports, dashboard analytics, centralized cross-Student transactions, settings, offline mutation, and the other documented extension points remain intentionally unimplemented.
+- Exports, advanced analytics, centralized cross-Student transactions, settings, offline mutation, and the other documented extension points remain intentionally unimplemented. Later Dashboard and Reporting Foundation sprints add bounded read-only presentation without changing this QA evidence or release recommendation.
 
 ## Release Recommendation
 

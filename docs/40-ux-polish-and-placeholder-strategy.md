@@ -33,9 +33,9 @@ These states must not borrow one another's wording. In particular, “not yet im
 - optional icon;
 - optional action;
 - optional estimated availability text; and
-- optional future-capability cards for richer roadmap surfaces such as dashboards.
+- optional future-capability cards for richer roadmap surfaces.
 
-Dashboard pages compose the same primitive with capability cards. Planned leaf modules use the compact form. No route owns a one-off placeholder implementation.
+Dashboard pages used this primitive during the UX Polish sprint and were replaced by the approved Dashboard Foundation. Remaining planned leaf modules use the compact form. No route owns a one-off placeholder implementation.
 
 ## 4. Navigation consistency
 
@@ -43,14 +43,15 @@ Every current sidebar destination resolves as follows:
 
 | Route | Outcome |
 |---|---|
-| `/admin` | In-development dashboard placeholder |
+| `/admin` | Implemented read-only administrative dashboard |
 | `/admin/operators` | Implemented Operator Management |
 | `/admin/students` | Implemented Student Management |
+| `/admin/reports` | Implemented privacy-safe administrative reporting |
 | `/admin/settings` | Planned feature placeholder |
-| `/operator` | In-development dashboard placeholder |
+| `/operator` | Implemented ownership-scoped operational dashboard |
 | `/operator/students` | Implemented owned-Student list |
 | `/operator/transactions` | Planned centralized-module placeholder; current Student-level transactions remain available |
-| `/operator/reports` | Planned feature placeholder |
+| `/operator/reports` | Implemented ownership-scoped financial reporting |
 | `/operator/settings` | Planned feature placeholder |
 
 Generic 404 remains reserved for unknown routes and missing resources.
@@ -74,4 +75,4 @@ Placeholder status is visible text, headings follow the page `h1` → placeholde
 
 ## 7. Known roadmap modules
 
-Still unimplemented: dashboard analytics, centralized cross-Student transaction workspace, reports, exports, user/platform settings, reconciliation presentation, and financial-audit history. Placeholders do not imply approval, dates, or hidden functionality.
+Still unimplemented: centralized cross-Student transaction workspace, exports, user/platform settings, reconciliation presentation, full financial-audit history, and advanced historical analytics. Placeholders do not imply approval, dates, or hidden functionality. Dashboard and report routes are now implemented and no longer use this placeholder contract.

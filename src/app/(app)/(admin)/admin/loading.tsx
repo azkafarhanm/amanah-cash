@@ -1,5 +1,6 @@
-import { ContentWrapper, LoadingSkeleton } from "@/components/ui";
+import { ContentWrapper } from "@/components/ui";
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-cards";
 
 export default function Loading() {
-  return <ContentWrapper aria-busy="true"><LoadingSkeleton variant="cards" lines={5} /></ContentWrapper>;
+  return <ContentWrapper><DashboardSkeleton /></ContentWrapper>;
 }

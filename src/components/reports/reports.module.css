@@ -1,0 +1,129 @@
+.filters,
+.summary,
+.tableSection,
+.tableSection > header,
+.skeleton {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.filters {
+  padding: var(--space-5);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.filterDescription {
+  margin: var(--space-0);
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.filterFields {
+  min-width: 0;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  border: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-4);
+}
+
+.field { display: grid; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
+.field input,
+.field select { width: var(--size-full); min-height: var(--control-height-minimum); padding: var(--space-2) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
+.field input:hover:not(:disabled),
+.field select:hover:not(:disabled) { border-color: var(--color-action-primary); }
+.field input:disabled,
+.field select:disabled { color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; opacity: 1; }
+.searchField { grid-column: span 2; }
+.filterActions { display: flex; align-items: center; gap: var(--space-4); }
+.filterActions button,
+.emptyAction { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); }
+.filterActions button { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); background: var(--color-action-primary); color: var(--color-text-inverse); cursor: pointer; }
+.filterActions button:hover:not(:disabled) { background: var(--color-action-primary-hover); }
+.filterActions .resetButton { border-color: var(--color-border-default); background: var(--color-background-surface); color: var(--color-action-primary); }
+.filterActions button:disabled { border-color: var(--color-border-default); color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; }
+.emptyAction { color: var(--color-text-inverse); background: var(--color-action-primary); text-decoration: none; }
+
+.summary h2,
+.tableSection h2,
+.tableSection p { margin: var(--space-0); }
+.summary h2,
+.tableSection h2 { color: var(--color-text-primary); font: var(--type-section-title); }
+.tableSection p { color: var(--color-text-secondary); font: var(--type-body); }
+.summaryGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.summaryGrid article { min-width: 0; display: grid; align-content: start; gap: var(--space-2); padding: var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.summaryGrid span { color: var(--color-text-secondary); font: var(--type-body); }
+.summaryGrid strong { overflow-wrap: anywhere; color: var(--color-text-primary); font: var(--type-screen-title); font-variant-numeric: tabular-nums; }
+.summaryGrid small { color: var(--color-text-secondary); font: var(--type-supporting); }
+.summaryGrid .periodValue { font: var(--type-section-title); }
+
+.tableWrap { overflow: hidden; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.table { width: var(--size-full); border-collapse: collapse; }
+.table th,
+.table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: start; vertical-align: top; }
+.table th { color: var(--color-text-secondary); font: var(--type-label); white-space: nowrap; }
+.table tbody tr:nth-child(even) { background: var(--color-background-subtle); }
+.table tbody tr:last-child td { border-block-end: 0; }
+.table th a,
+.table td a { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
+.table td { color: var(--color-text-primary); font: var(--type-body); overflow-wrap: anywhere; }
+.table td > small,
+.table td > span { display: block; margin-block-start: var(--space-1); }
+.table td small,
+.unavailable { color: var(--color-text-secondary); font: var(--type-supporting); }
+.amount { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.pagination div { display: flex; gap: var(--space-4); }
+.pagination a { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; color: var(--color-action-primary); font: var(--type-button); }
+.paginationDisabled { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; color: var(--color-text-secondary); font: var(--type-button); cursor: not-allowed; }
+.field input:focus-visible,
+.field select:focus-visible,
+.filterActions button:focus-visible,
+.emptyAction:focus-visible,
+.table a:focus-visible,
+.pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
+
+.skeleton h1,
+.skeleton p { margin: var(--space-0); }
+.skeleton h1 { color: var(--color-text-primary); font: var(--type-screen-title); }
+.skeleton p { margin-block-start: var(--space-2); color: var(--color-text-secondary); font: var(--type-body); }
+.filterSkeleton { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); padding: var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.filterSkeleton span { min-height: var(--control-height-minimum); border-radius: var(--shape-control); background: var(--color-background-subtle); }
+.visuallyHidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+@media (max-width: 64rem) {
+  .filterFields,
+  .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .filterSkeleton { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 48rem) {
+  .filterFields,
+  .summaryGrid { grid-template-columns: minmax(0, 1fr); }
+  .filters { padding: var(--space-4); }
+  .searchField { grid-column: auto; }
+  .filterActions { align-items: stretch; flex-direction: column; }
+  .filterActions button { width: var(--size-full); }
+  .filterSkeleton { grid-template-columns: minmax(0, 1fr); padding: var(--space-4); }
+  .tableWrap { border: 0; background: transparent; }
+  .table,
+  .table tbody,
+  .table tr,
+  .table td { display: block; width: var(--size-full); }
+  .table thead { display: none; }
+  .table tbody { display: grid; gap: var(--space-4); }
+  .table tr { padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+  .table tbody tr:nth-child(even) { background: var(--color-background-surface); }
+  .table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-0); text-align: end; }
+  .table td::before { content: attr(data-label); color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
+  .table td > * { justify-self: end; }
+  .pagination { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filterSkeleton span { animation: none; }
+}

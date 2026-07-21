@@ -23,7 +23,6 @@ test("every sidebar destination resolves to an implemented page or FeaturePlaceh
   for (const path of [
     "src/app/(app)/(admin)/admin/settings/page.tsx",
     "src/app/(app)/(operator)/operator/transactions/page.tsx",
-    "src/app/(app)/(operator)/operator/reports/page.tsx",
     "src/app/(app)/(operator)/operator/settings/page.tsx"
   ]) {
     assert.match(source(path), /<FeaturePlaceholder/);
@@ -37,9 +36,8 @@ test("the reusable placeholder communicates status, availability, actions, and f
   assert.match(placeholder, /capabilities/);
   assert.match(placeholder, /aria-labelledby/);
   assert.match(placeholder, /role="status"/);
-  assert.match(source("src/app/(app)/(operator)/operator/page.tsx"), /Ringkasan Keuangan/);
-  assert.match(source("src/app/(app)/(operator)/operator/page.tsx"), /Transaksi Terbaru/);
-  assert.match(source("src/app/(app)/(admin)/admin/page.tsx"), /Ringkasan Operator/);
+  assert.doesNotMatch(source("src/app/(app)/(operator)/operator/page.tsx"), /FeaturePlaceholder/);
+  assert.doesNotMatch(source("src/app/(app)/(admin)/admin/page.tsx"), /FeaturePlaceholder/);
 });
 
 test("empty, balance, loading, error, and mobile table states remain distinct", () => {
