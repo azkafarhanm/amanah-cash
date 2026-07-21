@@ -6,8 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Made Student ownership reassignment require a reason and atomically append immutable privacy-minimized `OWNERSHIP_TRANSFER` audit evidence; injected audit failure now rolls back the owner update.
+- Kept Correction reasons visible when optional Notes exist, enforced required Deposit Notes during edit-to-Deposit, and moved dialog focus to asynchronous error summaries.
+- Converted malformed Operator and Student admin API JSON from unexpected 500 failures into stable `VALIDATION` 400 responses.
+
+### Quality Assurance
+
+- Added long-chain Balance/revision/audit reconciliation, real SQLite ownership-transfer rollback/immutability, malformed-body, development-role login, and Transaction UI regression coverage.
+- Completed isolated HTTP workflow validation, foreign-key/orphan checks, query-plan smoke checks, and the MVP release report in `docs/41-mvp-quality-assurance-report.md`.
+
 ### Added
 
+- Reusable `FeaturePlaceholder` with planned/in-development status, optional icon/action/availability, and richer future-capability cards.
+- Intentional placeholder routes for every unfinished sidebar destination plus richer Admin and Operator dashboard roadmap previews.
+- Context-aware empty/no-result copy, table/card/ledger skeleton variants, responsive mobile table cards, and UX-state regression tests.
+- Ownership-scoped Operator Student-list Balance summaries with explicit `Rp 0` and no-transactions context; Platform Admin financial privacy remains unchanged.
+- Complete mobile-first Transaction UI on Operator Student Detail with authoritative Balance overview, last-updated activity, Transaction count, newest-first ledger, filters, and stable cursor pagination.
+- Accessible Deposit, Withdrawal, Correction, edit, soft-delete, and restore dialogs with exact-IDR input, Notes, lifecycle reasons, backend error display, in-flight protection, and idempotent unknown-outcome retry identity.
+- Ownership-scoped financial read projection and additive bounded Transaction Notes migration with read, filter, accessibility, responsive, migration, and workflow tests.
 - Complete Transaction Engine persistence and protected Operator APIs for Deposit, Withdrawal, directional Correction, edit, soft delete, and restore.
 - Persisted non-negative Student Balance and financial version with SQLite `BEGIN IMMEDIATE` serialization, guarded updates, command idempotency, and rollback-safe immutable financial audit.
 - Transaction lifecycle actor/revision/deletion metadata, deterministic audit snapshots, financial constraints/indexes, hard-delete and audit-immutability triggers, fail-closed legacy migration, and comprehensive engine tests.
@@ -26,11 +44,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- Reserved generic 404 for unknown routes and missing resources; known roadmap modules no longer appear broken.
+- Differentiated unexpected, forbidden, unauthorized, not-found, validation, empty, loading, and development-placeholder presentation.
+- Replaced mobile table overflow with labeled record cards and added consistent focus-visible behavior for list controls.
 - Approved the complete MVP documentation set after final consistency review.
 - Replaced obsolete governance documents with the approved Engineering Rules and Development Workflow.
 - Synchronized requirements, domain, flows, architecture, roadmap, accessibility, and Landing Page contracts with the locked authentication and privacy decisions.
 - Updated authentication admission and authorization lookups to exclude logically deleted users and record successful Operator login time.
-- Replaced Student financial values with explicit static placeholders until the Financial Transactions sprint; no balance or Transaction query is performed.
+- Replaced the Operator Student Detail financial placeholder with the committed Balance and complete Transaction workflow while preserving Platform Admin financial privacy.
 - Synchronized README, roadmap, changelog, and canonical AI handoff with the implemented Operator and Student modules.
 - Superseded the pre-Transaction-Foundation derived-Balance, append-only Transaction, no-actor, and no-soft-delete architecture with the locked ADR-004 model across requirements, rules, domain, database target, system architecture, roadmap, engineering workflow, privacy/authorization references, and affected future-content specifications.
 - Kept Transaction Foundation architecture-only: no application code, migration, Prisma model, API, or UI change is included.

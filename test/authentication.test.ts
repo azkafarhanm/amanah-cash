@@ -199,6 +199,11 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
       "INSERT INTO users (id, name, email, role, is_active) VALUES ('operator-1', 'Operator', 'operator@example.com', 'OPERATOR', 1)"
     )
     .run();
+  database.connection
+    .prepare(
+      "INSERT INTO users (id, name, email, role, is_active) VALUES ('admin-1', 'Admin', 'admin@example.com', 'PLATFORM_ADMIN', 1)"
+    )
+    .run();
   database.close();
 
   const environment = {
@@ -207,12 +212,37 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
     googleClientSecret: "google-client-secret",
     nextAuthSecret: "a-secure-secret-with-at-least-32-characters",
     nextAuthUrl: "http://localhost:3000",
-    production: false
+    production: false,
+    developmentAuth: false,
+    developmentAdminEmail: null,
+    developmentOperatorEmail: null
   };
   const prisma = getPrismaClient(environment);
 
   try {
-    const adapter = buildAuthOptions(environment).adapter!;
+    const productionLikeOptions = buildAuthOptions(environment);
+    assert.equal(productionLikeOptions.session?.strategy, "database");
+    assert.equal(productionLikeOptions.providers[0].id, "google");
+    const developmentOptions = buildAuthOptions({
+      ...environment,
+      developmentAuth: true,
+      developmentAdminEmail: "admin@example.com",
+      developmentOperatorEmail: "operator@example.com"
+    });
+    assert.equal(developmentOptions.session?.strategy, "jwt");
+    assert.equal(developmentOptions.providers[0].id, "credentials");
+    const authorizeDevelopment = (
+      developmentOptions.providers[0] as unknown as {
+        options: {
+          authorize(credentials: { email: string }): Promise<{ id: string } | null>;
+        };
+      }
+    ).options.authorize;
+    assert.equal((await authorizeDevelopment({ email: "admin@example.com" }))?.id, "admin-1");
+    assert.equal((await authorizeDevelopment({ email: " OPERATOR@EXAMPLE.COM " }))?.id, "operator-1");
+    assert.equal(await authorizeDevelopment({ email: "unknown@example.com" }), null);
+
+    const adapter = productionLikeOptions.adapter!;
     assert.equal((await adapter.getUserByEmail!("operator@example.com"))?.id, "operator-1");
 
     await adapter.createSession!({
@@ -252,4 +282,20 @@ test("authentication environment enforces secrets and production HTTPS", () => {
   assert.doesNotThrow(() =>
     loadAuthenticationEnvironment({ ...validEnvironment, NODE_ENV: "development", NEXTAUTH_URL: "http://localhost:3000" })
   );
+  assert.throws(
+    () => loadAuthenticationEnvironment({ ...validEnvironment, AUTH_DEV_MODE: "true" }),
+    /cannot be enabled in production/
+  );
+  const development = loadAuthenticationEnvironment({
+    DATABASE_URL: "file:./data/amanah-cash.sqlite",
+    NEXTAUTH_SECRET: "a-secure-secret-with-at-least-32-characters",
+    NEXTAUTH_URL: "http://localhost:3000",
+    AUTH_DEV_MODE: "true",
+    DEV_SEED_ADMIN_EMAIL: "ADMIN@EXAMPLE.COM",
+    DEV_SEED_OPERATOR_EMAIL: "OPERATOR@EXAMPLE.COM",
+    NODE_ENV: "development"
+  });
+  assert.equal(development.developmentAuth, true);
+  assert.equal(development.developmentAdminEmail, "admin@example.com");
+  assert.equal(development.googleClientId, "");
 });

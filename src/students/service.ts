@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
+import type { AuthenticationEnvironment } from "@/auth/environment";
 import { getPrismaClient } from "@/persistence/prisma";
 import { createStudentManagement, StudentManagementError, type StudentRecord, type StudentRepository } from "@/students/domain";
 
@@ -7,8 +9,8 @@ const select = {
   operator: { select: { id: true, name: true, email: true } }
 } as const;
 
-export function studentManagement() {
-  const prisma = getPrismaClient(loadAuthenticationEnvironment());
+export function studentManagement(environment: AuthenticationEnvironment = loadAuthenticationEnvironment()) {
+  const prisma = getPrismaClient(environment);
   const repository: StudentRepository = {
     activeOperator: (id) => prisma.user.findFirst({ where: { id, role: "OPERATOR", isActive: true, deletedAt: null }, select: { id: true, name: true, email: true } }),
     activeOperators: () => prisma.user.findMany({ where: { role: "OPERATOR", isActive: true, deletedAt: null }, orderBy: { name: "asc" }, select: { id: true, name: true, email: true } }),
@@ -19,8 +21,44 @@ export function studentManagement() {
         throw error;
       }
     },
-    async update(id, data) {
-      try { return await prisma.student.update({ where: { id }, data, select }) as StudentRecord; }
+    async update(id, data, expectedOperatorId, ownershipTransfer) {
+      try {
+        return await prisma.$transaction(async (transaction) => {
+          const result = await transaction.student.updateMany({
+            where: { id, operatorId: expectedOperatorId },
+            data
+          });
+          if (result.count !== 1) {
+            throw new StudentManagementError("CONFLICT", "Kepemilikan Siswa berubah secara bersamaan. Muat ulang lalu coba lagi.", 409);
+          }
+          if (ownershipTransfer) {
+            const commandPayloadHash = createHash("sha256").update(JSON.stringify({
+              operation: "OWNERSHIP_TRANSFER",
+              actorId: ownershipTransfer.actorId,
+              studentId: id,
+              oldOperatorId: ownershipTransfer.oldOperatorId,
+              newOperatorId: ownershipTransfer.newOperatorId,
+              reason: ownershipTransfer.reason
+            })).digest("hex");
+            await transaction.financialAuditEvent.create({ data: {
+              id: crypto.randomUUID(),
+              commandId: ownershipTransfer.commandId,
+              commandPayloadHash,
+              eventType: "OWNERSHIP_TRANSFER",
+              actorId: ownershipTransfer.actorId,
+              actorRole: "PLATFORM_ADMIN",
+              studentId: id,
+              reason: ownershipTransfer.reason,
+              oldOperatorId: ownershipTransfer.oldOperatorId,
+              newOperatorId: ownershipTransfer.newOperatorId,
+              correlationId: ownershipTransfer.correlationId
+            } });
+          }
+          const updated = await transaction.student.findUnique({ where: { id }, select });
+          if (!updated) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
+          return updated as StudentRecord;
+        });
+      }
       catch (error) {
         if (typeof error === "object" && error && "code" in error && error.code === "P2002") throw new StudentManagementError("DUPLICATE_NAME", "Nama Siswa tersebut sudah terdaftar.", 409);
         throw error;

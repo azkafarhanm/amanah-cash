@@ -5,10 +5,10 @@ import styles from "./ui.module.css";
 export type EmptyStateKind = "students" | "transactions" | "reports" | "generic";
 
 const COPY: Record<EmptyStateKind, { title: string; description: string }> = {
-  students: { title: "Belum ada siswa", description: "Data siswa akan tampil di sini ketika tersedia." },
-  transactions: { title: "Belum ada transaksi", description: "Riwayat transaksi akan tampil di sini ketika tersedia." },
-  reports: { title: "Belum ada laporan", description: "Laporan yang tersedia akan tampil di sini." },
-  generic: { title: "Belum ada data", description: "Konten akan tampil di sini ketika tersedia." }
+  students: { title: "Belum ada siswa", description: "Belum ada siswa yang terdaftar atau ditugaskan pada daftar ini." },
+  transactions: { title: "Belum ada transaksi keuangan", description: "Belum ada transaksi keuangan yang dicatat untuk siswa ini." },
+  reports: { title: "Belum ada laporan", description: "Belum ada laporan yang dapat ditampilkan untuk periode ini." },
+  generic: { title: "Belum ada data", description: "Belum ada data yang tercatat untuk bagian ini." }
 };
 
 export type EmptyStateProps = {

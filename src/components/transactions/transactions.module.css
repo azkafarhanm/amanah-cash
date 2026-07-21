@@ -1,0 +1,60 @@
+.experience, .dialogForm, .filters, .ledger { display: grid; gap: var(--space-4); }
+.experience { gap: var(--space-6); }
+.sectionHeading, .historyHeading, .dialogHeader, .transactionTop, .filterActions, .dialogActions, .rowActions, .pagination { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.sectionHeading h2, .sectionHeading p, .historyHeading h2, .historyHeading p, .dialogHeader h2, .dialogHeader p, .confirmation { margin: var(--space-0); }
+.sectionHeading p, .historyHeading p, .dialogHeader p, .hint, .metric span, .balanceCard span, .balanceCard small, .direction, .transactionMeta dt { color: var(--color-text-secondary); }
+.overviewGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.balanceCard, .metric { padding: var(--space-6); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.balanceCard { grid-column: 1 / -1; display: grid; gap: var(--space-2); }
+.balanceCard strong { font-size: var(--font-size-40); line-height: var(--line-height-heading); overflow-wrap: anywhere; }
+.metric { display: grid; align-content: start; gap: var(--space-2); }
+.metric strong { font: var(--type-body); }
+.primaryActions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
+.primaryActions button { width: var(--size-full); }
+.success, .error, .warning { margin: var(--space-0); padding: var(--space-4); border-radius: var(--shape-control); }
+.success { color: var(--color-success-foreground); background: var(--color-success-background); }
+.error { color: var(--color-error-foreground); background: var(--color-error-background); }
+.warning { color: var(--color-warning-foreground); background: var(--color-warning-background); }
+.filters { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.field { display: grid; align-content: start; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
+.input, .select, .textarea { width: var(--size-full); min-height: var(--control-height-minimum); padding: var(--space-2) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
+.textarea { min-height: var(--space-24); resize: vertical; }
+.input:focus-visible, .select:focus-visible, .textarea:focus-visible, .closeButton:focus-visible, .filterButton:focus-visible, .resetLink:focus-visible, .pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
+.filterActions { align-items: end; justify-content: flex-start; }
+.filterButton, .resetLink { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); }
+.filterButton { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); cursor: pointer; }
+.resetLink { color: var(--color-action-primary); }
+.ledger { border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
+.transactionItem { display: grid; gap: var(--space-4); padding-block: var(--space-6); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
+.correctionItem { padding-inline: var(--space-4); border-inline-start: var(--border-width-emphasis) var(--border-style-default) var(--color-warning-foreground); background: var(--color-warning-background); }
+.transactionIdentity { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2); }
+.amountPositive { color: var(--color-deposit-foreground); }
+.amountNegative { color: var(--color-withdrawal-foreground); }
+.amountCorrection { color: var(--color-warning-foreground); }
+.transactionMeta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin: var(--space-0); }
+.transactionMeta div { display: grid; gap: var(--space-2); }
+.transactionMeta dt { font: var(--type-label); }
+.transactionMeta dd { margin: var(--space-0); overflow-wrap: anywhere; }
+.rowActions { justify-content: flex-end; }
+.dangerButton:not(:disabled) { color: var(--color-error-foreground) !important; border-color: var(--color-error-foreground) !important; }
+.depositButton:not(:disabled) { color: var(--color-text-inverse) !important; background: var(--color-deposit-foreground) !important; }
+.withdrawalButton:not(:disabled) { color: var(--color-text-inverse) !important; background: var(--color-withdrawal-foreground) !important; }
+.correctionButton:not(:disabled) { color: var(--color-warning-foreground) !important; border-color: var(--color-warning-foreground) !important; background: var(--color-warning-background) !important; }
+.pagination { align-items: center; }
+.pagination div { display: flex; gap: var(--space-4); }
+.pagination a { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
+.dialog { width: min(calc(var(--size-full) - var(--space-8)), var(--size-content-160)); max-height: calc(var(--size-full) - var(--space-8)); padding: var(--space-0); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--radius-lg); color: var(--color-text-primary); background: var(--color-background-surface); }
+.dialog::backdrop { background: var(--color-overlay); }
+.dialogForm { padding: var(--space-6); overflow-y: auto; }
+.dialogHeader div { display: grid; gap: var(--space-2); }
+.closeButton { min-width: var(--control-height-minimum); min-height: var(--control-height-minimum); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font-size: var(--font-size-24); cursor: pointer; }
+.dialogActions { justify-content: flex-end; padding-block-start: var(--space-2); }
+.correctionFields { display: grid; gap: var(--space-4); padding: var(--space-4); border-radius: var(--shape-control); background: var(--color-warning-background); }
+@media (max-width: 48rem) {
+  .overviewGrid, .filters, .transactionMeta { grid-template-columns: 1fr; }
+  .primaryActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .primaryActions > :last-child { grid-column: 1 / -1; }
+  .transactionTop, .pagination { align-items: flex-start; flex-direction: column; }
+  .dialogActions { flex-direction: column-reverse; }
+  .dialogActions button { width: var(--size-full); }
+}

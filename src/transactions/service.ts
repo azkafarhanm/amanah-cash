@@ -24,7 +24,7 @@ type StudentRow = { id: string; status: string; balance: bigint; financial_versi
 type ActorRow = { id: string; role: string; is_active: bigint; deleted_at: string | null };
 type TransactionRow = {
   id: string; student_id: string; type: "DEPOSIT" | "WITHDRAWAL" | "CORRECTION"; amount: bigint;
-  correction_direction: "INCREASE" | "DECREASE" | null; reason: string | null; occurred_at: string;
+  correction_direction: "INCREASE" | "DECREASE" | null; reason: string | null; notes: string | null; occurred_at: string;
   created_at: string; created_by: string; updated_at: string; updated_by: string; revision: bigint;
   deleted_at: string | null; deleted_by: string | null;
 };
@@ -35,7 +35,7 @@ export type TransactionEngineDatabase = Database.Database;
 function snapshot(row: TransactionRow): TransactionSnapshot {
   return {
     id: row.id, studentId: row.student_id, type: row.type, amount: row.amount.toString(),
-    correctionDirection: row.correction_direction, reason: row.reason, occurredAt: row.occurred_at,
+    correctionDirection: row.correction_direction, reason: row.reason, notes: row.notes, occurredAt: row.occurred_at,
     createdAt: row.created_at, createdBy: row.created_by, updatedAt: row.updated_at, updatedBy: row.updated_by,
     revision: Number(row.revision), deletedAt: row.deleted_at, deletedBy: row.deleted_by
   };
@@ -69,7 +69,8 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
         const prior = database.prepare("SELECT command_payload_hash, after_snapshot, balance_after, balance_delta, transaction_revision FROM financial_audit_events WHERE command_id = ?").get(input.commandId) as AuditRow | undefined;
         if (prior) {
           if (prior.command_payload_hash !== input.hash) throw new TransactionEngineError("IDEMPOTENCY_CONFLICT", "Command ID telah digunakan untuk payload berbeda.", 409);
-          const transaction = JSON.parse(prior.after_snapshot) as TransactionSnapshot;
+          const recorded = JSON.parse(prior.after_snapshot) as TransactionSnapshot & { notes?: string | null };
+          const transaction: TransactionSnapshot = { ...recorded, notes: recorded.notes ?? null };
           database.exec("COMMIT");
           return { transaction, balance: prior.balance_after.toString(), balanceDelta: prior.balance_delta.toString(), replayed: true };
         }
@@ -113,7 +114,7 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
       operation: "CREATE", actorId: input.actorId, studentId: input.studentId,
       transactionId: transactionId(input.transactionId), commandId: commandId(input.commandId),
       type: values.type, amount: values.amount.toString(), correctionDirection: values.correctionDirection,
-      reason: values.reason, occurredAt: values.occurredAt
+      reason: values.reason, notes: values.notes, occurredAt: values.occurredAt
     };
     const safeCorrelationId = correlationId(input.correlationId);
     const hash = payloadHash(normalized);
@@ -122,9 +123,9 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
       checkedBalance(student.balance, delta);
       try {
         database.prepare(`INSERT INTO transactions
-          (id, student_id, type, amount, correction_direction, reason, occurred_at, created_at, created_by, updated_at, updated_by, revision)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`)
-          .run(normalized.transactionId, student.id, values.type, values.amount, values.correctionDirection, values.reason,
+          (id, student_id, type, amount, correction_direction, reason, notes, occurred_at, created_at, created_by, updated_at, updated_by, revision)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)`)
+          .run(normalized.transactionId, student.id, values.type, values.amount, values.correctionDirection, values.reason, values.notes,
             values.occurredAt, timestamp, input.actorId, timestamp, input.actorId);
       } catch (error) {
         if (error instanceof Error && /UNIQUE constraint failed: transactions\.id/.test(error.message)) {
@@ -147,7 +148,7 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
     const normalized = {
       operation: "EDIT", actorId: input.actorId, studentId: input.studentId, transactionId: transactionId(input.transactionId),
       commandId: commandId(input.commandId), expectedRevision, type: values.type, amount: values.amount.toString(),
-      correctionDirection: values.correctionDirection, reason: values.reason, occurredAt: values.occurredAt, editReason
+      correctionDirection: values.correctionDirection, reason: values.reason, notes: values.notes, occurredAt: values.occurredAt, editReason
     };
     const safeCorrelationId = correlationId(input.correlationId);
     const hash = payloadHash(normalized);
@@ -159,9 +160,9 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
       const before = snapshot(row);
       const delta = effect(values) - effect({ type: row.type, amount: row.amount, correctionDirection: row.correction_direction });
       checkedBalance(student.balance, delta);
-      const transactionUpdate = database.prepare(`UPDATE transactions SET type = ?, amount = ?, correction_direction = ?, reason = ?, occurred_at = ?,
+      const transactionUpdate = database.prepare(`UPDATE transactions SET type = ?, amount = ?, correction_direction = ?, reason = ?, notes = ?, occurred_at = ?,
         updated_at = ?, updated_by = ?, revision = revision + 1 WHERE id = ? AND student_id = ? AND revision = ? AND deleted_at IS NULL`)
-        .run(values.type, values.amount, values.correctionDirection, values.reason, values.occurredAt, timestamp, input.actorId,
+        .run(values.type, values.amount, values.correctionDirection, values.reason, values.notes, values.occurredAt, timestamp, input.actorId,
           row.id, student.id, row.revision);
       if (Number(transactionUpdate.changes) !== 1) throw new TransactionEngineError("CONCURRENT_MODIFICATION", "Transaction berubah secara bersamaan.", 409, true);
       const { balanceAfter } = updateBalance(student, delta);

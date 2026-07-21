@@ -1,6 +1,6 @@
 import { withAuthorization } from "@/authorization/api";
 import { operatorManagement } from "@/operators/service";
-import { operatorJson } from "@/operators/http";
+import { operatorBody, operatorJson } from "@/operators/http";
 
 type RouteContext = { params: Promise<{ id: string }> };
 
@@ -16,8 +16,7 @@ export async function GET(request: Request, context: RouteContext) {
 export async function PATCH(request: Request, context: RouteContext) {
   const { id } = await context.params;
   return withAuthorization({ role: "admin" }, async (authorizedRequest, { authorization }) => operatorJson(async () => {
-    const body: unknown = await authorizedRequest.json();
-    const input = typeof body === "object" && body ? body as Record<string, unknown> : {};
+    const input = await operatorBody(authorizedRequest);
     return operatorManagement().edit(id, { name: input.name, isActive: input.isActive }, authorization.id);
   }))(request);
 }

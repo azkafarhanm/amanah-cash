@@ -2,11 +2,11 @@
 
 **Status:** Implemented  
 **Date:** 2026-07-20  
-**Scope:** Google identity admission and Auth.js database sessions only
+**Scope:** Google identity admission, Auth.js database sessions, and an isolated local-development substitute
 
 ## 1. Implemented boundary
 
-This implementation provides Auth.js authentication through Google, registered-active-user admission, database sessions, login, logout, friendly authentication errors, and reusable server authentication helpers. It implements no role decision, ownership decision, Student/Transaction filtering, financial permission, administrative permission, or dashboard permission.
+This implementation provides Auth.js authentication through Google, registered-active-user admission, database sessions, login, logout, friendly authentication errors, and reusable server authentication helpers. An explicit non-production mode substitutes two configured seeded identities so local work does not require Google credentials. It implements no role decision, ownership decision, Student/Transaction filtering, financial permission, administrative permission, or dashboard permission.
 
 The installed stable integration versions are:
 
@@ -28,8 +28,12 @@ The Auth.js API route is `/api/auth/[...nextauth]`. The Google callback is alway
 | `GOOGLE_CLIENT_SECRET` | Matching Google OAuth client secret | Secret; server-only |
 | `NEXTAUTH_SECRET` | Independent cryptographically random value of at least 32 characters | Secret; signs/encrypts Auth.js security material; never reuse across environments |
 | `NEXTAUTH_URL` | Exact application origin, such as `http://localhost:3000` or `https://cash.example.com` | Determines trusted Auth.js URLs and secure-cookie behavior |
+| `AUTH_DEV_MODE` | Optional boolean; defaults to `false` | Enables the development credentials provider outside production; `true` is rejected in production |
+| `DEV_SEED_ADMIN_EMAIL` | Required only for development auth/seed | Allowed seeded Platform Admin identity |
+| `DEV_SEED_OPERATOR_EMAIL` | Required only for development auth/seed | Allowed seeded Operator identity |
+| `DEV_SEED_STUDENT_NAME` | Required only for the development seed | Name of the active Student assigned to the seeded Operator |
 
-The committed `.env.example` contains placeholders only. Local secrets belong in an ignored `.env.local` or deployment secret store. Production requires HTTPS except that a production build may be run on loopback HTTP for local verification. Non-HTTPS non-loopback origins are rejected. `NEXTAUTH_URL` must not contain a path, query, or fragment.
+The committed `.env.example` contains a local-only secret and reserved example-domain seed identities for clone-and-run development. Real local and production secrets belong in an ignored `.env` or deployment secret store. Production requires HTTPS except that a production build may be run on loopback HTTP for local verification. Non-HTTPS non-loopback origins are rejected. `NEXTAUTH_URL` must not contain a path, query, or fragment.
 
 Google Cloud OAuth configuration must use an OAuth 2.0 Web application client and exact redirect URIs:
 
@@ -56,7 +60,7 @@ No role is read or placed in the session. No ownership or permission lookup occu
 
 ## 4. Sessions and logout
 
-- Strategy is explicitly `database`; JWT sessions are not configured.
+- Google authentication uses the explicit `database` strategy. Only `AUTH_DEV_MODE=true` uses a JWT session because the Auth.js credentials provider does not support database sessions.
 - Session inactivity maximum is 8 hours.
 - Auth.js renewal is throttled to once every 15 minutes and extends an eligible active session to request time plus 8 hours.
 - Each device receives an independent opaque session token. There is no uniqueness constraint on User ID, so multiple devices are supported.
@@ -72,7 +76,7 @@ Auth.js owns OAuth state/correlation, callback validation, and sign-in/sign-out 
 
 | Surface | Authentication behavior |
 |---|---|
-| `/login` | Shows Google login; an existing valid session redirects to `/app` |
+| `/login` | Shows Google login, or the two seeded identity buttons in local mode; an existing valid session redirects to `/app` |
 | `/access-denied` | Shows generic unknown/inactive denial or temporary provider/callback message |
 | `/app` | Authentication-only handoff page; requires an active session and exposes no application permission |
 | `/api/auth/*` | Auth.js provider, callback, CSRF, session, sign-in, and sign-out endpoints |
@@ -84,6 +88,12 @@ Server helpers in `src/auth/index.ts` are:
 - `requireAuthentication()` — redirects unauthenticated requests to `/login`.
 
 These helpers intentionally expose no `role`, capability, owner ID, Student, Transaction, Balance, or report data. They must not be treated as authorization helpers in the next sprint.
+
+## 5.1 Local development authentication
+
+`AUTH_DEV_MODE=true` replaces Google with one credentials provider whose only accepted emails are `DEV_SEED_ADMIN_EMAIL` and `DEV_SEED_OPERATOR_EMAIL`. The provider still requires a matching active, non-deleted database User. The login page renders explicit buttons for those identities; there is no arbitrary role or user-ID input.
+
+The environment loader rejects development auth whenever `NODE_ENV=production`. With the switch absent or false, Google, verified-email admission, provider-subject binding, and database sessions are unchanged. Authorization continues to reload the active User and persisted role for every protected operation in both modes.
 
 ## 6. Failure behavior
 

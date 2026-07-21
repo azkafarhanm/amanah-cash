@@ -1,5 +1,5 @@
 import { withAuthorization } from "@/authorization/api";
-import { studentJson } from "@/students/http";
+import { studentBody, studentJson } from "@/students/http";
 import { studentManagement } from "@/students/service";
 
 export const dynamic = "force-dynamic";
@@ -10,7 +10,6 @@ export const GET = withAuthorization({ role: "admin" }, async (request) => {
 });
 
 export const POST = withAuthorization({ role: "admin" }, async (request) => studentJson(async () => {
-  const body: unknown = await request.json();
-  const input = typeof body === "object" && body ? body as Record<string, unknown> : {};
+  const input = await studentBody(request);
   return studentManagement().create({ name: input.name, notes: input.notes, status: input.status, operatorId: input.operatorId });
 }, 201));

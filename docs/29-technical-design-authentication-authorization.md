@@ -199,7 +199,7 @@ Production MUST NOT have a hard-coded default email, seed account, development b
 
 ### 5.3 Local development
 
-Local bootstrap uses the same explicit operation and normalization rules against a disposable local database. A developer supplies a real Google test-account email through an uncommitted local environment file or process environment. No default address is committed. A test fixture may use a reserved example-domain identity only in automated tests that do not call Google; test-only authentication substitution must be impossible to enable in production builds.
+Local development uses an explicit idempotent seed against a disposable local database. The committed environment template uses reserved example-domain identities for local-only authentication; a developer replaces them with real Google test-account emails when exercising OAuth. The authentication substitute is rejected whenever `NODE_ENV=production`, while production bootstrap continues to require separately supplied, reviewed identities and never consumes the development seed.
 
 ### 5.4 Recovery
 

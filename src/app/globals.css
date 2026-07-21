@@ -47,6 +47,11 @@
   margin: 0;
 }
 
+.authActions {
+  display: grid;
+  gap: var(--space-3);
+}
+
 .authBrand {
   width: fit-content;
   color: inherit;
@@ -131,6 +136,8 @@
   --color-red-700: #b91c1c;
   --color-green-50: #f0fdf4;
   --color-green-700: #15803d;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-800: #065f46;
   --color-amber-50: #fffbeb;
   --color-amber-700: #b45309;
   --color-transparent: transparent;
@@ -210,6 +217,10 @@
   --color-success-background: var(--color-green-50);
   --color-warning-foreground: var(--color-amber-700);
   --color-warning-background: var(--color-amber-50);
+  --color-deposit-foreground: var(--color-emerald-800);
+  --color-deposit-background: var(--color-emerald-50);
+  --color-withdrawal-foreground: var(--color-blue-700);
+  --color-withdrawal-background: var(--color-blue-50);
   --color-primary-subtle: var(--color-blue-50);
   --color-overlay: rgb(17 24 39 / 42%);
   --type-screen-title: var(--font-weight-bold) var(--font-size-24) /

@@ -122,6 +122,7 @@
 
 .sectionHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-4);
@@ -157,10 +158,100 @@
 .errorState h1 { font: var(--type-screen-title); }
 .errorState p { color: var(--color-text-secondary); font: var(--type-body); }
 .errorStateIcon { display: grid; place-items: center; width: var(--error-icon-size); height: var(--error-icon-size); border-radius: var(--radius-full); color: var(--color-error-foreground); background: var(--color-error-background); font: var(--type-section-title); }
+.errorStateIconForbidden { color: var(--color-warning-foreground); background: var(--color-warning-background); }
+.errorStateIconNotFound { color: var(--color-text-secondary); background: var(--color-background-subtle); }
+.errorStateIconUnauthorized { color: var(--color-action-primary); background: var(--color-primary-subtle); }
 .errorStateLink { display: inline-flex; align-items: center; min-height: var(--control-height-minimum); color: var(--color-action-primary); font: var(--type-button); }
+.errorState button { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); background: var(--color-action-primary); color: var(--color-text-inverse); font: var(--type-button); cursor: pointer; }
+.errorState button:focus-visible, .errorStateLink:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 
 .sectionHeaderAction {
   flex: none;
+}
+
+.featurePlaceholder {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-8);
+}
+
+.featurePlaceholderIntro {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.featurePlaceholderIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: var(--space-16);
+  height: var(--space-16);
+  border-radius: var(--radius-full);
+  background: var(--color-warning-background);
+  font-size: var(--font-size-32);
+}
+
+.featurePlaceholderCopy {
+  display: grid;
+  flex: 1 1 var(--app-sidebar-width);
+  justify-items: start;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.featurePlaceholderCopy h2,
+.featurePlaceholderCopy p,
+.futureCapabilities h3,
+.futureCapabilities p {
+  margin: var(--space-0);
+}
+
+.featurePlaceholderCopy h2 { font: var(--type-screen-title); }
+.featurePlaceholderCopy p,
+.futureCapabilities p { color: var(--color-text-secondary); font: var(--type-body); }
+.featurePlaceholderAssurance { padding: var(--space-2) var(--space-4); border-radius: var(--shape-control); background: var(--color-background-subtle); }
+
+.futureCapabilities {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--size-full), var(--app-sidebar-width)), 1fr));
+  gap: var(--space-4);
+}
+
+.futureCapabilities article {
+  display: flex;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-subtle);
+}
+
+.futureCapabilities article > span { color: var(--color-action-primary); font-size: var(--font-size-24); }
+.futureCapabilities article > div { display: grid; gap: var(--space-2); min-width: 0; }
+.futureCapabilities h3 { font: var(--type-section-title); }
+
+.featurePlaceholderAction a,
+.featurePlaceholderAction button {
+  min-height: var(--control-height-minimum);
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-action-primary);
+  font: var(--type-button);
+  text-decoration: none;
+}
+
+.featurePlaceholderAction a:focus-visible,
+.featurePlaceholderAction button:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
 }
 
 .emptyState {
@@ -230,6 +321,18 @@
 .loadingSkeleton span:last-child {
   width: var(--skeleton-last-line-width);
 }
+
+.loadingSkeletonTable span:first-child { min-height: var(--space-12); }
+.loadingSkeletonTable span:not(:first-child) { min-height: var(--space-16); }
+.loadingSkeletonTable span:last-child { width: var(--size-full); }
+
+.loadingSkeletonCards {
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--size-full), var(--app-sidebar-width)), 1fr));
+}
+
+.loadingSkeletonCards span { min-height: calc(var(--space-16) * 2); }
+.loadingSkeletonCards span:first-child { grid-column: 1 / -1; min-height: calc(var(--space-24) + var(--space-16)); }
+.loadingSkeletonCards span:last-child { width: var(--size-full); }
 
 @keyframes skeleton-loading {
   to { background-position: calc(var(--skeleton-background-size) * var(--direction-reverse)) 0; }

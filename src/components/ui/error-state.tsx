@@ -6,15 +6,18 @@ import styles from "./ui.module.css";
 export type ErrorStateProps = {
   title: string;
   description: string;
+  kind?: "system" | "forbidden" | "notFound" | "unauthorized";
   action?: ReactNode;
   href?: string;
   hrefLabel?: string;
 };
 
-export function ErrorState({ title, description, action, href, hrefLabel }: ErrorStateProps) {
+const ICON = { system: "!", forbidden: "×", notFound: "?", unauthorized: "→" } as const;
+
+export function ErrorState({ title, description, kind = "system", action, href, hrefLabel }: ErrorStateProps) {
   return (
     <Card className={styles.errorState} role="alert">
-      <span className={styles.errorStateIcon} aria-hidden="true">!</span>
+      <span className={[styles.errorStateIcon, styles[`errorStateIcon${kind[0].toUpperCase()}${kind.slice(1)}`]].join(" ")} aria-hidden="true">{ICON[kind]}</span>
       <h1>{title}</h1>
       <p>{description}</p>
       {action}

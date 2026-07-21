@@ -1,9 +1,9 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.5
+**Version:** 1.7
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-21
 
 ---
 
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, and the Transaction Engine are complete. The next recommended sprint is Reconciliation and Financial Reads.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, and the MVP QA sprint are complete. The next recommended product sprint is Reconciliation and Financial Reads.
 
 ## 2. Delivery Rules
 
@@ -30,8 +30,10 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Milestone 2 — Student Management: complete under the approved multi-user ownership architecture.
 - Dedicated authentication and authorization track: complete through provisioning, login, session enforcement, role/ownership enforcement, assignment, and transfer behavior.
 - Application Shell and Operator Management: complete.
-- Transaction Engine: complete at domain, persistence, protected API, audit, rollback, and test levels; financial UI remains outside this milestone.
-- Milestones 4–9: outstanding.
+- Transaction Engine and Operator Transaction UI: complete at domain, persistence, protected API, read projection, presentation, audit, rollback, accessibility, and test levels.
+- UX Polish and Placeholder Consistency sprint: complete; every sidebar destination resolves, planned modules use one placeholder primitive, data states are contextual, and mobile list tables use labeled record cards.
+- MVP Quality Assurance and Business Workflow Validation: complete with five defects fixed, regression coverage added, and a `READY WITH MINOR LIMITATIONS` recommendation documented in `docs/41-mvp-quality-assurance-report.md`.
+- Milestone 4 is partial: Balance/history reads are complete; reconciliation and audit-history reads remain outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
 ## 3. Milestone Overview
@@ -41,11 +43,11 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 | 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
 | 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
 | 3 | Transaction Engine | Complete | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
-| 4 | Reconciliation and Financial Reads | Outstanding | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
-| 5 | Financial Presentation and Progressive History | Outstanding (basic non-financial detail exists) | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
-| 6 | Validation and Interaction States | Outstanding for financial flows | FR-3.2.1–FR-3.2.7 |
-| 7 | Failure Handling and Safe Retry | Outstanding | FR-3.2.1–FR-3.2.7; NFR-5.1–5.2 |
-| 8 | Verification and Quality | Outstanding | All FR and NFR |
+| 4 | Reconciliation and Financial Reads | Partial — Balance/history complete | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
+| 5 | Financial Presentation and Progressive History | Complete | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
+| 6 | Validation and Interaction States | Complete for financial flows | FR-3.2.1–FR-3.2.7 |
+| 7 | Failure Handling and Safe Retry | Complete | FR-3.2.1–FR-3.2.7; NFR-5.1–5.2 |
+| 8 | Verification and Quality | Complete — environment gates remain in Milestone 9 | All FR and NFR |
 | 9 | Production Readiness | Outstanding | FR-3.4.1–3.4.3; NFR Sections 5–8 |
 
 ## 4. Milestone 1 — Project Foundation

@@ -1,3 +1,5 @@
-import { AppLoading } from "@/components/app-shell/app-loading";
+import { ContentWrapper, LoadingSkeleton } from "@/components/ui";
 
-export default AppLoading;
+export default function Loading() {
+  return <ContentWrapper aria-busy="true"><LoadingSkeleton variant="cards" lines={5} /></ContentWrapper>;
+}

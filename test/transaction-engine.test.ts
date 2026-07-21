@@ -46,7 +46,9 @@ function studentState(database: Database.Database) {
 
 test("Deposit, Withdrawal, and directional Correction atomically update Balance and audit", () => {
   const { database, create } = fixture();
-  assert.equal(create().balance, "1000");
+  const deposit = create({ notes: "Titipan pekan ini" });
+  assert.equal(deposit.balance, "1000");
+  assert.equal(deposit.transaction.notes, "Titipan pekan ini");
   assert.equal(create({ type: "WITHDRAWAL", amount: "250" }).balance, "750");
   assert.equal(create({ type: "CORRECTION", amount: "40", correctionDirection: "INCREASE", reason: "Selisih kas" }).balance, "790");
   assert.equal(create({ type: "CORRECTION", amount: "10", correctionDirection: "DECREASE", reason: "Koreksi catatan" }).balance, "780");
@@ -117,6 +119,51 @@ test("Soft delete removes an effect and restore reapplies it with revision guard
     { event_type: "CREATE" }, { event_type: "CREATE" }, { event_type: "DELETE" }, { event_type: "RESTORE" }
   ]);
   assert.equal(withdrawalFunding.balance, "2000");
+  database.close();
+});
+
+test("long lifecycle chain reconciles Balance, history, audit, and every revision without double counting", () => {
+  const { database, engine, create } = fixture();
+  const first = create({ amount: "2000" });
+  const second = create({ amount: "500" });
+  const withdrawal = create({ type: "WITHDRAWAL", amount: "600" });
+  const correction = create({ type: "CORRECTION", amount: "100", correctionDirection: "DECREASE", reason: "Selisih kas" });
+  assert.equal(correction.balance, "1800");
+
+  const edited = engine.edit({
+    actorId: "operator-1", studentId: "student-1", transactionId: second.transaction.id,
+    commandId: crypto.randomUUID(), correlationId: crypto.randomUUID(), expectedRevision: 1,
+    type: "DEPOSIT", amount: "800", occurredAt: "2026-07-20T11:00:00.000Z", editReason: "Nominal dikonfirmasi"
+  });
+  assert.equal(edited.balance, "2100");
+  assert.equal(edited.transaction.revision, 2);
+  const deleted = engine.remove({ actorId: "operator-1", studentId: "student-1", transactionId: withdrawal.transaction.id, commandId: crypto.randomUUID(), correlationId: crypto.randomUUID(), expectedRevision: 1, reason: "Verifikasi sementara" });
+  assert.equal(deleted.balance, "2700");
+  assert.equal(deleted.transaction.revision, 2);
+  const restored = engine.restore({ actorId: "operator-1", studentId: "student-1", transactionId: withdrawal.transaction.id, commandId: crypto.randomUUID(), correlationId: crypto.randomUUID(), expectedRevision: 2, reason: "Bukti transaksi sah" });
+  assert.equal(restored.balance, "2100");
+  assert.equal(restored.transaction.revision, 3);
+
+  const reconciled = database.prepare(`SELECT COALESCE(SUM(CASE
+    WHEN deleted_at IS NOT NULL THEN 0
+    WHEN type = 'DEPOSIT' THEN amount
+    WHEN type = 'WITHDRAWAL' THEN -amount
+    WHEN correction_direction = 'INCREASE' THEN amount
+    ELSE -amount END), 0) AS balance FROM transactions WHERE student_id = 'student-1'`).get() as { balance: bigint };
+  assert.equal(reconciled.balance, BigInt(2100));
+  assert.deepEqual(studentState(database), { balance: 2100, financial_version: 7 });
+  assert.equal(count(database, "transactions"), 4);
+  assert.equal(count(database, "financial_audit_events"), 7);
+  assert.deepEqual(database.prepare("SELECT event_type, transaction_revision FROM financial_audit_events ORDER BY rowid").all(), [
+    { event_type: "CREATE", transaction_revision: BigInt(1) },
+    { event_type: "CREATE", transaction_revision: BigInt(1) },
+    { event_type: "CREATE", transaction_revision: BigInt(1) },
+    { event_type: "CREATE", transaction_revision: BigInt(1) },
+    { event_type: "EDIT", transaction_revision: BigInt(2) },
+    { event_type: "DELETE", transaction_revision: BigInt(2) },
+    { event_type: "RESTORE", transaction_revision: BigInt(3) }
+  ]);
+  assert.equal(first.balance, "2000");
   database.close();
 });
 

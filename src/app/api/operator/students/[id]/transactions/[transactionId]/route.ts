@@ -13,7 +13,7 @@ export const PATCH = withAuthorization(owner, async (request, { authorization })
       actorId: authorization.id, studentId, transactionId,
       commandId: body.commandId, correlationId: crypto.randomUUID(), expectedRevision: body.expectedRevision,
       type: body.type, amount: body.amount, correctionDirection: body.correctionDirection,
-      reason: body.reason, occurredAt: body.occurredAt, editReason: body.editReason
+      reason: body.reason, notes: body.notes, occurredAt: body.occurredAt, editReason: body.editReason
     });
   });
 });

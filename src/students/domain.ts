@@ -16,7 +16,7 @@ export type StudentOperatorOption = { id: string; name: string; email: string };
 
 export class StudentManagementError extends Error {
   constructor(
-    public readonly code: "VALIDATION" | "DUPLICATE_NAME" | "NOT_FOUND" | "INVALID_OPERATOR",
+    public readonly code: "VALIDATION" | "DUPLICATE_NAME" | "NOT_FOUND" | "INVALID_OPERATOR" | "CONFLICT",
     message: string,
     public readonly status: number
   ) {
@@ -29,7 +29,19 @@ export type StudentRepository = {
   activeOperator(id: string): Promise<StudentOperatorOption | null>;
   activeOperators(): Promise<StudentOperatorOption[]>;
   create(data: { id: string; name: string; notes: string | null; status: StudentStatus; operatorId: string }): Promise<StudentRecord>;
-  update(id: string, data: { name: string; notes: string | null; status: StudentStatus; operatorId: string }): Promise<StudentRecord>;
+  update(
+    id: string,
+    data: { name: string; notes: string | null; status: StudentStatus; operatorId: string },
+    expectedOperatorId: string,
+    ownershipTransfer?: {
+      actorId: string;
+      reason: string;
+      commandId: string;
+      correlationId: string;
+      oldOperatorId: string;
+      newOperatorId: string;
+    }
+  ): Promise<StudentRecord>;
   find(id: string, operatorId?: string): Promise<StudentRecord | null>;
   list(input: { search: string; status?: StudentStatus; operatorId?: string; skip: number; take: number }): Promise<{ items: StudentRecord[]; total: number }>;
 };
@@ -56,6 +68,17 @@ function statusValue(value: unknown): StudentStatus {
   return value as StudentStatus;
 }
 
+function ownershipTransferReasonValue(value: unknown) {
+  if (typeof value !== "string") {
+    throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator wajib diisi.", 400);
+  }
+  const reason = value.trim();
+  if (reason.length < 1 || reason.length > 500) {
+    throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator harus terdiri dari 1–500 karakter.", 400);
+  }
+  return reason;
+}
+
 export function createStudentManagement(repository: StudentRepository) {
   async function inputValues(input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown }) {
     const name = nameValue(input.name);
@@ -72,9 +95,23 @@ export function createStudentManagement(repository: StudentRepository) {
     async create(input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown }) {
       return repository.create({ id: crypto.randomUUID(), ...(await inputValues(input)) });
     },
-    async edit(id: string, input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown }) {
-      if (!id || !(await repository.find(id))) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
-      return repository.update(id, await inputValues(input));
+    async edit(
+      id: string,
+      input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown; ownershipTransferReason?: unknown },
+      actorId: string
+    ) {
+      const current = id ? await repository.find(id) : null;
+      if (!current) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
+      const values = await inputValues(input);
+      const ownershipTransfer = current.operator.id === values.operatorId ? undefined : {
+        actorId,
+        reason: ownershipTransferReasonValue(input.ownershipTransferReason),
+        commandId: crypto.randomUUID(),
+        correlationId: crypto.randomUUID(),
+        oldOperatorId: current.operator.id,
+        newOperatorId: values.operatorId
+      };
+      return repository.update(id, values, current.operator.id, ownershipTransfer);
     },
     async detail(id: string, scope: StudentScope) {
       if (!id) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);

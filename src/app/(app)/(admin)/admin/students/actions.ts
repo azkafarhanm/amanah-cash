@@ -19,9 +19,9 @@ export async function createStudentAction(formData: FormData) {
 }
 
 export async function editStudentAction(id: string, formData: FormData) {
-  await authorizeServerAction({ role: "admin" });
+  const actor = await authorizeServerAction({ role: "admin" });
   try {
-    await studentManagement().edit(id, { name: formData.get("name"), notes: formData.get("notes"), status: formData.get("status"), operatorId: formData.get("operatorId") });
+    await studentManagement().edit(id, { name: formData.get("name"), notes: formData.get("notes"), status: formData.get("status"), operatorId: formData.get("operatorId"), ownershipTransferReason: formData.get("ownershipTransferReason") }, actor.id);
     revalidatePath("/admin/students"); revalidatePath(`/admin/students/${id}`); revalidatePath("/operator/students");
   } catch (error) {
     if (!(error instanceof StudentManagementError)) throw error;

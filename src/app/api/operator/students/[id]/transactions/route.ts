@@ -19,6 +19,7 @@ export const POST = withAuthorization(
         amount: body.amount,
         correctionDirection: body.correctionDirection,
         reason: body.reason,
+        notes: body.notes,
         occurredAt: body.occurredAt
       });
     }, 201);

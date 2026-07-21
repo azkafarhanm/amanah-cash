@@ -11,6 +11,7 @@ export type TransactionSnapshot = {
   amount: string;
   correctionDirection: CorrectionDirection | null;
   reason: string | null;
+  notes: string | null;
   occurredAt: string;
   createdAt: string;
   createdBy: string;
@@ -38,6 +39,7 @@ export type CreateTransactionInput = {
   amount: unknown;
   correctionDirection?: unknown;
   reason?: unknown;
+  notes?: unknown;
   occurredAt: unknown;
 };
 
@@ -52,6 +54,7 @@ export type EditTransactionInput = {
   amount: unknown;
   correctionDirection?: unknown;
   reason?: unknown;
+  notes?: unknown;
   occurredAt: unknown;
   editReason: unknown;
 };
@@ -146,6 +149,14 @@ export function reasonValue(value: unknown, label = "Alasan"): string {
   return reason;
 }
 
+export function notesValue(value: unknown): string | null {
+  if (value === undefined || value === null || value === "") return null;
+  if (typeof value !== "string") throw new TransactionEngineError("VALIDATION", "Catatan tidak valid.", 400);
+  const notes = value.trim();
+  if (notes.length > 500) throw new TransactionEngineError("VALIDATION", "Catatan maksimal 500 karakter.", 400);
+  return notes || null;
+}
+
 export function occurredAtValue(value: unknown): string {
   const date = value instanceof Date ? value : typeof value === "string" ? new Date(value) : null;
   if (!date || Number.isNaN(date.getTime())) {
@@ -159,6 +170,7 @@ export function transactionValues(input: {
   amount: unknown;
   correctionDirection?: unknown;
   reason?: unknown;
+  notes?: unknown;
   occurredAt: unknown;
 }) {
   if (typeof input.type !== "string" || !TYPES.has(input.type as TransactionType)) {
@@ -167,11 +179,12 @@ export function transactionValues(input: {
   const type = input.type as TransactionType;
   const amount = amountValue(input.amount);
   const occurredAt = occurredAtValue(input.occurredAt);
+  const notes = notesValue(input.notes);
   if (type === "CORRECTION") {
     if (typeof input.correctionDirection !== "string" || !DIRECTIONS.has(input.correctionDirection as CorrectionDirection)) {
       throw new TransactionEngineError("VALIDATION", "Arah Correction tidak valid.", 400);
     }
-    return { type, amount, occurredAt, correctionDirection: input.correctionDirection as CorrectionDirection, reason: reasonValue(input.reason, "Alasan Correction") };
+    return { type, amount, occurredAt, correctionDirection: input.correctionDirection as CorrectionDirection, reason: reasonValue(input.reason, "Alasan Correction"), notes };
   }
   if (input.correctionDirection !== undefined && input.correctionDirection !== null && input.correctionDirection !== "") {
     throw new TransactionEngineError("VALIDATION", "Arah Correction hanya boleh digunakan untuk Correction.", 400);
@@ -179,7 +192,7 @@ export function transactionValues(input: {
   if (input.reason !== undefined && input.reason !== null && input.reason !== "") {
     throw new TransactionEngineError("VALIDATION", "Alasan ledger hanya boleh digunakan untuk Correction.", 400);
   }
-  return { type, amount, occurredAt, correctionDirection: null, reason: null };
+  return { type, amount, occurredAt, correctionDirection: null, reason: null, notes };
 }
 
 export function effect(value: { type: TransactionType; amount: bigint; correctionDirection: CorrectionDirection | null }): bigint {

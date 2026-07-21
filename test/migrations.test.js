@@ -50,7 +50,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "002_auth_identity_and_ownership.sql" },
     { version: "003_operator_management.sql" },
     { version: "004_student_management.sql" },
-    { version: "005_transaction_engine.sql" }
+    { version: "005_transaction_engine.sql" },
+    { version: "006_transaction_ui_notes.sql" }
   ]);
   first.close();
 
@@ -61,7 +62,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "002_auth_identity_and_ownership.sql" },
     { version: "003_operator_management.sql" },
     { version: "004_student_management.sql" },
-    { version: "005_transaction_engine.sql" }
+    { version: "005_transaction_engine.sql" },
+    { version: "006_transaction_ui_notes.sql" }
   ]);
   second.close();
 });
@@ -156,6 +158,13 @@ test("Transaction Engine migration mirror matches the executable migration", () 
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260720030000_transaction_engine/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/005_transaction_engine.sql"), "utf8")
+  );
+});
+
+test("Transaction UI notes migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260721000000_transaction_ui_notes/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/006_transaction_ui_notes.sql"), "utf8")
   );
 });
 

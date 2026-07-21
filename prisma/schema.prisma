@@ -126,6 +126,7 @@ model Transaction {
   amount              BigInt
   correctionDirection CorrectionDirection?  @map("correction_direction")
   reason              String?
+  notes               String?
   occurredAt          DateTime              @map("occurred_at")
   createdAt           DateTime              @default(now()) @map("created_at")
   createdBy           String                @map("created_by")

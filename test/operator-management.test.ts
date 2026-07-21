@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createOperatorManagement, OperatorManagementError, type OperatorRecord, type OperatorRepository } from "../src/operators/domain";
+import { operatorBody, operatorJson } from "../src/operators/http";
 
 function fixture(seed: Partial<OperatorRecord>[] = []) {
   const operators = seed.map((value, index): OperatorRecord => ({ id: `operator-${index + 1}`, name: "Operator", email: `operator${index + 1}@example.com`, isActive: false, createdAt: new Date("2026-07-20T00:00:00Z"), lastLoginAt: null, deletedAt: null, assignedStudentCount: 0, ...value }));
@@ -29,6 +30,14 @@ test("duplicate and invalid email are rejected server-side", async () => {
   const { service } = fixture([{ email: "siti@example.com" }]);
   await assert.rejects(service.create({ name: "Siti", email: "SITI@example.com" }, "admin"), (error: unknown) => error instanceof OperatorManagementError && error.code === "DUPLICATE_EMAIL");
   await assert.rejects(service.create({ name: "Siti", email: "not-an-email" }, "admin"), (error: unknown) => error instanceof OperatorManagementError && error.code === "VALIDATION");
+});
+
+test("malformed Operator API JSON returns a stable validation response", async () => {
+  const response = await operatorJson(async () => operatorBody(new Request("https://cash.example.com/api/admin/operators", {
+    method: "POST", headers: { "Content-Type": "application/json" }, body: "{"
+  })));
+  assert.equal(response.status, 400);
+  assert.equal((await response.json()).error.code, "VALIDATION");
 });
 
 test("edit changes name and activation status but never accepts identity fields", async () => {

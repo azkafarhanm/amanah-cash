@@ -83,7 +83,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "expires", type: "TEXT", notnull: 1, pk: 0 }
   ]);
   assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at", "balance", "financial_version"]);
-  assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "correction_direction", "reason", "occurred_at", "created_at", "created_by", "updated_at", "updated_by", "revision", "deleted_at", "deleted_by"]);
+  assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "correction_direction", "reason", "occurred_at", "created_at", "created_by", "updated_at", "updated_by", "revision", "deleted_at", "deleted_by", "notes"]);
   assert.deepEqual(columns.financial_audit_events.map(({ name }) => name), ["id", "command_id", "command_payload_hash", "event_type", "actor_id", "actor_role", "student_id", "transaction_id", "transaction_revision", "reason", "before_snapshot", "after_snapshot", "balance_before", "balance_after", "balance_delta", "old_operator_id", "new_operator_id", "occurred_at", "schema_version", "correlation_id"]);
   assert.deepEqual(columns.operator_audit.map(({ name }) => name), ["id", "operator_id", "actor_id", "action", "summary", "created_at"]);
 
@@ -252,6 +252,16 @@ test("financial constraints enforce Balance, Correction shape, soft deletion, an
       1, '{}', 0, 100, 100, 'correlation-1')`).run("a".repeat(64));
   assert.throws(() => database.connection.prepare("UPDATE financial_audit_events SET correlation_id = 'changed' WHERE id = 'audit-1'").run(), /immutable/);
   assert.throws(() => database.connection.prepare("DELETE FROM financial_audit_events WHERE id = 'audit-1'").run(), /cannot be deleted/);
+});
+
+test("Transaction notes are normalized bounded presentation metadata", () => {
+  insertStudent("student-1", "Alya");
+  insertTransaction("transaction-1", "student-1", "DEPOSIT", 100);
+  database.connection.prepare("UPDATE transactions SET notes = 'Uang saku' WHERE id = 'transaction-1'").run();
+  assert.equal(database.connection.prepare("SELECT notes FROM transactions WHERE id = 'transaction-1'").get().notes, "Uang saku");
+  for (const value of ["", " leading", "trailing ", "x".repeat(501)]) {
+    assert.throws(() => database.connection.prepare("UPDATE transactions SET notes = ? WHERE id = 'transaction-1'").run(value), /CHECK constraint failed/);
+  }
 });
 
 test("approved indexes have the required uniqueness, collation, columns, and direction", () => {
