@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added read-only Student report detail with timeline metadata, Correction context, revisions, actor attribution, and exact persisted audit Balance-after evidence when available.
 - Added privacy-safe Admin reports for Operator lifecycle activity, initial Student assignments, and minimized ownership changes without Transaction, Balance, or financial-audit payload access.
 - Added reusable accessible filters, summaries, semantic responsive tables, contextual empty/error/loading states, and a future PDF/Excel/CSV adapter contract without implementing exports.
-- Polished Reporting UX with distinct first-use/search/filter empty states and reset actions, explanatory zero-value summaries, role-appropriate search hints, contextual disabled filter controls, pending feedback, table captions/sort semantics, consistent badges, and clearer responsive loading/table presentation.
+- Polished Reporting UX with distinct no-assignment/first-use/search/filter empty states, meaningful icons and context-preserving actions, explanatory zero-value summaries, role-appropriate search hints, grouped custom dates, contextual disabled controls, pending/live-result feedback, table captions/sort semantics, consistent badges, pointer/keyboard row feedback, and clearer responsive presentation.
 - Added real SQLite regression coverage for ownership isolation, soft-delete exclusion, filters, Jakarta dates, pagination, summary accuracy, Admin privacy, and export-neutral/read-only boundaries.
 
 ### Dashboard Foundation

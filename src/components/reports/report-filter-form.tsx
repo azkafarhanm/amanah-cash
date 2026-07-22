@@ -34,6 +34,7 @@ export function ReportFilterForm({
   const form = useRef<HTMLFormElement>(null);
   const fields = useRef<HTMLFieldSetElement>(null);
   const descriptionId = `${ariaLabel.toLowerCase().replaceAll(" ", "-")}-description`;
+  const dateRangeId = `${descriptionId}-date-range`;
 
   useEffect(() => {
     const action = fields.current?.querySelector<HTMLSelectElement>('select[name="action"]');
@@ -79,12 +80,18 @@ export function ReportFilterForm({
     <fieldset ref={fields} className={styles.filterFields} disabled={pending}>
       <legend className={styles.visuallyHidden}>Pilihan filter</legend>
       {children}
-      <label className={styles.field}>Dari tanggal
-        <input type="date" name="dateFrom" defaultValue={initialDateFrom} disabled={period !== "CUSTOM" || pending} />
-      </label>
-      <label className={styles.field}>Sampai tanggal
-        <input type="date" name="dateTo" defaultValue={initialDateTo} disabled={period !== "CUSTOM" || pending} />
-      </label>
+      <div className={styles.dateRange} role="group" aria-labelledby={`${dateRangeId}-label`} aria-describedby={`${dateRangeId}-hint`}>
+        <span id={`${dateRangeId}-label`} className={styles.dateRangeLabel}>Rentang tanggal</span>
+        <div className={styles.dateRangeFields}>
+          <label className={styles.field}>Dari
+            <input type="date" name="dateFrom" defaultValue={initialDateFrom} disabled={period !== "CUSTOM" || pending} />
+          </label>
+          <label className={styles.field}>Sampai
+            <input type="date" name="dateTo" defaultValue={initialDateTo} disabled={period !== "CUSTOM" || pending} />
+          </label>
+        </div>
+        <small id={`${dateRangeId}-hint`}>{period === "CUSTOM" ? "Pilih tanggal awal, tanggal akhir, atau keduanya." : "Pilih periode Rentang khusus untuk mengatur tanggal."}</small>
+      </div>
     </fieldset>
     <div className={styles.filterActions}>
       <button type="submit" disabled={pending} aria-busy={pending}>{pending ? "Menerapkan…" : "Terapkan filter"}</button>

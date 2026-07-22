@@ -264,9 +264,20 @@
 }
 
 .emptyStateIcon {
+  display: inline-flex;
   color: var(--color-action-primary);
   font-size: var(--font-size-32);
   line-height: var(--line-height-unit);
+}
+
+.emptyStateIcon svg {
+  width: var(--space-8);
+  height: var(--space-8);
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: var(--border-width-emphasis);
 }
 
 .emptyState h2 {

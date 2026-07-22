@@ -22,7 +22,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - UX Polish implemented with one reusable planned-feature placeholder, complete sidebar route outcomes, richer dashboard previews, contextual empty/search states, ownership-scoped Operator list balances, responsive table cards, differentiated error states, and layout-stable skeletons.
 - MVP Quality Assurance completed across authentication, administration, Student ownership, every Transaction lifecycle mutation, long-chain Balance reconciliation, authorization routes, UI states, database integrity, and performance smoke checks. Five confirmed defects were fixed with regression coverage; see `docs/41-mvp-quality-assurance-report.md`.
 - Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
-- Reporting Foundation implemented and UX-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct first-use/search/filter empty states, explanatory zero summaries, pending/disabled filter feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
+- Reporting Foundation implemented and production-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct no-assignment/first-use/search/filter states with contextual actions, explanatory zero summaries, grouped dates, pending/live-result feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
@@ -47,7 +47,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 109 passed, 0 failed.
+- Automated tests: 110 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.

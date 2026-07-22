@@ -16,13 +16,14 @@ export type EmptyStateProps = {
   title?: string;
   description?: string;
   action?: ReactNode;
+  icon?: ReactNode;
 };
 
-export function EmptyState({ kind = "generic", title, description, action }: EmptyStateProps) {
+export function EmptyState({ kind = "generic", title, description, action, icon }: EmptyStateProps) {
   const copy = COPY[kind];
   return (
     <Card className={styles.emptyState} role="status">
-      <span className={styles.emptyStateIcon} aria-hidden="true">○</span>
+      <span className={styles.emptyStateIcon} aria-hidden="true">{icon ?? "○"}</span>
       <h2>{title ?? copy.title}</h2>
       <p>{description ?? copy.description}</p>
       {action ? <div>{action}</div> : null}

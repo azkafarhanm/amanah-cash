@@ -34,6 +34,7 @@ database.pragma("foreign_keys = ON");
 database.prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('admin-1', 'Admin', 'admin@example.com', 'PLATFORM_ADMIN', 1)").run();
 database.prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator-1', 'Operator Satu', 'one@example.com', 'OPERATOR', 1)").run();
 database.prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator-2', 'Operator Dua', 'two@example.com', 'OPERATOR', 1)").run();
+database.prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator-3', 'Operator Kosong', 'empty@example.com', 'OPERATOR', 1)").run();
 database.prepare("INSERT INTO students (id, name, operator_id, status, created_at) VALUES ('student-1', 'Alya', 'operator-1', 'ACTIVE', '2026-07-01T01:00:00.000Z')").run();
 database.prepare("INSERT INTO students (id, name, operator_id, status, created_at) VALUES ('student-2', 'Bima', 'operator-1', 'INACTIVE', '2026-07-02T01:00:00.000Z')").run();
 database.prepare("INSERT INTO students (id, name, operator_id, status, created_at) VALUES ('student-3', 'Citra', 'operator-2', 'ACTIVE', '2026-07-03T01:00:00.000Z')").run();
@@ -126,6 +127,15 @@ test("Operator report composes type, date, search, Student, status, sorting, and
   assert.equal(second.items.length, 10);
 });
 
+test("Operator report returns an explicit empty ownership scope without broadening access", async () => {
+  const report = await reportReadService(environment, now).operator("operator-3", {});
+  assert.equal(report.students.length, 0);
+  assert.equal(report.items.length, 0);
+  assert.equal(report.total, 0);
+  assert.equal(report.summary.transactionCount, 0);
+  assert.equal(report.summary.activeStudents, 0);
+});
+
 test("Admin reports paginate administrative data and expose only privacy-minimized ownership evidence", async () => {
   const service = reportReadService(environment, now);
   const activity = await service.admin({ period: "ALL" });
@@ -159,11 +169,18 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.match(filterForm, /aria-busy=\{pending\}/);
   assert.match(filterForm, /disabled=\{\(!hasActiveFilters && !dirty\) \|\| pending\}/);
   assert.match(filterForm, /period !== "CUSTOM"/);
+  assert.match(filterForm, /role="group"/);
+  assert.match(filterForm, /Pilih periode Rentang khusus/);
   assert.match(components, /aria-label="Paginasi laporan"/);
   assert.match(components, /aria-sort=/);
   assert.match(components, /<caption/);
   assert.match(components, /Pencarian tidak menemukan transaksi/);
   assert.match(components, /Tidak ada transaksi setelah difilter/);
+  assert.match(components, /Belum ada Siswa yang ditugaskan/);
+  assert.match(components, /disabled=\{students.length === 0\}/);
+  assert.match(components, /Hapus pencarian/);
+  assert.match(components, /ReportEmptyIcon/);
+  assert.match(components, /aria-live="polite"/);
   assert.match(components, /Belum ada setoran pada periode ini/);
   assert.match(components, /placeholder="Cari nama Siswa, catatan, atau alasan"/);
   assert.match(components, /name="sort"/);
@@ -172,6 +189,8 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.doesNotMatch(components, /placeholder="[^"]*Operator[^"]*"/);
   assert.match(components, /ReportSkeleton/);
   assert.match(styles, /@media \(max-width: 48rem\)/);
+  assert.match(styles, /tr:hover/);
+  assert.match(styles, /tr:focus-within/);
   assert.doesNotMatch(styles, /overflow-x/);
   assert.match(operatorPage, /currentOperator\(\)/);
   assert.match(adminPage, /requirePlatformAdmin\(\)/);

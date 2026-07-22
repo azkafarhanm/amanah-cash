@@ -38,7 +38,13 @@
 .field select:hover:not(:disabled) { border-color: var(--color-action-primary); }
 .field input:disabled,
 .field select:disabled { color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; opacity: 1; }
-.searchField { grid-column: span 2; }
+.dateRange { grid-column: 1 / span 2; grid-row: 2; display: grid; gap: var(--space-2); min-width: 0; padding: var(--space-4); border-radius: var(--shape-control); background: var(--color-background-subtle); }
+.dateRangeLabel { color: var(--color-text-primary); font: var(--type-label); }
+.dateRangeFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.dateRange small { color: var(--color-text-secondary); font: var(--type-supporting); }
+.sortGroup { grid-column: span 2; display: grid; gap: var(--space-2); min-width: 0; }
+.sortGroupLabel { color: var(--color-text-primary); font: var(--type-label); }
+.sortFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
 .filterActions { display: flex; align-items: center; gap: var(--space-4); }
 .filterActions button,
 .emptyAction { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); }
@@ -47,6 +53,7 @@
 .filterActions .resetButton { border-color: var(--color-border-default); background: var(--color-background-surface); color: var(--color-action-primary); }
 .filterActions button:disabled { border-color: var(--color-border-default); color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; }
 .emptyAction { color: var(--color-text-inverse); background: var(--color-action-primary); text-decoration: none; }
+.emptyAction:hover { background: var(--color-action-primary-hover); }
 
 .summary h2,
 .tableSection h2,
@@ -67,6 +74,7 @@
 .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: start; vertical-align: top; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); white-space: nowrap; }
 .table tbody tr:nth-child(even) { background: var(--color-background-subtle); }
+.table tbody tr:focus-within { background: var(--color-primary-subtle); }
 .table tbody tr:last-child td { border-block-end: 0; }
 .table th a,
 .table td a { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); }
@@ -99,13 +107,18 @@
   .filterFields,
   .summaryGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .filterSkeleton { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dateRange { grid-column: span 2; grid-row: 3; }
+  .sortGroup { grid-column: span 2; }
 }
 
 @media (max-width: 48rem) {
   .filterFields,
   .summaryGrid { grid-template-columns: minmax(0, 1fr); }
   .filters { padding: var(--space-4); }
-  .searchField { grid-column: auto; }
+  .dateRange { grid-column: auto; grid-row: auto; }
+  .dateRangeFields { grid-template-columns: minmax(0, 1fr); }
+  .sortGroup { grid-column: auto; }
+  .sortFields { grid-template-columns: minmax(0, 1fr); }
   .filterActions { align-items: stretch; flex-direction: column; }
   .filterActions button { width: var(--size-full); }
   .filterSkeleton { grid-template-columns: minmax(0, 1fr); padding: var(--space-4); }
@@ -118,10 +131,15 @@
   .table tbody { display: grid; gap: var(--space-4); }
   .table tr { padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
   .table tbody tr:nth-child(even) { background: var(--color-background-surface); }
+  .table tbody tr:focus-within { background: var(--color-primary-subtle); }
   .table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-0); text-align: end; }
   .table td::before { content: attr(data-label); color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
   .table td > * { justify-self: end; }
   .pagination { align-items: flex-start; flex-direction: column; }
+}
+
+@media (hover: hover) {
+  .table tbody tr:hover { background: var(--color-primary-subtle); }
 }
 
 @media (prefers-reduced-motion: reduce) {
