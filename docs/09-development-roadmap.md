@@ -1,6 +1,6 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.10
+**Version:** 1.13
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-22
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, and Reporting Foundation sprints are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, and the separately approved Export Foundation sprint are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
 
 ## 2. Delivery Rules
 
@@ -35,6 +35,8 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - MVP Quality Assurance and Business Workflow Validation: complete with five defects fixed, regression coverage added, and a `READY WITH MINOR LIMITATIONS` recommendation documented in `docs/41-mvp-quality-assurance-report.md`.
 - Dashboard and Analytics Foundation: complete as a read-only presentation layer with privacy-safe Admin aggregates, ownership-scoped Operator metrics, reusable cards, bounded activity reads, responsive loading/empty states, and regression coverage. No authorization, ownership, schema, or financial-write behavior changed.
 - Reporting Foundation: complete and production-polished with privacy-safe Admin activity reports, ownership-scoped Operator financial history, composable Jakarta-period filters with grouped dates and pending/disabled feedback, distinct no-assignment/search/filter states, explanatory zero summaries, accessible responsive tables with live results and pointer/keyboard feedback, Student detail timelines, and an export adapter contract. No export or financial write was introduced.
+- Export Foundation: complete with a Reporting Read Service-only coordinator, presentation-neutral documents, an extensible format registry, authorized complete-filtered-result downloads, UTF-8 CSV, centralized default 10,000-row and optional byte guard rails, controlled oversized errors, and privacy-safe Jakarta filenames. Excel and PDF remain unavailable placeholders. No query/calculation, authorization, ownership, schema, Dashboard, Transaction Engine, or Export Contract behavior changed.
+- Export Production Hardening: partial. Safe synchronous guard rails are complete, but buffering, deployment capacity measurement, deadline/concurrency control, cross-page snapshot semantics, streaming, and any separately approved asynchronous path remain outstanding; see `docs/45-export-production-readiness-review.md`.
 - Milestone 4 is partial: Balance/history reads are complete; reconciliation and audit-history reads remain outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
@@ -349,6 +351,9 @@ This is the Deployment phase in which production hosting and database compatibil
 - Production error diagnostics and operator-safe messages.
 - Final requirement, documentation, and deployment review.
 - Definition of the open NFR deployment measurement baseline.
+- Export workload qualification using realistic row widths and 30,000-/100,000-row cases.
+- Measured tuning of the implemented synchronous row/byte limits plus deadline/concurrency policy.
+- A decision on backpressure-aware CSV streaming and cross-page consistency; any asynchronous export infrastructure requires separate architecture approval.
 
 ### Deliverables
 
@@ -357,6 +362,8 @@ This is the Deployment phase in which production hosting and database compatibil
 - Production configuration checklist.
 - Error-diagnostic verification.
 - Agreed supported-browser, network-latency, and data-volume test baseline.
+- Recorded export page/query count, duration, time-to-first-byte, peak heap, output size, database load, and timeout behavior at the selected limits.
+- Verification that configured export limits fit the selected deployment resource envelope.
 - Final MVP acceptance report.
 
 ### Dependencies
@@ -370,6 +377,8 @@ This is the Deployment phase in which production hosting and database compatibil
 - Database is not directly exposed to the client.
 - PWA installability, standalone mode, and online failure behavior are verified.
 - Open NFR measurement baseline is resolved and tested.
+- CSV export limits are enforced from measured deployment capacity, or large-volume export remains explicitly unsupported.
+- The supported CSV volume completes within the agreed resource envelope without weakening Reporting, authorization, ownership, or Admin privacy boundaries.
 - Documentation matches the delivered MVP.
 - No excluded infrastructure or product capability is present.
 
@@ -409,7 +418,7 @@ No milestone includes:
 - Password authentication, public registration, password recovery, provider-assigned roles, and routine Platform Admin financial access.
 - Offline data or Transaction synchronization.
 - Hard Transaction deletion.
-- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, Export, and advanced historical analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS. Implemented Dashboard and Reporting Foundations remain read-only projections.
+- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, Excel/PDF export, and advanced historical analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS and Export Foundation. Implemented Dashboard, Reporting, and CSV Export Foundations remain read-only projections.
 - Student deletion or bulk operations.
 - Multiple currencies.
 - Microservices, event sourcing, CQRS, message queues, background workers, caches, read replicas, multiple databases, distributed transactions, service mesh, Kubernetes, or API gateway.

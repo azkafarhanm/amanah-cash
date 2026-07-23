@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Export Foundation
+
+- Added a reusable Export Coordinator that validates format requests, forwards existing filter inputs to the Reporting Read Service, preserves the authorized Operator scope, and collects all matching report pages without direct persistence access.
+- Added presentation-neutral Operator and Admin export documents, a registry with implemented CSV plus hidden Excel/PDF placeholders, and shared Reporting/UI/export formatters without duplicated financial calculations.
+- Implemented UTF-8 CSV downloads with complete escaping, spreadsheet-formula injection hardening, identical Rupiah/Jakarta date presentation, filtered-result export, and omission of hidden identifiers and Admin financial fields.
+- Added centrally authorized Admin and Operator export endpoints plus registry-gated **Unduh CSV** actions on Reports and Operator Student report detail.
+- Added regression coverage for registry validation, CSV encoding/escaping, multipage coordination, Reporting data parity, ownership isolation, Admin privacy, authorization reuse, read-only boundaries, and Export Contract compatibility.
+- Added centralized `EXPORT_MAX_ROWS` and optional `EXPORT_MAX_BYTES` guard rails, first-page oversized rejection, exact rendered-byte enforcement, and controlled privacy-safe HTTP 413 errors.
+- Improved filenames with normalized report period, Admin report kind where applicable, and collision-resistant `Asia/Jakarta` generation timestamps without names, search text, or identifiers.
+- Added regression coverage for configuration validation, early row/estimated-byte rejection, final-byte enforcement, stable error mapping, and deterministic privacy-safe filenames.
+
 ### Reporting Foundation
 
 - Replaced the Operator report placeholder with ownership-scoped financial reports supporting Student/type/status/search filters, Asia/Jakarta Today/Week/Month/custom periods, controlled sorting, summaries, and database pagination.

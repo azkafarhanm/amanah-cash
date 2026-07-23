@@ -40,6 +40,7 @@ Included:
 - Operator visibility limited to currently assigned Students.
 - Read-only administrative and ownership-scoped operational dashboards with reusable summary and activity cards.
 - Read-only administrative reports and ownership-scoped Operator financial reports with composable periods, summaries, sorting, pagination, and Student detail timelines.
+- Authorized CSV export of permitted currently filtered Admin or ownership-scoped Operator reports through the reusable Export Foundation, with configurable synchronous size guard rails.
 - Responsive PWA operation and explicit interaction states.
 
 Implemented financial engine scope:
@@ -54,7 +55,7 @@ Excluded:
 
 - Offline synchronization.
 - Hard Transaction deletion and Student deletion.
-- Transaction transfer, schedules, monthly allowance, categories, attachments, approval workflow, Export, advanced analytics, notifications, and bulk operations remain unimplemented extension scope.
+- Transaction transfer, schedules, monthly allowance, categories, attachments, approval workflow, Excel/PDF export, advanced analytics, notifications, and bulk operations remain unimplemented extension scope.
 - Multiple currencies and distributed infrastructure.
 - Financial-audit read presentation and reconciliation tooling remain future milestones.
 
@@ -90,7 +91,9 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [UX Polish and Placeholder Strategy](docs/40-ux-polish-and-placeholder-strategy.md) | Planned-feature placeholders, empty/loading/error state taxonomy, navigation consistency, mobile behavior, and accessibility |
 | [MVP QA Report](docs/41-mvp-quality-assurance-report.md) | Executed workflow matrix, defects, regression evidence, limitations, and release recommendation |
 | [Dashboard Implementation](docs/42-dashboard-implementation.md) | Dashboard read model, reusable cards, performance, authorization, privacy, and verification |
-| [Reporting Foundation](docs/43-reporting-foundation.md) | Report read model, polished filters/states/summaries/tables, accessibility, ownership/privacy boundaries, performance, and future export adapter |
+| [Reporting Foundation](docs/43-reporting-foundation.md) | Report read model, polished filters/states/summaries/tables, accessibility, ownership/privacy boundaries, performance, and export integration |
+| [Export Foundation](docs/44-export-foundation.md) | Coordinator, documents, registry, CSV adapter, authorized endpoints, privacy boundaries, and deferred Excel/PDF work |
+| [Export Production Readiness Review](docs/45-export-production-readiness-review.md) | Buffering and pagination behavior, filename policy, high-volume limits, consistency, and hardening gates |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 
@@ -152,7 +155,7 @@ Known roadmap routes render an explicit planned or in-development placeholder in
 
 ## Development Roadmap
 
-Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, and Reporting Foundation are complete. The current recommendation remains **READY WITH MINOR LIMITATIONS**; exports, reconciliation/audit presentation, and deployment qualification remain bounded future work.
+Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, and guard-railed Export Foundation with CSV are complete. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured export capacity, streaming/snapshot architecture, Excel/PDF export, reconciliation/audit presentation, and deployment qualification remain bounded future work.
 
 ## Contributing
 

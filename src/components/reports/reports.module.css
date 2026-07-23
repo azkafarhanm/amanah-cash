@@ -2,6 +2,7 @@
 .summary,
 .tableSection,
 .tableSection > header,
+.exportBar,
 .skeleton {
   display: grid;
   gap: var(--space-4);
@@ -55,6 +56,15 @@
 .emptyAction { color: var(--color-text-inverse); background: var(--color-action-primary); text-decoration: none; }
 .emptyAction:hover { background: var(--color-action-primary-hover); }
 
+.exportBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-subtle); }
+.exportBar h2,
+.exportBar p { margin: var(--space-0); }
+.exportBar h2 { color: var(--color-text-primary); font: var(--type-section-title); }
+.exportBar p { margin-block-start: var(--space-1); color: var(--color-text-secondary); font: var(--type-supporting); }
+.exportActions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.exportLink { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); text-decoration: none; }
+.exportLink:hover { background: var(--color-action-primary-hover); }
+
 .summary h2,
 .tableSection h2,
 .tableSection p { margin: var(--space-0); }
@@ -92,6 +102,7 @@
 .field select:focus-visible,
 .filterActions button:focus-visible,
 .emptyAction:focus-visible,
+.exportLink:focus-visible,
 .table a:focus-visible,
 .pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 
@@ -121,6 +132,9 @@
   .sortFields { grid-template-columns: minmax(0, 1fr); }
   .filterActions { align-items: stretch; flex-direction: column; }
   .filterActions button { width: var(--size-full); }
+  .exportBar { align-items: stretch; padding: var(--space-4); }
+  .exportActions,
+  .exportLink { width: var(--size-full); }
   .filterSkeleton { grid-template-columns: minmax(0, 1fr); padding: var(--space-4); }
   .tableWrap { border: 0; background: transparent; }
   .table,

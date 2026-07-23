@@ -1,8 +1,6 @@
+import type { ExportFormat } from "@/exports/types";
 import type { NormalizedReportFilters, ReportQuery } from "@/reports/types";
-
-export function reportDate(value: string) {
-  return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", hour12: false, timeZone: "Asia/Jakarta" }).format(new Date(value));
-}
+export { reportDate } from "@/presentation/formatting";
 
 export function reportHref(basePath: string, filters: NormalizedReportFilters, overrides: Partial<ReportQuery> = {}) {
   const params = new URLSearchParams();
@@ -27,4 +25,12 @@ export function adminReportHref(basePath: string, query: Record<string, string |
   const params = new URLSearchParams();
   for (const [key, value] of Object.entries({ ...query, page: String(page) })) if (value) params.set(key, value);
   return `${basePath}?${params}`;
+}
+
+export function operatorReportExportHref(basePath: string, filters: NormalizedReportFilters, format: ExportFormat) {
+  return `${reportHref(basePath, filters, { page: "1" })}&format=${encodeURIComponent(format)}`;
+}
+
+export function adminReportExportHref(basePath: string, query: Record<string, string | undefined>, format: ExportFormat) {
+  return `${adminReportHref(basePath, query, 1)}&format=${encodeURIComponent(format)}`;
 }

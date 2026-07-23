@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
 **Last updated:** 2026-07-22
-**Current delivery state:** Reporting Foundation complete; READY WITH MINOR LIMITATIONS; exports, reconciliation/audit presentation, and deployment remain
+**Current delivery state:** Export Foundation with CSV complete; READY WITH MINOR LIMITATIONS; Excel/PDF, reconciliation/audit presentation, and deployment remain
 
 ## Project Purpose
 
@@ -23,6 +23,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - MVP Quality Assurance completed across authentication, administration, Student ownership, every Transaction lifecycle mutation, long-chain Balance reconciliation, authorization routes, UI states, database integrity, and performance smoke checks. Five confirmed defects were fixed with regression coverage; see `docs/41-mvp-quality-assurance-report.md`.
 - Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
 - Reporting Foundation implemented and production-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct no-assignment/first-use/search/filter states with contextual actions, explanatory zero summaries, grouped dates, pending/live-result feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
+- Export Foundation implemented as a downstream Reporting consumer: centralized authorized CSV endpoints, a read-service-only multipage coordinator, presentation-neutral documents, an extensible CSV/Excel/PDF registry with only CSV enabled, shared display formatters, UTF-8/escaped/spreadsheet-safe CSV serialization, centralized row/optional-byte guard rails, controlled oversized errors, privacy-safe Jakarta filenames, and registry-gated UI actions. No Reporting calculation/query, authorization, ownership, Dashboard, Transaction Engine, schema, or Export Contract behavior changed.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
@@ -41,13 +42,15 @@ Every current sidebar route now resolves to either an implemented module or `Fea
 
 `/admin/reports` now provides paginated Operator lifecycle, initial assignment, and privacy-minimized ownership reports without financial fields. `/operator/reports` provides ownership-scoped active Transaction reports and `/operator/reports/students/[id]` provides read-only Student timelines. Report summaries group persisted active Transactions and reuse the centralized `effect` function; they never reconstruct Student Balance. Exact persisted audit `balanceAfter` is shown only when a visible Transaction revision has matching authorized evidence.
 
+Admin and Operator report pages now expose only implemented CSV downloads. `/api/admin/reports/export` and `/api/operator/reports/export` reuse centralized role authorization, then the Export Coordinator gathers every permitted matching page exclusively through the Reporting Read Service. Operator scope is forwarded on every page read. The first Reporting page supplies the matching total for a default 10,000-row preflight cap; `EXPORT_MAX_BYTES` optionally adds estimated and final-byte enforcement. Oversized results return controlled HTTP 413. Export documents are display-ready and omit internal identifiers; Admin CSV contains administrative facts only.
+
 Latest verification:
 
 - Prisma format, validation, and client generation: passed.
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 110 passed, 0 failed.
+- Automated tests: 121 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -76,7 +79,8 @@ SQLite relational database and invariant triggers
 - `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; implemented dashboards no longer use it.
 - `src/dashboard/` owns the fixed-query, read-only Admin and Operator dashboard projections.
 - `src/components/dashboard/` owns reusable statistic, trend, summary, activity, quick-action, grid, and skeleton presentation components.
-- `src/reports/` owns report filter normalization, export-neutral Admin/Operator read projections, result contracts, and the future export adapter boundary.
+- `src/reports/` owns report filter normalization, export-neutral Admin/Operator read projections, result contracts, and the unchanged export adapter contract.
+- `src/exports/` owns export request coordination, display-ready documents, registry/format availability, CSV serialization, and download response mapping. It has no persistence or authorization policy ownership.
 - `src/components/reports/` owns report filters, summaries, semantic responsive tables, pagination, loading, error, and empty presentation.
 - `src/app/(app)/(admin)/` contains protected Platform Admin pages and Server Actions.
 - `src/app/(app)/(operator)/` contains protected Operator pages.
@@ -102,6 +106,7 @@ SQLite relational database and invariant triggers
 - Financial presentation is implemented for owned Operator Student detail and list summaries; authoritative Balance is persisted and changed only by the Transaction Engine.
 - Dashboard presentation is read-only. Admin projections never select financial detail; Operator projections require the server-derived current Operator ID, aggregate persisted owned balances, and bound recent activity to six rows.
 - Reporting presentation is read-only. Operational rows default to non-deleted Transactions, all financial reads follow current Student ownership, Jakarta business periods use `occurredAt`, summaries reuse centralized Transaction effect semantics, and database pagination precedes rendering. Admin reports contain administrative facts only.
+- Export is read-only and downstream-only. Routes reuse centralized role authorization; the coordinator delegates every data read and filter normalization to Reporting; adapters serialize prepared strings and never interpret financial effects.
 - Student owns every Transaction; Transaction has no Operator owner. Current `operatorId` scopes the entire financial record and transfer changes visibility without rewriting Transactions.
 - Implemented Transaction types are `DEPOSIT`, `WITHDRAWAL`, and `CORRECTION`. Correction has explicit increase/decrease direction and required reason.
 - Transactions support controlled edit, soft delete, and restore. Transaction identity, Student, creation actor, and creation time remain immutable; database triggers prohibit hard delete.
@@ -129,7 +134,8 @@ SQLite relational database and invariant triggers
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.
 - SQLite is the approved current persistence target; production deployment topology remains deferred.
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
-- No exports, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, or distributed infrastructure exist.
+- CSV export is implemented. Excel/PDF, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, and distributed infrastructure do not exist.
+- CSV export is synchronous and fully buffered. It has a default 10,000-row cap and optional byte cap, but no deadline/concurrency control or cross-page snapshot and is not qualified to generate 30,000–100,000-row files. Such requests are rejected after the first Reporting page by default. See `docs/45-export-production-readiness-review.md`.
 - Centralized cross-Student transactions and settings remain roadmap modules represented by explicit placeholders rather than 404 pages. Reporting routes are implemented.
 
 ## Outstanding Work
@@ -137,12 +143,14 @@ SQLite relational database and invariant triggers
 - Implement Operator-only financial-audit history without a Platform Admin financial bypass.
 - Add explicit reconciliation verification that detects but never silently repairs Balance mismatches.
 - Review production deployment, database topology, backups, OAuth configuration, dependency advisories, and Platform Admin bootstrap in their separately approved phases.
+- Benchmark representative export workloads, tune the implemented row/byte limits, and define deadline/concurrency policy before claiming measured production capacity.
+- Decide on backpressure-aware CSV streaming and multipage consistency at the Reporting read boundary. Any background-job export path requires a separately approved architecture change.
 
 ## Next Recommended Sprint
 
 Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint.
 
-The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Export, advanced analytics, and future extension implementation remain outside that bounded sprint.
+The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Excel/PDF, advanced analytics, and future extension implementation remain outside that bounded sprint.
 
 ## Core Business Rules to Preserve
 
@@ -169,7 +177,7 @@ The sprint should add ownership-scoped audit-history and reconciliation contract
 - Use floating-point money.
 - Split Transaction lifecycle, Balance/version, idempotency, or audit writes across transaction boundaries.
 - Put authoritative business logic in UI code.
-- Add password authentication, public registration, offline financial sync, multiple currencies, reporting implementation, or distributed infrastructure without a separately approved sprint.
+- Add password authentication, public registration, offline financial sync, multiple currencies, new export formats, or distributed infrastructure without a separately approved sprint.
 - Bypass tests, database constraints, review, documentation synchronization, or this canonical handoff update.
 
 ## Documentation Map
@@ -200,6 +208,9 @@ The sprint should add ownership-scoped audit-history and reconciliation contract
 | `docs/40-ux-polish-and-placeholder-strategy.md` | Implemented placeholder architecture, state taxonomy, navigation outcomes, mobile behavior, and accessibility |
 | `docs/41-mvp-quality-assurance-report.md` | Executed QA matrix, confirmed defects and regressions, known limitations, and release recommendation |
 | `docs/42-dashboard-implementation.md` | Dashboard read model, reusable cards, performance, authorization/privacy boundaries, and verification |
+| `docs/43-reporting-foundation.md` | Reporting read model, filters, summaries, UX, authorization/privacy boundaries, and export integration |
+| `docs/44-export-foundation.md` | Export coordinator, documents, registry, CSV, endpoints, privacy, and future format boundaries |
+| `docs/45-export-production-readiness-review.md` | Export buffering, pagination cost, filenames, volume limits, consistency, and Production Hardening gates |
 
 ## Sprint Completion Rule
 

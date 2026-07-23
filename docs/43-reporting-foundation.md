@@ -13,7 +13,7 @@ central role / ownership authorization
   → report filter normalization
   → export-neutral report read projection
   → reusable summaries, filters, tables, pagination, and states
-  → future export adapter (no exporter implemented)
+  → implemented downstream Export Foundation
 ```
 
 `src/reports/read-service.ts` is the only reporting persistence boundary. Report components do not access Prisma, recalculate Student Balance, authorize identities, or invoke financial mutations. No schema, migration, API, Dashboard, Transaction Engine, ownership policy, or authorization behavior changed.
@@ -105,11 +105,11 @@ The report detail is read-only. Existing Transaction mutation dialogs remain onl
 
 Student filter options are a lightweight ownership-scoped ID/name/status projection. A future asynchronous selector can replace its presentation without changing the report query or result contract if production volume requires it.
 
-## Export Integration Strategy
+## Export Integration
 
-`src/reports/export-contract.ts` defines `ReportExportDocument` and `ReportExportAdapter`. Future PDF, Excel, or CSV adapters receive an already authorized, generated report document and return bytes plus adapter media metadata. Export renderers must not query Prisma, reinterpret Correction direction, recalculate Balance, or broaden ownership.
+`src/reports/export-contract.ts` defines `ReportExportDocument` and `ReportExportAdapter`. The implemented Export Foundation consumes this unchanged contract and the Reporting Read Service. Export adapters receive an already authorized, display-ready report document and return bytes plus adapter media metadata. They must not query Prisma, reinterpret Correction direction, recalculate Balance, or broaden ownership.
 
-No export endpoint, download action, file generation library, or background job is introduced in this sprint.
+CSV is implemented and exposed on Admin, Operator, and Student-detail Reporting pages. Excel and PDF remain registered placeholders and are not shown. See `docs/44-export-foundation.md` for the coordinator, document, registry, adapter, privacy, and delivery contracts.
 
 ## Verification
 

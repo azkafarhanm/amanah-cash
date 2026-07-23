@@ -1,6 +1,6 @@
 import { currentOperator } from "@/authorization";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
-import { OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
+import { OperatorReportExport, OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
 import { reportReadService } from "@/reports/read-service";
 import type { ReportQuery } from "@/reports/types";
 
@@ -10,6 +10,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   return <ContentWrapper>
     <SectionHeader title="Laporan Keuangan" description="Riwayat keuangan hanya untuk Siswa yang saat ini ditugaskan kepada Anda." />
     <ReportFilters filters={report.filters} students={report.students} basePath="/operator/reports" />
+    <OperatorReportExport result={report} />
     <ReportSummary result={report} />
     <OperatorReportTable result={report} basePath="/operator/reports" detailBasePath="/operator/reports/students" />
   </ContentWrapper>;
