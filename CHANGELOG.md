@@ -6,10 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Excel Export Foundation
+
+- Added a presentation-only ExcelJS adapter that converts the existing Export Document into one `Laporan` worksheet without persistence, Reporting, authorization, or financial-calculation dependencies.
+- Registered `xlsx` beside CSV so existing authorized endpoints, Coordinator, guard rails, filenames, and registry-derived UI actions support Excel without duplicated format-specific request logic.
+- Added document-derived metadata, summaries, headers and ordered rows with a frozen table header, auto-filter, wrapping, bounded widths, and display-ready numeric alignment.
+- Added workbook round-trip, registry, MIME type, filename, multipage Coordinator, row-count, worksheet, header, and oversized preflight regression coverage.
+- Added ExcelJS `4.4.0` with a scoped `uuid@11.1.1` override to remove its transitive UUID advisory while preserving the compatible API.
+
 ### Export Foundation
 
 - Added a reusable Export Coordinator that validates format requests, forwards existing filter inputs to the Reporting Read Service, preserves the authorized Operator scope, and collects all matching report pages without direct persistence access.
-- Added presentation-neutral Operator and Admin export documents, a registry with implemented CSV plus hidden Excel/PDF placeholders, and shared Reporting/UI/export formatters without duplicated financial calculations.
+- Added presentation-neutral Operator and Admin export documents, an extensible CSV/Excel/PDF registry, and shared Reporting/UI/export formatters without duplicated financial calculations.
 - Implemented UTF-8 CSV downloads with complete escaping, spreadsheet-formula injection hardening, identical Rupiah/Jakarta date presentation, filtered-result export, and omission of hidden identifiers and Admin financial fields.
 - Added centrally authorized Admin and Operator export endpoints plus registry-gated **Unduh CSV** actions on Reports and Operator Student report detail.
 - Added regression coverage for registry validation, CSV encoding/escaping, multipage coordination, Reporting data parity, ownership isolation, Admin privacy, authorization reuse, read-only boundaries, and Export Contract compatibility.

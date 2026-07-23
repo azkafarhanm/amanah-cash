@@ -2,13 +2,14 @@
 
 **Status:** Guard rails implemented; conditionally ready for bounded synchronous exports  
 **Review date:** 2026-07-22  
-**Scope:** CSV export capacity, memory behavior, filename policy, and high-volume operation
+**Last updated:** 2026-07-23  
+**Scope:** CSV/Excel export capacity, memory behavior, filename policy, and high-volume operation
 
 ## Executive Decision
 
 The Export Foundation has appropriate security and layering boundaries: it is read-only, reuses centralized authorization, obtains data only through the Reporting Read Service, preserves Operator ownership scope, and keeps Admin exports free of financial data. Those boundaries are production-appropriate and must remain unchanged.
 
-The current CSV delivery path remains **not qualified for large production datasets** because it is synchronous and fully buffered. It now has a centralized default 10,000-row safety cap, optional byte cap, early first-page rejection, controlled `413` error, and improved filenames. It is adequate only for bounded requests within those guard rails; the default cap is not a measured service-level guarantee.
+The current CSV and Excel delivery paths remain **not qualified for large production datasets** because they are synchronous and fully buffered. They share a centralized default 10,000-row safety cap, optional byte cap, early first-page rejection, controlled `413` error, and privacy-safe filenames. They are adequate only for bounded requests within those guard rails; the default cap is not a measured service-level guarantee.
 
 ## Current Runtime Behavior
 
@@ -38,7 +39,7 @@ The implementation is buffered, not streaming:
 5. `TextEncoder` creates the complete UTF-8 byte array; and
 6. the HTTP response creates and fills another `ArrayBuffer`.
 
-Peak memory is therefore materially greater than the final CSV size because several representations can coexist. The exact multiplier depends on row width, JavaScript string representation, runtime garbage collection, and deployment platform. No safe 30,000- or 100,000-row guarantee can be stated without representative measurement. A 100,000-row export must currently be treated as unsupported for production planning, even if it happens to complete in a development environment.
+Peak memory is therefore materially greater than the final file size because several representations can coexist. ExcelJS also constructs the workbook archive in memory. The exact multiplier differs by format and depends on row width, runtime garbage collection, and deployment platform. No safe 30,000- or 100,000-row generation guarantee can be stated without representative per-format measurement.
 
 ### Export size limits
 
@@ -59,7 +60,7 @@ Examples are `laporan-keuangan-2026-07-20260722-143015.csv` and `laporan-adminis
 
 ### Locale and timezone consistency
 
-The current UI and CSV both consume the shared presentation formatters. Currency uses Indonesian IDR formatting and report timestamps use `Asia/Jakarta`; the filename date also uses `Asia/Jakarta`. This part of the design is adequate. Future adapters must continue to consume prepared display values or the same shared formatters rather than introducing adapter-specific locale logic.
+The current UI, CSV, and Excel documents consume the shared presentation formatters. Currency uses Indonesian IDR formatting and report timestamps use `Asia/Jakarta`; the filename date also uses `Asia/Jakarta`. Excel preserves those display-ready strings rather than reverse-parsing them into potentially divergent native cell values.
 
 ## Production Hardening Gates
 
@@ -72,7 +73,7 @@ The following work is required before claiming support for large synchronous exp
 5. **Choose consistency semantics.** The present guarantee is ownership-scoped, filter-consistent per Reporting call, but not one point-in-time snapshot across all pages. Snapshot/high-water-mark/keyset work belongs at the Reporting read boundary and remains deferred because it changes read architecture.
 6. **Plan oversized asynchronous exports only if separately approved.** A background job, queue, object storage, expiry policy, and secure download flow remain outside the current approved architecture.
 
-Excel and PDF implementation should not begin until the workload measurements and synchronous size policy are known. Their generators commonly have different and sometimes higher memory costs than CSV.
+PDF implementation should not begin until its workload and memory behavior are reviewed. Excel is implemented behind the existing limits, but its deployment capacity must be benchmarked separately from CSV because workbook generation has a different memory profile.
 
 ## Readiness Matrix
 
@@ -82,7 +83,7 @@ Excel and PDF implementation should not begin until the workload measurements an
 | Authorization and ownership | Ready | Existing Admin/Operator authorization and Operator ID scope are reused on every read. |
 | Admin financial privacy | Ready | Admin document remains administrative and contains no financial fields. |
 | Complete filtered dataset | Ready for bounded volume | All matching pages are fetched sequentially; UI pagination is not exported as a data limit. |
-| Locale and timezone | Ready | UI and CSV share IDR and `Asia/Jakarta` formatters. |
+| Locale and timezone | Ready | UI, CSV, and Excel share IDR and `Asia/Jakarta` display formatting. |
 | Filename usability | Ready | Includes family, normalized period, Admin kind where applicable, and Jakarta timestamp; excludes personal data and identifiers. |
 | Memory behavior | Not high-volume ready | Complete rows, strings, bytes, and response copy are buffered. |
 | Size controls | Guarded, not capacity-qualified | Default 10,000-row cap plus optional estimated/exact byte cap; deployment tuning remains outstanding. |

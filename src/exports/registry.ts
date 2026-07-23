@@ -1,4 +1,5 @@
 import { csvExportAdapter } from "@/exports/csv-adapter";
+import { excelExportAdapter } from "@/exports/excel-adapter";
 import { ExportFormatUnavailableError, ExportValidationError } from "@/exports/errors";
 import type { ExportAdapter, ExportFormat, ExportFormatDescriptor } from "@/exports/types";
 
@@ -29,4 +30,7 @@ export function createExportRegistry(entries: ReadonlyArray<readonly [ExportForm
   };
 }
 
-export const exportRegistry = createExportRegistry([["csv", csvExportAdapter]]);
+export const exportRegistry = createExportRegistry([
+  ["csv", csvExportAdapter],
+  ["xlsx", excelExportAdapter]
+]);

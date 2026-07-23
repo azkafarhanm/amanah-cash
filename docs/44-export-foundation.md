@@ -2,7 +2,8 @@
 
 **Status:** Implemented  
 **Date:** 2026-07-22  
-**Scope:** Reusable report export coordination and CSV delivery
+**Last updated:** 2026-07-23  
+**Scope:** Reusable report export coordination with CSV and Excel delivery
 
 ## Architecture
 
@@ -14,7 +15,7 @@ existing centralized Admin / Operator authorization
   → existing Reporting Read Service with the authorized scope and report query
   → presentation-neutral Export Document
   → Export Registry
-  → CSV adapter
+  → CSV or Excel adapter
   → private no-store download response
 ```
 
@@ -73,10 +74,10 @@ Admin documents contain only time, administrative category, subject, description
 | Format | Registry state | UI state |
 |---|---|---|
 | CSV | Implemented | Exposed |
-| Excel (`xlsx`) | Reserved, unavailable | Hidden |
+| Excel (`xlsx`) | Implemented | Exposed |
 | PDF | Reserved, unavailable | Hidden |
 
-Unknown formats fail validation. Known but unimplemented formats return an unavailable error if requested directly. The Reporting UI derives its links from implemented registry entries, so Excel and PDF cannot appear prematurely.
+Unknown formats fail validation. Known but unimplemented PDF returns an unavailable error if requested directly. The Reporting UI derives its links from implemented registry entries, so CSV and Excel appear without page-specific format logic while PDF cannot appear prematurely.
 
 ## CSV Adapter
 
@@ -92,6 +93,10 @@ The CSV adapter emits:
 
 CSV rendering performs serialization only. It does not interpret business rules or calculate financial values.
 
+## Excel Adapter
+
+`src/exports/excel-adapter.ts` consumes the same display-ready Export Document and creates one minimally formatted `Laporan` worksheet. Metadata and existing summaries appear beside the table; generated headers and ordered rows come only from the document. The adapter adds a frozen first-row table header, auto-filter, bounded column widths, wrapping, and numeric-display alignment without querying Reporting or reinterpreting financial effects. See `docs/46-excel-export-foundation.md`.
+
 ## HTTP and UI Integration
 
 Downloads are available through:
@@ -103,21 +108,22 @@ The Operator route reuses the centralized Operator authorization adapter and for
 
 Successful filenames contain the report family, normalized period, Jakarta generation timestamp to the second, and Admin report kind where applicable. For example: `laporan-keuangan-2026-07-20260722-143015.csv` and `laporan-administratif-aktivitas-operator-2026-07-20260722-143015.csv`. They never contain Student names, Operator names, email addresses, or identifiers.
 
-Operator Reports, Operator Student report detail, and Admin Reports expose only an **Unduh CSV** action. The action carries the current report filters; export always includes the complete matching result rather than only the visible page.
+Operator Reports, Operator Student report detail, and Admin Reports expose **Unduh CSV** and **Unduh Excel** actions. Each action carries the current report filters; export always includes the complete permitted matching result rather than only the visible page.
 
 ## Verification
 
-Automated coverage proves registry availability, configuration validation, row and byte limit enforcement, first-page oversized rejection, controlled HTTP errors, deterministic privacy-safe Jakarta filenames, UTF-8 encoding, CSV escaping, spreadsheet-safe text, multipage coordination, current-filter forwarding, shared Rupiah/date formatting, hidden-identifier exclusion, cross-Operator isolation, Admin financial privacy, centralized route authorization, Reporting Read Service-only access, UI format gating, and existing Export Contract compatibility.
+Automated coverage proves registry availability, configuration validation, row and byte limit enforcement, first-page oversized rejection, controlled HTTP errors, deterministic privacy-safe Jakarta filenames, UTF-8 CSV behavior, XLSX workbook/worksheet/header/row/layout generation, multipage coordination, current-filter forwarding, shared Rupiah/date formatting, hidden-identifier exclusion, cross-Operator isolation, Admin financial privacy, centralized route authorization, Reporting Read Service-only access, UI format gating, and existing Export Contract compatibility.
 
 No schema, migration, Reporting query/calculation, authorization rule, ownership rule, Dashboard, Transaction Engine, or Export Contract change was introduced.
 
-## Deferred Excel and PDF Work
+## Deferred PDF and Presentation Work
 
-Excel and PDF adapters remain intentionally unimplemented. Production workload measurements and a bounded export-size policy must be completed before enabling them. Then:
+PDF remains intentionally unimplemented. Before enabling it:
 
 - select and review generation libraries and their transitive dependencies;
-- define spreadsheet cell types, widths, and large-workbook behavior;
 - define PDF page size, repeating headers, wrapping, pagination, and font embedding;
 - reuse the same Export Document without querying Reporting again inside adapters;
 - add format-specific injection, metadata, accessibility, and memory tests; and
-- register each adapter only when complete, which will automatically make it eligible for UI exposure.
+- register the adapter only when complete, which will automatically make it eligible for UI exposure.
+
+Native Excel cell typing, multi-sheet workbooks, advanced workbook styling, and measured large-workbook capacity remain separately scoped presentation/Production Hardening work.

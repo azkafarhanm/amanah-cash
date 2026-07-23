@@ -4,10 +4,12 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { after, test } from "node:test";
 import Database from "better-sqlite3";
+import ExcelJS from "exceljs";
 import { csvExportAdapter } from "../src/exports/csv-adapter";
 import { DEFAULT_EXPORT_MAX_ROWS, ExportConfigurationError, loadExportLimits } from "../src/exports/config";
 import { createExportCoordinator } from "../src/exports/coordinator";
 import { ExportFormatUnavailableError, ExportLimitExceededError, ExportValidationError } from "../src/exports/errors";
+import { excelExportAdapter } from "../src/exports/excel-adapter";
 import { adminExportFileName, operatorExportFileName } from "../src/exports/filename";
 import { enforceExportPreflight, enforceRenderedExportSize } from "../src/exports/guardrails";
 import { exportResponse } from "../src/exports/http";
@@ -60,6 +62,22 @@ function decode(bytes: Uint8Array) {
   return new TextDecoder().decode(bytes);
 }
 
+async function loadWorkbook(bytes: Uint8Array) {
+  const workbook = new ExcelJS.Workbook();
+  const buffer = new Uint8Array(bytes.byteLength);
+  buffer.set(bytes);
+  await workbook.xlsx.load(buffer.buffer);
+  return workbook;
+}
+
+function rowWithValues(worksheet: ExcelJS.Worksheet, values: ReadonlyArray<string>) {
+  return worksheet.getRows(1, worksheet.rowCount)?.find((row) => values.every((value, index) => row.getCell(index + 1).value === value));
+}
+
+function valuesFrom(row: ExcelJS.Row) {
+  return Array.isArray(row.values) ? row.values.slice(1) : [];
+}
+
 function emptyOperatorResult(page: number, pages: number, id: string, total = 2): OperatorReportResult {
   return {
     filters: { period: "ALL", search: "", sort: "occurredAt", direction: "desc", page },
@@ -72,15 +90,16 @@ function emptyOperatorResult(page: number, pages: number, id: string, total = 2)
   };
 }
 
-test("export registry exposes only implemented CSV while reserving Excel and PDF", () => {
+test("export registry exposes implemented CSV and Excel while reserving PDF", () => {
   assert.deepEqual(exportRegistry.formats(), [
     { format: "csv", label: "CSV", implemented: true },
-    { format: "xlsx", label: "Excel", implemented: false },
+    { format: "xlsx", label: "Excel", implemented: true },
     { format: "pdf", label: "PDF", implemented: false }
   ]);
-  assert.deepEqual(exportRegistry.availableFormats().map((item) => item.format), ["csv"]);
+  assert.deepEqual(exportRegistry.availableFormats().map((item) => item.format), ["csv", "xlsx"]);
   assert.throws(() => exportRegistry.resolve("zip"), ExportValidationError);
-  assert.throws(() => exportRegistry.resolve("xlsx"), ExportFormatUnavailableError);
+  assert.equal(exportRegistry.resolve("xlsx").adapter, excelExportAdapter);
+  assert.throws(() => exportRegistry.resolve("pdf"), ExportFormatUnavailableError);
 });
 
 test("export limits use centralized defaults and validate environment overrides", () => {
@@ -123,6 +142,41 @@ test("CSV adapter emits UTF-8, RFC-style escaping, and spreadsheet-safe user tex
   assert.equal(content.endsWith("\r\n"), true);
 });
 
+test("Excel adapter creates one formatted Laporan worksheet from the Export Document", async () => {
+  const bytes = await excelExportAdapter.render({
+    title: "Laporan Keuangan",
+    generatedAt: "22 Jul 2026, 12.00",
+    periodLabel: "Juli 2026",
+    summary: [{ label: "Total setoran", value: "Rp 1.000" }],
+    columns: [{ key: "occurredAt", label: "Waktu" }, { key: "student", label: "Siswa" }, { key: "amount", label: "Jumlah" }],
+    rows: [
+      { occurredAt: "21 Jul 2026, 08.00", student: "Alya", amount: "+ Rp 1.000" },
+      { occurredAt: "22 Jul 2026, 09.30", student: "Bima", amount: "− Rp 500" }
+    ]
+  });
+  assert.deepEqual([...bytes.slice(0, 2)], [0x50, 0x4b]);
+  assert.equal(excelExportAdapter.mediaType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  assert.equal(excelExportAdapter.fileExtension, "xlsx");
+
+  const workbook = await loadWorkbook(bytes);
+  assert.deepEqual(workbook.worksheets.map((worksheet) => worksheet.name), ["Laporan"]);
+  const worksheet = workbook.getWorksheet("Laporan")!;
+  const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Jumlah"]);
+  assert.ok(header);
+  assert.equal(header.number, 1);
+  assert.equal(header.font.bold, true);
+  assert.equal(worksheet.views[0]?.state, "frozen");
+  assert.equal(worksheet.views[0]?.ySplit, 1);
+  assert.ok(worksheet.autoFilter);
+  assert.deepEqual(valuesFrom(worksheet.getRow(header.number + 1)).slice(0, 3), ["21 Jul 2026, 08.00", "Alya", "+ Rp 1.000"]);
+  assert.deepEqual(valuesFrom(worksheet.getRow(header.number + 2)).slice(0, 3), ["22 Jul 2026, 09.30", "Bima", "− Rp 500"]);
+  assert.equal(worksheet.getRow(header.number + 1).getCell(3).alignment.horizontal, "right");
+  assert.equal(worksheet.getColumn(1).values.filter(Boolean).length - 1, 2);
+  assert.equal(worksheet.getCell(1, 5).value, "Laporan Keuangan");
+  assert.equal(worksheet.getCell(5, 5).value, "Total setoran");
+  assert.ok(worksheet.columns.slice(0, 3).every((column) => (column.width ?? 0) >= 12 && (column.width ?? 0) <= 40));
+});
+
 test("export coordinator resolves all pages through the existing ownership-scoped reader", async () => {
   const calls: Array<{ operatorId: string; page?: string }> = [];
   const reader = {
@@ -141,6 +195,47 @@ test("export coordinator resolves all pages through the existing ownership-scope
   assert.doesNotMatch(content, /"'\+ Rp/);
   assert.equal(content.match(/"Alya"/g)?.length, 2);
   assert.equal(result.fileName, "laporan-keuangan-semua-periode-20260722-120000.csv");
+});
+
+test("export coordinator resolves Excel through the registry with existing filename and guard rails", async () => {
+  const calls: string[] = [];
+  const reader = {
+    async operator(_operatorId: string, query: { page?: string }) {
+      calls.push(query.page ?? "");
+      return emptyOperatorResult(Number(query.page), 2, `row-${query.page}`);
+    },
+    async admin() {
+      throw new Error("Admin reader should not be called.");
+    }
+  };
+  const coordinator = createExportCoordinator({ reader, limits: { maxRows: 2, maxBytes: null }, now: () => generatedAt });
+  const result = await coordinator.operator({ operatorId: "operator-owned", parameters: new URLSearchParams({ format: "xlsx", period: "ALL" }) });
+  assert.deepEqual(calls, ["1", "2"]);
+  assert.equal(result.mediaType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  assert.equal(result.fileName, "laporan-keuangan-semua-periode-20260722-120000.xlsx");
+  const worksheet = (await loadWorkbook(result.bytes)).getWorksheet("Laporan")!;
+  const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Status Siswa", "Jenis"]);
+  assert.ok(header);
+  assert.equal(worksheet.getColumn(1).values.filter(Boolean).length - 1, 2);
+});
+
+test("Excel export rejects an oversized report before collecting later pages", async () => {
+  const calls: string[] = [];
+  const reader = {
+    async operator(_operatorId: string, query: { page?: string }) {
+      calls.push(query.page ?? "");
+      return emptyOperatorResult(1, 6, "row-1", 101);
+    },
+    async admin() {
+      throw new Error("Admin reader should not be called.");
+    }
+  };
+  const coordinator = createExportCoordinator({ reader, limits: { maxRows: 100, maxBytes: null }, now: () => generatedAt });
+  await assert.rejects(
+    coordinator.operator({ operatorId: "operator-owned", parameters: new URLSearchParams({ format: "xlsx", period: "ALL" }) }),
+    ExportLimitExceededError
+  );
+  assert.deepEqual(calls, ["1"]);
 });
 
 test("export coordinator rejects oversized reports after preflight without collecting later pages", async () => {
