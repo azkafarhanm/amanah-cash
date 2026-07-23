@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import { after, test } from "node:test";
 import Database from "better-sqlite3";
 import ExcelJS from "exceljs";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { csvExportAdapter } from "../src/exports/csv-adapter";
 import { DEFAULT_EXPORT_MAX_ROWS, ExportConfigurationError, loadExportLimits } from "../src/exports/config";
 import { createExportCoordinator } from "../src/exports/coordinator";
@@ -13,6 +14,7 @@ import { excelExportAdapter } from "../src/exports/excel-adapter";
 import { adminExportFileName, operatorExportFileName } from "../src/exports/filename";
 import { enforceExportPreflight, enforceRenderedExportSize } from "../src/exports/guardrails";
 import { exportResponse } from "../src/exports/http";
+import { pdfExportAdapter } from "../src/exports/pdf-adapter";
 import { createExportRegistry, exportRegistry } from "../src/exports/registry";
 import { reportDate, rupiah } from "../src/presentation/formatting";
 import { reportReadService } from "../src/reports/read-service";
@@ -78,6 +80,25 @@ function valuesFrom(row: ExcelJS.Row) {
   return Array.isArray(row.values) ? row.values.slice(1) : [];
 }
 
+async function loadPdf(bytes: Uint8Array) {
+  const data = new Uint8Array(bytes.byteLength);
+  data.set(bytes);
+  return getDocument({
+    data,
+    standardFontDataUrl: `${resolve(root, "node_modules/pdfjs-dist/standard_fonts")}/`
+  }).promise;
+}
+
+async function pdfText(bytes: Uint8Array) {
+  const document = await loadPdf(bytes);
+  const pages: string[] = [];
+  for (let index = 1; index <= document.numPages; index += 1) {
+    const content = await (await document.getPage(index)).getTextContent();
+    pages.push(content.items.map((item) => "str" in item ? item.str : "").join(" "));
+  }
+  return { document, pages };
+}
+
 function emptyOperatorResult(page: number, pages: number, id: string, total = 2): OperatorReportResult {
   return {
     filters: { period: "ALL", search: "", sort: "occurredAt", direction: "desc", page },
@@ -90,16 +111,16 @@ function emptyOperatorResult(page: number, pages: number, id: string, total = 2)
   };
 }
 
-test("export registry exposes implemented CSV and Excel while reserving PDF", () => {
+test("export registry exposes and resolves CSV, Excel, and PDF adapters", () => {
   assert.deepEqual(exportRegistry.formats(), [
     { format: "csv", label: "CSV", implemented: true },
     { format: "xlsx", label: "Excel", implemented: true },
-    { format: "pdf", label: "PDF", implemented: false }
+    { format: "pdf", label: "PDF", implemented: true }
   ]);
-  assert.deepEqual(exportRegistry.availableFormats().map((item) => item.format), ["csv", "xlsx"]);
+  assert.deepEqual(exportRegistry.availableFormats().map((item) => item.format), ["csv", "xlsx", "pdf"]);
   assert.throws(() => exportRegistry.resolve("zip"), ExportValidationError);
   assert.equal(exportRegistry.resolve("xlsx").adapter, excelExportAdapter);
-  assert.throws(() => exportRegistry.resolve("pdf"), ExportFormatUnavailableError);
+  assert.equal(exportRegistry.resolve("pdf").adapter, pdfExportAdapter);
 });
 
 test("export limits use centralized defaults and validate environment overrides", () => {
@@ -177,6 +198,58 @@ test("Excel adapter creates one formatted Laporan worksheet from the Export Docu
   assert.ok(worksheet.columns.slice(0, 3).every((column) => (column.width ?? 0) >= 12 && (column.width ?? 0) <= 40));
 });
 
+test("PDF adapter renders metadata, summary, and transaction table from the Export Document", async () => {
+  const bytes = await pdfExportAdapter.render({
+    title: "Laporan Keuangan",
+    generatedAt: "22 Jul 2026, 12.00",
+    periodLabel: "Juli 2026",
+    summary: [{ label: "Total setoran", value: "Rp 1.000" }],
+    columns: [{ key: "occurredAt", label: "Waktu" }, { key: "student", label: "Siswa" }, { key: "amount", label: "Jumlah" }],
+    rows: [
+      { occurredAt: "21 Jul 2026, 08.00", student: "Alya", amount: "+ Rp 1.000" },
+      { occurredAt: "22 Jul 2026, 09.30", student: "Bima", amount: "− Rp 500" }
+    ]
+  });
+  assert.deepEqual(decode(bytes.slice(0, 5)), "%PDF-");
+  assert.equal(pdfExportAdapter.mediaType, "application/pdf");
+  assert.equal(pdfExportAdapter.fileExtension, "pdf");
+
+  const { document, pages } = await pdfText(bytes);
+  const text = pages.join(" ");
+  assert.equal(document.numPages, 1);
+  assert.match(text, /Laporan Keuangan/);
+  assert.match(text, /Dibuat: 22 Jul 2026, 12.00/);
+  assert.match(text, /Periode: Juli 2026/);
+  assert.match(text, /Total setoran:/);
+  assert.match(text, /Rp 1.000/);
+  assert.match(text, /Waktu/);
+  assert.match(text, /Alya/);
+  assert.match(text, /Bima/);
+  assert.match(text, /Halaman 1 dari 1/);
+  assert.equal(((await document.getMetadata()).info as Record<string, unknown>).Title, "Laporan Keuangan");
+});
+
+test("PDF adapter paginates long reports and repeats readable table headers", async () => {
+  const rows = Array.from({ length: 120 }, (_, index) => ({
+    occurredAt: `23 Jul 2026, ${String(index % 24).padStart(2, "0")}.00`,
+    student: `Siswa ${index + 1}`,
+    notes: `Catatan transaksi ${index + 1}`
+  }));
+  const bytes = await pdfExportAdapter.render({
+    title: "Laporan Multipage",
+    generatedAt: "23 Jul 2026, 12.00",
+    periodLabel: "Seluruh periode",
+    summary: [{ label: "Jumlah transaksi", value: String(rows.length) }],
+    columns: [{ key: "occurredAt", label: "Waktu" }, { key: "student", label: "Siswa" }, { key: "notes", label: "Catatan" }],
+    rows
+  });
+  const { document, pages } = await pdfText(bytes);
+  assert.ok(document.numPages > 1);
+  assert.ok(pages.every((page) => page.includes("Waktu") && page.includes("Siswa") && page.includes("Catatan")));
+  assert.match(pages.at(-1) ?? "", /Siswa 120/);
+  assert.ok(pages.every((page, index) => page.includes(`Halaman ${index + 1} dari ${document.numPages}`)));
+});
+
 test("export coordinator resolves all pages through the existing ownership-scoped reader", async () => {
   const calls: Array<{ operatorId: string; page?: string }> = [];
   const reader = {
@@ -217,6 +290,48 @@ test("export coordinator resolves Excel through the registry with existing filen
   const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Status Siswa", "Jenis"]);
   assert.ok(header);
   assert.equal(worksheet.getColumn(1).values.filter(Boolean).length - 1, 2);
+});
+
+test("export coordinator resolves PDF with existing pagination, filename, MIME type, and guard rails", async () => {
+  const calls: string[] = [];
+  const reader = {
+    async operator(_operatorId: string, query: { page?: string }) {
+      calls.push(query.page ?? "");
+      return emptyOperatorResult(Number(query.page), 2, `row-${query.page}`);
+    },
+    async admin() {
+      throw new Error("Admin reader should not be called.");
+    }
+  };
+  const coordinator = createExportCoordinator({ reader, limits: { maxRows: 2, maxBytes: null }, now: () => generatedAt });
+  const result = await coordinator.operator({ operatorId: "operator-owned", parameters: new URLSearchParams({ format: "pdf", period: "ALL" }) });
+  assert.deepEqual(calls, ["1", "2"]);
+  assert.equal(result.mediaType, "application/pdf");
+  assert.equal(result.fileName, "laporan-keuangan-semua-periode-20260722-120000.pdf");
+  const { pages } = await pdfText(result.bytes);
+  assert.match(pages.join(" "), /Alya/);
+  const response = await exportResponse(async () => result);
+  assert.equal(response.headers.get("content-type"), "application/pdf");
+  assert.equal(response.headers.get("content-disposition"), 'attachment; filename="laporan-keuangan-semua-periode-20260722-120000.pdf"');
+});
+
+test("PDF export rejects an oversized report before collecting later pages", async () => {
+  const calls: string[] = [];
+  const reader = {
+    async operator(_operatorId: string, query: { page?: string }) {
+      calls.push(query.page ?? "");
+      return emptyOperatorResult(1, 6, "row-1", 101);
+    },
+    async admin() {
+      throw new Error("Admin reader should not be called.");
+    }
+  };
+  const coordinator = createExportCoordinator({ reader, limits: { maxRows: 100, maxBytes: null }, now: () => generatedAt });
+  await assert.rejects(
+    coordinator.operator({ operatorId: "operator-owned", parameters: new URLSearchParams({ format: "pdf", period: "ALL" }) }),
+    ExportLimitExceededError
+  );
+  assert.deepEqual(calls, ["1"]);
 });
 
 test("Excel export rejects an oversized report before collecting later pages", async () => {

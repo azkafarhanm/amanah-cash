@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### PDF Export Foundation
+
+- Added a presentation-only PDFKit adapter that converts the existing Export Document into a minimal landscape report without persistence, Reporting, authorization, filtering, or financial-calculation dependencies.
+- Registered `pdf` beside CSV and Excel so the existing authorized endpoints, Coordinator, guard rails, filename generator, HTTP response, and registry-derived UI actions support PDF without format-specific request logic.
+- Added document-derived title, generated time, period, summaries, columns, and ordered transaction rows with proportional column sizing, safe wrapping, continued oversized rows, repeated multipage headers, and page numbering.
+- Added PDF parsing, metadata, summary, transaction, MIME type, filename, Coordinator pagination, registry selection, final-row preservation, and multipage repeated-header regression coverage.
+- Added PDFKit `0.19.1` for maintained Node PDF generation and `pdfjs-dist` as a test-only round-trip parser.
+
 ### Excel Export Foundation
 
 - Added a presentation-only ExcelJS adapter that converts the existing Export Document into one `Laporan` worksheet without persistence, Reporting, authorization, or financial-calculation dependencies.

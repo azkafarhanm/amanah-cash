@@ -109,7 +109,7 @@ Student filter options are a lightweight ownership-scoped ID/name/status project
 
 `src/reports/export-contract.ts` defines `ReportExportDocument` and `ReportExportAdapter`. The implemented Export Foundation consumes this unchanged contract and the Reporting Read Service. Export adapters receive an already authorized, display-ready report document and return bytes plus adapter media metadata. They must not query Prisma, reinterpret Correction direction, recalculate Balance, or broaden ownership.
 
-CSV is implemented and exposed on Admin, Operator, and Student-detail Reporting pages. Excel and PDF remain registered placeholders and are not shown. See `docs/44-export-foundation.md` for the coordinator, document, registry, adapter, privacy, and delivery contracts.
+CSV, Excel, and PDF are implemented and exposed on Admin, Operator, and Student-detail Reporting pages. See `docs/44-export-foundation.md` for the coordinator, document, registry, adapter, privacy, and delivery contracts.
 
 ## Verification
 

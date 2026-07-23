@@ -45,9 +45,9 @@ The registry now exposes:
 |---|---|---|---|
 | CSV | `csvExportAdapter` | `text/csv; charset=utf-8` | Exposed |
 | Excel (`xlsx`) | `excelExportAdapter` | `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` | Exposed |
-| PDF | Unimplemented | — | Hidden |
+| PDF | `pdfExportAdapter` | `application/pdf` | Exposed |
 
-The existing endpoints accept either `format=csv` or `format=xlsx`:
+The existing endpoints accept `format=csv`, `format=xlsx`, or `format=pdf`:
 
 - `GET /api/operator/reports/export`
 - `GET /api/admin/reports/export`
@@ -82,7 +82,6 @@ Regression tests cover:
 
 ## Explicitly Deferred
 
-- PDF adapter.
 - Logos, branding, covers, charts, graphs, signatures, formulas, multiple worksheets, advanced colors, conditional formatting, and premium layouts.
 - Native spreadsheet date/currency cell typing or redesigned summaries.
 - Streaming, asynchronous generation, background jobs, queues, object storage, snapshots, and read-model redesign.
