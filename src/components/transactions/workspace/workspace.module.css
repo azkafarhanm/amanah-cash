@@ -3,6 +3,148 @@
   gap: var(--space-6);
 }
 
+.metricsBanner {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-6);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.metricLabel {
+  font-size: var(--font-size-12);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.metricDeposit {
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-heading);
+  color: var(--color-deposit-foreground);
+  font-weight: var(--font-weight-bold);
+}
+
+.metricWithdrawal {
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-heading);
+  color: var(--color-withdrawal-foreground);
+  font-weight: var(--font-weight-bold);
+}
+
+.metricCount {
+  font-size: var(--font-size-24);
+  line-height: var(--line-height-heading);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+}
+
+.filterToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.filterGroup {
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.searchInput {
+  width: var(--size-full);
+  min-height: var(--control-height-minimum);
+  padding: 0 var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font: var(--type-body);
+}
+
+.searchInput:focus-visible,
+.periodSelect:focus-visible,
+.pillButton:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+}
+
+.filterControls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.typeSegmentedGroup {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--control-height-minimum);
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: var(--shape-control);
+  background: var(--color-background-subtle);
+}
+
+.pillButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(var(--control-height-minimum) - var(--space-2));
+  padding-inline: var(--space-4);
+  border: none;
+  border-radius: calc(var(--shape-control) - var(--space-0-5));
+  background: transparent;
+  color: var(--color-text-secondary);
+  font: var(--type-button);
+  font-size: var(--font-size-14);
+  cursor: pointer;
+  transition: all var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.pillButton:hover {
+  color: var(--color-text-primary);
+}
+
+.pillButtonActive {
+  background: var(--color-background-surface);
+  color: var(--color-action-primary);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+}
+
+.periodSelectGroup {
+  display: flex;
+  align-items: center;
+}
+
+.periodSelect {
+  min-height: var(--control-height-minimum);
+  padding: 0 var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font: var(--type-body);
+  font-size: var(--font-size-14);
+  cursor: pointer;
+}
+
+
+
 .desktopView {
   display: block;
 }

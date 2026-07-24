@@ -2,6 +2,7 @@ import type { AuthenticationEnvironment } from "@/auth/environment";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import type { Prisma } from "@/generated/prisma/client";
 import { getPrismaClient } from "@/persistence/prisma";
+import { periodDates, reportPeriod } from "@/reports/filters";
 import type { CorrectionDirection, TransactionType } from "@/transactions/domain";
 
 export const TRANSACTION_PAGE_SIZE = 10;
@@ -65,6 +66,7 @@ export type WorkspaceTransactionItem = {
 
 export type WorkspaceTransactionQuery = TransactionHistoryQuery & {
   studentId?: string;
+  period?: string;
 };
 
 export type WorkspaceTransactionSummary = {
@@ -190,10 +192,13 @@ export function transactionReadService(
       const type = typeof query.type === "string" && TYPES.has(query.type as TransactionType) ? (query.type as TransactionType) : undefined;
       const status = query.status === "ACTIVE" || query.status === "DELETED" ? query.status : undefined;
       const search = typeof query.search === "string" ? query.search.trim().slice(0, 100) : "";
-      const from = dateBoundary(query.dateFrom, false);
-      const to = dateBoundary(query.dateTo, true);
+      const period = query.period ? reportPeriod(query.period) : undefined;
+      const periodBoundaries = period && !query.dateFrom && !query.dateTo ? periodDates(period, now()) : undefined;
+      const from = periodBoundaries?.from ?? dateBoundary(query.dateFrom, false);
+      const to = periodBoundaries?.to ?? dateBoundary(query.dateTo, true);
       const cursor = decodeCursor(query.cursor);
       const studentId = typeof query.studentId === "string" && query.studentId ? query.studentId : undefined;
+
 
       const filteredWhere: Prisma.TransactionWhereInput = {
         student: {

@@ -9,6 +9,7 @@ export const GET = withAuthorization({ role: "operator" }, async (request, { aut
     type: params.get("type") ?? undefined,
     status: params.get("status") ?? undefined,
     search: params.get("search") ?? undefined,
+    period: params.get("period") ?? undefined,
     dateFrom: params.get("dateFrom") ?? undefined,
     dateTo: params.get("dateTo") ?? undefined,
     cursor: params.get("cursor") ?? undefined

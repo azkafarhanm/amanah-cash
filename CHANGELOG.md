@@ -6,7 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Transaction Workspace Batch 2B (Operational Filters & Cash Flow Metrics)
+
+- Added `WorkspaceMetricsBanner` rendering today's drawer cash flow summary (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from `GET /api/operator/transactions` summary data without client-side total recalculations.
+- Added `WorkspaceFilterToolbar` supporting debounced search input (matching student name, notes, or reason), transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period preset selector (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`).
+- Synchronized all workspace filter controls with URL SearchParams (`search`, `type`, `period`), triggering server-side filtering and data refetches.
+- Updated `workspaceHistory` read service and `GET /api/operator/transactions` route to support native `period` query parameter boundaries.
+- Added comprehensive unit and structural tests for Batch 2B metrics and filter components (141 total tests passing).
+
 ### Transaction Workspace Batch 2A (Workspace Foundation & Table Stream)
+
 
 - Replaced `FeaturePlaceholder` on `/operator/transactions` with the initial production-ready **Transaction Workspace** UI foundation (`TransactionWorkspaceView`).
 - Implemented desktop semantic table (`WorkspaceTransactionTable`) and touch-friendly mobile card view (`WorkspaceTransactionCards`) displaying transaction timestamp, student name with secondary notes/class badge, IDR amount, operator attribution, and status badge.

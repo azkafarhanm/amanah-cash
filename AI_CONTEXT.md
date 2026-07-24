@@ -26,11 +26,12 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Export Foundation implemented as a downstream Reporting consumer: centralized authorized export endpoints, a read-service-only multipage coordinator, presentation-neutral documents, an extensible CSV/Excel/PDF registry with all three formats enabled, shared display formatters, UTF-8/escaped/spreadsheet-safe CSV serialization, presentation-only ExcelJS workbooks, and presentation-only paginated PDFKit reports with repeated table headers. Centralized row/optional-byte guard rails, controlled oversized errors, privacy-safe Jakarta filenames, and registry-gated UI actions apply to every format. No Reporting calculation/query, authorization, ownership, Dashboard, Transaction Engine, schema, or Export Contract behavior changed.
 - Transaction Workspace Batch 1 (Read Service & API Route Extension) implemented: added `transactionReadService().workspaceHistory(operatorId, query)` for multi-student cursor-paginated transaction streams, student notes/class identity, and today's cash flow drawer summaries (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), and created `GET /api/operator/transactions` endpoint guarded by `withAuthorization({ role: "operator" })` with 403 Forbidden enforcement for Platform Admin.
 - Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
+- Transaction Workspace Batch 2B (Operational Filters & Today's Cash Flow Metrics) implemented: added `WorkspaceMetricsBanner` displaying today's drawer cash metrics (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from API summary, and `WorkspaceFilterToolbar` supporting debounced search, transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period presets (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`) with URL SearchParams synchronization and server-side query refetching.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
 
-The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace Batch 1 Read API, and Transaction Workspace Batch 2A UI Foundation.
+The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace Batch 1 Read API, Transaction Workspace Batch 2A UI Foundation, and Transaction Workspace Batch 2B Filters & Metrics.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
 
@@ -46,7 +47,7 @@ Every current sidebar route now resolves to an implemented module or `FeaturePla
 
 Admin and Operator report pages expose implemented CSV, Excel, and PDF downloads. `/api/admin/reports/export` and `/api/operator/reports/export` reuse centralized role authorization, then the Export Coordinator gathers every permitted matching page exclusively through the Reporting Read Service. Operator scope is forwarded on every page read. The first Reporting page supplies the matching total for a default 10,000-row preflight cap; `EXPORT_MAX_BYTES` optionally adds estimated and final-byte enforcement. Oversized results return controlled HTTP 413. Export documents are display-ready and omit internal identifiers; Admin exports contain administrative facts only.
 
-`/operator/transactions` now renders the production **Transaction Workspace** foundation (`TransactionWorkspaceView`), displaying multi-student transaction streams, student notes/class identity, responsive desktop tables, mobile touch cards, loading skeletons, and cursor-based load-more pagination directly connected to `GET /api/operator/transactions`. Server API remains the single source of truth; client code performs zero manual sum or total recalculations.
+`/operator/transactions` renders the production **Transaction Workspace** (`TransactionWorkspaceView`), combining compact today cash flow drawer metrics (`WorkspaceMetricsBanner`), URL SearchParams-synchronized filters (`WorkspaceFilterToolbar`), multi-student transaction streams, student notes/class identity, responsive desktop tables, mobile touch cards, loading skeletons, and cursor-based load-more pagination directly connected to `GET /api/operator/transactions`. Server API remains the single source of truth; client code performs zero manual sum or total recalculations.
 
 Latest verification:
 
@@ -54,7 +55,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 139 passed, 0 failed.
+- Automated tests: 141 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.

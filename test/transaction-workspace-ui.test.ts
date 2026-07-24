@@ -17,6 +17,8 @@ test("Transaction Workspace page embeds SectionHeader and TransactionWorkspaceVi
 test("TransactionWorkspaceView uses single-source-of-truth server API and does not recalculate totals client-side", () => {
   const viewSrc = source("src/components/transactions/workspace/transaction-workspace-view.tsx");
   assert.match(viewSrc, /\/api\/operator\/transactions/);
+  assert.match(viewSrc, /WorkspaceMetricsBanner/);
+  assert.match(viewSrc, /WorkspaceFilterToolbar/);
   assert.match(viewSrc, /WorkspaceTransactionTable/);
   assert.match(viewSrc, /WorkspaceTransactionCards/);
   assert.match(viewSrc, /WorkspacePaginationBar/);
@@ -24,8 +26,29 @@ test("TransactionWorkspaceView uses single-source-of-truth server API and does n
   assert.match(viewSrc, /WorkspaceSkeleton/);
   // Ensure zero client-side sum/reduce calculations
   assert.doesNotMatch(viewSrc, /\.reduce\(/);
-  assert.doesNotMatch(viewSrc, /todayDeposits/);
-  assert.doesNotMatch(viewSrc, /todayWithdrawals/);
+});
+
+test("WorkspaceMetricsBanner renders today's cash flow metrics directly from server API summary without client calculations", () => {
+  const bannerSrc = source("src/components/transactions/workspace/workspace-metrics-banner.tsx");
+  assert.match(bannerSrc, /Kas Masuk Hari Ini/);
+  assert.match(bannerSrc, /Kas Keluar Hari Ini/);
+  assert.match(bannerSrc, /Transaksi Hari Ini/);
+  assert.match(bannerSrc, /summary\.todayDeposits/);
+  assert.match(bannerSrc, /summary\.todayWithdrawals/);
+  assert.match(bannerSrc, /summary\.todayTransactionCount/);
+  assert.doesNotMatch(bannerSrc, /\.reduce\(/);
+});
+
+test("WorkspaceFilterToolbar renders search input, type pills, and period presets with URL SearchParams binding", () => {
+  const filterSrc = source("src/components/transactions/workspace/workspace-filter-toolbar.tsx");
+  assert.match(filterSrc, /Cari nama siswa, catatan, atau alasan/);
+  assert.match(filterSrc, /Setoran/);
+  assert.match(filterSrc, /Penarikan/);
+  assert.match(filterSrc, /Koreksi/);
+  assert.match(filterSrc, /Hari Ini/);
+  assert.match(filterSrc, /7 Hari Terakhir/);
+  assert.match(filterSrc, /Bulan Ini/);
+  assert.match(filterSrc, /onFilterChange/);
 });
 
 test("WorkspaceTransactionTable renders semantic desktop table, formatted IDR, and student subtext", () => {
