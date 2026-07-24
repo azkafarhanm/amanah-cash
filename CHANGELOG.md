@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Transaction Workspace Batch 2A (Workspace Foundation & Table Stream)
+
+- Replaced `FeaturePlaceholder` on `/operator/transactions` with the initial production-ready **Transaction Workspace** UI foundation (`TransactionWorkspaceView`).
+- Implemented desktop semantic table (`WorkspaceTransactionTable`) and touch-friendly mobile card view (`WorkspaceTransactionCards`) displaying transaction timestamp, student name with secondary notes/class badge, IDR amount, operator attribution, and status badge.
+- Added contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor-based pagination bar (`WorkspacePaginationBar`).
+- Integrated UI client controller directly with `GET /api/operator/transactions` without client-side total recalculations, maintaining server API as single source of truth.
+- Added comprehensive UI structural and rendering tests (139 total tests passing).
+
+### Transaction Workspace Batch 1 (Read Service & API Route)
+
+
+- Added `transactionReadService().workspaceHistory(operatorId, query)` supporting multi-student cursor-paginated transaction history scoped strictly by the authenticated Operator identity.
+- Added `GET /api/operator/transactions` API endpoint guarded by `withAuthorization({ role: "operator" })`, returning paginated workspace transaction items, student notes/class identity, cursor tokens, and today's cash flow summary (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), while enforcing 403 Forbidden for Platform Admin.
+- Added regression tests covering operator isolation, cursor pagination, search/type/status/student filtering, and API authorization.
+
 ### Excel Export Presentation
 
 - Reorganized the `Laporan` worksheet into title, aligned metadata, compact `Ringkasan`, and transaction-table sections without changing the Export Document or export flow.

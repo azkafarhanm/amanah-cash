@@ -1,4 +1,6 @@
+import type { AuthenticationEnvironment } from "@/auth/environment";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
+import type { Prisma } from "@/generated/prisma/client";
 import { getPrismaClient } from "@/persistence/prisma";
 import type { CorrectionDirection, TransactionType } from "@/transactions/domain";
 
@@ -43,6 +45,42 @@ export type StudentFinancialSummary = {
   transactionCount: number;
 };
 
+export type WorkspaceTransactionItem = {
+  id: string;
+  studentId: string;
+  studentName: string;
+  studentNotes: string | null;
+  studentStatus: string;
+  type: TransactionType;
+  amount: string;
+  correctionDirection: CorrectionDirection | null;
+  reason: string | null;
+  notes: string | null;
+  occurredAt: string;
+  updatedAt: string;
+  operator: string;
+  revision: number;
+  deletedAt: string | null;
+};
+
+export type WorkspaceTransactionQuery = TransactionHistoryQuery & {
+  studentId?: string;
+};
+
+export type WorkspaceTransactionSummary = {
+  todayDeposits: string;
+  todayWithdrawals: string;
+  todayTransactionCount: number;
+};
+
+export type WorkspaceTransactionResult = {
+  items: WorkspaceTransactionItem[];
+  total: number;
+  nextCursor: string | null;
+  hasPrevious: boolean;
+  summary: WorkspaceTransactionSummary;
+};
+
 const TYPES = new Set<TransactionType>(["DEPOSIT", "WITHDRAWAL", "CORRECTION"]);
 
 function dateBoundary(value: string | undefined, end: boolean) {
@@ -76,8 +114,11 @@ function item(value: {
   };
 }
 
-export function transactionReadService() {
-  const prisma = getPrismaClient(loadAuthenticationEnvironment());
+export function transactionReadService(
+  environment: AuthenticationEnvironment = loadAuthenticationEnvironment(),
+  now: () => Date = () => new Date()
+) {
+  const prisma = getPrismaClient(environment);
   return {
     async studentSummaries(
       studentIds: string[],
@@ -140,6 +181,119 @@ export function transactionReadService() {
         items: visibleRows.map(item), total,
         nextCursor: rows.length > TRANSACTION_PAGE_SIZE && lastVisible ? encodeCursor(lastVisible) : null,
         hasPrevious: Boolean(cursor)
+      };
+    },
+    async workspaceHistory(
+      operatorId: string,
+      query: WorkspaceTransactionQuery
+    ): Promise<WorkspaceTransactionResult> {
+      const type = typeof query.type === "string" && TYPES.has(query.type as TransactionType) ? (query.type as TransactionType) : undefined;
+      const status = query.status === "ACTIVE" || query.status === "DELETED" ? query.status : undefined;
+      const search = typeof query.search === "string" ? query.search.trim().slice(0, 100) : "";
+      const from = dateBoundary(query.dateFrom, false);
+      const to = dateBoundary(query.dateTo, true);
+      const cursor = decodeCursor(query.cursor);
+      const studentId = typeof query.studentId === "string" && query.studentId ? query.studentId : undefined;
+
+      const filteredWhere: Prisma.TransactionWhereInput = {
+        student: {
+          operatorId,
+          ...(studentId ? { id: studentId } : {})
+        },
+        ...(type ? { type } : {}),
+        ...(status === "ACTIVE" ? { deletedAt: null } : status === "DELETED" ? { deletedAt: { not: null } } : {}),
+        ...(from || to ? { occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) } } : {}),
+        ...(search ? { OR: [
+          { student: { name: { contains: search } } },
+          { notes: { contains: search } },
+          { reason: { contains: search } },
+          { updater: { name: { contains: search } } }
+        ] } : {})
+      };
+
+      const where = cursor ? { AND: [filteredWhere, { OR: [
+        { occurredAt: { lt: cursor.occurredAt } },
+        { occurredAt: cursor.occurredAt, id: { lt: cursor.id } }
+      ] }] } : filteredWhere;
+
+      const select = {
+        id: true,
+        type: true,
+        amount: true,
+        correctionDirection: true,
+        reason: true,
+        notes: true,
+        occurredAt: true,
+        updatedAt: true,
+        revision: true,
+        deletedAt: true,
+        updater: { select: { name: true } },
+        student: { select: { id: true, name: true, notes: true, status: true } }
+      } as const;
+
+      const todayStr = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Jakarta" }).format(now());
+      const todayStart = new Date(`${todayStr}T00:00:00.000+07:00`);
+      const todayEnd = new Date(`${todayStr}T23:59:59.999+07:00`);
+
+      const [rows, total, todayGroups] = await Promise.all([
+        prisma.transaction.findMany({
+          where,
+          select,
+          orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
+          take: TRANSACTION_PAGE_SIZE + 1
+        }),
+        prisma.transaction.count({ where: filteredWhere }),
+        prisma.transaction.groupBy({
+          by: ["type"],
+          where: {
+            deletedAt: null,
+            student: { operatorId },
+            occurredAt: { gte: todayStart, lte: todayEnd }
+          },
+          _count: true,
+          _sum: { amount: true }
+        })
+      ]);
+
+      const visibleRows = rows.slice(0, TRANSACTION_PAGE_SIZE);
+      const lastVisible = visibleRows.at(-1);
+
+      let todayDeposits = BigInt(0);
+      let todayWithdrawals = BigInt(0);
+      let todayTransactionCount = 0;
+      for (const group of todayGroups) {
+        const amt = group._sum.amount ?? BigInt(0);
+        todayTransactionCount += group._count;
+        if (group.type === "DEPOSIT") todayDeposits += amt;
+        if (group.type === "WITHDRAWAL") todayWithdrawals += amt;
+      }
+
+      return {
+        items: visibleRows.map((row) => ({
+          id: row.id,
+          studentId: row.student.id,
+          studentName: row.student.name,
+          studentNotes: row.student.notes,
+          studentStatus: row.student.status,
+          type: row.type,
+          amount: row.amount.toString(),
+          correctionDirection: row.correctionDirection,
+          reason: row.reason,
+          notes: row.notes,
+          occurredAt: row.occurredAt.toISOString(),
+          updatedAt: row.updatedAt.toISOString(),
+          operator: row.updater.name,
+          revision: row.revision,
+          deletedAt: row.deletedAt?.toISOString() ?? null
+        })),
+        total,
+        nextCursor: rows.length > TRANSACTION_PAGE_SIZE && lastVisible ? encodeCursor(lastVisible) : null,
+        hasPrevious: Boolean(cursor),
+        summary: {
+          todayDeposits: todayDeposits.toString(),
+          todayWithdrawals: todayWithdrawals.toString(),
+          todayTransactionCount
+        }
       };
     }
   };
