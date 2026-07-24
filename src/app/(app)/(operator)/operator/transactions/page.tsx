@@ -1,16 +1,14 @@
-import Link from "next/link";
-import { ContentWrapper, FeaturePlaceholder, SectionHeader } from "@/components/ui";
+import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { TransactionWorkspaceView } from "@/components/transactions/workspace";
 
-export default function TransactionsModulePage() {
+export default function TransactionsWorkspacePage() {
   return (
     <ContentWrapper>
-      <SectionHeader title="Transaksi" description="Ruang transaksi lintas siswa yang direncanakan." />
-      <FeaturePlaceholder
-        title="Modul Transaksi Terpusat"
-        description="Pencatatan dan riwayat transaksi saat ini tersedia melalui detail setiap Siswa. Tampilan lintas siswa ini masih direncanakan."
-        status="PLANNED"
-        action={<Link href="/operator/students">Pilih Siswa untuk mencatat transaksi</Link>}
+      <SectionHeader
+        title="Workspace Transaksi"
+        description="Kelola dan pantau seluruh transaksi siswa dalam satu ruang kerja operasional."
       />
+      <TransactionWorkspaceView />
     </ContentWrapper>
   );
 }

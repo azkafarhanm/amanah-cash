@@ -1,0 +1,171 @@
+.workspaceContainer {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.desktopView {
+  display: block;
+}
+
+.mobileView {
+  display: none;
+}
+
+.tableWrapper {
+  width: var(--size-full);
+  overflow-x: auto;
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.table {
+  width: var(--size-full);
+  border-collapse: collapse;
+  text-align: left;
+  font: var(--type-body);
+}
+
+.th {
+  padding: var(--space-4);
+  border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  background: var(--color-background-subtle);
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+  white-space: nowrap;
+}
+
+.td {
+  padding: var(--space-4);
+  border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.tr:last-child .td {
+  border-block-end: none;
+}
+
+.tr:hover {
+  background: var(--color-background-subtle);
+}
+
+.studentCell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.studentLink {
+  color: var(--color-action-primary);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+}
+
+.studentLink:hover,
+.studentLink:focus-visible {
+  text-decoration: underline;
+}
+
+.studentSubtext {
+  font-size: var(--font-size-12);
+  color: var(--color-text-secondary);
+}
+
+.amountDeposit {
+  color: var(--color-deposit-foreground);
+  font-weight: var(--font-weight-semibold);
+}
+
+.amountWithdrawal {
+  color: var(--color-withdrawal-foreground);
+  font-weight: var(--font-weight-semibold);
+}
+
+.amountCorrection {
+  color: var(--color-warning-foreground);
+  font-weight: var(--font-weight-semibold);
+}
+
+.cardsWrapper {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.cardItem {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.cardBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.cardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block-start: var(--space-2);
+  border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-12);
+}
+
+.paginationContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block-start: var(--space-2);
+}
+
+.loadMoreButton {
+  min-height: var(--control-height-minimum);
+  padding-inline: var(--space-6);
+  border: var(--border-width-default) var(--border-style-default) var(--color-action-primary);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-action-primary);
+  font: var(--type-button);
+  cursor: pointer;
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.loadMoreButton:hover:not(:disabled) {
+  background: var(--color-primary-subtle);
+}
+
+.loadMoreButton:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 48rem) {
+  .desktopView {
+    display: none;
+  }
+
+  .mobileView {
+    display: block;
+  }
+}

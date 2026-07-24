@@ -24,11 +24,13 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
 - Reporting Foundation implemented and production-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct no-assignment/first-use/search/filter states with contextual actions, explanatory zero summaries, grouped dates, pending/live-result feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
 - Export Foundation implemented as a downstream Reporting consumer: centralized authorized export endpoints, a read-service-only multipage coordinator, presentation-neutral documents, an extensible CSV/Excel/PDF registry with all three formats enabled, shared display formatters, UTF-8/escaped/spreadsheet-safe CSV serialization, presentation-only ExcelJS workbooks, and presentation-only paginated PDFKit reports with repeated table headers. Centralized row/optional-byte guard rails, controlled oversized errors, privacy-safe Jakarta filenames, and registry-gated UI actions apply to every format. No Reporting calculation/query, authorization, ownership, Dashboard, Transaction Engine, schema, or Export Contract behavior changed.
+- Transaction Workspace Batch 1 (Read Service & API Route Extension) implemented: added `transactionReadService().workspaceHistory(operatorId, query)` for multi-student cursor-paginated transaction streams, student notes/class identity, and today's cash flow drawer summaries (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), and created `GET /api/operator/transactions` endpoint guarded by `withAuthorization({ role: "operator" })` with 403 Forbidden enforcement for Platform Admin.
+- Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
 
-The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI.
+The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace Batch 1 Read API, and Transaction Workspace Batch 2A UI Foundation.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
 
@@ -36,7 +38,7 @@ Every Student has exactly one active Operator. Platform Admin can create and edi
 
 Operator Student Detail now reads persisted Balance and ownership-scoped Transaction history and exposes every approved lifecycle workflow without manual API calls. Student Balance is still updated only through the serialized engine. Platform Admin receives no financial presentation or read bypass.
 
-Every current sidebar route now resolves to either an implemented module or `FeaturePlaceholder`; roadmap features never fall through to generic 404. Operator Student lists show ownership-scoped persisted Balance and transaction-count context. Admin Student lists intentionally omit Balance. Empty data, no search results, loading, validation, unauthorized, forbidden, missing-resource, planned-feature, and unexpected-error states have separate presentation contracts.
+Every current sidebar route now resolves to an implemented module or `FeaturePlaceholder`; roadmap features never fall through to generic 404. Operator Student lists show ownership-scoped persisted Balance and transaction-count context. Admin Student lists intentionally omit Balance. Empty data, no search results, loading, validation, unauthorized, forbidden, missing-resource, planned-feature, and unexpected-error states have separate presentation contracts.
 
 `/admin` is now an administrative dashboard containing only Operator/Student counts, current assignments, Operator audit summaries, and privacy-minimized ownership changes. `/operator` is an operational dashboard whose every Student and Transaction query is scoped by the authenticated Operator ID. It sums persisted owned Student balances and never reconstructs Balance from history.
 
@@ -44,13 +46,15 @@ Every current sidebar route now resolves to either an implemented module or `Fea
 
 Admin and Operator report pages expose implemented CSV, Excel, and PDF downloads. `/api/admin/reports/export` and `/api/operator/reports/export` reuse centralized role authorization, then the Export Coordinator gathers every permitted matching page exclusively through the Reporting Read Service. Operator scope is forwarded on every page read. The first Reporting page supplies the matching total for a default 10,000-row preflight cap; `EXPORT_MAX_BYTES` optionally adds estimated and final-byte enforcement. Oversized results return controlled HTTP 413. Export documents are display-ready and omit internal identifiers; Admin exports contain administrative facts only.
 
+`/operator/transactions` now renders the production **Transaction Workspace** foundation (`TransactionWorkspaceView`), displaying multi-student transaction streams, student notes/class identity, responsive desktop tables, mobile touch cards, loading skeletons, and cursor-based load-more pagination directly connected to `GET /api/operator/transactions`. Server API remains the single source of truth; client code performs zero manual sum or total recalculations.
+
 Latest verification:
 
 - Prisma format, validation, and client generation: passed.
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 129 passed, 0 failed.
+- Automated tests: 139 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.

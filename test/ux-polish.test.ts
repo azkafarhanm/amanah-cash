@@ -22,12 +22,13 @@ test("every sidebar destination resolves to an implemented page or FeaturePlaceh
 
   for (const path of [
     "src/app/(app)/(admin)/admin/settings/page.tsx",
-    "src/app/(app)/(operator)/operator/transactions/page.tsx",
     "src/app/(app)/(operator)/operator/settings/page.tsx"
   ]) {
     assert.match(source(path), /<FeaturePlaceholder/);
   }
+  assert.match(source("src/app/(app)/(operator)/operator/transactions/page.tsx"), /<TransactionWorkspaceView/);
 });
+
 
 test("the reusable placeholder communicates status, availability, actions, and future capabilities accessibly", () => {
   const placeholder = source("src/components/ui/feature-placeholder.tsx");
