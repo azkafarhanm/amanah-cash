@@ -184,18 +184,63 @@ test("Excel adapter creates one formatted Laporan worksheet from the Export Docu
   const worksheet = workbook.getWorksheet("Laporan")!;
   const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Jumlah"]);
   assert.ok(header);
-  assert.equal(header.number, 1);
-  assert.equal(header.font.bold, true);
+  assert.equal(header.number, 8);
+  assert.equal(header.getCell(1).font?.bold, true);
+  assert.equal((header.getCell(1).fill as ExcelJS.FillPattern).fgColor?.argb, "FFF1F2F3");
   assert.equal(worksheet.views[0]?.state, "frozen");
-  assert.equal(worksheet.views[0]?.ySplit, 1);
+  assert.equal(worksheet.views[0]?.ySplit, header.number);
+  assert.equal(worksheet.views[0]?.xSplit, 0);
   assert.ok(worksheet.autoFilter);
+  assert.equal(worksheet.autoFilter, "A8:C10");
   assert.deepEqual(valuesFrom(worksheet.getRow(header.number + 1)).slice(0, 3), ["21 Jul 2026, 08.00", "Alya", "+ Rp 1.000"]);
   assert.deepEqual(valuesFrom(worksheet.getRow(header.number + 2)).slice(0, 3), ["22 Jul 2026, 09.30", "Bima", "− Rp 500"]);
   assert.equal(worksheet.getRow(header.number + 1).getCell(3).alignment.horizontal, "right");
-  assert.equal(worksheet.getColumn(1).values.filter(Boolean).length - 1, 2);
-  assert.equal(worksheet.getCell(1, 5).value, "Laporan Keuangan");
-  assert.equal(worksheet.getCell(5, 5).value, "Total setoran");
+  assert.equal(worksheet.getColumn(1).values.slice(header.number + 1).filter(Boolean).length, 2);
+  assert.equal(worksheet.getCell(1, 1).value, "Laporan Keuangan");
+  assert.equal(worksheet.getCell(2, 1).value, "Dibuat");
+  assert.equal(worksheet.getCell(2, 2).value, "22 Jul 2026, 12.00");
+  assert.equal(worksheet.getCell(3, 1).value, "Periode");
+  assert.equal(worksheet.getCell(5, 1).value, "Ringkasan");
+  assert.equal(worksheet.getCell(6, 1).value, "Total setoran");
+  assert.equal(worksheet.getCell(6, 2).value, "Rp 1.000");
+  assert.equal(worksheet.pageSetup.paperSize, 9);
+  assert.equal(worksheet.pageSetup.orientation, "portrait");
+  assert.equal(worksheet.pageSetup.fitToWidth, 1);
+  assert.equal(worksheet.pageSetup.printTitlesRow, "8:8");
+  assert.match(worksheet.headerFooter.oddFooter ?? "", /Halaman &P dari &N/);
   assert.ok(worksheet.columns.slice(0, 3).every((column) => (column.width ?? 0) >= 12 && (column.width ?? 0) <= 40));
+});
+
+test("Excel adapter prepares wide reports for comfortable scrolling and A4 printing", async () => {
+  const columns = [
+    { key: "occurredAt", label: "Waktu" },
+    { key: "student", label: "Siswa" },
+    { key: "studentStatus", label: "Status Siswa" },
+    { key: "type", label: "Jenis" },
+    { key: "amount", label: "Jumlah" },
+    { key: "notes", label: "Catatan" },
+    { key: "reason", label: "Alasan" }
+  ];
+  const workbook = await loadWorkbook(await excelExportAdapter.render({
+    title: "Laporan Keuangan",
+    generatedAt: "24 Jul 2026, 08.30",
+    periodLabel: "Juli 2026",
+    summary: [{ label: "Jumlah transaksi", value: "1" }],
+    columns,
+    rows: [{ occurredAt: "24 Jul 2026, 08.00", student: "Alya", studentStatus: "Aktif", type: "Setoran", amount: "+ Rp 1.000", notes: "Catatan transaksi", reason: "" }]
+  }));
+  const worksheet = workbook.getWorksheet("Laporan")!;
+  const header = rowWithValues(worksheet, columns.map((column) => column.label))!;
+  const frozenView = worksheet.views[0] as unknown as { xSplit?: number; ySplit?: number };
+
+  assert.equal(frozenView.xSplit, 2);
+  assert.equal(frozenView.ySplit, header.number);
+  assert.equal(worksheet.autoFilter, `A${header.number}:G${header.number + 1}`);
+  assert.equal(worksheet.pageSetup.orientation, "landscape");
+  assert.equal(worksheet.pageSetup.printArea, `A1:G${header.number + 1}`);
+  assert.equal(worksheet.pageSetup.printTitlesRow, `${header.number}:${header.number}`);
+  assert.ok((worksheet.getColumn(6).width ?? 0) > (worksheet.getColumn(4).width ?? 0));
+  assert.equal(worksheet.getRow(header.number + 1).getCell(3).alignment.horizontal, "center");
 });
 
 test("PDF adapter renders metadata, summary, and transaction table from the Export Document", async () => {
@@ -292,7 +337,7 @@ test("export coordinator resolves Excel through the registry with existing filen
   const worksheet = (await loadWorkbook(result.bytes)).getWorksheet("Laporan")!;
   const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Status Siswa", "Jenis"]);
   assert.ok(header);
-  assert.equal(worksheet.getColumn(1).values.filter(Boolean).length - 1, 2);
+  assert.equal(worksheet.getColumn(1).values.slice(header.number + 1).filter(Boolean).length, 2);
 });
 
 test("export coordinator resolves PDF with existing pagination, filename, MIME type, and guard rails", async () => {

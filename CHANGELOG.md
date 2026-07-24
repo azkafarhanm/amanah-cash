@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Excel Export Presentation
+
+- Reorganized the `Laporan` worksheet into title, aligned metadata, compact `Ringkasan`, and transaction-table sections without changing the Export Document or export flow.
+- Added neutral table styling, semantic column widths, report/table freeze panes, transaction-only filters, A4 print setup, repeated table headers, and page-number footers.
+
 ### PDF Export Foundation
 
 - Added a presentation-only PDFKit adapter that converts the existing Export Document into a minimal landscape report without persistence, Reporting, authorization, filtering, or financial-calculation dependencies.

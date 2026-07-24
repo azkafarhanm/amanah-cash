@@ -95,7 +95,7 @@ CSV rendering performs serialization only. It does not interpret business rules 
 
 ## Excel Adapter
 
-`src/exports/excel-adapter.ts` consumes the same display-ready Export Document and creates one minimally formatted `Laporan` worksheet. Metadata and existing summaries appear beside the table; generated headers and ordered rows come only from the document. The adapter adds a frozen first-row table header, auto-filter, bounded column widths, wrapping, and numeric-display alignment without querying Reporting or reinterpreting financial effects. See `docs/46-excel-export-foundation.md`.
+`src/exports/excel-adapter.ts` consumes the same display-ready Export Document and creates one print-ready `Laporan` worksheet. Title, aligned metadata, and a compact `Ringkasan` block appear above the generated transaction table; headers and ordered rows come only from the document. The adapter adds neutral table styling, semantic bounded column widths, report/table freeze panes, transaction-only filtering, and A4 page setup without querying Reporting or reinterpreting financial effects. See `docs/46-excel-export-foundation.md`.
 
 ## PDF Adapter
 
