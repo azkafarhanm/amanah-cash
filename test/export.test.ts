@@ -218,9 +218,12 @@ test("PDF adapter renders metadata, summary, and transaction table from the Expo
   const text = pages.join(" ");
   assert.equal(document.numPages, 1);
   assert.match(text, /Laporan Keuangan/);
-  assert.match(text, /Dibuat: 22 Jul 2026, 12.00/);
-  assert.match(text, /Periode: Juli 2026/);
-  assert.match(text, /Total setoran:/);
+  assert.match(text, /Dibuat/);
+  assert.match(text, /22 Jul 2026, 12.00/);
+  assert.match(text, /Periode/);
+  assert.match(text, /Juli 2026/);
+  assert.match(text, /Ringkasan/);
+  assert.match(text, /Total setoran/);
   assert.match(text, /Rp 1.000/);
   assert.match(text, /Waktu/);
   assert.match(text, /Alya/);
