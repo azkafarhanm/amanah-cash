@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Transaction Workspace Batch 3 (Consecutive Multi-Student Entry & Inline Mutations)
+
+- Added `WorkspaceStudentPicker` component: reusable, searchable combobox displaying Student Name, secondary Class/Notes, and live balance (`Saldo Rp150.000`) with full ARIA accessibility (`combobox`, `listbox`, `option`) and keyboard navigation.
+- Extended `TransactionDialog` with dual submit actions: `"Simpan & Catat Lagi"` (consecutive multi-student mode) and `"Simpan & Selesai"`.
+- Implemented Consecutive Entry Mode with Transaction Type Memory: saves transaction, retains dialog open state, preserves selected transaction type and correction direction, resets amount/notes & student picker, and auto-focuses student search input for instant follow-up entries.
+- Added top-level **"+ Catat Transaksi"** action button to Transaction Workspace header, enabling multi-student transaction entry directly from the workspace.
+- Added inline **Edit**, **Hapus** (Delete), and **Pulihkan** (Restore) action triggers directly on workspace desktop table rows and mobile transaction cards.
+- Added toast notification feedback banner and auto-refresh workspace stream sync upon successful transaction mutations.
+- Extended `studentManagement().list` to include persisted student balance formatting.
+- Added comprehensive unit and UI component regression tests (145 total tests passing).
+
 ### Transaction Workspace Batch 2B (Operational Filters & Cash Flow Metrics)
 
 - Added `WorkspaceMetricsBanner` rendering today's drawer cash flow summary (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from `GET /api/operator/transactions` summary data without client-side total recalculations.

@@ -5,3 +5,4 @@ export { WorkspaceTransactionTable } from "./workspace-transaction-table";
 export { WorkspaceTransactionCards } from "./workspace-transaction-cards";
 export { WorkspacePaginationBar } from "./workspace-pagination-bar";
 export { WorkspaceEmptyState, WorkspaceSkeleton } from "./workspace-states";
+export { WorkspaceStudentPicker } from "./workspace-student-picker";

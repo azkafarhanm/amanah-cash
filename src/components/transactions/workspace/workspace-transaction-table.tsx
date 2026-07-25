@@ -1,14 +1,24 @@
+"use client";
+
 import Link from "next/link";
 import type { WorkspaceTransactionItem } from "@/transactions/read-service";
 import { rupiah, transactionDate, transactionSign, transactionTypeLabel } from "@/components/transactions/presentation";
-import { StatusBadge } from "@/components/ui";
+import { Button, StatusBadge } from "@/components/ui";
 import styles from "./workspace.module.css";
 
 type WorkspaceTransactionTableProps = {
   items: WorkspaceTransactionItem[];
+  onEdit?(item: WorkspaceTransactionItem): void;
+  onDelete?(item: WorkspaceTransactionItem): void;
+  onRestore?(item: WorkspaceTransactionItem): void;
 };
 
-export function WorkspaceTransactionTable({ items }: WorkspaceTransactionTableProps) {
+export function WorkspaceTransactionTable({
+  items,
+  onEdit,
+  onDelete,
+  onRestore
+}: WorkspaceTransactionTableProps) {
   return (
     <div className={styles.tableWrapper}>
       <table className={styles.table} aria-label="Daftar Transaksi Seluruh Siswa">
@@ -20,6 +30,7 @@ export function WorkspaceTransactionTable({ items }: WorkspaceTransactionTablePr
             <th scope="col" className={styles.th}>Nominal</th>
             <th scope="col" className={styles.th}>Oleh</th>
             <th scope="col" className={styles.th}>Status</th>
+            <th scope="col" className={styles.th}>Aksi</th>
           </tr>
         </thead>
         <tbody>
@@ -71,6 +82,48 @@ export function WorkspaceTransactionTable({ items }: WorkspaceTransactionTablePr
                     <StatusBadge tone="success">Aktif</StatusBadge>
                   )}
                 </td>
+                <td className={styles.td}>
+                  <div className={styles.rowActions}>
+                    {!isDeleted ? (
+                      <>
+                        {onEdit && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className={styles.actionBtn}
+                            onClick={() => onEdit(item)}
+                            aria-label={`Edit transaksi ${item.studentName}`}
+                          >
+                            Edit
+                          </Button>
+                        )}
+                        {onDelete && (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            className={`${styles.actionBtn} ${styles.dangerActionBtn}`}
+                            onClick={() => onDelete(item)}
+                            aria-label={`Hapus transaksi ${item.studentName}`}
+                          >
+                            Hapus
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      onRestore && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          className={styles.actionBtn}
+                          onClick={() => onRestore(item)}
+                          aria-label={`Pulihkan transaksi ${item.studentName}`}
+                        >
+                          Pulihkan
+                        </Button>
+                      )
+                    )}
+                  </div>
+                </td>
               </tr>
             );
           })}
@@ -79,4 +132,3 @@ export function WorkspaceTransactionTable({ items }: WorkspaceTransactionTablePr
     </div>
   );
 }
-

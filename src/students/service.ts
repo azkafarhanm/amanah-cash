@@ -2,12 +2,28 @@ import { createHash } from "node:crypto";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import type { AuthenticationEnvironment } from "@/auth/environment";
 import { getPrismaClient } from "@/persistence/prisma";
-import { createStudentManagement, StudentManagementError, type StudentRecord, type StudentRepository } from "@/students/domain";
+import { createStudentManagement, StudentManagementError, type StudentRecord, type StudentRepository, type StudentStatus } from "@/students/domain";
 
 const select = {
-  id: true, name: true, notes: true, status: true, createdAt: true, updatedAt: true,
+  id: true, name: true, notes: true, status: true, balance: true, createdAt: true, updatedAt: true,
   operator: { select: { id: true, name: true, email: true } }
 } as const;
+
+function formatStudent(row: {
+  id: string; name: string; notes: string | null; status: StudentStatus; balance: bigint; createdAt: Date; updatedAt: Date;
+  operator: { id: string; name: string; email: string };
+}): StudentRecord {
+  return {
+    id: row.id,
+    name: row.name,
+    notes: row.notes,
+    status: row.status,
+    balance: row.balance.toString(),
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    operator: row.operator
+  };
+}
 
 export function studentManagement(environment: AuthenticationEnvironment = loadAuthenticationEnvironment()) {
   const prisma = getPrismaClient(environment);
@@ -15,7 +31,10 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
     activeOperator: (id) => prisma.user.findFirst({ where: { id, role: "OPERATOR", isActive: true, deletedAt: null }, select: { id: true, name: true, email: true } }),
     activeOperators: () => prisma.user.findMany({ where: { role: "OPERATOR", isActive: true, deletedAt: null }, orderBy: { name: "asc" }, select: { id: true, name: true, email: true } }),
     async create(data) {
-      try { return await prisma.student.create({ data, select }) as StudentRecord; }
+      try {
+        const created = await prisma.student.create({ data, select });
+        return formatStudent(created);
+      }
       catch (error) {
         if (typeof error === "object" && error && "code" in error && error.code === "P2002") throw new StudentManagementError("DUPLICATE_NAME", "Nama Siswa tersebut sudah terdaftar.", 409);
         throw error;
@@ -56,7 +75,7 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
           }
           const updated = await transaction.student.findUnique({ where: { id }, select });
           if (!updated) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
-          return updated as StudentRecord;
+          return formatStudent(updated);
         });
       }
       catch (error) {
@@ -64,7 +83,10 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
         throw error;
       }
     },
-    find: (id, operatorId) => prisma.student.findFirst({ where: { id, ...(operatorId ? { operatorId } : {}) }, select }) as Promise<StudentRecord | null>,
+    find: async (id, operatorId) => {
+      const found = await prisma.student.findFirst({ where: { id, ...(operatorId ? { operatorId } : {}) }, select });
+      return found ? formatStudent(found) : null;
+    },
     async list({ search, status, operatorId, skip, take }) {
       const where = {
         ...(operatorId ? { operatorId } : {}), ...(status ? { status } : {}),
@@ -74,8 +96,9 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
         prisma.student.findMany({ where, skip, take, orderBy: [{ createdAt: "desc" }, { id: "desc" }], select }),
         prisma.student.count({ where })
       ]);
-      return { items: items as StudentRecord[], total };
+      return { items: items.map(formatStudent), total };
     }
   };
+
   return createStudentManagement(repository);
 }

@@ -87,3 +87,55 @@ test("WorkspacePaginationBar renders load-more controls with cursor support", ()
   assert.match(paginationSrc, /Muat Lebih Banyak/);
   assert.match(paginationSrc, /onLoadMore/);
 });
+
+test("WorkspaceStudentPicker renders searchable student options with live balance and class/notes", () => {
+  const pickerSrc = source("src/components/transactions/workspace/workspace-student-picker.tsx");
+  assert.match(pickerSrc, /role="combobox"/);
+  assert.match(pickerSrc, /aria-autocomplete="list"/);
+  assert.match(pickerSrc, /role="listbox"/);
+  assert.match(pickerSrc, /role="option"/);
+  assert.match(pickerSrc, /rupiah/);
+  assert.match(pickerSrc, /Saldo/);
+  assert.match(pickerSrc, /Tanpa catatan/);
+  assert.match(pickerSrc, /onSelect/);
+});
+
+test("TransactionDialog provides dual submit actions and consecutive mode reset behavior", () => {
+  const dialogSrc = source("src/components/transactions/transaction-dialog.tsx");
+  assert.match(dialogSrc, /Simpan & Catat Lagi/);
+  assert.match(dialogSrc, /Simpan & Selesai/);
+  assert.match(dialogSrc, /data-action="save-and-next"/);
+  assert.match(dialogSrc, /data-action="save-and-close"/);
+  assert.match(dialogSrc, /WorkspaceStudentPicker/);
+  assert.match(dialogSrc, /setPickerAutoFocus/);
+  assert.match(dialogSrc, /setSelectedStudent/);
+});
+
+test("TransactionWorkspaceView renders top action button and inline mutation modal handlers", () => {
+  const viewSrc = source("src/components/transactions/workspace/transaction-workspace-view.tsx");
+  assert.match(viewSrc, /\+ Catat Transaksi/);
+  assert.match(viewSrc, /onEdit=/);
+  assert.match(viewSrc, /onDelete=/);
+  assert.match(viewSrc, /onRestore=/);
+  assert.match(viewSrc, /toastBanner/);
+  assert.match(viewSrc, /TransactionDialog/);
+});
+
+test("WorkspaceTransactionTable and WorkspaceTransactionCards render inline Edit, Hapus, and Pulihkan triggers", () => {
+  const tableSrc = source("src/components/transactions/workspace/workspace-transaction-table.tsx");
+  const cardSrc = source("src/components/transactions/workspace/workspace-transaction-cards.tsx");
+
+  assert.match(tableSrc, /onEdit/);
+  assert.match(tableSrc, /onDelete/);
+  assert.match(tableSrc, /onRestore/);
+  assert.match(tableSrc, /Edit/);
+  assert.match(tableSrc, /Hapus/);
+  assert.match(tableSrc, /Pulihkan/);
+
+  assert.match(cardSrc, /onEdit/);
+  assert.match(cardSrc, /onDelete/);
+  assert.match(cardSrc, /onRestore/);
+  assert.match(cardSrc, /Edit/);
+  assert.match(cardSrc, /Hapus/);
+  assert.match(cardSrc, /Pulihkan/);
+});

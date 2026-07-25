@@ -4,6 +4,7 @@ import { Suspense, useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { WorkspaceTransactionItem, WorkspaceTransactionResult, WorkspaceTransactionSummary } from "@/transactions/read-service";
 import { Button, ErrorState } from "@/components/ui";
+import { TransactionDialog, type DialogKind } from "@/components/transactions/transaction-dialog";
 import { WorkspaceMetricsBanner } from "./workspace-metrics-banner";
 import { WorkspaceFilterToolbar, type FilterValues } from "./workspace-filter-toolbar";
 import { WorkspaceTransactionTable } from "./workspace-transaction-table";
@@ -11,6 +12,11 @@ import { WorkspaceTransactionCards } from "./workspace-transaction-cards";
 import { WorkspacePaginationBar } from "./workspace-pagination-bar";
 import { WorkspaceEmptyState, WorkspaceSkeleton } from "./workspace-states";
 import styles from "./workspace.module.css";
+
+type ModalState = {
+  kind: DialogKind;
+  item?: WorkspaceTransactionItem;
+} | null;
 
 function TransactionWorkspaceController() {
   const router = useRouter();
@@ -32,6 +38,9 @@ function TransactionWorkspaceController() {
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [modalState, setModalState] = useState<ModalState>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const fetchWorkspace = useCallback((search: string, type: string, period: string) => {
     setIsLoading(true);
@@ -98,7 +107,6 @@ function TransactionWorkspaceController() {
     };
   }, [currentSearch, currentType, currentPeriod]);
 
-
   const handleFilterChange = useCallback((updated: Partial<FilterValues>) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -152,6 +160,11 @@ function TransactionWorkspaceController() {
     }
   }
 
+  function handleMutationSuccess(msg: string) {
+    setToastMessage(msg);
+    fetchWorkspace(currentSearch, currentType, currentPeriod);
+  }
+
   const filters: FilterValues = {
     search: currentSearch,
     type: currentType,
@@ -160,7 +173,34 @@ function TransactionWorkspaceController() {
 
   return (
     <div className={styles.workspaceContainer}>
-      <WorkspaceMetricsBanner summary={summary} />
+      {toastMessage && (
+        <div className={styles.toastBanner} role="status" aria-live="polite">
+          <span>{toastMessage}</span>
+          <button
+            type="button"
+            className={styles.toastClose}
+            onClick={() => setToastMessage(null)}
+            aria-label="Tutup notifikasi"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      <div className={styles.workspaceHeaderRow}>
+        <WorkspaceMetricsBanner summary={summary} />
+        <div className={styles.workspaceHeaderActions}>
+          <Button
+            type="button"
+            variant="primary"
+            className={styles.primaryActionBtn}
+            onClick={() => setModalState({ kind: "NEW" })}
+          >
+            + Catat Transaksi
+          </Button>
+        </div>
+      </div>
+
       <WorkspaceFilterToolbar filters={filters} onFilterChange={handleFilterChange} />
 
       {isLoading ? (
@@ -180,10 +220,20 @@ function TransactionWorkspaceController() {
       ) : (
         <>
           <div className={styles.desktopView}>
-            <WorkspaceTransactionTable items={items} />
+            <WorkspaceTransactionTable
+              items={items}
+              onEdit={(item) => setModalState({ kind: "EDIT", item })}
+              onDelete={(item) => setModalState({ kind: "DELETE", item })}
+              onRestore={(item) => setModalState({ kind: "RESTORE", item })}
+            />
           </div>
           <div className={styles.mobileView}>
-            <WorkspaceTransactionCards items={items} />
+            <WorkspaceTransactionCards
+              items={items}
+              onEdit={(item) => setModalState({ kind: "EDIT", item })}
+              onDelete={(item) => setModalState({ kind: "DELETE", item })}
+              onRestore={(item) => setModalState({ kind: "RESTORE", item })}
+            />
           </div>
           <WorkspacePaginationBar
             nextCursor={nextCursor}
@@ -193,6 +243,19 @@ function TransactionWorkspaceController() {
             loadedCount={items.length}
           />
         </>
+      )}
+
+      {modalState && (
+        <TransactionDialog
+          kind={modalState.kind}
+          studentId={modalState.item?.studentId}
+          item={modalState.item}
+          isOpen={Boolean(modalState)}
+          onClose={() => setModalState(null)}
+          hideTrigger
+          allowStudentPicker={modalState.kind === "NEW"}
+          onSuccess={handleMutationSuccess}
+        />
       )}
     </div>
   );

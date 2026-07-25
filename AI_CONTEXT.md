@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-23
-**Current delivery state:** Export Foundation with CSV, Excel, and PDF complete; READY WITH MINOR LIMITATIONS; advanced export presentation, reconciliation/audit presentation, and deployment remain
+**Last updated:** 2026-07-24
+**Current delivery state:** Export Foundation & Transaction Workspace Batch 1, 2A, 2B, and 3 complete; READY WITH MINOR LIMITATIONS; advanced export presentation, reconciliation/audit presentation, and deployment remain
 
 ## Project Purpose
 
@@ -27,6 +27,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Transaction Workspace Batch 1 (Read Service & API Route Extension) implemented: added `transactionReadService().workspaceHistory(operatorId, query)` for multi-student cursor-paginated transaction streams, student notes/class identity, and today's cash flow drawer summaries (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), and created `GET /api/operator/transactions` endpoint guarded by `withAuthorization({ role: "operator" })` with 403 Forbidden enforcement for Platform Admin.
 - Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
 - Transaction Workspace Batch 2B (Operational Filters & Today's Cash Flow Metrics) implemented: added `WorkspaceMetricsBanner` displaying today's drawer cash metrics (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from API summary, and `WorkspaceFilterToolbar` supporting debounced search, transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period presets (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`) with URL SearchParams synchronization and server-side query refetching.
+- Transaction Workspace Batch 3 (Consecutive Multi-Student Entry & Inline Mutations) implemented: added `WorkspaceStudentPicker` component (searchable, live balance, class/notes, ARIA accessible), extended `TransactionDialog` with `"Simpan & Catat Lagi"` and `"Simpan & Selesai"` actions, preserved transaction type memory across consecutive entries, added top-level **"+ Catat Transaksi"** workspace button, inline Edit/Delete/Restore triggers on table rows and mobile cards, toast notification feedback, and extended student service balance formatting.
 - Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
 
 ## Current Implementation Status
@@ -55,7 +56,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 141 passed, 0 failed.
+- Automated tests: 145 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.

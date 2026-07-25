@@ -7,6 +7,7 @@ export type StudentRecord = {
   name: string;
   notes: string | null;
   status: StudentStatus;
+  balance?: string;
   createdAt: Date;
   updatedAt: Date;
   operator: { id: string; name: string; email: string };
