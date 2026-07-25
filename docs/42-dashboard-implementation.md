@@ -40,7 +40,11 @@ Every Operator query includes the authenticated `operatorId` through either `Stu
 - active owned Students with activity today;
 - current managed Balance from the sum of persisted owned `Student.balance` values;
 - active Deposit and Withdrawal totals for the current Asia/Jakarta business day;
-- six newest owned Transactions; and
+- month-to-date active Deposit, Withdrawal, and Net Cash Flow totals (`isPositive` flag and absolute difference);
+- operational attention alerts (`attentionStudents`) selecting zero-balance active students, dormant students with zero transactions, and inactive students holding balance;
+- six newest owned Transactions;
+- six newest owned Corrections (`recentCorrections`) with reason context;
+- six newest owned Withdrawals (`recentWithdrawals`); and
 - six most recently administratively updated owned Students.
 
 The dashboard never reconstructs Student Balance from Transaction history. Corrections remain visible in recent activity but are not relabeled as Deposit or Withdrawal. Deleted Transactions remain identifiable in recent activity and are excluded from today's operational Deposit/Withdrawal totals.
@@ -49,15 +53,17 @@ The dashboard never reconstructs Student Balance from Transaction history. Corre
 
 `src/components/dashboard/dashboard-cards.tsx` provides:
 
-- `StatisticCard` for current counts and balances;
+- `StatisticCard` for current counts and balances, with support for `hero` visual prominence;
 - `TrendCard` for period-labelled operational totals without inventing comparison data;
+- `AttentionStudentsCard` for operational risk and attention alerts with status badges (`Non-aktif bersaldo`, `Saldo Rp 0`, `Belum transaksi`);
 - `SummaryCard` and `SummaryList` for distributions;
-- `ActivityCard` for administrative, financial, ownership, and status activity;
-- `QuickActionCard` linking only to existing workflows;
-- `DashboardGrid` and `DashboardSection` for consistent composition; and
+- `ActivityCard` for administrative, financial, ownership, and status activity streams;
+- `QuickActionCard` linking directly to high-frequency operational workflows;
+- `DashboardGrid` and `DashboardSection` for consistent responsive composition; and
 - `DashboardSkeleton` for layout-stable loading.
 
 Cards use semantic headings, labelled regions/groups, real lists and times, visible activity categories, focus-visible links, and explanatory zero/empty copy. The responsive grid collapses to one column at mobile width without horizontal scrolling.
+
 
 ## Performance
 

@@ -19,14 +19,15 @@ export function DashboardSection({ title, description, children }: { title: stri
   </section>;
 }
 
-export function StatisticCard({ label, value, description }: { label: string; value: string | number; description?: string }) {
+export function StatisticCard({ label, value, description, hero = false }: { label: string; value: string | number; description?: string; hero?: boolean }) {
   const labelId = `stat-${label.toLocaleLowerCase("id-ID").replace(/[^a-z0-9]+/g, "-")}`;
-  return <Card className={styles.statisticCard} role="group" aria-labelledby={labelId}>
+  return <Card className={`${styles.statisticCard} ${hero ? styles.statisticCardHero : ""}`} role="group" aria-labelledby={labelId}>
     <span id={labelId}>{label}</span>
     <strong>{value}</strong>
     {description ? <p>{description}</p> : null}
   </Card>;
 }
+
 
 export function TrendCard({ label, value, period, description, tone = "neutral" }: {
   label: string;
@@ -92,9 +93,56 @@ export function QuickActionCard({ title, description, href }: { title: string; d
   </Card>;
 }
 
+export function AttentionStudentsCard({ items }: {
+  items: Array<{
+    id: string;
+    name: string;
+    reason: "ZERO_BALANCE" | "NO_TRANSACTIONS" | "INACTIVE_WITH_BALANCE";
+    balance: string;
+    updatedAt: string;
+  }>;
+}) {
+  const titleId = "attention-students-title";
+  return (
+    <Card className={styles.activityCard} role="region" aria-labelledby={titleId}>
+      <div className={styles.cardHeaderWithBadge}>
+        <h2 id={titleId}>Perhatian Operasional</h2>
+      </div>
+      {items.length ? (
+        <ol className={styles.activityList}>
+          {items.map((item) => (
+            <li key={item.id}>
+              <span className={styles.activityKind}>
+                {item.reason === "INACTIVE_WITH_BALANCE"
+                  ? "Non-aktif bersaldo"
+                  : item.reason === "ZERO_BALANCE"
+                  ? "Saldo Rp 0"
+                  : "Belum transaksi"}
+              </span>
+              <div>
+                <Link href={`/operator/students/${encodeURIComponent(item.id)}`}>
+                  {item.name}
+                </Link>
+                <p>
+                  Saldo: Rp {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(BigInt(item.balance || "0"))}
+                </p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className={styles.activityEmpty}>
+          Semua siswa aktif memiliki saldo positif dan transaksi tercatat.
+        </p>
+      )}
+    </Card>
+  );
+}
+
 export function DashboardSkeleton() {
   return <div className={styles.dashboardSkeleton} aria-busy="true" aria-label="Memuat dashboard">
     <LoadingSkeleton variant="cards" lines={5} />
     <div className={styles.dashboardGrid}><LoadingSkeleton variant="cards" lines={3} /><LoadingSkeleton variant="cards" lines={3} /></div>
   </div>;
 }
+

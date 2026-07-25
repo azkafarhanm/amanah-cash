@@ -33,7 +33,9 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 2 — Search UX & Filter Experience (Epic 1A): added debounced live search (350ms), expanded Transaction search to include `amount` (`BigInt`) matching, updated search placeholders, scoped Operator student search to `name` and `notes`.
 - Sprint 2 — QA Bug Fix Batch (Epic 1B): fixed Student live search scoping, solidified Correction button visual design, connected controlled form state for all filter fields with URL SearchParams synchronization, implemented instant reset action.
 - Sprint 2 — Final UI Polish (Epic 1C): standardized cursor behavior for enabled/disabled interactive elements across Report and Transaction filter forms, added hover feedback for Reset buttons, added automated CSS cursor assertions.
+- Sprint 2 — Dashboard Analytics & Insights (Epic 2 & 2B): implemented Operator Dashboard month-to-date cash flow metrics (Setoran Bulan Ini, Penarikan Bulan Ini, Arus Kas Bersih), operational attention alerts (`AttentionStudentsCard`), filtered activity feeds (recent corrections, recent withdrawals), Level 1 hero card styling, and full documentation in `docs/42-dashboard-implementation.md`.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
+
 
 ## Current Implementation Status
 

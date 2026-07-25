@@ -161,9 +161,59 @@
   text-align: center;
 }
 
-.quickActionCard { align-content: start; }
+.cardHeaderWithBadge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.dashboardActionLink:hover {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-action-primary);
+}
+
+.statisticCardHero {
+  border-left: 4px solid var(--color-action-primary);
+  background: var(--color-surface-elevated, #ffffff);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.statisticCardHero strong {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+}
+
+.quickActionCard {
+  align-content: start;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.quickActionCard:hover {
+  border-color: var(--color-border-emphasis);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
 .quickActionCard h3 { color: var(--color-text-primary); font: var(--type-section-title); }
-.quickActionCard a { justify-self: start; display: inline-flex; min-height: var(--control-height-minimum); align-items: center; color: var(--color-action-primary); font: var(--type-button); }
+.quickActionCard a {
+  justify-self: start;
+  display: inline-flex;
+  min-height: var(--control-height-minimum);
+  align-items: center;
+  padding-inline: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  color: var(--color-action-primary);
+  font: var(--type-button);
+  text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.quickActionCard a:hover {
+  background: var(--color-primary-subtle);
+  border-color: var(--color-action-primary);
+}
 
 .dashboardActionLink {
   display: inline-flex;
@@ -175,6 +225,7 @@
   color: var(--color-action-primary);
   font: var(--type-button);
   text-decoration: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .dashboardActionLink:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
@@ -185,3 +236,4 @@
   .activityList li { grid-template-columns: minmax(0, 1fr); }
   .activityKind { justify-self: start; }
 }
+

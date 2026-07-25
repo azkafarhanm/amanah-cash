@@ -10,7 +10,15 @@ _No unreleased changes._
 
 ## [1.1.0] - 2026-07-25
 
+### Sprint 2 — Epic 2 & 2B: Dashboard Analytics, Insights & Visual UI Polish
+
+- Implemented Operator Dashboard Analytics: month-to-date cash flow aggregations (Setoran Bulan Ini, Penarikan Bulan Ini, Arus Kas Bersih), operational attention alerts (`AttentionStudentsCard`), and filtered activity streams (`recentCorrections`, `recentWithdrawals`).
+- Added `AttentionStudentsCard` component surfacing active zero-balance students, dormant students with 0 transactions, and inactive students holding balance.
+- Standardized Level 1 visual hierarchy with hero card left accent border (`4px solid var(--color-action-primary)`), elevated surface, bold tabular numeric font (`1.875rem / 30px`), top border accents for trend cards, micro-interaction hover states, and `:focus-visible` focus ring styling.
+- Documented complete architecture & design specification in `docs/42-dashboard-implementation.md`.
+
 ### Sprint 2 — Epic 1: Student Financial History
+
 
 - Implemented date-grouped financial timeline component (`StudentTimeline`) on Operator Student Detail (`/operator/students/[id]`) rendering transaction history grouped by Jakarta timezone date headers (`Hari ini`, `Kemarin`, `Juli 2026`).
 - Added `formatTimelineGroup` helper in `src/presentation/formatting.ts` for Asia/Jakarta date group formatting with today/yesterday/month-year categorization.

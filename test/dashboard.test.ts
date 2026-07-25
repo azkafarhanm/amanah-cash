@@ -85,6 +85,11 @@ test("Operator dashboard is ownership-scoped and uses persisted balances and Jak
     deposits: { count: 1, amount: "1000" },
     withdrawals: { count: 1, amount: "200" }
   });
+  assert.deepEqual(dashboard.month, {
+    deposits: { count: 1, amount: "1000" },
+    withdrawals: { count: 1, amount: "200" },
+    netCashFlow: { amount: "800", isPositive: true }
+  });
   assert.equal(dashboard.recentTransactions.length, 2);
   assert.equal(dashboard.recentTransactions.every((transaction) => transaction.studentId === "student-1"), true);
   assert.equal(JSON.stringify(dashboard).includes("9999"), false);
@@ -98,7 +103,15 @@ test("Dashboard empty projections return meaningful zero data without special-ca
   const dashboard = await dashboardReadService(environment, now).operator("operator-without-students");
   assert.deepEqual(dashboard.students, { total: 0, active: 0, inactive: 0, archived: 0, activeToday: 0 });
   assert.equal(dashboard.managedBalance, "0");
+  assert.deepEqual(dashboard.month, {
+    deposits: { count: 0, amount: "0" },
+    withdrawals: { count: 0, amount: "0" },
+    netCashFlow: { amount: "0", isPositive: true }
+  });
+  assert.deepEqual(dashboard.attentionStudents, []);
   assert.deepEqual(dashboard.recentTransactions, []);
+  assert.deepEqual(dashboard.recentCorrections, []);
+  assert.deepEqual(dashboard.recentWithdrawals, []);
   assert.deepEqual(dashboard.recentlyUpdatedStudents, []);
 });
 
@@ -108,7 +121,7 @@ test("Dashboard presentation is reusable, read-only, responsive, and accessible"
   const readService = source("src/dashboard/read-service.ts");
   const adminPage = source("src/app/(app)/(admin)/admin/page.tsx");
   const operatorPage = source("src/app/(app)/(operator)/operator/page.tsx");
-  for (const component of ["StatisticCard", "TrendCard", "ActivityCard", "SummaryCard", "QuickActionCard", "DashboardSkeleton"]) {
+  for (const component of ["StatisticCard", "TrendCard", "ActivityCard", "SummaryCard", "QuickActionCard", "AttentionStudentsCard", "DashboardSkeleton"]) {
     assert.match(cards, new RegExp(`function ${component}`));
   }
   assert.match(cards, /aria-labelledby/);
@@ -124,3 +137,4 @@ test("Dashboard presentation is reusable, read-only, responsive, and accessible"
   assert.match(operatorPage, /currentOperator\(\)/);
   assert.doesNotMatch(operatorPage, /transactionEngine|\.create\(|\.edit\(|\.remove\(|\.restore\(/);
 });
+

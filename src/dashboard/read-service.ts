@@ -22,6 +22,18 @@ function jakartaDay(now: Date) {
   return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
 }
 
+function jakartaMonth(now: Date) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit"
+    }).formatToParts(now).filter(({ type }) => type !== "literal").map(({ type, value }) => [type, value])
+  );
+  const start = new Date(`${parts.year}-${parts.month}-01T00:00:00.000+07:00`);
+  return { start };
+}
+
 function countFor<T extends string>(
   groups: Array<{ status: T; _count: number }>,
   status: T
@@ -149,65 +161,186 @@ export function dashboardReadService(
     },
 
     async operator(operatorId: string): Promise<OperatorDashboardResult> {
-      const { start, end } = jakartaDay(now());
-      const [studentGroups, managed, activeToday, todayTransactions, recentTransactions, recentStudents] =
-        await Promise.all([
-          prisma.student.groupBy({
-            by: ["status"],
-            where: { operatorId },
-            orderBy: { status: "asc" },
-            _count: true
-          }),
-          prisma.student.aggregate({
-            where: { operatorId },
-            _sum: { balance: true }
-          }),
-          prisma.student.count({
-            where: {
-              operatorId,
-              status: "ACTIVE",
-              transactions: { some: { deletedAt: null, occurredAt: { gte: start, lt: end } } }
-            }
-          }),
-          prisma.transaction.groupBy({
-            by: ["type"],
-            where: {
-              student: { operatorId },
-              deletedAt: null,
-              occurredAt: { gte: start, lt: end },
-              type: { in: ["DEPOSIT", "WITHDRAWAL"] }
-            },
-            orderBy: { type: "asc" },
-            _count: true,
-            _sum: { amount: true }
-          }),
-          prisma.transaction.findMany({
-            where: { student: { operatorId } },
-            select: {
-              id: true,
-              type: true,
-              amount: true,
-              correctionDirection: true,
-              deletedAt: true,
-              occurredAt: true,
-              student: { select: { id: true, name: true } }
-            },
-            orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
-            take: ACTIVITY_LIMIT
-          }),
-          prisma.student.findMany({
-            where: { operatorId },
-            select: { id: true, name: true, status: true, updatedAt: true },
-            orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
-            take: ACTIVITY_LIMIT
-          })
-        ]);
+      const { start: todayStart, end: todayEnd } = jakartaDay(now());
+      const { start: monthStart } = jakartaMonth(now());
+
+      const [
+        studentGroups,
+        managed,
+        activeToday,
+        todayTransactions,
+        monthTransactions,
+        zeroBalanceStudents,
+        noTxnStudents,
+        inactiveWithBalanceStudents,
+        recentTransactions,
+        recentCorrections,
+        recentWithdrawals,
+        recentStudents
+      ] = await Promise.all([
+        prisma.student.groupBy({
+          by: ["status"],
+          where: { operatorId },
+          orderBy: { status: "asc" },
+          _count: true
+        }),
+        prisma.student.aggregate({
+          where: { operatorId },
+          _sum: { balance: true }
+        }),
+        prisma.student.count({
+          where: {
+            operatorId,
+            status: "ACTIVE",
+            transactions: { some: { deletedAt: null, occurredAt: { gte: todayStart, lt: todayEnd } } }
+          }
+        }),
+        prisma.transaction.groupBy({
+          by: ["type"],
+          where: {
+            student: { operatorId },
+            deletedAt: null,
+            occurredAt: { gte: todayStart, lt: todayEnd },
+            type: { in: ["DEPOSIT", "WITHDRAWAL"] }
+          },
+          orderBy: { type: "asc" },
+          _count: true,
+          _sum: { amount: true }
+        }),
+        prisma.transaction.groupBy({
+          by: ["type"],
+          where: {
+            student: { operatorId },
+            deletedAt: null,
+            occurredAt: { gte: monthStart, lt: todayEnd },
+            type: { in: ["DEPOSIT", "WITHDRAWAL"] }
+          },
+          orderBy: { type: "asc" },
+          _count: true,
+          _sum: { amount: true }
+        }),
+        prisma.student.findMany({
+          where: { operatorId, status: "ACTIVE", balance: 0 },
+          select: { id: true, name: true, balance: true, updatedAt: true },
+          orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+          take: 5
+        }),
+        prisma.student.findMany({
+          where: { operatorId, status: "ACTIVE", transactions: { none: {} } },
+          select: { id: true, name: true, balance: true, updatedAt: true },
+          orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+          take: 5
+        }),
+        prisma.student.findMany({
+          where: { operatorId, status: { in: ["INACTIVE", "ARCHIVED"] }, balance: { gt: 0 } },
+          select: { id: true, name: true, balance: true, updatedAt: true },
+          orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+          take: 5
+        }),
+        prisma.transaction.findMany({
+          where: { student: { operatorId } },
+          select: {
+            id: true,
+            type: true,
+            amount: true,
+            correctionDirection: true,
+            deletedAt: true,
+            occurredAt: true,
+            student: { select: { id: true, name: true } }
+          },
+          orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
+          take: ACTIVITY_LIMIT
+        }),
+        prisma.transaction.findMany({
+          where: { student: { operatorId }, type: "CORRECTION", deletedAt: null },
+          select: {
+            id: true,
+            amount: true,
+            correctionDirection: true,
+            reason: true,
+            occurredAt: true,
+            student: { select: { id: true, name: true } }
+          },
+          orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
+          take: ACTIVITY_LIMIT
+        }),
+        prisma.transaction.findMany({
+          where: { student: { operatorId }, type: "WITHDRAWAL", deletedAt: null },
+          select: {
+            id: true,
+            amount: true,
+            occurredAt: true,
+            student: { select: { id: true, name: true } }
+          },
+          orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
+          take: ACTIVITY_LIMIT
+        }),
+        prisma.student.findMany({
+          where: { operatorId },
+          select: { id: true, name: true, status: true, updatedAt: true },
+          orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
+          take: ACTIVITY_LIMIT
+        })
+      ]);
 
       const activeStudents = countFor(studentGroups, "ACTIVE");
       const inactiveStudents = countFor(studentGroups, "INACTIVE");
       const archivedStudents = countFor(studentGroups, "ARCHIVED");
-      const deposits = todayTransactions.find((group) => group.type === "DEPOSIT");
-      const withdrawals = todayTransactions.find((group) => group.type === "WITHDRAWAL");
+      const todayDeposits = todayTransactions.find((group) => group.type === "DEPOSIT");
+      const todayWithdrawals = todayTransactions.find((group) => group.type === "WITHDRAWAL");
+      const monthDeposits = monthTransactions.find((group) => group.type === "DEPOSIT");
+      const monthWithdrawals = monthTransactions.find((group) => group.type === "WITHDRAWAL");
+
+      const monthDepBigInt = monthDeposits?._sum.amount ?? BigInt(0);
+      const monthWithBigInt = monthWithdrawals?._sum.amount ?? BigInt(0);
+      const netBigInt = monthDepBigInt - monthWithBigInt;
+      const isNetPositive = netBigInt >= 0n;
+      const absNetBigInt = netBigInt < 0n ? -netBigInt : netBigInt;
+
+      // Deduplicate attention students
+      const attentionMap = new Map<string, {
+        id: string;
+        name: string;
+        reason: "ZERO_BALANCE" | "NO_TRANSACTIONS" | "INACTIVE_WITH_BALANCE";
+        balance: string;
+        updatedAt: string;
+      }>();
+
+      for (const s of inactiveWithBalanceStudents) {
+        if (!attentionMap.has(s.id)) {
+          attentionMap.set(s.id, {
+            id: s.id,
+            name: s.name,
+            reason: "INACTIVE_WITH_BALANCE",
+            balance: s.balance.toString(),
+            updatedAt: s.updatedAt.toISOString()
+          });
+        }
+      }
+      for (const s of noTxnStudents) {
+        if (!attentionMap.has(s.id)) {
+          attentionMap.set(s.id, {
+            id: s.id,
+            name: s.name,
+            reason: "NO_TRANSACTIONS",
+            balance: s.balance.toString(),
+            updatedAt: s.updatedAt.toISOString()
+          });
+        }
+      }
+      for (const s of zeroBalanceStudents) {
+        if (!attentionMap.has(s.id)) {
+          attentionMap.set(s.id, {
+            id: s.id,
+            name: s.name,
+            reason: "ZERO_BALANCE",
+            balance: s.balance.toString(),
+            updatedAt: s.updatedAt.toISOString()
+          });
+        }
+      }
+
+      const attentionStudents = Array.from(attentionMap.values()).slice(0, 5);
 
       return {
         students: {
@@ -220,14 +353,29 @@ export function dashboardReadService(
         managedBalance: (managed._sum.balance ?? BigInt(0)).toString(),
         today: {
           deposits: {
-            count: deposits?._count ?? 0,
-            amount: (deposits?._sum.amount ?? BigInt(0)).toString()
+            count: todayDeposits?._count ?? 0,
+            amount: (todayDeposits?._sum.amount ?? BigInt(0)).toString()
           },
           withdrawals: {
-            count: withdrawals?._count ?? 0,
-            amount: (withdrawals?._sum.amount ?? BigInt(0)).toString()
+            count: todayWithdrawals?._count ?? 0,
+            amount: (todayWithdrawals?._sum.amount ?? BigInt(0)).toString()
           }
         },
+        month: {
+          deposits: {
+            count: monthDeposits?._count ?? 0,
+            amount: monthDepBigInt.toString()
+          },
+          withdrawals: {
+            count: monthWithdrawals?._count ?? 0,
+            amount: monthWithBigInt.toString()
+          },
+          netCashFlow: {
+            amount: absNetBigInt.toString(),
+            isPositive: isNetPositive
+          }
+        },
+        attentionStudents,
         recentTransactions: recentTransactions.map((transaction) => ({
           id: transaction.id,
           studentId: transaction.student.id,
@@ -236,6 +384,22 @@ export function dashboardReadService(
           amount: transaction.amount.toString(),
           correctionDirection: transaction.correctionDirection,
           deleted: Boolean(transaction.deletedAt),
+          occurredAt: transaction.occurredAt.toISOString()
+        })),
+        recentCorrections: recentCorrections.map((transaction) => ({
+          id: transaction.id,
+          studentId: transaction.student.id,
+          studentName: transaction.student.name,
+          amount: transaction.amount.toString(),
+          correctionDirection: transaction.correctionDirection,
+          reason: transaction.reason,
+          occurredAt: transaction.occurredAt.toISOString()
+        })),
+        recentWithdrawals: recentWithdrawals.map((transaction) => ({
+          id: transaction.id,
+          studentId: transaction.student.id,
+          studentName: transaction.student.name,
+          amount: transaction.amount.toString(),
           occurredAt: transaction.occurredAt.toISOString()
         })),
         recentlyUpdatedStudents: recentStudents.map((student) => ({
@@ -248,3 +412,4 @@ export function dashboardReadService(
     }
   };
 }
+
