@@ -6,7 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Transaction Workspace Batch 3 (Consecutive Multi-Student Entry & Inline Mutations)
+### Operator Self-Provisioning (Batch 5)
+
+- Implemented Operator self-provisioning: Operators can now create new Students directly from their workspace (`/operator/students`).
+- Server-enforced session operator binding: `operatorId` is strictly derived from active server session (`authorization.id`); client payload `operatorId` parameter is ignored/rejected to prevent identity spoofing.
+- Added automatic `OperatorAudit` logging with action `STUDENT_CREATE` and actor Operator upon student creation.
+- Added lightweight, accessible `CreateStudentModal` dialog component on `/operator/students` page with fields: Nama (required), Kelas, and Catatan (optional).
+- Added SQLite migration `007_operator_self_provisioning_audit.sql` to support `STUDENT_CREATE` in `operator_audit` check constraint.
+- Added comprehensive unit and integration tests covering operator self-provisioning, audit logging, security isolation, and immediate transaction entry (`test/operator-self-provisioning.test.ts`, 150 total tests passing).
+
 
 - Added `WorkspaceStudentPicker` component: reusable, searchable combobox displaying Student Name, secondary Class/Notes, and live balance (`Saldo Rp150.000`) with full ARIA accessibility (`combobox`, `listbox`, `option`) and keyboard navigation.
 - Extended `TransactionDialog` with dual submit actions: `"Simpan & Catat Lagi"` (consecutive multi-student mode) and `"Simpan & Selesai"`.

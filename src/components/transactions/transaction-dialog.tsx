@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui";
 import type { TransactionHistoryItem } from "@/transactions/read-service";
 import { WorkspaceStudentPicker, type StudentOption } from "./workspace/workspace-student-picker";
-import { rupiah } from "./presentation";
+import { formatThousand, parseNumericValue, rupiah } from "./presentation";
 import styles from "./transactions.module.css";
 
 export type DialogKind = "DEPOSIT" | "WITHDRAWAL" | "CORRECTION" | "EDIT" | "DELETE" | "RESTORE" | "NEW";
@@ -170,8 +170,8 @@ export function TransactionDialog({
       };
     } else {
       const type = kind === "EDIT" || kind === "NEW" ? selectedType : kind;
-      const amount = String(data.get("amount") ?? "").trim();
-      if (!/^[0-9]+$/.test(amount) || BigInt(amount) <= BigInt(0)) {
+      const amount = parseNumericValue(data.get("amount"));
+      if (!amount || !/^[0-9]+$/.test(amount) || BigInt(amount) <= BigInt(0)) {
         setError("Jumlah harus berupa Rupiah bulat dan lebih dari nol.");
         const amountField = form.elements.namedItem("amount");
         if (amountField instanceof HTMLElement) amountField.focus();
@@ -371,14 +371,18 @@ export function TransactionDialog({
                   name="amount"
                   type="text"
                   inputMode="numeric"
-                  pattern="[0-9]+"
-                  defaultValue={item?.amount}
+                  pattern="[0-9.]*"
+                  defaultValue={item?.amount ? formatThousand(item.amount) : ""}
+                  onChange={(event) => {
+                    const digits = parseNumericValue(event.target.value);
+                    event.target.value = digits ? formatThousand(digits) : "";
+                  }}
                   required
                   autoFocus={!isPickerRequired}
                   aria-describedby={`${kind}-amount-hint`}
                 />
                 <span id={`${kind}-amount-hint`} className={styles.hint}>
-                  Masukkan Rupiah utuh tanpa titik atau koma.
+                  Nominal otomatis terformat dengan pemisah ribuan (misal: 10.000).
                 </span>
               </label>
 

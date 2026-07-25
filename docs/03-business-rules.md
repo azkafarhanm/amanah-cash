@@ -40,9 +40,10 @@ Every Student has one of `ACTIVE`, `INACTIVE`, or `ARCHIVED` status. The current
 
 Student notes are optional, trimmed before persistence, and limited to 500 characters. Empty notes are stored as absent rather than as meaningful whitespace.
 
-### BR-STU-007: Only Platform Admin Maintains Student Records
+### BR-STU-007: Student Creation and Maintenance
 
-Platform Admin creates and edits Student identity, notes, lifecycle status, and Operator assignment. Operators have read access to currently assigned Students and do not maintain Student records.
+Platform Admin creates and edits Student identity, notes, lifecycle status, and Operator assignment. Operators are also permitted to self-provision Students ("Tambah Student") directly assigned to their own active session (`operatorId` derived strictly from server session, client `operatorId` payload ignored). Operator student creation automatically records an immutable `STUDENT_CREATE` audit event.
+
 
 ## 3. Monetary Rules
 

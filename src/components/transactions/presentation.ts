@@ -1,7 +1,7 @@
 import type { TransactionHistoryQuery } from "@/transactions/read-service";
-import { rupiah, transactionSign, transactionTypeLabel } from "@/presentation/formatting";
+import { formatThousand, parseNumericValue, rupiah, transactionSign, transactionTypeLabel } from "@/presentation/formatting";
 
-export { rupiah, transactionSign, transactionTypeLabel };
+export { formatThousand, parseNumericValue, rupiah, transactionSign, transactionTypeLabel };
 
 export function transactionDate(value: string) {
   return new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", hour12: false }).format(new Date(value));

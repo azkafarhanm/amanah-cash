@@ -36,6 +36,7 @@ Included:
 - Google-only authentication for active, pre-provisioned accounts.
 - Centralized Platform Admin, Operator, and Student-ownership authorization.
 - Platform Admin management of Operator accounts and Student assignments.
+- Operator self-provisioning of Students ("+ Tambah Student") automatically bound to the active Operator session.
 - Create, edit, list, search, filter, paginate, and view Students.
 - Operator visibility limited to currently assigned Students.
 - Read-only administrative and ownership-scoped operational dashboards with reusable summary and activity cards.

@@ -30,6 +30,7 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
   const repository: StudentRepository = {
     activeOperator: (id) => prisma.user.findFirst({ where: { id, role: "OPERATOR", isActive: true, deletedAt: null }, select: { id: true, name: true, email: true } }),
     activeOperators: () => prisma.user.findMany({ where: { role: "OPERATOR", isActive: true, deletedAt: null }, orderBy: { name: "asc" }, select: { id: true, name: true, email: true } }),
+    async audit(data) { await prisma.operatorAudit.create({ data }); },
     async create(data) {
       try {
         const created = await prisma.student.create({ data, select });

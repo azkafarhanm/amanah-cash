@@ -5,7 +5,7 @@ import { join, resolve } from "node:path";
 import { after, test } from "node:test";
 import Database from "better-sqlite3";
 import { openDatabase } from "../src/persistence/database.js";
-import { rupiah, transactionSign } from "../src/components/transactions/presentation";
+import { formatThousand, parseNumericValue, rupiah, transactionSign } from "../src/components/transactions/presentation.js";
 import { transactionReadService } from "../src/transactions/read-service";
 import { createTransactionEngine } from "../src/transactions/service";
 
@@ -39,7 +39,10 @@ test("Transaction UI uses accessible dialogs, mobile money input, filters, lifec
 });
 
 test("financial presentation formats exact whole Rupiah and explicit direction", () => {
-  assert.equal(rupiah("75000"), "Rp 75.000");
+  assert.equal(rupiah("75000"), "Rp\u00a075.000");
+  assert.equal(rupiah("2500000"), "Rp\u00a02.500.000");
+  assert.equal(formatThousand("10000"), "10.000");
+  assert.equal(parseNumericValue("10.000"), "10000");
   assert.equal(transactionSign({ type: "DEPOSIT", correctionDirection: null }), "+");
   assert.equal(transactionSign({ type: "CORRECTION", correctionDirection: "DECREASE" }), "−");
 });

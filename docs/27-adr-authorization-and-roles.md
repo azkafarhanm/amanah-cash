@@ -26,7 +26,11 @@ Must not routinely access Operator financial data, including Student balances, T
 
 ### `OPERATOR`
 
-May manage Transactions, Balances, financial history, and approved reports only for Students currently assigned to that Operator.
+May:
+
+- self-provision Students ("Tambah Student") assigned automatically to the active session; and
+- manage Transactions, Balances, financial history, and approved reports only for Students currently assigned to that Operator.
+
 
 ### Student ownership
 

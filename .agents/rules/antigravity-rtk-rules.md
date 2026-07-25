@@ -1,3 +1,8 @@
+---
+trigger: always_on
+description: Always prefix shell commands with rtk to optimize token consumption.
+---
+
 # RTK - Rust Token Killer (Google Antigravity)
 
 **Usage**: Token-optimized CLI proxy for shell commands.

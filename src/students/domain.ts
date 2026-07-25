@@ -45,6 +45,7 @@ export type StudentRepository = {
   ): Promise<StudentRecord>;
   find(id: string, operatorId?: string): Promise<StudentRecord | null>;
   list(input: { search: string; status?: StudentStatus; operatorId?: string; skip: number; take: number }): Promise<{ items: StudentRecord[]; total: number }>;
+  audit?(data: { operatorId: string; actorId: string; action: string; summary: string }): Promise<void>;
 };
 
 const STATUSES = new Set<StudentStatus>(["ACTIVE", "INACTIVE", "ARCHIVED"]);
@@ -95,6 +96,26 @@ export function createStudentManagement(repository: StudentRepository) {
     activeOperators: repository.activeOperators,
     async create(input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown }) {
       return repository.create({ id: crypto.randomUUID(), ...(await inputValues(input)) });
+    },
+    async createByOperator(operatorId: string, input: { name: unknown; kelas?: unknown; notes?: unknown }) {
+      if (!operatorId) throw new StudentManagementError("INVALID_OPERATOR", "Operator tidak valid.", 400);
+      const operator = await repository.activeOperator(operatorId);
+      if (!operator) throw new StudentManagementError("INVALID_OPERATOR", "Operator aktif tidak ditemukan.", 400);
+      const name = nameValue(input.name);
+      const rawKelas = typeof input.kelas === "string" ? input.kelas.trim() : "";
+      const rawNotes = typeof input.notes === "string" ? input.notes.trim() : "";
+      const combinedNotes = rawKelas ? (rawNotes ? `${rawKelas} - ${rawNotes}` : rawKelas) : rawNotes;
+      const notes = notesValue(combinedNotes);
+      const student = await repository.create({ id: crypto.randomUUID(), name, notes, status: "ACTIVE", operatorId: operator.id });
+      if (repository.audit) {
+        await repository.audit({
+          operatorId: operator.id,
+          actorId: operator.id,
+          action: "STUDENT_CREATE",
+          summary: `Menambahkan siswa baru: ${student.name}`
+        });
+      }
+      return student;
     },
     async edit(
       id: string,

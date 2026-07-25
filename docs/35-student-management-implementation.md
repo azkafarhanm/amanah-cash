@@ -14,9 +14,11 @@ Statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. Status does not independently
 ## Interfaces
 
 - Platform Admin: `/admin/students`, create, detail, edit, assignment, search, status filtering, and pagination.
-- Operator: `/operator/students` and owned detail pages only.
-- APIs: admin list/create/detail/edit under `/api/admin/students`; Operator-owned reads under `/api/operator/students`.
+- Operator: `/operator/students` and owned detail pages. Includes `+ Tambah Student` modal dialog for self-provisioning Students assigned automatically to the logged-in Operator session.
+- APIs: admin list/create/detail/edit under `/api/admin/students`; Operator-owned reads and self-provisioning `POST` under `/api/operator/students`.
+- Operator self-provisioning derives `operatorId` strictly from active session (`authorization.id`), ignoring client-supplied `operatorId` payloads, and logs a `STUDENT_CREATE` event to `OperatorAudit`.
 - Operator lists and detail pages use ownership-scoped persisted Balance and Transaction reads. Platform Admin Student presentation intentionally excludes Balance and Transaction data.
+
 
 All validation is server-side in `src/students/domain.ts`. UI constraints are convenience only. Partial Student/Operator-name search, status filtering, newest-first ordering, and ten-row pagination execute in the repository query. Invalid page and status query values safely fall back to page one and no status filter. Cross-Operator detail access uses the existing masked owner policy and returns the established not-found response.
 

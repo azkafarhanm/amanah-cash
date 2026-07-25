@@ -51,7 +51,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "003_operator_management.sql" },
     { version: "004_student_management.sql" },
     { version: "005_transaction_engine.sql" },
-    { version: "006_transaction_ui_notes.sql" }
+    { version: "006_transaction_ui_notes.sql" },
+    { version: "007_operator_self_provisioning_audit.sql" }
   ]);
   first.close();
 
@@ -63,7 +64,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "003_operator_management.sql" },
     { version: "004_student_management.sql" },
     { version: "005_transaction_engine.sql" },
-    { version: "006_transaction_ui_notes.sql" }
+    { version: "006_transaction_ui_notes.sql" },
+    { version: "007_operator_self_provisioning_audit.sql" }
   ]);
   second.close();
 });
