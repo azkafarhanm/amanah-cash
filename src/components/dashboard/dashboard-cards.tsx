@@ -85,13 +85,14 @@ export function ActivityCard({ title, items, emptyMessage }: {
   </Card>;
 }
 
-export function QuickActionCard({ title, description, href }: { title: string; description: string; href: string }) {
+export function QuickActionCard({ title, description, href, variant = "secondary" }: { title: string; description: string; href: string; variant?: "primary" | "secondary" }) {
   return <Card className={styles.quickActionCard}>
     <h3>{title}</h3>
     <p>{description}</p>
-    <Link href={href} aria-label={`${title}: ${description}`}>Buka</Link>
+    <Link className={variant === "primary" ? styles.quickActionPrimaryLink : undefined} href={href} aria-label={`${title}: ${description}`}>Buka</Link>
   </Card>;
 }
+
 
 export function AttentionStudentsCard({ items }: {
   items: Array<{

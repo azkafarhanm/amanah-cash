@@ -230,10 +230,22 @@
 
 .dashboardActionLink:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 
+.quickActionCard a.quickActionPrimaryLink {
+  background: var(--color-action-primary);
+  color: var(--color-text-inverse, #ffffff);
+  border-color: var(--color-action-primary);
+}
+
+.quickActionCard a.quickActionPrimaryLink:hover {
+  opacity: 0.92;
+  border-color: var(--color-action-primary);
+}
+
 @media (max-width: 48rem) {
   .dashboardGrid,
   .dashboardGridWide { grid-template-columns: minmax(0, 1fr); }
   .activityList li { grid-template-columns: minmax(0, 1fr); }
   .activityKind { justify-self: start; }
 }
+
 

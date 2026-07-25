@@ -140,6 +140,7 @@ export default async function OperatorHome() {
       <DashboardSection title="Aksi Cepat Operasional" description="Pintas langsung ke alur transaksi dan pengelolaan siswa.">
         <DashboardGrid>
           <QuickActionCard
+            variant="primary"
             title="+ Catat Transaksi"
             description="Buka workspace untuk mencatat transaksi siswa secara langsung."
             href="/operator/transactions"
@@ -150,6 +151,7 @@ export default async function OperatorHome() {
             href="/operator/transactions"
           />
           <QuickActionCard
+            variant="primary"
             title="+ Tambah Siswa"
             description="Daftarkan siswa baru ke dalam lingkup operasional Anda."
             href="/operator/students"
@@ -161,6 +163,7 @@ export default async function OperatorHome() {
           />
         </DashboardGrid>
       </DashboardSection>
+
     </ContentWrapper>
   );
 }
