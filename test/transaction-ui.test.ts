@@ -18,6 +18,7 @@ after(() => rmSync(temporary, { recursive: true, force: true }));
 test("Transaction UI uses accessible dialogs, mobile money input, filters, lifecycle controls, and live outcomes", () => {
   const dialog = source("src/components/transactions/transaction-dialog.tsx");
   const experience = source("src/components/transactions/transaction-experience.tsx");
+  const timeline = source("src/components/transactions/student-timeline.tsx");
   const styles = source("src/components/transactions/transactions.module.css");
   assert.match(dialog, /<dialog/);
   assert.match(dialog, /aria-labelledby=/);
@@ -29,7 +30,7 @@ test("Transaction UI uses accessible dialogs, mobile money input, filters, lifec
   assert.match(dialog, /kind === "RESTORE"/);
   assert.match(dialog, /selectedType === "DEPOSIT"/);
   assert.match(experience, /aria-live="polite"/);
-  assert.match(experience, /Alasan koreksi/);
+  assert.match(timeline, /Alasan Koreksi/);
   assert.match(experience, /name="dateFrom"/);
   assert.match(experience, /name="dateTo"/);
   assert.match(experience, /name="status"/);

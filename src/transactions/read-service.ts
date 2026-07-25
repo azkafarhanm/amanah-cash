@@ -148,16 +148,24 @@ export function transactionReadService(
         select: { balance: true, updatedAt: true, _count: { select: { transactions: true } } }
       });
       if (!student) throw new Error("Owned Student disappeared during financial read");
+      const numericSearch = search.replace(/\D/g, "");
+      const searchOR: Prisma.TransactionWhereInput[] = [
+        { notes: { contains: search } },
+        { reason: { contains: search } },
+        { updater: { name: { contains: search } } }
+      ];
+      if (numericSearch.length > 0) {
+        try {
+          searchOR.push({ amount: BigInt(numericSearch) });
+        } catch { /* ignore overflow if any */ }
+      }
       const filteredWhere = {
         studentId,
         student: { operatorId },
         ...(type ? { type } : {}),
         ...(status === "ACTIVE" ? { deletedAt: null } : status === "DELETED" ? { deletedAt: { not: null } } : {}),
         ...(from || to ? { occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) } } : {}),
-        ...(search ? { OR: [
-          { notes: { contains: search } }, { reason: { contains: search } },
-          { updater: { name: { contains: search } } }
-        ] } : {})
+        ...(search ? { OR: searchOR } : {})
       };
       const where = cursor ? { AND: [filteredWhere, { OR: [
         { occurredAt: { lt: cursor.occurredAt } },
@@ -200,6 +208,19 @@ export function transactionReadService(
       const studentId = typeof query.studentId === "string" && query.studentId ? query.studentId : undefined;
 
 
+      const numericSearchWorkspace = search.replace(/\D/g, "");
+      const searchWorkspaceOR: Prisma.TransactionWhereInput[] = [
+        { student: { name: { contains: search } } },
+        { notes: { contains: search } },
+        { reason: { contains: search } },
+        { updater: { name: { contains: search } } }
+      ];
+      if (numericSearchWorkspace.length > 0) {
+        try {
+          searchWorkspaceOR.push({ amount: BigInt(numericSearchWorkspace) });
+        } catch { /* ignore overflow */ }
+      }
+
       const filteredWhere: Prisma.TransactionWhereInput = {
         student: {
           operatorId,
@@ -208,12 +229,7 @@ export function transactionReadService(
         ...(type ? { type } : {}),
         ...(status === "ACTIVE" ? { deletedAt: null } : status === "DELETED" ? { deletedAt: { not: null } } : {}),
         ...(from || to ? { occurredAt: { ...(from ? { gte: from } : {}), ...(to ? { lte: to } : {}) } } : {}),
-        ...(search ? { OR: [
-          { student: { name: { contains: search } } },
-          { notes: { contains: search } },
-          { reason: { contains: search } },
-          { updater: { name: { contains: search } } }
-        ] } : {})
+        ...(search ? { OR: searchWorkspaceOR } : {})
       };
 
       const where = cursor ? { AND: [filteredWhere, { OR: [

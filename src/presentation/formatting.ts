@@ -40,6 +40,23 @@ export function jakartaDateStamp(value: Date) {
   return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "2-digit", day: "2-digit", timeZone: "Asia/Jakarta" }).format(value);
 }
 
+export function formatTimelineGroup(dateString: string, now = new Date()) {
+  const target = new Date(dateString);
+  if (Number.isNaN(target.getTime())) return "Tanggal tidak valid";
+
+  const targetJakarta = jakartaDateStamp(target);
+  const nowJakarta = jakartaDateStamp(now);
+
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayJakarta = jakartaDateStamp(yesterday);
+
+  if (targetJakarta === nowJakarta) return "Hari ini";
+  if (targetJakarta === yesterdayJakarta) return "Kemarin";
+
+  return new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric", timeZone: "Asia/Jakarta" }).format(target);
+}
+
 export function transactionSign(item: { type: TransactionType; correctionDirection: CorrectionDirection | null }) {
   return item.type === "DEPOSIT" || (item.type === "CORRECTION" && item.correctionDirection === "INCREASE") ? "+" : "−";
 }

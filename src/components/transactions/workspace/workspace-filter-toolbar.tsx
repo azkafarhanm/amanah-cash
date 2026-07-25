@@ -55,7 +55,7 @@ export function WorkspaceFilterToolbar({ filters, onFilterChange }: WorkspaceFil
         <input
           type="search"
           className={styles.searchInput}
-          placeholder="Cari nama siswa, catatan, atau alasan..."
+          placeholder="Cari nominal, catatan, atau operator..."
           aria-label="Cari transaksi"
           value={searchInput}
           onChange={(e) => setSearchInput(e.target.value)}

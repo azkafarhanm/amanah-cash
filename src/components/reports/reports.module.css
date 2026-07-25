@@ -35,6 +35,8 @@
 .field { display: grid; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
 .field input,
 .field select { width: var(--size-full); min-height: var(--control-height-minimum); padding: var(--space-2) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
+.field select:not(:disabled),
+.field input[type="date"]:not(:disabled) { cursor: pointer; }
 .field input:hover:not(:disabled),
 .field select:hover:not(:disabled) { border-color: var(--color-action-primary); }
 .field input:disabled,
@@ -50,8 +52,9 @@
 .filterActions button,
 .emptyAction { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); }
 .filterActions button { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); background: var(--color-action-primary); color: var(--color-text-inverse); cursor: pointer; }
-.filterActions button:hover:not(:disabled) { background: var(--color-action-primary-hover); }
-.filterActions .resetButton { border-color: var(--color-border-default); background: var(--color-background-surface); color: var(--color-action-primary); }
+.filterActions button:hover:not(:disabled) { background: var(--color-action-primary-hover); cursor: pointer; }
+.filterActions .resetButton { border-color: var(--color-border-default); background: var(--color-background-surface); color: var(--color-action-primary); cursor: pointer; }
+.filterActions .resetButton:hover:not(:disabled) { background: var(--color-primary-subtle); border-color: var(--color-action-primary); cursor: pointer; }
 .filterActions button:disabled { border-color: var(--color-border-default); color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; }
 .emptyAction { color: var(--color-text-inverse); background: var(--color-action-primary); text-decoration: none; }
 .emptyAction:hover { background: var(--color-action-primary-hover); }

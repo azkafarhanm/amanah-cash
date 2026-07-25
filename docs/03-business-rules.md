@@ -97,6 +97,12 @@ Transaction edit cannot change `studentId`. A future Transaction Transfer is a s
 
 Transaction create, edit, delete, or restore; Student Balance update; financial-version update; and audit append either commit together or roll back together.
 
+### BR-TXN-010: Distinction Between Edit and Correction
+
+- **Edit (Perbaikan Data)**: Fixes incorrect transaction entry data (e.g., human typing error in amount, date, or notes). It increments the transaction's revision, adjusts the balance by the exact delta between new and old effects, and preserves transaction identity.
+- **Correction (Koreksi Saldo)**: Records a new audit-backed balance adjustment event (with an explicit `INCREASE` or `DECREASE` direction and mandatory audit reason). It creates a new transaction entry, preserves full financial history, and is used for ledger reconciliation.
+- Both operations remain available and valid in the application lifecycle.
+
 ## 5. Balance Rules
 
 ### BR-BAL-001: Balance Formula

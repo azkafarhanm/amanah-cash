@@ -41,7 +41,7 @@ test("WorkspaceMetricsBanner renders today's cash flow metrics directly from ser
 
 test("WorkspaceFilterToolbar renders search input, type pills, and period presets with URL SearchParams binding", () => {
   const filterSrc = source("src/components/transactions/workspace/workspace-filter-toolbar.tsx");
-  assert.match(filterSrc, /Cari nama siswa, catatan, atau alasan/);
+  assert.match(filterSrc, /Cari nominal, catatan, atau operator/);
   assert.match(filterSrc, /Setoran/);
   assert.match(filterSrc, /Penarikan/);
   assert.match(filterSrc, /Koreksi/);

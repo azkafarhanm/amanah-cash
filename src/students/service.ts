@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type { Prisma } from "@/generated/prisma/client";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import type { AuthenticationEnvironment } from "@/auth/environment";
 import { getPrismaClient } from "@/persistence/prisma";
@@ -89,9 +90,16 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
       return found ? formatStudent(found) : null;
     },
     async list({ search, status, operatorId, skip, take }) {
+      const searchOR: Prisma.StudentWhereInput[] = [
+        { name: { contains: search } },
+        { notes: { contains: search } }
+      ];
+      if (!operatorId && search) {
+        searchOR.push({ operator: { name: { contains: search } } });
+      }
       const where = {
         ...(operatorId ? { operatorId } : {}), ...(status ? { status } : {}),
-        ...(search ? { OR: [{ name: { contains: search } }, { operator: { name: { contains: search } } }] } : {})
+        ...(search ? { OR: searchOR } : {})
       };
       const [items, total] = await prisma.$transaction([
         prisma.student.findMany({ where, skip, take, orderBy: [{ createdAt: "desc" }, { id: "desc" }], select }),
