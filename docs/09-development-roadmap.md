@@ -1,9 +1,9 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.14
+**Version:** 1.15
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-23
+**Last Updated:** 2026-07-25
 
 ---
 
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, and the separately approved Export Foundation sprint are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, the separately approved Export Foundation sprint, and Sprint 2 (Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish — tagged v1.1.0) are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
 
 ## 2. Delivery Rules
 
@@ -37,6 +37,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Reporting Foundation: complete and production-polished with privacy-safe Admin activity reports, ownership-scoped Operator financial history, composable Jakarta-period filters with grouped dates and pending/disabled feedback, distinct no-assignment/search/filter states, explanatory zero summaries, accessible responsive tables with live results and pointer/keyboard feedback, Student detail timelines, and an export adapter contract. No export or financial write was introduced.
 - Export Foundation: complete with a Reporting Read Service-only coordinator, presentation-neutral documents, an extensible format registry, authorized complete-filtered-result CSV, Excel, and paginated PDF downloads, centralized default 10,000-row and optional byte guard rails, controlled oversized errors, and privacy-safe Jakarta filenames. No query/calculation, authorization, ownership, schema, Dashboard, Transaction Engine, or Export Contract behavior changed.
 - Export Production Hardening: partial. Safe synchronous guard rails are complete, but buffering, deployment capacity measurement, deadline/concurrency control, cross-page snapshot semantics, streaming, and any separately approved asynchronous path remain outstanding; see `docs/45-export-production-readiness-review.md`.
+- Sprint 2 (v1.1.0): complete. Student Financial History timeline with Jakarta timezone date grouping, centralized Rupiah formatting in `src/presentation/formatting.ts`, debounced live search with amount matching, Transaction controlled form state and URL SearchParams sync, Correction button visual polish, cursor/hover UX standardization, and 151 automated tests passing.
 - Milestone 4 is partial: Balance/history reads are complete; reconciliation and audit-history reads remain outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 

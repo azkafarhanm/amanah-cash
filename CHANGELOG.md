@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [1.1.0] - 2026-07-25
+
+### Sprint 2 — Epic 1: Student Financial History
+
+- Implemented date-grouped financial timeline component (`StudentTimeline`) on Operator Student Detail (`/operator/students/[id]`) rendering transaction history grouped by Jakarta timezone date headers (`Hari ini`, `Kemarin`, `Juli 2026`).
+- Added `formatTimelineGroup` helper in `src/presentation/formatting.ts` for Asia/Jakarta date group formatting with today/yesterday/month-year categorization.
+- Added comprehensive unit test for timeline group categorization (`test/student-financial-history.test.ts`).
+
+### Sprint 2 — Global Currency Standardization
+
+- Established `src/presentation/formatting.ts` as the single source of truth for Rupiah formatting (`Rp 10.000`, no decimal digits).
+- Added `rupiah()`, `formatThousand()`, `parseNumericValue()`, `signedRupiah()`, and `correctionDirectionLabel()` centralized formatting functions.
+- Standardized all currency display across Transaction Workspace, Transaction Modal, Student List, Student Detail, Dashboard, Reports, Statistics, Summary Cards, and Edit Transaction screens.
+- Documented `BR-TXN-010` (Edit vs Correction distinction) in `docs/03-business-rules.md`.
+
+### Sprint 2 — Epic 1A: Search UX & Filter Experience
+
+- Added debounced live search (350ms) for Student and Transaction search fields.
+- Expanded Transaction search scope to include `amount` (`BigInt`) matching, enabling numeric searches like `50000` or `Rp 50.000`.
+- Updated search placeholders to `"Cari nominal, catatan, atau operator..."` for clarity.
+- Scoped Operator student search to `name` and `notes` fields, omitting self-matching operator name.
+
+### Sprint 2 — Epic 1B: QA Bug Fix Batch
+
+- Fixed Student live search scoping in `src/students/service.ts`: Operator search now matches only `name` and `notes`, preventing self-matching operator name from returning all owned students.
+- Fixed Correction button visual design: solidified `.correctionButton:not(:disabled)` with background `var(--color-warning-foreground)` and white text `var(--color-text-inverse)`.
+- Connected controlled form state for all filter fields (`search`, `type`, `status`, `dateFrom`, `dateTo`) in `TransactionExperience` with URL SearchParams synchronization.
+- Implemented instant reset action clearing all controlled form states and replacing router to clean base path.
+
+### Sprint 2 — Epic 1C: Final UI Polish Batch
+
+- Standardized cursor behavior across Report and Transaction filter forms: `cursor: pointer` for enabled interactive elements (`select:not(:disabled)`, `input[type="date"]:not(:disabled)`, buttons, links); `cursor: not-allowed` only for explicitly disabled elements.
+- Added hover background feedback for Reset Filter buttons and links with `var(--color-primary-subtle)` background and `var(--color-action-primary)` border on `:hover:not(:disabled)`.
+- Added automated CSS cursor and hover rule assertions in `test/ux-polish.test.ts`.
+- All 151 automated tests passing, typecheck clean, lint clean, production build clean.
+
 ### Operator Self-Provisioning (Batch 5)
 
 - Implemented Operator self-provisioning: Operators can now create new Students directly from their workspace (`/operator/students`).

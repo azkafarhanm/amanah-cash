@@ -1,6 +1,6 @@
 # Amanah Cash
 
-Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform provides Google authentication, centralized role and ownership authorization, Operator and Student management, the complete Transaction Engine, and its Operator-facing financial UI.
+Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform provides Google authentication, centralized role and ownership authorization, Operator and Student management, the complete Transaction Engine, its Operator-facing financial UI, Student Financial History timeline, and centralized Rupiah formatting.
 
 ## Problem Statement
 
@@ -50,6 +50,8 @@ Implemented financial engine scope:
 - Edit, soft-delete, and restore Transactions with immutable actor/reason/before-after audit evidence.
 - Persist non-negative Student Balance through atomic financial operations.
 - View committed Balance, recent activity, Transaction count, filtered newest-first history, Notes, Operator, lifecycle status, and stable cursor pagination.
+- Date-grouped Student Financial History timeline with Jakarta timezone categorization (today, yesterday, month/year).
+- Debounced live search (350ms) supporting amount, notes, and operator matching.
 - Complete Deposit, Withdrawal, Correction, edit, soft-delete, and restore workflows from mobile-first accessible dialogs.
 
 Excluded:
@@ -158,7 +160,7 @@ Known roadmap routes render an explicit planned or in-development placeholder in
 
 ## Development Roadmap
 
-Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, and guard-railed Export Foundation with CSV, Excel, and PDF are complete. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured per-format export capacity, streaming/snapshot architecture, advanced export presentation, reconciliation/audit presentation, and deployment qualification remain bounded future work.
+Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, guard-railed Export Foundation with CSV, Excel, and PDF, and Sprint 2 (Student Financial History, Global Currency Standardization, Search UX, QA Fixes, UI Polish) are complete. The application is tagged `v1.1.0`. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured per-format export capacity, streaming/snapshot architecture, advanced export presentation, reconciliation/audit presentation, and deployment qualification remain bounded future work.
 
 ## Contributing
 

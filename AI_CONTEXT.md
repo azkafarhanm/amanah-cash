@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-24
-**Current delivery state:** Export Foundation & Transaction Workspace Batch 1, 2A, 2B, and 3 complete; READY WITH MINOR LIMITATIONS; advanced export presentation, reconciliation/audit presentation, and deployment remain
+**Last updated:** 2026-07-25
+**Current delivery state:** Sprint 2 complete (v1.1.0): Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
 
 ## Project Purpose
 
@@ -28,11 +28,16 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
 - Transaction Workspace Batch 2B (Operational Filters & Today's Cash Flow Metrics) implemented: added `WorkspaceMetricsBanner` displaying today's drawer cash metrics (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from API summary, and `WorkspaceFilterToolbar` supporting debounced search, transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period presets (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`) with URL SearchParams synchronization and server-side query refetching.
 - Transaction Workspace Batch 3 (Consecutive Multi-Student Entry & Inline Mutations) implemented: added `WorkspaceStudentPicker` component (searchable, live balance, class/notes, ARIA accessible), extended `TransactionDialog` with `"Simpan & Catat Lagi"` and `"Simpan & Selesai"` actions, preserved transaction type memory across consecutive entries, added top-level **"+ Catat Transaksi"** workspace button, inline Edit/Delete/Restore triggers on table rows and mobile cards, toast notification feedback, and extended student service balance formatting.
-- Canonical handoff, changelog, README, requirements, rules, domain, database target, architecture, roadmap, and affected design documentation synchronized without implementation changes.
+- Sprint 2 — Student Financial History (Epic 1): implemented date-grouped financial timeline component (`StudentTimeline`) on Operator Student Detail rendering history grouped by Jakarta timezone date headers (`Hari ini`, `Kemarin`, `Juli 2026`). Added `formatTimelineGroup` helper and unit test.
+- Sprint 2 — Global Currency Standardization: established `src/presentation/formatting.ts` as the single source of truth for Rupiah formatting across all financial screens. Added `rupiah()`, `formatThousand()`, `signedRupiah()`, and `correctionDirectionLabel()` centralized functions. Documented `BR-TXN-010` (Edit vs Correction distinction).
+- Sprint 2 — Search UX & Filter Experience (Epic 1A): added debounced live search (350ms), expanded Transaction search to include `amount` (`BigInt`) matching, updated search placeholders, scoped Operator student search to `name` and `notes`.
+- Sprint 2 — QA Bug Fix Batch (Epic 1B): fixed Student live search scoping, solidified Correction button visual design, connected controlled form state for all filter fields with URL SearchParams synchronization, implemented instant reset action.
+- Sprint 2 — Final UI Polish (Epic 1C): standardized cursor behavior for enabled/disabled interactive elements across Report and Transaction filter forms, added hover feedback for Reset buttons, added automated CSS cursor assertions.
+- Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 
 ## Current Implementation Status
 
-The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace Batch 1 Read API, Transaction Workspace Batch 2A UI Foundation, and Transaction Workspace Batch 2B Filters & Metrics.
+The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace, Student Financial History timeline, Global Currency Standardization, debounced live search, and polished filter/cursor UX.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
 
@@ -56,7 +61,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 145 passed, 0 failed.
+- Automated tests: 151 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -81,7 +86,9 @@ SQLite relational database and invariant triggers
 - `src/students/` owns Student validation, assignment, visibility scope, search, and pagination behavior.
 - `src/transactions/` owns exact-IDR validation, lifecycle effects, idempotency, serialization, Balance/version changes, and immutable financial audit.
 - `src/transactions/read-service.ts` owns the read-only ownership-scoped Balance/history projection and stable cursor contract.
-- `src/components/transactions/` owns financial presentation, filters, dialogs, accessibility, and API invocation without authoritative business logic.
+- `src/presentation/formatting.ts` is the single source of truth for Rupiah formatting (`rupiah()`, `formatThousand()`, `signedRupiah()`), date formatting (`reportDate()`, `formatTimelineGroup()`), and transaction presentation labels.
+- `src/components/transactions/` owns financial presentation, filters, dialogs, Student Financial History timeline, accessibility, and API invocation without authoritative business logic.
+- `src/components/transactions/student-timeline.tsx` owns the date-grouped financial timeline component for Operator Student Detail, rendering history grouped by Jakarta timezone date headers.
 - `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; implemented dashboards no longer use it.
 - `src/dashboard/` owns the fixed-query, read-only Admin and Operator dashboard projections.
 - `src/components/dashboard/` owns reusable statistic, trend, summary, activity, quick-action, grid, and skeleton presentation components.
@@ -154,7 +161,7 @@ SQLite relational database and invariant triggers
 
 ## Next Recommended Sprint
 
-Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint.
+Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint (Sprint 3).
 
 The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Advanced export presentation, advanced analytics, and future extension implementation remain outside that bounded sprint.
 

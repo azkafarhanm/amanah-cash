@@ -35,4 +35,18 @@ Migration `006_transaction_ui_notes.sql` adds optional bounded, normalized `tran
 
 ## Verification
 
-Tests cover Notes constraints/migration mirroring, read ownership, overview values, filters, cursor continuation, exact Rupiah formatting, explicit direction, dialogs, keyboard/focus semantics, lifecycle controls, responsive rules, and all existing Transaction Engine behavior.
+Tests cover Notes constraints/migration mirroring, read ownership, overview values, filters, cursor continuation, exact Rupiah formatting, explicit direction, dialogs, keyboard/focus semantics, lifecycle controls, responsive rules, Student Financial History timeline group categorization, and all existing Transaction Engine behavior.
+
+## Student Financial History (Sprint 2)
+
+Sprint 2 added a date-grouped financial timeline component (`StudentTimeline` in `src/components/transactions/student-timeline.tsx`) rendered on Operator Student Detail. Transaction history items are grouped by Jakarta timezone date headers using `formatTimelineGroup()` from `src/presentation/formatting.ts`:
+
+- **Hari ini** — transactions occurring on the current Jakarta date.
+- **Kemarin** — transactions occurring on the previous Jakarta date.
+- **[Bulan] [Tahun]** — transactions occurring on older dates, e.g. `Juli 2026`.
+
+Each timeline group renders its constituent transaction items with type badge, signed amount, occurrence time, operator attribution, notes, correction context where applicable, lifecycle status, and edit/delete/restore actions.
+
+`src/presentation/formatting.ts` was established as the single source of truth for all Rupiah formatting (`rupiah()`, `formatThousand()`, `signedRupiah()`), date formatting (`reportDate()`, `formatTimelineGroup()`), and transaction presentation labels.
+
+All presentation formatting is centralized under `BR-TXN-010` (Edit vs Correction distinction documented in `docs/03-business-rules.md`).
