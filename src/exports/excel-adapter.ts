@@ -25,7 +25,6 @@ const PREFERRED_COLUMN_WIDTHS: Readonly<Record<string, number>> = {
   revision: 11,
   updatedAt: 20,
   operator: 20,
-  auditReference: 18,
   category: 18,
   subject: 24,
   description: 36

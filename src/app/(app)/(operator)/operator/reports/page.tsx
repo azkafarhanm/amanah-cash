@@ -11,8 +11,8 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
     <SectionHeader title="Laporan Keuangan" description="Riwayat keuangan hanya untuk Siswa yang saat ini ditugaskan kepada Anda." />
     <ReportFilters filters={report.filters} students={report.students} basePath="/operator/reports" />
     <OperatorReportFilterContext result={report} />
-    <OperatorReportExport result={report} />
     <ReportSummary result={report} />
     <OperatorReportTable result={report} basePath="/operator/reports" detailBasePath="/operator/reports/students" />
+    <OperatorReportExport result={report} />
   </ContentWrapper>;
 }

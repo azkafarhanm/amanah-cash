@@ -11,7 +11,7 @@ export default async function AdminReportsPage({ searchParams }: { searchParams:
     <SectionHeader title="Laporan Administratif" description="Aktivitas Operator dan penugasan tanpa akses ke saldo, transaksi, atau rincian audit keuangan." />
     <AdminReportFilters result={report} basePath="/admin/reports" />
     <AdminReportFilterContext result={report} />
-    <AdminReportExport result={report} />
     <AdminReportTable result={report} basePath="/admin/reports" />
+    <AdminReportExport result={report} />
   </ContentWrapper>;
 }

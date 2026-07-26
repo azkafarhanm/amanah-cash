@@ -155,6 +155,7 @@ test("Admin reports paginate administrative data and expose only privacy-minimiz
 test("Reporting presentation is reusable, read-only, responsive, accessible, and export-neutral", () => {
   const service = source("src/reports/read-service.ts");
   const components = source("src/components/reports/report-components.tsx");
+  const exportActions = source("src/components/reports/report-export-actions.tsx");
   const filterForm = source("src/components/reports/report-filter-form.tsx");
   const styles = source("src/components/reports/reports.module.css");
   const operatorPage = source("src/app/(app)/(operator)/operator/reports/page.tsx");
@@ -187,6 +188,8 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.match(components, /<details className=\{styles\.rowDetails\}>/);
   assert.match(components, /Konteks laporan/);
   assert.match(components, /Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat\./);
+  assert.match(exportActions, /Menyiapkan laporan \{state\.format\.label\}/);
+  assert.match(exportActions, /`Unduh \$\{label\}`/);
   assert.match(components, /aria-disabled="true"/);
   assert.match(filterForm, /AbortController/);
   assert.match(filterForm, /latestSearchRequest/);

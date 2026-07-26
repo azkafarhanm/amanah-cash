@@ -9,6 +9,7 @@ import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 import { csvExportAdapter } from "../src/exports/csv-adapter";
 import { DEFAULT_EXPORT_MAX_ROWS, ExportConfigurationError, loadExportLimits } from "../src/exports/config";
 import { createExportCoordinator } from "../src/exports/coordinator";
+import { operatorExportDocument } from "../src/exports/documents";
 import { ExportFormatUnavailableError, ExportLimitExceededError, ExportValidationError } from "../src/exports/errors";
 import { excelExportAdapter } from "../src/exports/excel-adapter";
 import { adminExportFileName, operatorExportFileName } from "../src/exports/filename";
@@ -335,8 +336,15 @@ test("export coordinator resolves Excel through the registry with existing filen
   assert.equal(result.mediaType, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   assert.equal(result.fileName, "laporan-keuangan-semua-periode-20260722-120000.xlsx");
   const worksheet = (await loadWorkbook(result.bytes)).getWorksheet("Laporan")!;
-  const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Status Siswa", "Jenis"]);
+  const header = rowWithValues(worksheet, ["Waktu", "Siswa", "Jenis Transaksi", "Jumlah", "Saldo Tersisa", "Catatan", "Alasan"]);
   assert.ok(header);
+  assert.equal(valuesFrom(header).includes("Saldo Setelah"), false);
+  assert.equal(valuesFrom(header).includes("Referensi audit"), false);
+  assert.equal(valuesFrom(header).includes("Revisi"), false);
+  assert.equal(valuesFrom(header).includes("Diperbarui"), false);
+  assert.equal(valuesFrom(header).includes("Diperbarui oleh"), false);
+  assert.equal(worksheet.getColumn(worksheet.columnCount).values.includes("Referensi audit"), false);
+  assert.equal(worksheet.getColumn(1).values.includes("Pergerakan bersih"), false);
   assert.equal(worksheet.getColumn(1).values.slice(header.number + 1).filter(Boolean).length, 2);
 });
 
@@ -358,6 +366,9 @@ test("export coordinator resolves PDF with existing pagination, filename, MIME t
   assert.equal(result.fileName, "laporan-keuangan-semua-periode-20260722-120000.pdf");
   const { pages } = await pdfText(result.bytes);
   assert.match(pages.join(" "), /Alya/);
+  assert.match(pages.join(" "), /Saldo Tersisa/);
+  assert.doesNotMatch(pages.join(" "), /Saldo Setelah/);
+  assert.doesNotMatch(pages.join(" "), /Referensi audit|Audit audit-|Revisi|Diperbarui|Pergerakan bersih/i);
   const response = await exportResponse(async () => result);
   assert.equal(response.headers.get("content-type"), "application/pdf");
   assert.equal(response.headers.get("content-disposition"), 'attachment; filename="laporan-keuangan-semua-periode-20260722-120000.pdf"');
@@ -493,8 +504,10 @@ test("Operator CSV matches Reporting formatting and excludes another Operator an
   assert.match(content, new RegExp(rupiah("1000").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(content, new RegExp(reportDate("2026-07-21T01:00:00.000Z").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
   assert.match(content, /Catatan, ""khusus""\nbaris kedua/);
+  assert.match(content, /Saldo Tersisa/);
+  assert.doesNotMatch(content, /Saldo Setelah/);
   assert.doesNotMatch(content, /Rahasia Operator Lain|Rahasia finansial/);
-  assert.doesNotMatch(content, /transaction-export-1|student-export-1|command-export/);
+  assert.doesNotMatch(content, /Referensi audit|Audit [a-z0-9-]+|Revisi|Diperbarui|Pergerakan bersih|transaction-export-1|student-export-1|command-export/i);
 });
 
 test("Admin CSV remains administrative and contains no financial report fields", async () => {
@@ -503,7 +516,7 @@ test("Admin CSV remains administrative and contains no financial report fields",
   const content = decode(result.bytes);
   assert.equal(result.fileName, "laporan-administratif-aktivitas-operator-semua-periode-20260722-120000.csv");
   assert.match(content, /Profil Operator diperbarui/);
-  assert.doesNotMatch(content, /Saldo setelah|Total setoran|Total penarikan|Pergerakan bersih|transaction-export|9999/);
+  assert.doesNotMatch(content, /Referensi audit|Saldo setelah|Total setoran|Total penarikan|Pergerakan bersih|transaction-export|9999/i);
 });
 
 test("export endpoints reuse centralized role authorization and UI exposes registry-backed downloads", () => {
@@ -511,6 +524,7 @@ test("export endpoints reuse centralized role authorization and UI exposes regis
   const adminRoute = source("src/app/api/admin/reports/export/route.ts");
   const coordinator = source("src/exports/coordinator.ts");
   const components = source("src/components/reports/report-components.tsx");
+  const interaction = source("src/components/reports/report-export-actions.tsx");
   assert.match(operatorRoute, /withAuthorization\(\{ role: "operator" \}/);
   assert.match(operatorRoute, /authorization\.id/);
   assert.match(adminRoute, /withAuthorization\(\{ role: "admin" \}/);
@@ -518,7 +532,79 @@ test("export endpoints reuse centralized role authorization and UI exposes regis
   assert.match(coordinator, /reader\.operator/);
   assert.match(coordinator, /reader\.admin/);
   assert.match(components, /exportRegistry\.availableFormats\(\)/);
-  assert.match(components, /Unduh \{item\.label\}/);
-  assert.doesNotMatch(components, /Unduh Excel|Unduh PDF/);
+  assert.match(components, /<ReportExportActions key=.* formats=\{actions\} total=\{result\.total\}/);
+  assert.match(components, /key=\{actions\.map\(\(item\) => item\.href\)\.join\("\|"\)\}/);
+  assert.match(interaction, /fetch\(format\.href/);
+  assert.match(interaction, /credentials: "same-origin"/);
+  assert.match(interaction, /anchor\.download = downloadName/);
+  assert.match(interaction, /URL\.revokeObjectURL/);
   assert.match(source("src/reports/export-contract.ts"), /interface ReportExportAdapter/);
+});
+
+test("operational export documents expose only the approved parent-readable columns", () => {
+  const documents = source("src/exports/documents.ts");
+  const excel = source("src/exports/excel-adapter.ts");
+  const pdf = source("src/exports/pdf-adapter.ts");
+  const reportTypes = source("src/reports/types.ts");
+
+  assert.doesNotMatch(`${documents}${excel}${pdf}`, /auditReference|Referensi audit/);
+  assert.match(reportTypes, /auditId/);
+  const result = emptyOperatorResult(1, 1, "ordered");
+  result.items[0] = { ...result.items[0], type: "CORRECTION", correctionDirection: "DECREASE", reason: "Penyesuaian" };
+  const document = operatorExportDocument(result, generatedAt);
+  assert.deepEqual(document.columns.map((column) => column.key), [
+    "occurredAt",
+    "student",
+    "type",
+    "amount",
+    "balanceAfter",
+    "notes",
+    "reason"
+  ]);
+  assert.deepEqual(document.columns.map((column) => column.label), [
+    "Waktu",
+    "Siswa",
+    "Jenis Transaksi",
+    "Jumlah",
+    "Saldo Tersisa",
+    "Catatan",
+    "Alasan"
+  ]);
+  assert.equal(document.summary.some((item) => item.label === "Pergerakan bersih"), false);
+  assert.equal(document.rows[0].type, "Koreksi — Kurangi saldo");
+});
+
+test("export interaction is local, deterministic, duplicate-safe, and accessibly announced", () => {
+  const interaction = source("src/components/reports/report-export-actions.tsx");
+  const styles = source("src/components/reports/reports.module.css");
+  const operatorPage = source("src/app/(app)/(operator)/operator/reports/page.tsx");
+  const studentPage = source("src/app/(app)/(operator)/operator/reports/students/[id]/page.tsx");
+  const adminPage = source("src/app/(app)/(admin)/admin/reports/page.tsx");
+
+  assert.match(interaction, /type ExportState =/);
+  assert.match(interaction, /status: "idle"/);
+  assert.match(interaction, /status: "preparing"/);
+  assert.match(interaction, /status: "started"/);
+  assert.match(interaction, /status: "failed"/);
+  assert.match(interaction, /if \(inFlight\.current\) return/);
+  assert.match(interaction, /inFlight\.current = true/);
+  assert.match(interaction, /latestAttempt/);
+  assert.match(interaction, /attempt === latestAttempt\.current/);
+  assert.match(interaction, /disabled=\{preparing\}/);
+  assert.match(interaction, /aria-busy=\{active\}/);
+  assert.match(interaction, /role="group" aria-label="Pilih format laporan" aria-busy=\{preparing\}/);
+  assert.match(interaction, /role="status" aria-live="polite"/);
+  assert.match(interaction, /role="alert"/);
+  assert.match(interaction, /File \{state\.format\.label\} siap\. Unduhan dimulai\./);
+  assert.match(interaction, /Tidak ada data yang dapat diunduh untuk filter saat ini\./);
+  assert.match(interaction, /Coba lagi/);
+  assert.doesNotMatch(interaction, /localStorage|sessionStorage|BroadcastChannel|navigator\.userAgent/);
+  assert.match(styles, /\.exportButton:focus-visible/);
+  assert.match(styles, /grid-template-columns: repeat\(3/);
+  assert.match(styles, /grid-template-columns: minmax\(0, 1fr\)/);
+
+  for (const page of [operatorPage, studentPage]) {
+    assert.ok(page.indexOf("<OperatorReportTable") < page.indexOf("<OperatorReportExport"));
+  }
+  assert.ok(adminPage.indexOf("<AdminReportTable") < adminPage.indexOf("<AdminReportExport"));
 });

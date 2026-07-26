@@ -119,6 +119,8 @@ Student filter options are a lightweight ownership-scoped ID/name/status project
 
 CSV, Excel, and PDF are implemented and exposed on Admin, Operator, and Student-detail Reporting pages. See `docs/44-export-foundation.md` for the coordinator, document, registry, adapter, privacy, and delivery contracts.
 
+Sprint 3 Epic 2 places the export section after the report results and pagination so users can review the authorized scope before downloading. A reusable client presentation consumes the unchanged registry-derived URLs without navigating away from the report. Its state is local to the mounted report, resets when filter-derived export URLs change, preserves focus and scroll, prevents rapid duplicate activation, and never changes Reporting reads or calculations.
+
 ## Verification
 
 Regression coverage uses a migrated SQLite database with three Operators—including one without assigned Students—an asymmetric multi-owner ledger, more than one report page, daily/weekly/monthly/custom dates, directional Correction, a soft-deleted Transaction, persisted audit Balance evidence, administrative audits, assignments, and ownership changes. Tests prove ownership isolation, empty ownership scope, filter composition, Jakarta boundaries, pagination, summary accuracy, Admin privacy, empty behavior, read-only source boundaries, responsive tables, accessibility semantics, and export-contract separation.

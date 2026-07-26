@@ -93,6 +93,10 @@ Confirmed outcomes appear in persistent screen content; transient notification i
 
 Errors use an alert or associated message appropriate to urgency. Retry has a specific accessible name when multiple sections could fail. Existing content remains available when only older history fails.
 
+### Report Export
+
+Report export uses native text buttons for CSV, Excel, and PDF. Enter and Space activation have identical native behavior. The initiating control keeps focus, the format group exposes busy state, and one stable live region announces only state transitions: preparing once, then download started or failure once. Re-renders must not repeat announcements. Failure guidance remains visible with alert semantics, Retry starts a clean attempt, and no message claims that the browser saved or opened a file.
+
 ### Unknown Transaction Outcome
 
 Announce that the application is checking whether the Transaction was saved. Disable unsafe duplicate action and provide no false success language.
@@ -140,6 +144,7 @@ Each UI change must include:
 - reduced-motion verification;
 - touch-target measurement;
 - error, loading, empty, success, and retry state review.
+- Chrome, Edge, Firefox, mobile-browser, and installed-PWA export behavior where export presentation changes.
 
 Automated tools do not replace manual testing. Record browser, assistive technology, viewport, command/tool, result, and known limitation.
 

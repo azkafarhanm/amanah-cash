@@ -69,14 +69,24 @@
 .filterContext ul { display: flex; flex-wrap: wrap; gap: var(--space-2); margin: var(--space-2) var(--space-0) var(--space-0); padding: var(--space-0); list-style: none; }
 .filterContext li { padding: var(--space-1) var(--space-2); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); color: var(--color-text-primary); background: var(--color-background-surface); font: var(--type-supporting); }
 
-.exportBar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: var(--space-4) var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-subtle); }
+.exportBar { padding: var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-subtle); }
 .exportBar h2,
 .exportBar p { margin: var(--space-0); }
 .exportBar h2 { color: var(--color-text-primary); font: var(--type-section-title); }
 .exportBar p { margin-block-start: var(--space-1); color: var(--color-text-secondary); font: var(--type-supporting); }
-.exportActions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.exportLink { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); text-decoration: none; }
-.exportLink:hover { background: var(--color-action-primary-hover); }
+.exportExpectation { margin-block-start: var(--space-0) !important; }
+.exportActions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.exportChoice { min-width: 0; display: grid; align-content: start; gap: var(--space-2); }
+.exportChoice small { color: var(--color-text-secondary); font: var(--type-supporting); }
+.exportButton { width: var(--size-full); min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-action-primary); background: var(--color-background-surface); font: var(--type-button); cursor: pointer; }
+.exportButton:hover:not(:disabled) { border-color: var(--color-action-primary-hover); background: var(--color-primary-subtle); }
+.exportButton:disabled { border-color: var(--color-border-default); color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; }
+.exportFeedback { min-height: var(--control-height-minimum); display: flex; align-items: center; }
+.exportFeedback p { margin: var(--space-0); color: var(--color-text-primary); }
+.exportFeedback p span { display: block; margin-block-start: var(--space-1); color: var(--color-text-secondary); }
+.exportError { width: var(--size-full); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-error-foreground); border-radius: var(--shape-control); background: var(--color-error-background); }
+.exportError button { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); cursor: pointer; }
+.exportEmpty { padding: var(--space-3) var(--space-4); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-secondary) !important; }
 
 .summary h2,
 .tableSection h2,
@@ -120,7 +130,8 @@
 .field select:focus-visible,
 .filterActions button:focus-visible,
 .emptyAction:focus-visible,
-.exportLink:focus-visible,
+.exportButton:focus-visible,
+.exportError button:focus-visible,
 .table a:focus-visible,
 .pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 
@@ -151,9 +162,8 @@
   .sortFields { grid-template-columns: minmax(0, 1fr); }
   .filterActions { align-items: stretch; flex-direction: column; }
   .filterActions button { width: var(--size-full); }
-  .exportBar { align-items: stretch; padding: var(--space-4); }
-  .exportActions,
-  .exportLink { width: var(--size-full); }
+  .exportBar { padding: var(--space-4); }
+  .exportActions { width: var(--size-full); grid-template-columns: minmax(0, 1fr); }
   .filterSkeleton { grid-template-columns: minmax(0, 1fr); padding: var(--space-4); }
   .tableWrap { border: 0; background: transparent; }
   .table,

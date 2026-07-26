@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-25
-**Current delivery state:** Sprint 3 Epic 1 complete: Reports Enhancement; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
+**Last updated:** 2026-07-26
+**Current delivery state:** Sprint 3 Epic 2 complete: Export Experience; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
 
 ## Project Purpose
 
@@ -35,6 +35,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 2 — Final UI Polish (Epic 1C): standardized cursor behavior for enabled/disabled interactive elements across Report and Transaction filter forms, added hover feedback for Reset buttons, added automated CSS cursor assertions.
 - Sprint 2 — Dashboard Analytics & Insights (Epic 2 & 2B): implemented Operator Dashboard month-to-date cash flow metrics (Setoran Bulan Ini, Penarikan Bulan Ini, Arus Kas Bersih), operational attention alerts (`AttentionStudentsCard`), filtered activity feeds (recent corrections, recent withdrawals), Level 1 hero card styling, and full documentation in `docs/42-dashboard-implementation.md`.
 - Sprint 3 — Reports Enhancement (Epic 1): added 350 ms debounced Report search with cancellation and newest-request protection, concise applied-filter/result context for Operator and Admin reports, table-heading-only sorting, net-movement-first statistics, compact responsive audit-detail disclosures, and explicit all-matching-filtered-data export communication. Reporting reads, authorization, ownership isolation, calculations, export contracts, and adapters remain unchanged.
+- Sprint 3 — Export Experience (Epic 2): added a reusable report-local CSV/Excel/PDF interaction with immediate duplicate protection, per-attempt stale-result guards, preparing/success/failure/Retry feedback, truthful browser-download handoff language, zero-result guidance, responsive equal-weight format choices, stable focus and report context, and isolated per-tab state. Existing export endpoints, coordinator, adapters, limits, filenames, Reporting reads, authorization, ownership, schema, and business logic remain unchanged.
+- Sprint 3 — Export Experience refinement: simplified operational CSV, Excel, and PDF documents to parent-readable financial columns, including `Saldo Tersisa`, and removed Audit Reference, revision/update metadata, Student status, the separate Correction-direction column, and net-movement summary. Correction direction remains readable within Jenis Transaksi; Reporting still retains all metadata and immutable audit persistence is unchanged for the future dedicated Audit Log product.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 
 
@@ -166,7 +168,7 @@ SQLite relational database and invariant triggers
 
 Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint (Sprint 3).
 
-The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Advanced export presentation, advanced analytics, and future extension implementation remain outside that bounded sprint.
+The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Advanced export document styling, advanced analytics, and future extension implementation remain outside that bounded sprint.
 
 ## Core Business Rules to Preserve
 

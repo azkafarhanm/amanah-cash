@@ -465,5 +465,11 @@ Protect financial integrity when the client cannot determine whether a submitted
 ### Export
 
 - Display the all-matching-data scope before each download action.
-- Treat download initiation as a navigation outcome, not a confirmed report generation success.
+- Keep transient export state local to the mounted report and out of URL, browser history, persistent storage, and shared application state.
+- Use one deterministic `idle → preparing → download started / failed` cycle per attempt. Retry begins a new attempt and clears stale terminal feedback.
+- Guard activation immediately so double-click, Enter, Space, or key repeat cannot start a duplicate request.
+- Keep focus and scroll stable. Announce preparing and the terminal outcome exactly once when state changes, not whenever the component renders.
+- Treat `File <format> siap. Unduhan dimulai.` as browser handoff, not proof that the file was saved or opened.
+- Reset transient state when filter-derived export URLs change or browser navigation restores another report state. Never replay an export through Back or Forward.
+- Keep loading, success, failure, and busy state isolated between tabs.
 - Preserve the existing controlled export-limit error and do not expose internal limits, identifiers, or implementation details.

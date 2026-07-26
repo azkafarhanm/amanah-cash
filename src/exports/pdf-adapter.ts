@@ -38,7 +38,6 @@ const COLUMN_WEIGHTS: Readonly<Record<string, number>> = {
   revision: 9,
   updatedAt: 13,
   operator: 15,
-  auditReference: 15,
   category: 13,
   subject: 20,
   description: 30

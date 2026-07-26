@@ -7,6 +7,7 @@ import { adminReportKindLabel, correctionDirectionLabel, signedRupiah } from "@/
 import type { AdminReportResult, NormalizedReportFilters, OperatorReportResult, ReportStudentOption } from "@/reports/types";
 import { adminReportExportHref, adminReportHref, operatorReportExportHref, reportDate, reportHref } from "./presentation";
 import { ReportFilterForm } from "./report-filter-form";
+import { ReportExportActions } from "./report-export-actions";
 import styles from "./reports.module.css";
 
 function ReportEmptyIcon({ kind }: { kind: "students" | "search" | "filter" | "records" }) {
@@ -123,13 +124,15 @@ export function AdminReportFilterContext({ result }: { result: AdminReportResult
 
 export function OperatorReportExport({ result }: { result: OperatorReportResult }) {
   const formats = exportRegistry.availableFormats();
-  return <section className={styles.exportBar} aria-labelledby="operator-report-export-title"><div><h2 id="operator-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={operatorReportExportHref("/api/operator/reports/export", result.filters, item.format)} download>Unduh {item.label}</a>)}</div></section>;
+  const actions = formats.map((item) => ({ format: item.format, label: item.label, href: operatorReportExportHref("/api/operator/reports/export", result.filters, item.format) }));
+  return <section className={styles.exportBar} aria-labelledby="operator-report-export-title"><div><h2 id="operator-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><ReportExportActions key={actions.map((item) => item.href).join("|")} formats={actions} total={result.total} /></section>;
 }
 
 export function AdminReportExport({ result }: { result: AdminReportResult }) {
   const formats = exportRegistry.availableFormats();
   const query = { kind: result.query.kind, period: result.query.period, dateFrom: result.query.dateFrom, dateTo: result.query.dateTo, search: result.query.search, action: result.query.action };
-  return <section className={styles.exportBar} aria-labelledby="admin-report-export-title"><div><h2 id="admin-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={adminReportExportHref("/api/admin/reports/export", query, item.format)} download>Unduh {item.label}</a>)}</div></section>;
+  const actions = formats.map((item) => ({ format: item.format, label: item.label, href: adminReportExportHref("/api/admin/reports/export", query, item.format) }));
+  return <section className={styles.exportBar} aria-labelledby="admin-report-export-title"><div><h2 id="admin-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><ReportExportActions key={actions.map((item) => item.href).join("|")} formats={actions} total={result.total} /></section>;
 }
 
 export function OperatorReportFilterContext({ result }: { result: OperatorReportResult }) {

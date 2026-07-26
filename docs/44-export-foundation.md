@@ -63,7 +63,7 @@ The existing `ReportExportDocument` and `ReportExportAdapter` contract remains c
 
 Adapters do not receive Prisma records, ownership identifiers, raw financial audit payloads, or instructions for interpreting Deposit, Withdrawal, or Correction effects. Shared presentation formatters provide the exact Rupiah, Asia/Jakarta date/time, sign, Transaction label, Correction direction, and administrative category text used by Reporting UI and export documents.
 
-Operator documents expose only fields already presented by Reporting: time, Student and status, Transaction type/direction, signed Amount, persisted exact-revision Balance-after evidence when available, Notes, reason, revision/update attribution, and the visible shortened audit reference. Internal Transaction, Student, command, and correlation IDs are omitted.
+Operator documents expose exactly seven parent-readable columns in this order: Waktu, Siswa, Jenis Transaksi, Jumlah, Saldo Tersisa, Catatan, and Alasan. `Saldo Tersisa` describes the money still held by the Student after that Transaction without requiring system-oriented context. Correction direction remains part of the Jenis Transaksi text when applicable. Audit Reference, revision/update attribution, Student status, and other system metadata are intentionally omitted from CSV, Excel, and PDF because they belong to the future dedicated Admin Audit Log. The operational summary also omits Pergerakan Bersih while retaining the other approved report summaries. Reporting still retains the underlying metadata and persisted exact-revision Balance evidence; no query or audit behavior changes.
 
 Admin documents contain only time, administrative category, subject, description, period, and activity count. They contain no Transaction, Balance, Amount, revision, financial snapshot, or financial audit payload.
 
@@ -117,6 +117,14 @@ Successful filenames contain the report family, normalized period, Jakarta gener
 Operator Reports, Operator Student report detail, and Admin Reports expose **Unduh CSV**, **Unduh Excel**, and **Unduh PDF** actions. Each action carries the current report filters; export always includes the complete permitted matching result rather than only the visible page.
 
 The presentation now states this scope directly next to the actions: “Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.” This is communication only; the Coordinator, Reporting Read Service, authorization, privacy, guard rails, document contract, and adapters are unchanged.
+
+### Sprint 3 export interaction
+
+The report presentation now invokes the same endpoints through a component-local interaction instead of navigating the report page directly. Each attempt has an immediate in-flight guard and monotonically increasing identity. Only the current attempt may update the visible idle, preparing, download-started, or failed state; Retry begins a new clean cycle. No state is stored globally, persisted, or shared across tabs.
+
+The initiating format remains focused while the export section exposes concise busy and live-region feedback. A successful attachment response is described only as `File <format> siap. Unduhan dimulai.` because the application cannot verify whether the browser saved or opened the file. Controlled server messages, including the existing size-limit instruction, remain inline with the report; connectivity and unexpected failures use presentation-safe fallbacks. Zero matching rows show guidance instead of active format controls.
+
+The client preserves the server-provided attachment filename and media content, releases temporary browser download resources, and uses no browser-specific detection. This changes only browser presentation. The synchronous buffered pipeline, endpoints, authorization, Reporting reads, coordinator, registry, documents, adapters, configuration, errors, limits, and filename policy remain unchanged.
 
 ## Verification
 

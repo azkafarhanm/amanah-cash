@@ -448,6 +448,10 @@ Desktop rows prioritize time, subject, category/type, amount, and Balance-after 
 
 The export block states: `Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.` It must not imply export success, bypass current ownership/role scope, or conceal applicable size-limit failures.
 
+The block follows results and pagination. CSV, Excel (`.xlsx`), and PDF remain visible as equal-weight format actions with short purpose descriptions. Zero matching rows replace those actions with `Tidak ada data yang dapat diunduh untuk filter saat ini.` Large reports receive neutral preparation-time guidance without exposing an internal limit or promising a duration.
+
+Activation keeps the report visible and changes only the export block to `Menyiapkan <format>…`. Rapid pointer or keyboard activation produces one request. A successful attachment response reports `File <format> siap. Unduhan dimulai.` and never claims that the file was saved or opened. Controlled, connectivity, and unexpected failures remain inline with a safe Retry path.
+
 ### 7.4 Accessibility and States
 
-The context count is a concise polite status update. Tables provide captions, column headers, and sort state; mobile cards retain field labels. Loading reserves the filter, context, summary, and result geometry without inventing values. Empty states distinguish no assignment, default-period absence, no search result, and other filtered absence. Keyboard users can operate filters, sorting, disclosures, export links, and pagination with visible focus.
+The context count is a concise polite status update. Tables provide captions, column headers, and sort state; mobile cards retain field labels. Loading reserves the filter, context, summary, and result geometry without inventing values. Empty states distinguish no assignment, default-period absence, no search result, and other filtered absence. Keyboard users can operate filters, sorting, disclosures, export buttons, and pagination with visible focus. Export focus remains on its initiating button; preparing and terminal states are announced once per attempt, remain local to the current tab, and reset when the report filter URL changes or browser history restores another report state.

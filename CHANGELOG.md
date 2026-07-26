@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 3 — Epic 2: Export Experience
+
+- Replaced direct report download navigation with a local, deterministic export interaction for CSV, Excel, and PDF while preserving the existing endpoints, coordinator, adapters, authorization, filters, limits, and filenames.
+- Added per-format guidance, in-place preparing feedback, truthful browser-handoff confirmation, controlled inline failures and Retry, zero-result guidance, immediate duplicate-activation protection, and isolated per-tab state.
+- Moved export actions after report results and pagination, retained focus and report context, and added regression coverage for state isolation, stale-attempt protection, semantic announcements, responsive layout, and browser-history-safe state reset.
+- Simplified operational CSV, Excel, and PDF documents to Waktu, Siswa, Jenis Transaksi, Jumlah, Saldo Tersisa, Catatan, and Alasan; removed Audit Reference, revision/update metadata, Student status, the separate Correction-direction column, and net-movement summary while preserving Correction direction in the transaction-type text and retaining all audit/report data for the future dedicated Audit Log.
+
 ### Sprint 3 — Epic 1: Reports Enhancement
 
 - Added 350 ms debounced Reports search with abortable pending work and newest-request protection so stale queries cannot navigate after newer input.
