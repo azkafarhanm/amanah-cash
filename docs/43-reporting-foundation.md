@@ -57,6 +57,12 @@ Admin reports never select Transaction rows, Student Balance, Transaction revisi
 
 Custom dates use strict `YYYY-MM-DD` parsing. Reversed valid ranges are normalized. Invalid values fail closed to approved defaults rather than entering Prisma dynamically. All active filters compose into one ownership-scoped database predicate.
 
+### Sprint 3 presentation enhancement
+
+The presentation keeps period, Student, transaction type, status, and search as report filters, but consolidates sorting into the sortable table headings. Search is debounced by 350 ms. Each scheduled search navigation receives both an abort controller and monotonically increasing request token; a cancelled or superseded request cannot initiate a later navigation, so the newest query wins. This is a client presentation safeguard only: filter normalization, Reporting reads, URLs, and API semantics remain unchanged.
+
+After filtering, both report roles render a concise context block above their results. It states the matching count and the active period, dataset/Student, type, status, action, and/or search term as applicable. The block communicates scope without requiring the user to reopen filters and does not expose any additional fields.
+
 ## Summary Generation
 
 Summary queries use grouped persisted active Transactions. Deposit and Withdrawal totals use database sums. Net movement applies the existing centralized `transactions/domain.effect` function to the small grouped result; reporting does not own a second financial-effect implementation. Student Balance is never reconstructed.
@@ -82,6 +88,8 @@ Reusable report components provide:
 The final UX review adds distinct no-assigned-Students, first-use, search-without-results, and filtered-without-results states with meaningful report/search/filter/Student icons and contextual actions. Clearing a failed search preserves the other active filters; full Reset remains available for an empty filtered result. Operator search mentions only fields available in the Operator dataset; Admin search remains administrative. Custom-date controls are visually and semantically grouped, explain when they become available, and are enabled only for a custom period. Admin Operator-action filtering is enabled only for the Operator Activity dataset, Reset is disabled at the default state, and Apply/Reset controls expose an in-flight disabled state while navigation is pending.
 
 Tables include screen-reader captions, column scopes, `aria-sort` on sortable headings, semantic time values, consistent status/category badges, live result-count feedback, tabular currency values, alternating desktop rows, pointer-hover and keyboard-focus row feedback, and labeled mobile record cards. Loading presentation announces progress and reserves space for filters, summaries, and tables. Because Reporting is read-only, successful filtering is communicated through the live result count rather than a mutation-style success notice.
+
+The Operator table now prioritizes time, Student, type, signed amount, and persisted Balance-after evidence. Notes, reason, revision, updater, and authorized audit reference remain available in a native detail disclosure on desktop and mobile cards; no audit evidence is removed. Net movement leads the financial summary while all existing summary values and calculations remain unchanged.
 
 The report detail is read-only. Existing Transaction mutation dialogs remain only on the owned Student workflow. The UX review did not change report queries, financial calculations, export contracts, authorization, ownership rules, Dashboard code, Transaction Engine code, schema, or migrations.
 

@@ -116,6 +116,8 @@ Successful filenames contain the report family, normalized period, Jakarta gener
 
 Operator Reports, Operator Student report detail, and Admin Reports expose **Unduh CSV**, **Unduh Excel**, and **Unduh PDF** actions. Each action carries the current report filters; export always includes the complete permitted matching result rather than only the visible page.
 
+The presentation now states this scope directly next to the actions: “Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.” This is communication only; the Coordinator, Reporting Read Service, authorization, privacy, guard rails, document contract, and adapters are unchanged.
+
 ## Verification
 
 Automated coverage proves registry availability, configuration validation, row and byte limit enforcement, first-page oversized rejection, controlled HTTP errors, deterministic privacy-safe Jakarta filenames, UTF-8 CSV behavior, XLSX workbook/worksheet/header/row/layout generation, PDF metadata/summary/table/pagination generation, multipage coordination, current-filter forwarding, shared Rupiah/date formatting, hidden-identifier exclusion, cross-Operator isolation, Admin financial privacy, centralized route authorization, Reporting Read Service-only access, UI format gating, and existing Export Contract compatibility.

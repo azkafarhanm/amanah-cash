@@ -452,3 +452,18 @@ Protect financial integrity when the client cannot determine whether a submitted
 - [ ] Success follows confirmed persistence.
 - [ ] Balance, Amount, money counting, and totals never animate.
 - [ ] Reduced-motion behavior is verified.
+
+## 14. Reports Search and Export Context
+
+### Search
+
+- Debounce live report search for 350 ms.
+- Cancel pending search work and guard every scheduled navigation with a newest-request token; a stale search must not overwrite a later query.
+- Announce the settled result count once through the applied-report context.
+- Keep non-search filter changes explicit and preserve the current filter URL contract.
+
+### Export
+
+- Display the all-matching-data scope before each download action.
+- Treat download initiation as a navigation outcome, not a confirmed report generation success.
+- Preserve the existing controlled export-limit error and do not expose internal limits, identifiers, or implementation details.

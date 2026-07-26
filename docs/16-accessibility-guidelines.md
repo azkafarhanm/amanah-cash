@@ -79,7 +79,7 @@ Amanah Cash targets WCAG 2.2 Level AA for all approved workflows. Accessibility 
 
 ### Search
 
-Announce result count changes politely without announcing every keystroke verbosely. The clear control has an accessible name. No-results copy is visible and programmatically discoverable.
+Announce settled result count changes politely without announcing every keystroke verbosely. Debounced live search must cancel or supersede pending work so an older query cannot replace newer results. The clear control has an accessible name. No-results copy is visible and programmatically discoverable.
 
 ### Loading
 
@@ -113,7 +113,7 @@ Announce that the application is checking whether the Transaction was saved. Dis
 - The centered desktop Dialog and mobile/PWA bottom Sheet expose the same accessible name, description, controls, validation, focus behavior, and outcomes.
 - Toasts do not contain the only copy of critical information.
 - Lists and rows expose one coherent navigation target rather than nested competing controls.
-- Tables, if Reports are ever approved, include captions/labels, header associations, and a responsive alternative that preserves relationships.
+- Reports tables include captions/labels, header associations, sortable-heading state, and a responsive alternative that preserves relationships. Any secondary row disclosure retains an explicit summary and keeps notes, revision, actor, and audit evidence available to keyboard and screen-reader users.
 - Charts, if ever approved, require a text summary and equivalent data table.
 
 ## 12. Language and Cognitive Accessibility

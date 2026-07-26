@@ -424,3 +424,30 @@ Transaction Entry has no normal empty-data state. If required Student or mode co
 ## 6. Screen Verification Gate
 
 Every implementation must demonstrate all applicable states at 320px, 390px, 480px, and a centered desktop viewport; keyboard-only operation; mobile keyboard behavior; 200% text zoom; reduced motion; and screen-reader announcements. Financial truth and scope checks remain governed by `docs/17-design-review-checklist.md`.
+
+## 7. Reports
+
+### 7.1 Screen Purpose
+
+Reports are read-only evidence surfaces. Operator reports show only the current Operator's active financial records; Admin reports show only approved administrative data. Reports never authorize access, recalculate financial values, or broaden the export scope.
+
+### 7.2 Layout and Interaction
+
+1. Screen title and role-specific scope explanation.
+2. Visible filter form.
+3. Applied-report context: matching count followed by compact active-filter labels.
+4. Summary statistics, where the Operator financial report leads with net movement.
+5. Responsive table or record cards and pagination.
+6. Export actions with the explicit all-matching-data scope statement.
+
+Search waits 350 ms after typing stops, then replaces the current report URL. A cancelled or superseded search must never navigate after a newer query. Period, Student/type/status, and custom-date controls retain the explicit Apply action. Sorting is performed only from sortable table headings; the selected heading exposes its direction.
+
+Desktop rows prioritize time, subject, category/type, amount, and Balance-after evidence where authorized. Secondary notes, reason, revision, actor, and audit reference are available through a labelled native disclosure. Mobile cards preserve the same data and disclosure without horizontal scrolling.
+
+### 7.3 Export Scope
+
+The export block states: `Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.` It must not imply export success, bypass current ownership/role scope, or conceal applicable size-limit failures.
+
+### 7.4 Accessibility and States
+
+The context count is a concise polite status update. Tables provide captions, column headers, and sort state; mobile cards retain field labels. Loading reserves the filter, context, summary, and result geometry without inventing values. Empty states distinguish no assignment, default-period absence, no search result, and other filtered absence. Keyboard users can operate filters, sorting, disclosures, export links, and pagination with visible focus.

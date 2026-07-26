@@ -28,20 +28,30 @@ export function ReportFilters({ filters, students, basePath, lockedStudentId }: 
     <label className={styles.field}>Jenis transaksi<select name="type" defaultValue={filters.type ?? ""}><option value="">Semua jenis</option><option value="DEPOSIT">Setoran</option><option value="WITHDRAWAL">Penarikan</option><option value="CORRECTION">Koreksi</option></select></label>
     <label className={styles.field}>Periode<select name="period" defaultValue={filters.period}><option value="TODAY">Hari ini</option><option value="WEEK">Minggu ini</option><option value="MONTH">Bulan ini</option><option value="CUSTOM">Rentang khusus</option><option value="ALL">Semua waktu</option></select></label>
     <label className={styles.field}>Status Siswa<select name="status" defaultValue={filters.status ?? ""}><option value="">Semua status</option><option value="ACTIVE">Aktif</option><option value="INACTIVE">Tidak aktif</option><option value="ARCHIVED">Diarsipkan</option></select></label>
-    <label className={styles.field}>Pencarian<input type="search" name="search" defaultValue={filters.search} placeholder="Cari nama Siswa, catatan, atau alasan" autoComplete="off" /></label>
-    <div className={styles.sortGroup} role="group" aria-labelledby="operator-report-sort-label"><span id="operator-report-sort-label" className={styles.sortGroupLabel}>Urutan hasil</span><div className={styles.sortFields}>
-      <label className={styles.field}>Berdasarkan<select name="sort" defaultValue={filters.sort}><option value="occurredAt">Waktu</option><option value="student">Nama Siswa</option><option value="amount">Jumlah</option></select></label>
-      <label className={styles.field}>Arah<select name="direction" defaultValue={filters.direction}><option value="desc">Menurun</option><option value="asc">Menaik</option></select></label>
-    </div></div>
+    <label className={styles.field}>Pencarian<input type="search" name="search" defaultValue={filters.search} placeholder="Cari nama Siswa, catatan, alasan, atau operator" autoComplete="off" /></label>
   </ReportFilterForm>;
+}
+
+function FilterContext({ count, filters, students, periodLabel }: { count: number; filters: NormalizedReportFilters; students: ReportStudentOption[]; periodLabel: string }) {
+  const active = [
+    periodLabel,
+    filters.studentId ? students.find((student) => student.id === filters.studentId)?.name : undefined,
+    filters.type ? transactionTypeLabel[filters.type] : undefined,
+    filters.status ? filters.status === "ACTIVE" ? "Siswa aktif" : filters.status === "INACTIVE" ? "Siswa tidak aktif" : "Siswa diarsipkan" : undefined,
+    filters.search ? `Pencarian: ${filters.search}` : undefined
+  ].filter((item): item is string => Boolean(item));
+  return <section className={styles.filterContext} aria-labelledby="operator-filter-context-title">
+    <div><h2 id="operator-filter-context-title">Konteks laporan</h2><p role="status" aria-live="polite">{count.toLocaleString("id-ID")} transaksi ditemukan</p></div>
+    <div><span>Filter aktif:</span><ul>{active.map((item) => <li key={item}>{item}</li>)}</ul></div>
+  </section>;
 }
 
 export function ReportSummary({ result }: { result: OperatorReportResult }) {
   const summary = result.summary;
   return <section className={styles.summary} aria-labelledby="report-summary-title"><h2 id="report-summary-title">Ringkasan laporan</h2><div className={styles.summaryGrid}>
+    <article><span>Pergerakan bersih</span><strong>{signedRupiah(summary.netMovement)}</strong><small>{summary.netMovement === "0" ? "Tidak ada perubahan bersih pada periode ini" : "Setoran dikurangi penarikan dan efek koreksi"}</small></article>
     <article><span>Total setoran</span><strong>{rupiah(summary.deposits)}</strong><small>{summary.deposits === "0" ? "Belum ada setoran pada periode ini" : "Akumulasi setoran pada periode ini"}</small></article>
     <article><span>Total penarikan</span><strong>{rupiah(summary.withdrawals)}</strong><small>{summary.withdrawals === "0" ? "Belum ada penarikan pada periode ini" : "Akumulasi penarikan pada periode ini"}</small></article>
-    <article><span>Pergerakan bersih</span><strong>{signedRupiah(summary.netMovement)}</strong><small>{summary.netMovement === "0" ? "Tidak ada perubahan bersih pada periode ini" : "Setoran dikurangi penarikan dan efek koreksi"}</small></article>
     <article><span>Jumlah transaksi</span><strong>{summary.transactionCount.toLocaleString("id-ID")}</strong><small>{summary.transactionCount === 0 ? "Belum ada transaksi pada periode ini" : "Transaksi aktif dalam hasil laporan"}</small></article>
     <article><span>Siswa aktif</span><strong>{summary.activeStudents.toLocaleString("id-ID")}</strong><small>{summary.activeStudents === 0 ? "Tidak ada Siswa aktif dalam cakupan" : "Siswa aktif dalam cakupan laporan"}</small></article>
     <article><span>Periode</span><strong className={styles.periodValue}>{summary.periodLabel}</strong><small>Zona waktu Asia/Jakarta</small></article>
@@ -51,7 +61,7 @@ export function ReportSummary({ result }: { result: OperatorReportResult }) {
 function sortLink(basePath: string, filters: NormalizedReportFilters, sort: NormalizedReportFilters["sort"], label: string) {
   const active = filters.sort === sort;
   const direction = active && filters.direction === "desc" ? "asc" : "desc";
-  return <Link aria-label={`Urutkan ${label} ${direction === "asc" ? "menaik" : "menurun"}`} href={reportHref(basePath, filters, { sort, direction, page: "1" })}>{label}{active ? filters.direction === "asc" ? " ↑" : " ↓" : ""}</Link>;
+  return <Link aria-label={`Urutkan ${label} ${direction === "asc" ? "menaik" : "menurun"}`} href={reportHref(basePath, filters, { sort, direction, page: "1" })} scroll={false}>{label}{active ? filters.direction === "asc" ? " ↑" : " ↓" : ""}</Link>;
 }
 
 export function OperatorReportTable({ result, basePath, detailBasePath, lockedStudentId }: { result: OperatorReportResult; basePath: string; detailBasePath: string; lockedStudentId?: string }) {
@@ -68,19 +78,18 @@ export function OperatorReportTable({ result, basePath, detailBasePath, lockedSt
       action={noAssignedStudents ? <Link className={styles.emptyAction} href="/operator/students">Lihat daftar Siswa</Link> : searchEmpty ? <Link className={styles.emptyAction} href={clearSearchHref}>Hapus pencarian</Link> : filteredEmpty ? <Link className={styles.emptyAction} href={basePath}>Reset filter</Link> : <Link className={styles.emptyAction} href="/operator/students">Buka daftar Siswa</Link>}
     />;
   }
-  return <section className={styles.tableSection} aria-labelledby="report-table-title"><header><h2 id="report-table-title">Riwayat transaksi</h2><p role="status" aria-live="polite">{result.total.toLocaleString("id-ID")} transaksi aktif cocok dengan filter saat ini.</p></header><div className={styles.tableWrap}><table className={styles.table}><caption className={styles.visuallyHidden}>Daftar transaksi laporan keuangan</caption><thead><tr><th scope="col" aria-sort={result.filters.sort === "occurredAt" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "occurredAt", "Waktu")}</th><th scope="col" aria-sort={result.filters.sort === "student" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "student", "Siswa")}</th><th scope="col">Jenis</th><th scope="col" aria-sort={result.filters.sort === "amount" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "amount", "Jumlah")}</th><th scope="col">Saldo setelah</th><th scope="col">Catatan</th><th scope="col">Revisi</th></tr></thead><tbody>{result.items.map((item) => <tr key={item.id} id={item.auditId ? `audit-${item.auditId}` : undefined}>
+  return <section className={styles.tableSection} aria-labelledby="report-table-title"><header><h2 id="report-table-title">Riwayat transaksi</h2><p>Urutkan hasil melalui judul kolom Waktu, Siswa, atau Jumlah.</p></header><div className={styles.tableWrap}><table className={styles.table}><caption className={styles.visuallyHidden}>Daftar transaksi laporan keuangan</caption><thead><tr><th scope="col" aria-sort={result.filters.sort === "occurredAt" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "occurredAt", "Waktu")}</th><th scope="col" aria-sort={result.filters.sort === "student" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "student", "Siswa")}</th><th scope="col">Jenis</th><th scope="col" aria-sort={result.filters.sort === "amount" ? result.filters.direction === "asc" ? "ascending" : "descending" : "none"}>{sortLink(basePath, result.filters, "amount", "Jumlah")}</th><th scope="col">Saldo setelah</th><th scope="col">Detail</th></tr></thead><tbody>{result.items.map((item) => <tr key={item.id} id={item.auditId ? `audit-${item.auditId}` : undefined}>
     <td data-label="Waktu"><time dateTime={item.occurredAt}>{reportDate(item.occurredAt)}</time></td>
     <td data-label="Siswa"><Link href={`${detailBasePath}/${encodeURIComponent(item.studentId)}`}>{item.studentName}</Link><small><StudentStatusBadge status={item.studentStatus} /></small></td>
     <td data-label="Jenis"><StatusBadge tone={item.type === "DEPOSIT" ? "success" : item.type === "CORRECTION" ? "warning" : "neutral"}>{transactionTypeLabel[item.type]}</StatusBadge>{item.correctionDirection ? <small>{correctionDirectionLabel(item.correctionDirection)}</small> : null}</td>
     <td data-label="Jumlah" className={styles.amount}>{transactionSign(item)} {rupiah(item.amount)}</td>
     <td data-label="Saldo setelah">{item.balanceAfter === null ? <span className={styles.unavailable}>Tidak tersimpan untuk revisi ini</span> : rupiah(item.balanceAfter)}</td>
-    <td data-label="Catatan"><span>{item.notes ?? "Tidak ada catatan"}</span>{item.reason ? <small>Alasan: {item.reason}</small> : null}</td>
-    <td data-label="Revisi"><span>Revisi {item.revision}</span><small>Diperbarui {reportDate(item.updatedAt)} oleh {item.operatorName}</small>{item.auditId ? <a href={`#audit-${item.auditId}`} aria-label={`Bukti audit revisi ${item.revision}`}>Audit {item.auditId.slice(0, 8)}</a> : null}</td>
+    <td data-label="Detail"><details className={styles.rowDetails}><summary>Detail transaksi</summary><dl><div><dt>Catatan</dt><dd>{item.notes ?? "Tidak ada catatan"}</dd></div>{item.reason ? <div><dt>Alasan</dt><dd>{item.reason}</dd></div> : null}<div><dt>Revisi</dt><dd>Revisi {item.revision}</dd></div><div><dt>Pembaruan</dt><dd>{reportDate(item.updatedAt)} oleh {item.operatorName}</dd></div>{item.auditId ? <div><dt>Audit</dt><dd><a href={`#audit-${item.auditId}`} aria-label={`Bukti audit revisi ${item.revision}`}>Audit {item.auditId.slice(0, 8)}</a></dd></div> : null}</dl></details></td>
   </tr>)}</tbody></table></div><ReportPagination basePath={basePath} result={result} /></section>;
 }
 
 export function ReportPagination({ basePath, result }: { basePath: string; result: OperatorReportResult }) {
-  return <nav className={styles.pagination} aria-label="Paginasi laporan"><span>Halaman {result.page} dari {result.pages} · {result.total.toLocaleString("id-ID")} transaksi</span><div>{result.page > 1 ? <Link href={reportHref(basePath, result.filters, { page: String(result.page - 1) })}>Sebelumnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Sebelumnya</span>}{result.page < result.pages ? <Link href={reportHref(basePath, result.filters, { page: String(result.page + 1) })}>Berikutnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Berikutnya</span>}</div></nav>;
+  return <nav className={styles.pagination} aria-label="Paginasi laporan"><span>Halaman {result.page} dari {result.pages} · {result.total.toLocaleString("id-ID")} transaksi</span><div>{result.page > 1 ? <Link href={reportHref(basePath, result.filters, { page: String(result.page - 1) })} scroll={false}>Sebelumnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Sebelumnya</span>}{result.page < result.pages ? <Link href={reportHref(basePath, result.filters, { page: String(result.page + 1) })} scroll={false}>Berikutnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Berikutnya</span>}</div></nav>;
 }
 
 export function AdminReportFilters({ result, basePath }: { result: AdminReportResult; basePath: string }) {
@@ -99,15 +108,32 @@ export function AdminReportTable({ result, basePath }: { result: AdminReportResu
   return <section className={styles.tableSection} aria-labelledby="admin-report-title"><header><h2 id="admin-report-title">Aktivitas administratif</h2><p role="status" aria-live="polite">{result.total.toLocaleString("id-ID")} aktivitas · {result.periodLabel}</p></header><div className={styles.tableWrap}><table className={styles.table}><caption className={styles.visuallyHidden}>Daftar aktivitas administratif</caption><thead><tr><th scope="col">Waktu</th><th scope="col">Kategori</th><th scope="col">Subjek</th><th scope="col">Rincian</th></tr></thead><tbody>{result.items.map((item) => <tr key={item.id}><td data-label="Waktu"><time dateTime={item.occurredAt}>{reportDate(item.occurredAt)}</time></td><td data-label="Kategori"><StatusBadge tone={item.kind === "OWNERSHIP_CHANGE" ? "warning" : item.kind === "STUDENT_ASSIGNMENT" ? "success" : "neutral"}>{adminReportKindLabel(item.kind)}</StatusBadge></td><td data-label="Subjek"><span>{item.href ? <Link href={item.href}>{item.subject}</Link> : item.subject}</span></td><td data-label="Rincian"><span>{item.description}</span></td></tr>)}</tbody></table></div><nav className={styles.pagination} aria-label="Paginasi laporan administratif"><span>Halaman {result.page} dari {result.pages} · {result.total.toLocaleString("id-ID")} aktivitas</span><div>{result.page > 1 ? <Link href={adminReportHref(basePath, query, result.page - 1)}>Sebelumnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Sebelumnya</span>}{result.page < result.pages ? <Link href={adminReportHref(basePath, query, result.page + 1)}>Berikutnya</Link> : <span className={styles.paginationDisabled} aria-disabled="true">Berikutnya</span>}</div></nav></section>;
 }
 
+export function AdminReportFilterContext({ result }: { result: AdminReportResult }) {
+  const active = [
+    result.periodLabel,
+    result.query.kind === "OPERATOR_ACTIVITY" ? "Aktivitas Operator" : result.query.kind === "STUDENT_ASSIGNMENT" ? "Penugasan Siswa" : "Perubahan kepemilikan",
+    result.query.action ? `Aksi: ${result.query.action}` : undefined,
+    result.query.search ? `Pencarian: ${result.query.search}` : undefined
+  ].filter((item): item is string => Boolean(item));
+  return <section className={styles.filterContext} aria-labelledby="admin-filter-context-title">
+    <div><h2 id="admin-filter-context-title">Konteks laporan</h2><p role="status" aria-live="polite">{result.total.toLocaleString("id-ID")} aktivitas ditemukan</p></div>
+    <div><span>Filter aktif:</span><ul>{active.map((item) => <li key={item}>{item}</li>)}</ul></div>
+  </section>;
+}
+
 export function OperatorReportExport({ result }: { result: OperatorReportResult }) {
   const formats = exportRegistry.availableFormats();
-  return <section className={styles.exportBar} aria-labelledby="operator-report-export-title"><div><h2 id="operator-report-export-title">Ekspor laporan</h2><p>Unduh seluruh hasil yang cocok dengan filter saat ini.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={operatorReportExportHref("/api/operator/reports/export", result.filters, item.format)} download>Unduh {item.label}</a>)}</div></section>;
+  return <section className={styles.exportBar} aria-labelledby="operator-report-export-title"><div><h2 id="operator-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={operatorReportExportHref("/api/operator/reports/export", result.filters, item.format)} download>Unduh {item.label}</a>)}</div></section>;
 }
 
 export function AdminReportExport({ result }: { result: AdminReportResult }) {
   const formats = exportRegistry.availableFormats();
   const query = { kind: result.query.kind, period: result.query.period, dateFrom: result.query.dateFrom, dateTo: result.query.dateTo, search: result.query.search, action: result.query.action };
-  return <section className={styles.exportBar} aria-labelledby="admin-report-export-title"><div><h2 id="admin-report-export-title">Ekspor laporan</h2><p>Unduh seluruh aktivitas administratif yang cocok dengan filter saat ini.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={adminReportExportHref("/api/admin/reports/export", query, item.format)} download>Unduh {item.label}</a>)}</div></section>;
+  return <section className={styles.exportBar} aria-labelledby="admin-report-export-title"><div><h2 id="admin-report-export-title">Unduh laporan</h2><p>Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat.</p></div><div className={styles.exportActions}>{formats.map((item) => <a key={item.format} className={styles.exportLink} href={adminReportExportHref("/api/admin/reports/export", query, item.format)} download>Unduh {item.label}</a>)}</div></section>;
+}
+
+export function OperatorReportFilterContext({ result }: { result: OperatorReportResult }) {
+  return <FilterContext count={result.total} filters={result.filters} students={result.students} periodLabel={result.summary.periodLabel} />;
 }
 
 export function ReportSkeleton() {

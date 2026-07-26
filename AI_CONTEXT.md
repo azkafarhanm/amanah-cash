@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
 **Last updated:** 2026-07-25
-**Current delivery state:** Sprint 2 complete (v1.1.0): Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
+**Current delivery state:** Sprint 3 Epic 1 complete: Reports Enhancement; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
 
 ## Project Purpose
 
@@ -34,6 +34,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 2 — QA Bug Fix Batch (Epic 1B): fixed Student live search scoping, solidified Correction button visual design, connected controlled form state for all filter fields with URL SearchParams synchronization, implemented instant reset action.
 - Sprint 2 — Final UI Polish (Epic 1C): standardized cursor behavior for enabled/disabled interactive elements across Report and Transaction filter forms, added hover feedback for Reset buttons, added automated CSS cursor assertions.
 - Sprint 2 — Dashboard Analytics & Insights (Epic 2 & 2B): implemented Operator Dashboard month-to-date cash flow metrics (Setoran Bulan Ini, Penarikan Bulan Ini, Arus Kas Bersih), operational attention alerts (`AttentionStudentsCard`), filtered activity feeds (recent corrections, recent withdrawals), Level 1 hero card styling, and full documentation in `docs/42-dashboard-implementation.md`.
+- Sprint 3 — Reports Enhancement (Epic 1): added 350 ms debounced Report search with cancellation and newest-request protection, concise applied-filter/result context for Operator and Admin reports, table-heading-only sorting, net-movement-first statistics, compact responsive audit-detail disclosures, and explicit all-matching-filtered-data export communication. Reporting reads, authorization, ownership isolation, calculations, export contracts, and adapters remain unchanged.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 
 
@@ -51,7 +52,7 @@ Every current sidebar route now resolves to an implemented module or `FeaturePla
 
 `/admin` is now an administrative dashboard containing only Operator/Student counts, current assignments, Operator audit summaries, and privacy-minimized ownership changes. `/operator` is an operational dashboard whose every Student and Transaction query is scoped by the authenticated Operator ID. It sums persisted owned Student balances and never reconstructs Balance from history.
 
-`/admin/reports` now provides paginated Operator lifecycle, initial assignment, and privacy-minimized ownership reports without financial fields. `/operator/reports` provides ownership-scoped active Transaction reports and `/operator/reports/students/[id]` provides read-only Student timelines. Report summaries group persisted active Transactions and reuse the centralized `effect` function; they never reconstruct Student Balance. Exact persisted audit `balanceAfter` is shown only when a visible Transaction revision has matching authorized evidence.
+`/admin/reports` now provides paginated Operator lifecycle, initial assignment, and privacy-minimized ownership reports without financial fields. `/operator/reports` provides ownership-scoped active Transaction reports and `/operator/reports/students/[id]` provides read-only Student timelines. Reports show a concise matching-count and active-filter context, use protected debounced live search, and expose sorting from table headings. Report summaries group persisted active Transactions and reuse the centralized `effect` function; they never reconstruct Student Balance. Exact persisted audit `balanceAfter` is shown only when a visible Transaction revision has matching authorized evidence.
 
 Admin and Operator report pages expose implemented CSV, Excel, and PDF downloads. `/api/admin/reports/export` and `/api/operator/reports/export` reuse centralized role authorization, then the Export Coordinator gathers every permitted matching page exclusively through the Reporting Read Service. Operator scope is forwarded on every page read. The first Reporting page supplies the matching total for a default 10,000-row preflight cap; `EXPORT_MAX_BYTES` optionally adds estimated and final-byte enforcement. Oversized results return controlled HTTP 413. Export documents are display-ready and omit internal identifiers; Admin exports contain administrative facts only.
 

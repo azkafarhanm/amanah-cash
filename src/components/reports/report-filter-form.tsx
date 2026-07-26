@@ -33,6 +33,9 @@ export function ReportFilterForm({
   const [pending, startTransition] = useTransition();
   const form = useRef<HTMLFormElement>(null);
   const fields = useRef<HTMLFieldSetElement>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const searchRequest = useRef<AbortController | undefined>(undefined);
+  const latestSearchRequest = useRef(0);
   const descriptionId = `${ariaLabel.toLowerCase().replaceAll(" ", "-")}-description`;
   const dateRangeId = `${descriptionId}-date-range`;
 
@@ -42,13 +45,13 @@ export function ReportFilterForm({
   }, [kind, pending]);
 
   function navigate(href: string) {
-    startTransition(() => router.push(href));
+    startTransition(() => router.push(href, { scroll: false }));
   }
 
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function hrefFromForm() {
+    if (!form.current) return basePath;
     const params = new URLSearchParams();
-    const formData = new FormData(event.currentTarget);
+    const formData = new FormData(form.current);
     for (const [key, value] of formData.entries()) {
       if (typeof value === "string" && value) params.set(key, value);
     }
@@ -58,7 +61,33 @@ export function ReportFilterForm({
       params.delete("dateTo");
     }
     const query = params.toString();
-    navigate(query ? `${basePath}?${query}` : basePath);
+    return query ? `${basePath}?${query}` : basePath;
+  }
+
+  function cancelPendingSearch() {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    searchRequest.current?.abort();
+  }
+
+  function scheduleSearch() {
+    cancelPendingSearch();
+    const controller = new AbortController();
+    const request = latestSearchRequest.current + 1;
+    latestSearchRequest.current = request;
+    searchRequest.current = controller;
+    searchTimer.current = setTimeout(() => {
+      if (controller.signal.aborted || request !== latestSearchRequest.current) return;
+      setDirty(false);
+      startTransition(() => router.replace(hrefFromForm(), { scroll: false }));
+    }, 350);
+  }
+
+  useEffect(() => () => cancelPendingSearch(), []);
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    cancelPendingSearch();
+    navigate(hrefFromForm());
   }
 
   return <form
@@ -75,9 +104,13 @@ export function ReportFilterForm({
       if (target instanceof HTMLSelectElement && target.name === "kind") setKind(target.value);
       setDirty(true);
     }}
+    onInput={(event) => {
+      const target = event.target;
+      if (target instanceof HTMLInputElement && target.name === "search") scheduleSearch();
+    }}
   >
     <p id={descriptionId} className={styles.filterDescription}>{description}</p>
-    <fieldset ref={fields} className={styles.filterFields} disabled={pending}>
+    <fieldset ref={fields} className={styles.filterFields}>
       <legend className={styles.visuallyHidden}>Pilihan filter</legend>
       {children}
       <div className={styles.dateRange} role="group" aria-labelledby={`${dateRangeId}-label`} aria-describedby={`${dateRangeId}-hint`}>
@@ -96,6 +129,7 @@ export function ReportFilterForm({
     <div className={styles.filterActions}>
       <button type="submit" disabled={pending} aria-busy={pending}>{pending ? "Menerapkan…" : "Terapkan filter"}</button>
       <button type="button" className={styles.resetButton} disabled={(!hasActiveFilters && !dirty) || pending} onClick={() => {
+        cancelPendingSearch();
         form.current?.reset();
         setPeriod("MONTH");
         setKind(initialKind ? "OPERATOR_ACTIVITY" : undefined);

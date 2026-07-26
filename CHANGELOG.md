@@ -6,7 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Sprint 3 — Epic 1: Reports Enhancement
+
+- Added 350 ms debounced Reports search with abortable pending work and newest-request protection so stale queries cannot navigate after newer input.
+- Added concise applied-filter context and matching counts above Operator and Admin report results.
+- Consolidated Operator sorting into accessible table headings, prioritized net movement in summaries, and moved secondary audit evidence into responsive native detail disclosures.
+- Clarified that CSV, Excel, and PDF downloads include all data matching the active filters at click time, not only the visible page; Export architecture and behavior are unchanged.
 
 ## [1.1.0] - 2026-07-25
 
