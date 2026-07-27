@@ -24,7 +24,7 @@ test("navigation exposes only the modules designated for each role", () => {
   const operator = navigationForRole("OPERATOR");
 
   assert.deepEqual(admin.map(({ label }) => label), ["Dashboard", "Operator", "Penugasan Siswa", "Laporan", "Pengaturan"]);
-  assert.deepEqual(operator.map(({ label }) => label), ["Dashboard", "Siswa", "Transaksi", "Laporan", "Pengaturan"]);
+  assert.deepEqual(operator.map(({ label }) => label), ["Dashboard", "Siswa", "Transaksi", "Laporan", "Pemeriksaan", "Pengaturan"]);
   assert.equal(admin.some(({ label }) => label === "Transaksi"), false);
   assert.equal(operator.some(({ label }) => label === "Operator"), false);
 });

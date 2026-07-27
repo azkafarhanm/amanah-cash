@@ -10,12 +10,26 @@ import { rupiah } from "@/components/transactions/presentation";
 import { StudentStatusBadge, studentDate } from "./presentation";
 import styles from "./students.module.css";
 
-export function StudentList({ result, query, basePath, scope, financialSummaries }: {
+export function StudentList({
+  result,
+  query,
+  basePath,
+  scope,
+  financialSummaries,
+  showFinancialSummary = scope === "operator",
+  showStatusFilter = true,
+  searchLabel = "Cari Siswa atau Operator",
+  searchPlaceholder = "Cari nama Siswa atau Operator..."
+}: {
   result: { items: StudentRecord[]; total: number; page: number; pages: number };
   query: { search?: string; status?: string };
   basePath: string;
   scope: "admin" | "operator";
   financialSummaries?: Record<string, StudentFinancialSummary>;
+  showFinancialSummary?: boolean;
+  showStatusFilter?: boolean;
+  searchLabel?: string;
+  searchPlaceholder?: string;
 }) {
   const router = useRouter();
   const [prevQuerySearch, setPrevQuerySearch] = useState(query.search);
@@ -58,17 +72,17 @@ export function StudentList({ result, query, basePath, scope, financialSummaries
   return <>
     <form className={styles.toolbar} method="get" onSubmit={(e) => { e.preventDefault(); updateParams(searchValue); }}>
       <label className={styles.field}>
-        Cari Siswa atau Operator
+        {searchLabel}
         <input
           className={styles.input}
           name="search"
           value={searchValue}
-          placeholder="Cari nama Siswa atau Operator..."
+          placeholder={searchPlaceholder}
           onChange={(e) => handleSearchChange(e.target.value)}
           autoComplete="off"
         />
       </label>
-      <label className={styles.field}>
+      {showStatusFilter ? <label className={styles.field}>
         Status
         <select
           className={styles.select}
@@ -81,12 +95,12 @@ export function StudentList({ result, query, basePath, scope, financialSummaries
           <option value="INACTIVE">Tidak aktif</option>
           <option value="ARCHIVED">Diarsipkan</option>
         </select>
-      </label>
+      </label> : null}
       <button className={styles.button} type="submit">Terapkan</button>
     </form>
-    {result.items.length === 0 ? <EmptyState kind="students" {...emptyCopy} /> : <><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Nama Siswa</th><th>Operator</th><th>Status</th>{scope === "operator" ? <th>Saldo saat ini</th> : null}<th>Dibuat</th></tr></thead><tbody>{result.items.map((student) => {
+    {result.items.length === 0 ? <EmptyState kind="students" {...emptyCopy} /> : <><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Nama Siswa</th><th>Operator</th><th>Status</th>{showFinancialSummary ? <th>Saldo saat ini</th> : null}<th>Dibuat</th></tr></thead><tbody>{result.items.map((student) => {
       const financial = financialSummaries?.[student.id];
-      return <tr key={student.id}><td data-label="Nama Siswa"><Link className={styles.link} href={`${basePath}/${student.id}`}>{student.name}</Link></td><td data-label="Operator">{student.operator.name}</td><td data-label="Status"><StudentStatusBadge status={student.status} /></td>{scope === "operator" ? <td data-label="Saldo saat ini"><span className={styles.balance}><strong>{rupiah(financial?.balance ?? "0")}</strong><small>{financial?.transactionCount ? `${financial.transactionCount.toLocaleString("id-ID")} transaksi tercatat` : "Belum ada transaksi tercatat"}</small></span></td> : null}<td data-label="Dibuat">{studentDate(student.createdAt)}</td></tr>;
+      return <tr key={student.id}><td data-label="Nama Siswa"><Link className={styles.link} href={`${basePath}/${student.id}`}>{student.name}</Link></td><td data-label="Operator">{student.operator.name}</td><td data-label="Status"><StudentStatusBadge status={student.status} /></td>{showFinancialSummary ? <td data-label="Saldo saat ini"><span className={styles.balance}><strong>{rupiah(financial?.balance ?? "0")}</strong><small>{financial?.transactionCount ? `${financial.transactionCount.toLocaleString("id-ID")} transaksi tercatat` : "Belum ada transaksi tercatat"}</small></span></td> : null}<td data-label="Dibuat">{studentDate(student.createdAt)}</td></tr>;
     })}</tbody></table></div><nav className={styles.pagination} aria-label="Paginasi"><span>Halaman {result.page} dari {result.pages} · {result.total} Siswa</span><div>{result.page > 1 ? <Link className={styles.link} href={href(result.page - 1)}>Sebelumnya</Link> : null} {result.page < result.pages ? <Link className={styles.link} href={href(result.page + 1)}>Berikutnya</Link> : null}</div></nav></>}
   </>;
 }

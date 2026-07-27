@@ -1,0 +1,133 @@
+.resultCard,
+.resultError {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.backLink {
+  justify-self: start;
+  min-height: var(--control-height-minimum);
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-action-primary);
+  font: var(--type-button);
+}
+
+.backLink:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.resultCard {
+  border-inline-start-width: var(--border-width-emphasis);
+}
+
+.resultMATCHED {
+  border-inline-start-color: var(--color-success-foreground);
+}
+
+.resultMISMATCHED {
+  border-inline-start-color: var(--color-error-foreground);
+}
+
+.resultUNAVAILABLE {
+  border-inline-start-color: var(--color-warning-foreground);
+}
+
+.resultHeader {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.resultHeader > div,
+.resultError {
+  min-width: 0;
+}
+
+.resultHeader > div {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.resultHeader h2,
+.resultHeader p,
+.resultError h2,
+.resultError p {
+  margin: var(--space-0);
+}
+
+.resultHeader h2,
+.resultError h2 {
+  color: var(--color-text-primary);
+  font: var(--type-section-title);
+}
+
+.resultHeader p,
+.resultError p,
+.refreshError {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.refreshError {
+  margin: var(--space-0);
+  padding: var(--space-3);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-error-foreground);
+  border-radius: var(--shape-control);
+}
+
+.resultValues {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--space-6);
+  margin: var(--space-0);
+}
+
+.resultValues > div {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-6);
+  border-block-end: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+}
+
+.resultValues dt {
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+}
+
+.resultValues dd {
+  margin: var(--space-0);
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+  font: var(--type-section-title);
+  font-variant-numeric: tabular-nums;
+}
+
+.resultValues > div:last-child {
+  grid-column: 1 / -1;
+}
+
+.resultCard > button,
+.resultError > button {
+  justify-self: start;
+}
+
+@media (max-width: 48rem) {
+  .resultValues {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resultValues > div:last-child {
+    grid-column: auto;
+  }
+}

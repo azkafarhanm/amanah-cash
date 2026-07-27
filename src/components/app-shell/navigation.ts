@@ -11,6 +11,7 @@ const operatorNavigation: readonly NavigationItem[] = [
   { label: "Siswa", href: "/operator/students", icon: "students" },
   { label: "Transaksi", href: "/operator/transactions", icon: "transactions" },
   { label: "Laporan", href: "/operator/reports", icon: "reports" },
+  { label: "Pemeriksaan", href: "/operator/reconciliation", icon: "reports" },
   { label: "Pengaturan", href: "/operator/settings", icon: "settings" }
 ];
 
