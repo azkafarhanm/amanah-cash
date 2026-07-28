@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FinancialAuditTimeline } from "@/components/financial-assurance/financial-audit-timeline";
 import { ReconciliationResultCard } from "@/components/financial-assurance/reconciliation-result";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import styles from "@/components/financial-assurance/financial-assurance.module.css";
@@ -19,7 +20,8 @@ export default async function StudentReconciliationPage({
         title="Pemeriksaan Keuangan"
         description="Bandingkan saldo tersimpan dengan seluruh transaksi aktif di Amanah Cash."
       />
-      <ReconciliationResultCard key={studentId} studentId={studentId} />
+      <ReconciliationResultCard studentId={studentId} />
+      <FinancialAuditTimeline studentId={studentId} />
     </ContentWrapper>
   );
 }

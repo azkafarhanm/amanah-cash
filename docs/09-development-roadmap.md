@@ -1,9 +1,9 @@
 # Amanah Cash — Development Roadmap
 
-**Version:** 1.15
+**Version:** 1.16
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-25
+**Last Updated:** 2026-07-28
 
 ---
 
@@ -11,7 +11,7 @@
 
 This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
 
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, the separately approved Export Foundation sprint, and Sprint 2 (Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish — tagged v1.1.0) are complete. The next recommended product sprint is Reconciliation and Financial Audit Reads.
+Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, the separately approved Export Foundation sprint, Sprint 2 (Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish — tagged v1.1.0), and Sprint 3 Financial Assurance reconciliation/audit-timeline reads are complete. The next bounded Financial Assurance step is audit-detail presentation.
 
 ## 2. Delivery Rules
 
@@ -38,7 +38,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 - Export Foundation: complete with a Reporting Read Service-only coordinator, presentation-neutral documents, an extensible format registry, authorized complete-filtered-result CSV, Excel, and paginated PDF downloads, centralized default 10,000-row and optional byte guard rails, controlled oversized errors, and privacy-safe Jakarta filenames. No query/calculation, authorization, ownership, schema, Dashboard, Transaction Engine, or Export Contract behavior changed.
 - Export Production Hardening: partial. Safe synchronous guard rails are complete, but buffering, deployment capacity measurement, deadline/concurrency control, cross-page snapshot semantics, streaming, and any separately approved asynchronous path remain outstanding; see `docs/45-export-production-readiness-review.md`.
 - Sprint 2 (v1.1.0): complete. Student Financial History timeline with Jakarta timezone date grouping, centralized Rupiah formatting in `src/presentation/formatting.ts`, debounced live search with amount matching, Transaction controlled form state and URL SearchParams sync, Correction button visual polish, cursor/hover UX standardization, and 151 automated tests passing.
-- Milestone 4 is partial: Balance/history reads are complete; reconciliation and audit-history reads remain outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
+- Milestone 4 is partial: Balance/history, reconciliation, and immutable audit-timeline reads are complete; audit-detail presentation remains outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
 - Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
 
 ## 3. Milestone Overview
@@ -48,7 +48,7 @@ Roadmap milestones and delivery sprints are distinct planning units. Project Fou
 | 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
 | 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
 | 3 | Transaction Engine | Complete | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
-| 4 | Reconciliation and Financial Reads | Partial — Balance/history complete | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
+| 4 | Reconciliation and Financial Reads | Partial — Balance/history, reconciliation, and audit timeline complete; audit detail UI outstanding | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
 | 5 | Financial Presentation and Progressive History | Complete | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
 | 6 | Validation and Interaction States | Complete for financial flows | FR-3.2.1–FR-3.2.7 |
 | 7 | Failure Handling and Safe Retry | Complete | FR-3.2.1–FR-3.2.7; NFR-5.1–5.2 |

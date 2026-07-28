@@ -122,6 +122,103 @@
   justify-self: start;
 }
 
+.auditTimeline {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-4);
+}
+
+.auditTimelineHeader,
+.auditTimelineError,
+.auditTimelineCard,
+.auditPagination {
+  min-width: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.auditTimelineHeader h2,
+.auditTimelineHeader p,
+.auditTimelineError h2,
+.auditTimelineError p,
+.auditTimelineCard p,
+.auditLoadMoreError {
+  margin: var(--space-0);
+}
+
+.auditTimelineHeader h2,
+.auditTimelineError h2 {
+  color: var(--color-text-primary);
+  font: var(--type-section-title);
+}
+
+.auditTimelineHeader p,
+.auditTimelineError p,
+.auditTimelineCard p,
+.auditRevision,
+.auditLoadingStatus {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.auditTimelineList {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-0);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+.auditTimelineItem {
+  min-width: 0;
+  border-radius: var(--shape-control);
+}
+
+.auditTimelineItem:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.auditTimelineCard {
+  border-inline-start-width: var(--border-width-emphasis);
+  border-inline-start-color: var(--color-action-primary);
+}
+
+.auditTimelineCardHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.auditTimelineCardHeader time {
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+}
+
+.auditRevision {
+  font: var(--type-label);
+}
+
+.auditTimelineError,
+.auditLoadMoreError {
+  padding: var(--space-3);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-error-foreground);
+  border-radius: var(--shape-control);
+}
+
+.auditPagination {
+  justify-items: start;
+}
+
+.auditLoadingStatus {
+  min-height: var(--space-5);
+}
+
 @media (max-width: 48rem) {
   .resultValues {
     grid-template-columns: minmax(0, 1fr);
@@ -129,5 +226,9 @@
 
   .resultValues > div:last-child {
     grid-column: auto;
+  }
+
+  .auditTimelineCardHeader {
+    align-items: flex-start;
   }
 }

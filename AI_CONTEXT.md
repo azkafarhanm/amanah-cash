@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-26
-**Current delivery state:** Sprint 3 Epic 2 complete: Export Experience; READY WITH MINOR LIMITATIONS; reconciliation/audit presentation and deployment remain
+**Last updated:** 2026-07-28
+**Current delivery state:** Sprint 3 Epic 3 Batch 3C complete: Financial Assurance reconciliation and immutable audit timeline reads; audit detail UI and deployment remain
 
 ## Project Purpose
 
@@ -24,6 +24,9 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
 - Reporting Foundation implemented and production-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct no-assignment/first-use/search/filter states with contextual actions, explanatory zero summaries, grouped dates, pending/live-result feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
 - Export Foundation implemented as a downstream Reporting consumer: centralized authorized export endpoints, a read-service-only multipage coordinator, presentation-neutral documents, an extensible CSV/Excel/PDF registry with all three formats enabled, shared display formatters, UTF-8/escaped/spreadsheet-safe CSV serialization, presentation-only ExcelJS workbooks, and presentation-only paginated PDFKit reports with repeated table headers. Centralized row/optional-byte guard rails, controlled oversized errors, privacy-safe Jakarta filenames, and registry-gated UI actions apply to every format. No Reporting calculation/query, authorization, ownership, Dashboard, Transaction Engine, schema, or Export Contract behavior changed.
+- Financial Assurance implemented as a read-only, Operator-only layer. `financialAssuranceReadService().reconcile()` performs snapshot-consistent persisted-versus-active-Transaction comparison without repair. `financialAuditReadService()` returns ownership-scoped immutable timeline/detail DTOs, validates opaque cursors and filters, decodes only supported snapshot schemas into allow-listed changes, and never exposes raw snapshots or ORM models.
+- `GET /api/operator/reconciliation/students/:studentId/audit` and `GET /api/operator/reconciliation/students/:studentId/audit/:auditEventId` require the centralized Operator policy, return private no-store JSON, mask missing/cross-owner Student and audit resources as one 404 response, and preserve typed `UNSUPPORTED_SCHEMA` detail responses.
+- `/operator/reconciliation/students/[studentId]` renders the reconciliation result plus the API-only Financial Audit Timeline. The client treats `nextCursor` as opaque, appends only later pages, performs no financial calculation, and moves focus to the first appended audit item after Load More.
 - Transaction Workspace Batch 1 (Read Service & API Route Extension) implemented: added `transactionReadService().workspaceHistory(operatorId, query)` for multi-student cursor-paginated transaction streams, student notes/class identity, and today's cash flow drawer summaries (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), and created `GET /api/operator/transactions` endpoint guarded by `withAuthorization({ role: "operator" })` with 403 Forbidden enforcement for Platform Admin.
 - Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
 - Transaction Workspace Batch 2B (Operational Filters & Today's Cash Flow Metrics) implemented: added `WorkspaceMetricsBanner` displaying today's drawer cash metrics (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from API summary, and `WorkspaceFilterToolbar` supporting debounced search, transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period presets (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`) with URL SearchParams synchronization and server-side query refetching.
@@ -66,7 +69,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 151 passed, 0 failed.
+- Automated tests: 187 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -91,9 +94,11 @@ SQLite relational database and invariant triggers
 - `src/students/` owns Student validation, assignment, visibility scope, search, and pagination behavior.
 - `src/transactions/` owns exact-IDR validation, lifecycle effects, idempotency, serialization, Balance/version changes, and immutable financial audit.
 - `src/transactions/read-service.ts` owns the read-only ownership-scoped Balance/history projection and stable cursor contract.
+- `src/financial-assurance/read-service.ts` owns reconciliation; `src/financial-assurance/audit-read-service.ts` owns immutable audit timeline/detail projections, cursor/filter validation, snapshot schema decoding, and ownership-scoped reads.
 - `src/presentation/formatting.ts` is the single source of truth for Rupiah formatting (`rupiah()`, `formatThousand()`, `signedRupiah()`), date formatting (`reportDate()`, `formatTimelineGroup()`), and transaction presentation labels.
 - `src/components/transactions/` owns financial presentation, filters, dialogs, Student Financial History timeline, accessibility, and API invocation without authoritative business logic.
 - `src/components/transactions/student-timeline.tsx` owns the date-grouped financial timeline component for Operator Student Detail, rendering history grouped by Jakarta timezone date headers.
+- `src/components/financial-assurance/` owns API-only reconciliation and Financial Audit Timeline presentation. It has no Prisma dependency, no financial calculation, and no audit-detail UI in Batch 3C.
 - `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; implemented dashboards no longer use it.
 - `src/dashboard/` owns the fixed-query, read-only Admin and Operator dashboard projections.
 - `src/components/dashboard/` owns reusable statistic, trend, summary, activity, quick-action, grid, and skeleton presentation components.
@@ -130,6 +135,8 @@ SQLite relational database and invariant triggers
 - Transactions support controlled edit, soft delete, and restore. Transaction identity, Student, creation actor, and creation time remain immutable; database triggers prohibit hard delete.
 - `Student.balance` is persisted, non-negative, and changed only by the Transaction Engine. Every mutation updates Transaction state, Balance/version, and immutable audit atomically.
 - `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and privacy-minimized `OWNERSHIP_TRANSFER` are audited. Financial audit follows Student ownership; Platform Admin sees no Balance/Transaction payload through transfer audit.
+- `FinancialAuditEvent.occurredAt` is the server-generated immutable audit commit timestamp. API/UI call it `committedAt`; it is distinct from operator-supplied `Transaction.occurredAt` business occurrence time. Audit timelines order by commit time descending, then audit ID descending.
+- Audit timeline cursors are opaque transport tokens. UI must forward them unchanged and must not inspect, decode, or construct them. Audit detail returns only allow-listed typed changes; unsupported or malformed snapshot schemas return `UNSUPPORTED_SCHEMA` without raw snapshot exposure.
 - Financial mutations are allowed only for an `ACTIVE` Student owned by the current active Operator. Inactive and archived Students are financially read-only.
 - Every mutation uses a unique command ID and expected revision where applicable; retry cannot apply a Balance delta twice.
 - `AI_CONTEXT.md` is the canonical engineering handoff. Every implementation sprint must also assess and synchronize `CHANGELOG.md`, README, and roadmap status before completion.
@@ -144,7 +151,7 @@ SQLite relational database and invariant triggers
 
 ## Known Limitations
 
-- Financial-audit history and explicit reconciliation tooling are not implemented; the UI reads current Balance and operational Transaction history only.
+- Financial Audit detail presentation is not implemented; Batch 3C provides immutable audit timeline cards only.
 - Transaction migration intentionally refuses databases containing legacy financial rows because trustworthy actor/command/audit provenance cannot be inferred.
 - Student create/edit Server Action validation redirects do not restore submitted invalid values; the form reloads default or persisted values.
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
@@ -158,17 +165,14 @@ SQLite relational database and invariant triggers
 
 ## Outstanding Work
 
-- Implement Operator-only financial-audit history without a Platform Admin financial bypass.
-- Add explicit reconciliation verification that detects but never silently repairs Balance mismatches.
+- Implement an accessible Financial Audit detail view without exposing raw snapshots or creating a Platform Admin financial bypass.
 - Review production deployment, database topology, backups, OAuth configuration, dependency advisories, and Platform Admin bootstrap in their separately approved phases.
 - Benchmark representative export workloads, tune the implemented row/byte limits, and define deadline/concurrency policy before claiming measured production capacity.
 - Decide on backpressure-aware CSV streaming and multipage consistency at the Reporting read boundary. Any background-job export path requires a separately approved architecture change.
 
 ## Next Recommended Sprint
 
-Implement **Reconciliation and Financial Audit Reads** as the next bounded sprint (Sprint 3).
-
-The sprint should add ownership-scoped audit-history and reconciliation contracts without automatic repair or Platform Admin financial access. Advanced export document styling, advanced analytics, and future extension implementation remain outside that bounded sprint.
+Continue Financial Assurance with the separately approved audit-detail presentation batch. Advanced export document styling, advanced analytics, and future extension implementation remain outside that bounded sprint.
 
 ## Core Business Rules to Preserve
 

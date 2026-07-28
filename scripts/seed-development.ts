@@ -12,6 +12,7 @@ if (environment.production) {
 const adminEmail = process.env.DEV_SEED_ADMIN_EMAIL?.trim().toLocaleLowerCase("en-US");
 const operatorEmail = process.env.DEV_SEED_OPERATOR_EMAIL?.trim().toLocaleLowerCase("en-US");
 const studentName = process.env.DEV_SEED_STUDENT_NAME?.trim();
+const DEVELOPMENT_STUDENT_ID = "e12d64b2-4d8a-4f2a-9b46-0af0de7e0001";
 
 if (!adminEmail || !operatorEmail || !studentName) {
   throw new Error("DEV_SEED_ADMIN_EMAIL, DEV_SEED_OPERATOR_EMAIL, and DEV_SEED_STUDENT_NAME are required");
@@ -59,9 +60,9 @@ try {
       }
     });
     const student = await transaction.student.upsert({
-      where: { id: "dev-student" },
+      where: { id: DEVELOPMENT_STUDENT_ID },
       create: {
-        id: "dev-student",
+        id: DEVELOPMENT_STUDENT_ID,
         name: studentName,
         notes: "Local development seed",
         status: "ACTIVE",

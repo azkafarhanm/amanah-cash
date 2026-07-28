@@ -6,17 +6,19 @@ import { test } from "node:test";
 const root = resolve(import.meta.dirname, "..");
 const source = (path: string) => readFileSync(resolve(root, path), "utf8");
 
-test("Student reconciliation page reuses the protected layout and Batch 1C endpoint renderer", () => {
+test("Student reconciliation page reuses the protected layout and Financial Assurance renderers", () => {
   const page = source("src/app/(app)/(operator)/operator/reconciliation/students/[studentId]/page.tsx");
   const component = source("src/components/financial-assurance/reconciliation-result.tsx");
 
   assert.match(page, /<ContentWrapper>/);
   assert.match(page, /<SectionHeader/);
-  assert.match(page, /<ReconciliationResultCard key=\{studentId\} studentId=\{studentId\}/);
+  assert.match(page, /<ReconciliationResultCard studentId=\{studentId\}/);
+  assert.match(page, /<FinancialAuditTimeline studentId=\{studentId\}/);
+  assert.doesNotMatch(page, /key=\{studentId\}/);
   assert.ok(page.includes('href="/operator/reconciliation"'));
   assert.ok(component.includes("/api/operator/students/${encodeURIComponent(studentId)}/reconciliation"));
   assert.match(component, /cache: "no-store"/);
-  assert.doesNotMatch(page + component, /Prisma|studentManagement|transactionReadService|financialAudit|Audit Timeline/i);
+  assert.doesNotMatch(page + component, /Prisma|studentManagement|transactionReadService/);
 });
 
 test("Result Card renders only approved DTO evidence with shared presentation formatters", () => {

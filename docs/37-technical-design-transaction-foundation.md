@@ -78,6 +78,12 @@ The physical schema and storage representation are implementation-sprint deliver
 
 Audit events cannot be edited or soft/hard deleted through the application. Snapshot serialization must be deterministic, versioned, and limited to approved fields.
 
+### 2.3.1 Financial Assurance Read Contract
+
+The read layer exposes reconciliation and immutable audit evidence without changing financial state. Audit timeline and detail visibility follow current Student ownership and are Operator-only; missing, cross-owner, and missing-audit resources are intentionally indistinguishable. Timeline order is audit `occurredAt` descending then audit ID descending. In this entity, `occurredAt` means server commit time and is exposed to clients as `committedAt`; it must not be confused with Transaction business `occurredAt`.
+
+Timeline cursors are opaque versioned tokens. Clients may return them only as received and must not decode, inspect, synthesize, or use them as financial evidence. Detail projections decode a supported snapshot schema into allow-listed typed changes. Unknown or malformed schemas return typed unavailable detail and never return a raw snapshot.
+
 ## 3. Transaction lifecycle
 
 | Operation | Preconditions | Transaction mutation | Balance delta | Audit |

@@ -1,9 +1,9 @@
 # Amanah Cash — System Architecture
 
-**Version:** 1.5
+**Version:** 1.6
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-28
 
 ---
 
@@ -214,6 +214,14 @@ The connection sets `PRAGMA busy_timeout = 5000`. Exhausted lock acquisition ret
 ### 9.6 Read Operations
 
 Student, Balance, history, and authorized audit reads do not mutate state. Balance is read from persisted Student state independently of history pagination.
+
+### 9.7 Financial Assurance Read Boundary
+
+Financial Assurance is a read-only Operator capability. Reconciliation compares persisted Student Balance with independently aggregated active Transaction effects and reports a mismatch without repair. Immutable audit timeline/detail reads are scoped through the Student's current Operator ownership and mask missing and cross-owner Student or audit resources as the same not-found outcome.
+
+The protected JSON boundary is `GET /api/operator/reconciliation/students/:studentId/audit` and `GET /api/operator/reconciliation/students/:studentId/audit/:auditEventId`. Timeline pagination uses a versioned opaque cursor ordered by audit commit timestamp descending and audit ID descending. Presentation forwards a returned cursor unchanged, never decodes it, and never accesses Persistence directly.
+
+`FinancialAuditEvent.occurredAt` is the server-generated audit commit timestamp, exposed as `committedAt`; it is not the operator-supplied business occurrence time on `Transaction.occurredAt`. Audit detail decodes supported schemas only and exposes allow-listed typed fields, never raw snapshots.
 
 ## 10. Balance Lifecycle Flow
 

@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 3 — Epic 3: Financial Assurance
+
+- Added ownership-scoped, read-only reconciliation and immutable Financial Audit read services with typed DTOs, opaque cursor pagination, event/date filtering, schema-version-aware allow-listed detail projection, and no repair path.
+- Added protected Operator HTTP endpoints for audit timelines and projected detail: `GET /api/operator/reconciliation/students/:studentId/audit` and `GET /api/operator/reconciliation/students/:studentId/audit/:auditEventId`.
+- Added the Financial Audit Timeline beneath the Student Reconciliation result. It renders semantic event cards, committed timestamps, summaries, available revisions, loading/empty/error/retry states, and incremental opaque-cursor Load More pagination without client-side financial calculations.
+- Preserved current-Student ownership isolation, private no-store responses, raw-snapshot exclusion, and the distinction between audit commit time and Transaction business occurrence time.
+
 ### Sprint 3 — Epic 2: Export Experience
 
 - Replaced direct report download navigation with a local, deterministic export interaction for CSV, Excel, and PDF while preserving the existing endpoints, coordinator, adapters, authorization, filters, limits, and filenames.
