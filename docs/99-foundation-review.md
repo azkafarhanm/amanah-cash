@@ -207,7 +207,12 @@ These decisions remain unresolved but have different deadlines. They should be s
 - **Publishing metadata assets:** approve the canonical public URL and Open Graph image.
 - **Capability verification:** confirm that every visible claim and workflow in `24-landing-page-content.md` exists in the release candidate before publication.
 
-The absent document number `21`, future dark mode, future modules, support/legal links, and future commercial models are not current implementation blockers. They should remain out of scope until separately approved.
+At the time of this foundation review, document number `21`, dark mode, and
+Settings were intentionally absent and unapproved. The Product Owner later
+approved the bounded MVP Settings scope in
+`docs/21-mvp-settings-specification.md`; that newer specification supersedes
+this historical scope observation. Support/legal links, commercial models, and
+all other unapproved future modules remain outside scope.
 
 ## Overall Readiness
 

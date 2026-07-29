@@ -478,13 +478,40 @@ Kubernetes, service mesh, API gateway, read replicas, multiple databases, queues
 | Administrative/financial separation | Privacy outranks administrative visibility | ADR-003 |
 | Transaction, Balance, and audit strategy | Complete financial lifecycle is atomic, auditable, and ownership-scoped | ADR-004 |
 
-## 16. MVP Fit and Evolution
+## 16. Settings Architecture
+
+Settings follows the existing Presentation → Application → Domain/Persistence
+direction:
+
+- Presentation renders role-appropriate groups and explicit interaction states.
+- Application services authorize the active user, validate preference enums,
+  coordinate backup snapshots, and own the exclusive Restore maintenance flow.
+- Persistence stores per-user preferences and privacy-minimized maintenance
+  audit; no client accesses the database or backup payload directly.
+- Theme application consumes approved semantic tokens and contains no business
+  rules.
+- Version and sanitized Changelog use server/build-owned read sources.
+- Change Password is external Google navigation and introduces no credential
+  endpoint.
+
+Backup reads one database-consistent snapshot through a dedicated maintenance
+boundary. Restore first performs format, schema, referential, ownership,
+Balance/reconciliation, and audit validation in isolation. Only then may it
+enter exclusive maintenance, verify a safety backup, atomically replace state,
+and revoke sessions. Failed validation or replacement cannot expose a partially
+restored application.
+
+The maintenance boundary is Platform Admin-only but is not a financial-query
+boundary: it emits/accepts opaque artifacts and never returns decoded Student
+financial records to Admin presentation.
+
+## 17. MVP Fit and Evolution
 
 This architecture retains one deployable server and one relational database without distributed coordination. Student Balance, Transaction state, and FinancialAuditEvent form the financial consistency model; identity/session persistence remains isolated from financial data. Domain and persistence boundaries still allow internal replacement of technology without changing approved rules.
 
 Future evolution means changing an implementation behind an existing boundary when an approved requirement demands it. This document does not pre-design or authorize future features.
 
-## 17. Architecture Traceability
+## 18. Architecture Traceability
 
 | Architecture Concern | Requirements and Rules |
 |----------------------|------------------------|

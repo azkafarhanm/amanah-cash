@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-28
-**Current delivery state:** Sprint 4 Epic 4.2 Batch 4.2.1 complete: Admin Operator and Student form validation recovery; Release Sprint R1 remains on hold
+**Last updated:** 2026-07-29
+**Current delivery state:** Sprint 5 Epic 5.1 Batch 5.1.1 complete: Core Landing Content and FAQ; Release Sprint R1 remains on hold
 
 ## Project Purpose
 
@@ -10,7 +10,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 ## Completed Milestones
 
 - Product architecture, ADRs, technical design, database foundation, and engineering rules.
-- Next.js application foundation, Landing Page foundation, shared design tokens, reusable UI primitives, metadata, and local Geist font.
+- Next.js application foundation, Landing Page foundation and approved core narrative/FAQ, shared design tokens, reusable UI primitives, metadata, and local Geist font.
 - Google-only Auth.js authentication with registered-active-user admission and database sessions.
 - Centralized role and Student-ownership authorization with consistent route, API, and Server Action adapters.
 - Authenticated App Shell with role-aware navigation, protected route groups, loading, empty, forbidden, not-found, and error states.
@@ -73,7 +73,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 201 passed, 0 failed.
+- Automated tests: 208 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -165,7 +165,10 @@ SQLite relational database and invariant triggers
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
 - CSV, Excel, and PDF export are implemented. Advanced export presentation, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, and distributed infrastructure do not exist.
 - CSV, Excel, and PDF export are synchronous and fully buffered. They have a default 10,000-row cap and optional byte cap, but no deadline/concurrency control or cross-page snapshot and are not qualified to generate 30,000–100,000-row files. Such requests are rejected after the first Reporting page by default. See `docs/45-export-production-readiness-review.md`.
-- Centralized cross-Student transactions and settings remain roadmap modules represented by explicit placeholders rather than 404 pages. Reporting routes are implemented.
+- Settings is now an approved remaining MVP module governed by
+  `docs/21-mvp-settings-specification.md`; Admin and Operator routes retain
+  explicit placeholders until Sprint 8. The centralized Transaction Workspace
+  and Reporting routes are implemented.
 
 ## Outstanding Work
 
@@ -176,11 +179,12 @@ SQLite relational database and invariant triggers
 
 ## Next Recommended Sprint
 
-No feature Batch is currently `READY FOR IMPLEMENTATION`. Sprint 4 feature work
-defined by the executable roadmap is complete. Release Sprint R1 remains
-`ON HOLD` until the Product Owner explicitly declares MVP feature development
-complete and resumes deployment qualification. On-hold extension work must not
-be pulled forward.
+Batch 5.1.1 — Core Landing Content and FAQ is complete. No later Batch is
+currently `READY FOR IMPLEMENTATION`; Product Owner approval is required before
+the executable roadmap advances. Remaining Landing Page work and the approved
+MVP Settings module retain their documented blocked sequence. Release Sprint R1
+remains `ON HOLD` until the Product Owner explicitly declares MVP feature
+development complete and resumes deployment qualification.
 
 ## Core Business Rules to Preserve
 

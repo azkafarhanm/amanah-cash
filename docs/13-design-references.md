@@ -130,7 +130,12 @@ Reference audit and statement views with strong filters, totals, and tables. A c
 
 ### Settings
 
-Reference restrained native preference pages with grouped rows and plain consequences. Do not expose financial invariants as toggles. Settings are not approved for MVP.
+Reference restrained native preference pages with grouped rows and plain
+consequences. Settings is approved under
+`docs/21-mvp-settings-specification.md`; references may inform hierarchy and
+control clarity only. Do not copy account-profile, organization, integration,
+notification, branding, or enterprise-administration patterns. Never expose
+financial invariants as toggles.
 
 ## 8. Reference Capture Template
 

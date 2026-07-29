@@ -1,0 +1,170 @@
+.sectionContent {
+  display: grid;
+  gap: var(--landing-section-gap);
+}
+
+.sectionHeading {
+  display: grid;
+  max-width: var(--landing-copy-max);
+  gap: var(--landing-content-gap);
+}
+
+.sectionHeading h2,
+.sectionHeading p,
+.item h3,
+.item p,
+.workflowItem h3,
+.workflowItem p {
+  margin: var(--space-0);
+}
+
+.sectionHeading p,
+.item p,
+.workflowItem p {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.itemList,
+.workflowList {
+  margin: var(--space-0);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+.itemList {
+  display: grid;
+  gap: var(--landing-grid-gap);
+}
+
+.item {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  padding: var(--landing-card-padding);
+  background: var(--landing-card-background);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--landing-card-border);
+  border-radius: var(--landing-card-radius);
+  box-shadow: var(--shadow-none);
+}
+
+.itemIcon {
+  width: var(--size-6);
+  height: var(--size-6);
+  color: var(--color-action-primary);
+}
+
+.item h3,
+.workflowItem h3 {
+  font: var(--type-section-title);
+}
+
+.solutionAction,
+.workflowAction {
+  display: inline-flex;
+  width: fit-content;
+  min-height: var(--control-height-minimum);
+  align-items: center;
+  color: var(--color-action-primary);
+  font: var(--type-button);
+}
+
+.solutionAction:focus-visible,
+.workflowAction:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.workflowList {
+  display: grid;
+  gap: var(--landing-grid-gap);
+  counter-reset: workflow;
+}
+
+.workflowItem {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-3);
+  padding: var(--landing-card-padding);
+  background: var(--landing-card-background);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--landing-card-border);
+  border-radius: var(--landing-card-radius);
+  counter-increment: workflow;
+}
+
+.workflowItem::before {
+  display: grid;
+  width: var(--size-8);
+  height: var(--size-8);
+  place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--color-action-primary);
+  background: var(--color-primary-subtle);
+  content: counter(workflow);
+  font: var(--type-label);
+}
+
+.workflowCopy {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.faqContent {
+  width: var(--size-full);
+  max-width: var(--landing-faq-max-width);
+  margin-inline: auto;
+}
+
+.faqList {
+  display: grid;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+.faqItem {
+  border-block-end: var(--landing-faq-divider);
+}
+
+.faqItem h3,
+.faqAnswer {
+  margin: var(--space-0);
+}
+
+.faqButton {
+  display: grid;
+  width: var(--size-full);
+  min-height: var(--control-height-minimum);
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-5);
+  border: var(--space-0);
+  color: var(--color-text-primary);
+  background: var(--color-transparent);
+  font: var(--type-body-strong);
+  text-align: start;
+  cursor: pointer;
+}
+
+.faqButton:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.faqIndicator {
+  width: var(--size-5);
+  height: var(--size-5);
+}
+
+.faqAnswer {
+  padding-block-end: var(--space-5);
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}

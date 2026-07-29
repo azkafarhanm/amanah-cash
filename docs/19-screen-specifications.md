@@ -21,7 +21,10 @@ The MVP has exactly three primary screens:
 2. Student Detail
 3. Transaction Entry
 
-Create Student remains a responsive overlay owned by Student List. Dashboard, Reports, Settings, authentication, and offline transaction entry are outside scope.
+Create Student remains a responsive overlay owned by Student List. Dashboard,
+Reports, authentication, and offline transaction entry are outside this
+document's original core-screen scope. Settings is now approved and specified
+in Section 8 and `docs/21-mvp-settings-specification.md`.
 
 ## 2. Global Screen Contract
 
@@ -480,3 +483,35 @@ Activation keeps the report visible and changes only the export block to `Menyia
 ### 7.4 Accessibility and States
 
 The context count is a concise polite status update. Tables provide captions, column headers, and sort state; mobile cards retain field labels. Loading reserves the filter, context, summary, and result geometry without inventing values. Empty states distinguish no assignment, default-period absence, no search result, and other filtered absence. Keyboard users can operate filters, sorting, disclosures, export buttons, and pagination with visible focus. Export focus remains on its initiating button; preparing and terminal states are announced once per attempt, remain local to the current tab, and reset when the report filter URL changes or browser history restores another report state.
+
+## 8. Settings
+
+### 8.1 Screen Purpose and Layout
+
+Settings provides only recurring usability, continuity, security-handoff, and
+product-transparency controls approved by
+`docs/21-mvp-settings-specification.md`. One responsive content column contains
+Appearance, Preferences, Data for Platform Admin only, Security, and About.
+
+### 8.2 Controls
+
+- Theme is one mutually exclusive Light/Dark/System control.
+- Default items per page is limited to 10/20/50.
+- Backup prepares/downloads one sensitive artifact.
+- Restore uses file selection, server validation, metadata review, and a
+  destructive whole-state confirmation.
+- Change Password is visibly Google-managed external navigation.
+- Version is read-only; Changelog is normal internal navigation.
+
+### 8.3 States and Accessibility
+
+Loading reserves group/row geometry. Preference saving is local to its row;
+failure retains the committed value. Backup and Restore have explicit
+preparing, validation, confirmation, replacement, success, and failure states.
+Restore confirmation names both replacement and post-success sign-out.
+
+Controls expose group labels, descriptions, selected/current states, and visible
+focus. Status changes are announced once. Dialog close restores trigger focus;
+successful Restore intentionally moves to sign-in. Light and Dark presentations
+independently pass contrast, zoom, reflow, keyboard, screen-reader, and
+reduced-motion verification.

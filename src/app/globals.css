@@ -301,6 +301,8 @@
   --landing-section-padding-tablet: var(--space-16);
   --landing-section-padding-desktop: var(--space-24);
   --landing-content-gap: var(--space-4);
+  --landing-section-gap: var(--space-8);
+  --landing-grid-gap: var(--space-6);
   --landing-hero-title-mobile: var(--font-weight-bold) var(--font-size-40) /
     var(--line-height-heading-tight) var(--font-family-sans);
   --landing-hero-title-tablet: var(--font-weight-bold) var(--font-size-48) /
@@ -332,6 +334,9 @@
   --landing-card-padding: var(--space-6);
   --landing-footer-border: var(--border-width-default)
     var(--border-style-default) var(--color-border-default);
+  --landing-faq-divider: var(--border-width-default)
+    var(--border-style-default) var(--color-border-default);
+  --landing-faq-max-width: var(--size-content-192);
   --screen-shell-content-max: var(--layout-content-max);
   --landing-screen-content-max: var(--landing-content-max);
   --app-header-height: var(--size-14);

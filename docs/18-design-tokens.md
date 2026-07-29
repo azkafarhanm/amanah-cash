@@ -58,7 +58,9 @@ Reliability comes from consistent structure, legible type, exact values, restrai
 - Raw hexadecimal colors, pixel values, font declarations, shadows, opacity, z-index, and timing values are prohibited outside the Primitive layer.
 - Tailwind configuration and shadcn/ui variables must alias these tokens rather than create a parallel system.
 - A missing visual value requires a token proposal and review. Do not use an arbitrary value.
-- Dark mode is not defined. Only the approved light theme may be implemented.
+- Light is the base semantic mapping. Dark uses only the approved semantic
+  overrides in Section 5.1.1. System selects between those two mappings; it does
+  not define a third palette.
 - Financial values never use animation tokens to interpolate, count, or transition between numbers.
 
 ## 4. Primitive Tokens
@@ -331,6 +333,44 @@ Breakpoints express composition changes, not device detection.
 | `color.error.background` | `color.red.50` | Error surface |
 | `color.disabled.foreground` | `color.neutral.400` | Disabled content |
 | `color.disabled.background` | `color.neutral.100` | Disabled surface |
+
+#### 5.1.1 Dark Theme Semantic Overrides
+
+Tokens not listed retain their base semantic reference only when contrast
+verification passes. These overrides form an intentional dark surface hierarchy,
+not a mechanical inversion:
+
+| Semantic token | Dark reference |
+|---|---|
+| `color.background.canvas` | `color.neutral.950` |
+| `color.background.surface` | `color.neutral.900` |
+| `color.background.subtle` | `color.neutral.800` |
+| `color.text.primary` | `color.neutral.50` |
+| `color.text.secondary` | `color.neutral.300` |
+| `color.text.tertiary` | `color.neutral.400` |
+| `color.text.inverse` | `color.neutral.950` |
+| `color.border.default` | `color.neutral.700` |
+| `color.border.strong` | `color.neutral.600` |
+| `color.border.focus` | `color.blue.500` |
+| `color.action.primary` | `color.blue.500` |
+| `color.action.primary.hover` | `color.blue.600` |
+| `color.action.primary.subtle` | `color.neutral.800` |
+| `color.deposit.foreground` | `color.emerald.200` |
+| `color.deposit.background` | `color.emerald.900` |
+| `color.withdrawal.foreground` | `color.blue.100` |
+| `color.withdrawal.background` | `color.blue.800` |
+| `color.success.foreground` | `color.emerald.200` |
+| `color.success.background` | `color.emerald.900` |
+| `color.warning.foreground` | `color.amber.100` |
+| `color.warning.background` | `color.neutral.800` |
+| `color.error.foreground` | `color.red.100` |
+| `color.error.background` | `color.red.800` |
+| `color.disabled.foreground` | `color.neutral.500` |
+| `color.disabled.background` | `color.neutral.800` |
+
+Status meaning remains text/icon explicit. Every actual component pairing,
+including hover, focus, disabled, scrim, chart, dialog, and native-control state,
+must pass the contrast gate before the Dark theme is complete.
 
 ### 5.2 Typography Semantics
 

@@ -338,6 +338,51 @@ Every Student belongs to exactly one Operator. Platform Admin may assign or tran
 - Touch targets are at least 44px x 44px.
 - Text is readable without zooming on mobile devices.
 
+### 3.5 Settings
+
+The complete Settings behavior, role matrix, screen states, data contract, and
+exclusions are defined in `docs/21-mvp-settings-specification.md`.
+
+#### FR-3.5.1: Manage Appearance
+
+Authenticated users can select Light, Dark, or System theme. System is the
+default and follows device preference changes. The preference follows the
+provisioned user across authenticated devices. Dark mode uses an intentional,
+contrast-verified semantic palette rather than color inversion. Theme changes
+never alter financial meaning, business data, exports, or audit.
+
+#### FR-3.5.2: Manage Daily Preferences
+
+Authenticated users can choose a default page size of 10, 20, or 50 items for
+compatible paginated views; the default is 20. A valid explicit URL page size
+wins for that view. The preference never changes export limits, authorization
+scope, or non-paginated query limits. Delete confirmation and financial
+invariants are not configurable.
+
+#### FR-3.5.3: Back Up Operational State
+
+Platform Admin can create one versioned, opaque, database-consistent artifact
+that preserves approved business, identity, preference, migration, and audit
+state required for recovery. Secrets, environment configuration, logs, caches,
+and reusable sessions are excluded. Operators cannot access application
+backups.
+
+#### FR-3.5.4: Restore Operational State
+
+Platform Admin can validate and atomically restore a compatible Amanah Cash
+backup. Format, version, integrity, schema, referential, ownership, Balance, and
+audit checks pass before replacement. Restore creates a verified pre-restore
+safety backup, blocks concurrent writes, commits all state or none, invalidates
+sessions, and requires login again. Partial restore is unavailable.
+
+#### FR-3.5.5: Access Security and About Information
+
+Settings provides a Google-managed password-security handoff, the current
+application version, and a sanitized in-application Changelog. Amanah Cash never
+asks for, stores, changes, or resets a password. Version comes from one
+build-time source of truth; Changelog content contains released user-facing
+changes and excludes secrets and internal-only detail.
+
 ---
 
 ## 4. Data Model Summary
@@ -490,6 +535,8 @@ The following are explicitly **out of scope** for the MVP and will not be implem
 | Multiple currency support | Simplicity Over Generality (Principle 8) |
 | Notifications or reminders | Not required for core workflow |
 | Bulk operations | Not required for core workflow |
+| Application-managed password change | Google owns credentials; Settings provides only an explicit Google Account Security handoff |
+| Settings extensions listed in the Settings Specification | No clear day-to-day MVP value or conflicts with scope and safety |
 
 ---
 
@@ -514,6 +561,11 @@ The following are explicitly **out of scope** for the MVP and will not be implem
 | FR-3.4.1 | PWA Installation | Application is installable and launches standalone |
 | FR-3.4.2 | Navigation | Core workflows follow their documented tap counts |
 | FR-3.4.3 | Responsive Layout | Usable on mobile (primary) and desktop (secondary) |
+| FR-3.5.1 | Manage Appearance | Light, Dark, and System use complete accessible semantic palettes |
+| FR-3.5.2 | Manage Daily Preferences | Per-user page size safely initializes compatible paginated views |
+| FR-3.5.3 | Back Up Operational State | Admin-only consistent artifact preserves approved operational data |
+| FR-3.5.4 | Restore Operational State | Whole-state replacement is validated, atomic, recoverable, and session-invalidating |
+| FR-3.5.5 | Security and About | Google password handoff, build version, and sanitized Changelog are truthful |
 
 ---
 
@@ -526,5 +578,6 @@ This document is referenced by:
 - `docs/06-wireframe.md` — screen layouts
 - `docs/07-database-design.md` — schema implementation
 - `docs/08-system-architecture.md` — system architecture
+- `docs/21-mvp-settings-specification.md` — complete Settings product and design contract
 
 Changes to this document require review of all affected requirements, design documents, tests, and traceability references according to `docs/11-development-workflow.md`.

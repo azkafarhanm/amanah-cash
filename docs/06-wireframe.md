@@ -510,7 +510,52 @@ Wide viewport
 
 Larger viewports do not introduce sidebars, dashboards, bulk actions, or additional information. They preserve the mobile workflow with more surrounding space.
 
-## 14. Wireframe Traceability
+## 14. Settings Wireframes
+
+### 14.1 Operator
+
+```text
+┌──────────────────────────────────────┐
+│ Pengaturan                           │
+├──────────────────────────────────────┤
+│ Tampilan                             │
+│ Tema        ( ) Terang               │
+│             ( ) Gelap                │
+│             (•) Sistem               │
+├──────────────────────────────────────┤
+│ Preferensi                           │
+│ Item per halaman             [20 ▾]  │
+├──────────────────────────────────────┤
+│ Keamanan                             │
+│ Ubah kata sandi Google            ↗  │
+├──────────────────────────────────────┤
+│ Tentang                              │
+│ Versi aplikasi                 1.x.x │
+│ Lihat perubahan                   ›  │
+└──────────────────────────────────────┘
+```
+
+### 14.2 Platform Admin Data Group
+
+The Admin screen uses the same groups and adds Data between Preferences and
+Security:
+
+```text
+├──────────────────────────────────────┤
+│ Data                                 │
+│ [Buat & unduh backup]                │
+│ File berisi data operasional sensitif│
+│                                      │
+│ [Pilih file untuk restore]           │
+│ Restore mengganti seluruh data.      │
+└──────────────────────────────────────┘
+```
+
+After file validation, Restore opens a destructive confirmation dialog naming
+the artifact time/version, whole-state replacement, safety backup, and sign-out
+consequence. Invalid files remain inline and never open confirmation.
+
+## 15. Wireframe Traceability
 
 | Wireframe Area | Functional Requirements | Business Rules |
 |----------------|-------------------------|----------------|
@@ -522,3 +567,5 @@ Larger viewports do not introduce sidebars, dashboards, bulk actions, or additio
 | Withdrawal entry | FR-3.2.2 | BR-MON-001–003, BR-TXN-002, BR-BAL-004–005, BR-UI-001 |
 | Retry states | FR-3.2.1, FR-3.2.2 | BR-TXN-005, BR-PWA-001 |
 | Navigation and touch | FR-3.4.2, FR-3.4.3 | None |
+| Settings Appearance and Preferences | FR-3.5.1, FR-3.5.2 | BR-SET-001–002 |
+| Settings Data, Security, and About | FR-3.5.3–FR-3.5.5 | BR-SET-003, BR-BACKUP-001–004 |

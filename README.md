@@ -78,7 +78,8 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Wireframes](docs/06-wireframe.md) | Structured UI specification |
 | [Database Design](docs/07-database-design.md) | Schema and integrity |
 | [System Architecture](docs/08-system-architecture.md) | Technical responsibilities |
-| [Development Roadmap](docs/09-development-roadmap.md) | Nine delivery milestones |
+| [Development Roadmap](docs/09-development-roadmap.md) | Executable feature and release sequence |
+| [MVP Settings Specification](docs/21-mvp-settings-specification.md) | Approved appearance, preferences, Backup/Restore, Security, About, roles, states, and exclusions |
 | [Engineering Rules](docs/10-engineering-rules.md) | Contributor standards |
 | [Development Workflow](docs/11-development-workflow.md) | Requirement-to-release workflow |
 | [Authentication and Authorization TDS](docs/29-technical-design-authentication-authorization.md) | Implementation contract for identity, sessions, roles, and ownership |

@@ -32,7 +32,7 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 - [ ] The change cites approved Product Principles and requirement/rule IDs.
 - [ ] It fits the approved screen and user-flow inventory.
 - [ ] It introduces no unapproved feature, field, action, role, report, setting, or navigation layer.
-- [ ] Dashboard, Reports, and Settings are absent from MVP implementation unless requirements were formally approved first.
+- [ ] Dashboard, Reports, and Settings remain within their formally approved requirements.
 - [ ] External inspiration did not override project documentation.
 - [ ] Any product ambiguity was escalated instead of guessed.
 - [ ] Documentation impact and traceability are recorded.
@@ -137,12 +137,18 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 - [ ] Scrim, elevation, motion, focus, inert background, focus return, loading, error, Retry, unavailable, reflow, and reduced-motion behavior are verified.
 - [ ] Browser Back behavior is absent unless an approved Technical Design or Routing ADR authorizes it.
 
-### Future Dashboard, Reports, Settings
+### Dashboard, Reports, Settings
 
 - [ ] Formal approved requirements exist before review proceeds.
 - [ ] Dashboard avoids ornamental widgets and speculative metrics.
 - [ ] Reports define data meaning, filters, accessible tables, and chart purpose.
 - [ ] Settings never expose financial invariants as preferences.
+- [ ] Settings contains only the groups and controls approved by `docs/21-mvp-settings-specification.md`.
+- [ ] Light and Dark semantic palettes are reviewed independently; Dark is not inverted Light.
+- [ ] Data actions are Platform Admin-only and do not create routine financial browsing.
+- [ ] Restore communicates whole-state replacement, validates before confirmation, and ends existing sessions after success.
+- [ ] Change Password is explicitly a Google Account Security handoff and no application password field exists.
+- [ ] Version and Changelog content are truthful, read-only, and sanitized.
 
 ## 10. Motion — Blocking Where Applicable
 
@@ -217,5 +223,5 @@ Before the first production UI implementation, obtain explicit approval for:
 - final palette, typography, logo/app icon, radii, elevation, and content width;
 - selected framework/package versions and migration approach;
 - supported browser and assistive-technology matrix;
-- dark-mode decision;
-- the continued exclusion or formal requirements for Dashboard, Reports, and Settings.
+- any additional theme or Settings preference beyond the approved MVP contract;
+- formal requirements for any Dashboard, Reports, or Settings expansion.

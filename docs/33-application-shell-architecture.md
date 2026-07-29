@@ -48,7 +48,11 @@ The shell receives already-resolved role and session display data. It performs n
 | Settings | Reports |
 | | Settings |
 
-Platform Admin navigation intentionally excludes Transactions and Reports. Operator navigation excludes platform administration. Most links designate future module locations and currently resolve through the shared not-found experience; no feature destination has been implemented.
+Platform Admin navigation intentionally excludes Transactions and financial
+Reports. Operator navigation excludes platform administration. Settings routes
+are approved MVP destinations governed by
+`docs/21-mvp-settings-specification.md`; until their implementation sprint they
+continue to render the shared planned-feature placeholder.
 
 ## Async and failure boundaries
 

@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 5 — Epic 5.1: Core Landing Content and FAQ
+
+- Added the approved Problems, Solution, Workflow, Features, Security & Trust, and seven-question FAQ sections in the exact narrative order between the existing Hero and Footer.
+- Kept all static content server-rendered and isolated independent, multiple-open FAQ disclosure state to native buttons with expanded and controlled-region semantics.
+- Added the approved decorative Lucide icon inventory, responsive token-only section layouts, exact in-page destinations, and non-interactive static cards without changing business rules or Settings.
+- Added focused regression coverage for content inventory, source order, headings/lists, fragments, FAQ behavior, motion independence, icon semantics, token use, and prohibited claims; the complete suite now contains 208 passing tests.
+
 ### Sprint 4 — Epic 4.2: Admin Form Validation Recovery
 
 - Replaced query-string validation redirects for Admin Operator and Student create/edit forms with local React Action state while preserving the existing authoritative Domain and authorization boundaries.

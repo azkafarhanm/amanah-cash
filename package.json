@@ -29,6 +29,7 @@
     "better-sqlite3": "12.11.1",
     "exceljs": "4.4.0",
     "geist": "1.7.2",
+    "lucide-react": "1.27.0",
     "next": "16.2.11",
     "next-auth": "4.24.15",
     "pdfkit": "0.19.1",

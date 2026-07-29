@@ -101,6 +101,25 @@ These targets measure interaction efficiency. They are not network or backend la
 - Ownership-transfer audit is visible to authorized administrators without exposing financial values.
 - Audit payload schemas are versioned for future event and metadata expansion.
 
+### NFR-6.3: Backup and Restore Integrity
+
+- Backup captures one database-consistent operational snapshot.
+- Restore validates artifact, schema, referential, ownership, Balance, and audit
+  integrity before any replacement.
+- Restore creates a verified safety backup and commits the complete replacement
+  or preserves the current state.
+- Successful Restore invalidates all sessions.
+- Maintenance audit is privacy-minimized and never logs backup payloads,
+  credentials, secrets, or financial records.
+
+### NFR-6.4: Theme Quality
+
+- Light and Dark themes independently meet WCAG 2.2 AA contrast requirements
+  for text, controls, focus, status, and meaningful graphical boundaries.
+- Theme selection does not cause unreadable intermediate rendering or a
+  disruptive authenticated-page flash.
+- Dark is an intentional semantic mapping, not a filter or color inversion.
+
 ## 7. PWA and Device Support
 
 ### NFR-7.1: PWA Delivery

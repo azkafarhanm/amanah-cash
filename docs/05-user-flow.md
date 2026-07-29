@@ -453,7 +453,34 @@ References: FR-3.4.2
 - Cancel on Transaction Entry returns to Student Detail without creating a Transaction.
 - Leaving a form before successful persistence has no financial effect.
 
-## 16. Flow Traceability Summary
+## 16. Settings
+
+References: FR-3.5.1–FR-3.5.5 and
+`docs/21-mvp-settings-specification.md`
+
+```text
+Open Settings
+  --> Load per-user preferences
+  --> Appearance: choose Light / Dark / System
+  --> Preferences: choose 10 / 20 / 50 default items per page
+  --> Security: open Google Account Security externally
+  --> About: view Version or open sanitized Changelog
+  --> Platform Admin only: Data
+        --> Backup: prepare consistent artifact --> download or retry
+        --> Restore: choose file --> validate
+              --> invalid: explain safely; change nothing
+              --> valid: show metadata and replacement warning
+                    --> cancel: change nothing
+                    --> confirm: safety backup --> atomic replacement
+                          --> success: invalidate sessions --> sign in again
+                          --> failure: preserve current state --> retry safely
+```
+
+Operators never see or reach Data actions. Preference failure retains the prior
+committed value. Theme and page-size saves do not reload or mutate financial
+data.
+
+## 17. Flow Traceability Summary
 
 | Flow | Functional Requirements |
 |------|-------------------------|
@@ -469,3 +496,6 @@ References: FR-3.4.2
 | System failures and retry | FR-3.1.2, FR-3.1.4, FR-3.2.1, FR-3.2.2, FR-3.2.3 |
 | Empty states | FR-3.1.1, FR-3.1.2, FR-3.1.3, FR-3.1.4, FR-3.2.3 |
 | Back and cancel | FR-3.4.2 |
+| Appearance and preferences | FR-3.5.1, FR-3.5.2 |
+| Backup and Restore | FR-3.5.3, FR-3.5.4 |
+| Security and About | FR-3.5.5 |

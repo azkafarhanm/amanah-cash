@@ -181,7 +181,52 @@ Platform Admin may manage Operators, assignments, transfers, configuration, and 
 
 If an active user, valid role, or required Student ownership cannot be established, access is denied.
 
-## 8. Presentation Rules
+## 8. Settings and Recovery Rules
+
+### BR-SET-001: Settings Must Have Operational Value
+
+Only approved Appearance, page-size, Data, Security, and About behavior in
+`docs/21-mvp-settings-specification.md` may appear. Financial invariants,
+authorization, audit retention, destructive safety, and speculative preferences
+are never configurable.
+
+### BR-SET-002: Preferences Belong to the Provisioned User
+
+Theme and default page size persist per user. Theme is `LIGHT`, `DARK`, or
+`SYSTEM`; page size is `10`, `20`, or `50`. Invalid values fail without changing
+the committed preference.
+
+### BR-SET-003: Passwords Remain Google-Owned
+
+The Change Password action is an external Google Account Security handoff.
+Amanah Cash never receives, stores, validates, resets, or changes a password.
+
+### BR-BACKUP-001: Backup Is a Complete Consistent Snapshot
+
+Platform Admin may create an opaque, versioned snapshot containing the approved
+operational state. Operators cannot access it. Secrets, environment
+configuration, reusable sessions, logs, caches, and temporary files are
+excluded.
+
+### BR-BACKUP-002: Restore Is Validated and Atomic
+
+Restore validates compatibility and integrity, verifies ownership, Balance, and
+audit consistency, creates a pre-restore safety backup, prevents concurrent
+writes, and replaces the complete state atomically. Failure leaves current data
+unchanged.
+
+### BR-BACKUP-003: Recovery Revokes Sessions
+
+Successful Restore invalidates all prior sessions and requires Google
+authentication again. Backup and Restore outcomes append privacy-minimized
+maintenance audit without copying business payload into logs.
+
+### BR-BACKUP-004: Administration Does Not Become Financial Browsing
+
+Backup/Restore maintenance authority does not grant Platform Admin a routine
+financial-detail screen, report, search, or readable backup viewer.
+
+## 9. Presentation Rules
 
 ### BR-UI-001: Transaction Direction Is Explicit
 
@@ -199,7 +244,7 @@ Transaction history is presented newest first. Older entries may be loaded progr
 
 The UI must not imply that the balance is based only on currently displayed history.
 
-## 9. PWA and Connectivity Rules
+## 10. PWA and Connectivity Rules
 
 ### BR-PWA-001: Offline Transactions Are Not Supported
 
@@ -209,7 +254,7 @@ Offline capability and offline synchronization are outside the MVP. The applicat
 
 The application must satisfy supported-browser installability requirements. An automatic browser install prompt is not guaranteed; installation guidance may be provided instead.
 
-## 10. Requirement Traceability
+## 11. Requirement Traceability
 
 | Business Rule | Functional Requirements |
 |---------------|-------------------------|
@@ -228,3 +273,5 @@ The application must satisfy supported-browser installability requirements. An a
 | BR-UI-001 | FR-3.1.4, FR-3.2.1–FR-3.2.7 |
 | BR-UI-002–003 | FR-3.1.4, FR-3.2.3, FR-3.3.1 |
 | BR-PWA-001–002 | FR-3.4.1, Error Handling, Scope Boundary |
+| BR-SET-001–003 | FR-3.5.1, FR-3.5.2, FR-3.5.5 |
+| BR-BACKUP-001–004 | FR-3.5.3, FR-3.5.4 |

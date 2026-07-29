@@ -1,6 +1,6 @@
 # Amanah Cash — Executable Engineering Roadmap
 
-**Version:** 2.3
+**Version:** 3.1
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-29
@@ -51,21 +51,38 @@ Allowed Status values:
 
 ## 3. Current Progress
 
-The repository is complete through Sprint 3, Epic 3, Batch 4. The implemented
+The repository is complete through Sprint 4. The implemented
 system includes the application foundation, authentication and authorization,
 Operator and Student management, the complete Transaction lifecycle, persisted
 Balance and immutable audit, dashboards, reports, bounded CSV/Excel/PDF export,
 the Transaction Workspace, reconciliation, the Financial Audit Timeline, and
-the read-only Audit Detail Drawer.
+the read-only Audit Detail Drawer. Admin Student and Operator create/edit forms
+also preserve submitted values and expose accessible inline server-validation
+recovery.
 
 Repository Production Preflight is complete. Direct Auth.js, Next.js, and Prisma
 advisories with supported patch releases were remediated; production
 configuration validation and redacted operational diagnostics are implemented.
 The release recommendation remains `READY WITH MINOR LIMITATIONS`. Deployment
 qualification is not part of the current MVP feature-development phase and is
-held in Release Sprint R1. The next approved unfinished MVP feature is
-server-validation form recovery for Admin Student and Operator create/edit
-workflows, as required by the approved validation and error-handling contracts.
+held in Release Sprint R1.
+
+The remaining approved MVP application feature is completion of the public
+Landing Page defined by `docs/22-landing-page-strategy.md` through
+`docs/25-landing-page-implementation-plan.md`. The public route now provides its
+delivery foundation, Header, Hero, Problems, Solution, Workflow, Features,
+Security & Trust, FAQ, and Footer. Application Preview, Final CTA, responsive
+integration, motion, accessibility integration, and deployment-independent
+publication QA remain unfinished. Sprints 6–7 complete that application feature
+without starting deployment qualification.
+
+Settings is now an approved remaining MVP feature governed by
+`docs/21-mvp-settings-specification.md`. It follows Landing Page completion in
+Sprint 8 and replaces the Admin and Operator placeholders with focused
+Appearance, daily Preferences, Admin-only Data recovery, Security handoff, and
+About capabilities. Centralized cross-Student Transactions, Reports,
+reconciliation presentation, and financial audit presentation are already
+implemented; stale placeholder-era statements must not cause duplicate work.
 
 ## 4. Sprint 0 — Product and Application Foundation
 
@@ -696,7 +713,374 @@ action tests; affected implementation documentation.
 
 **Status:** `COMPLETE`
 
-## 9. Sprint R1 — Release and Deployment Qualification
+## 9. Sprint 5 — Landing Page Content Experience
+
+**Sprint Goal:** Complete the approved, deployment-independent public product
+narrative using truthful descriptions of the now-implemented MVP.
+
+**Status:** `COMPLETE`
+
+### Epic 5.1 — Core Narrative Sections
+
+**Objective:** Extend the existing Landing Page foundation with the approved
+Problems, Solution, Workflow, Features, Security & Trust, and FAQ sections.
+
+**Status:** `COMPLETE`
+
+#### Batch 5.1.1 — Core Landing Content and FAQ
+
+**Objective:** Implement the approved static narrative and accessible FAQ
+interaction without depending on unresolved brand, screenshot, canonical-origin,
+or deployment decisions.
+
+**Dependencies:** Completed Sprint 4; existing Landing Page Header/Hero/Footer
+foundation; approved Landing Page Strategy, Blueprint, Content Specification,
+Design Tokens, Component Guidelines, Motion Guidelines, and Accessibility
+Guidelines.
+
+**Affected modules:** `src/components/landing`, public-route styles and focused
+Landing Page tests; affected Landing Page implementation evidence within this
+roadmap only until the Batch completion synchronization step.
+
+**Acceptance Criteria:**
+
+- Problems, Solution, Workflow, Features, Security & Trust, and FAQ render in
+  the exact approved order between the existing Hero and Footer.
+- Visible copy, counts, ordering, icons, headings, lists, and in-page fragment
+  destinations match `docs/23-landing-page-blueprint.md` and
+  `docs/24-landing-page-content.md`.
+- Product claims describe only capabilities already implemented through Sprint
+  4; no pricing, registration, certification, integration, settings, offline
+  financial mutation, or future-feature claim is introduced.
+- Static content remains server-rendered; only the FAQ disclosure interaction
+  creates the minimal approved Client Component boundary.
+- FAQ disclosure uses native buttons, exposes expanded and controlled-region
+  relationships, supports keyboard operation and multiple open answers, and
+  remains usable with motion disabled.
+- All visual values resolve through approved Design Tokens, icons are treated
+  according to their semantic purpose, and static cards do not imply
+  interactivity.
+- Existing Header, Hero, Footer, `/login` access, authenticated product entry,
+  metadata, and PWA behavior remain functional.
+- Automated tests cover section order, exact content inventory, heading/list
+  semantics, fragment targets, FAQ behavior, reduced-motion fallback, and the
+  absence of unsupported claims or placeholder content in these sections.
+
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-07-29):**
+
+- Added the exact approved Problems, Solution, Workflow, Features, Security &
+  Trust, and seven-question FAQ content in the required server-rendered order.
+- Isolated disclosure state to independent FAQ item Client Components using
+  native buttons, expanded/controlled-region relationships, and motion-free
+  keyboard-operable behavior.
+- Reused approved responsive, surface, spacing, typography, focus, card, and FAQ
+  tokens; added the specified decorative Lucide icons without interactive card
+  styling.
+- Preserved the existing Header, Hero, Footer, routes, metadata, PWA behavior,
+  application boundaries, business rules, and Settings scope.
+- Verified `npm test` (208 passing), `npm run typecheck`, `npm run lint`,
+  `npm run prisma:validate`, `npm run build`, and `git diff --check`.
+
+## 10. Sprint 6 — Landing Page Product Evidence and Conversion
+
+**Sprint Goal:** Complete authentic application evidence and approved public
+entry actions without inventing assets, destinations, or product claims.
+
+**Status:** `BLOCKED`
+
+### Epic 6.1 — Application Preview and Final Actions
+
+**Objective:** Add the approved Application Preview, Hero evidence, Final CTA,
+and verified Footer destinations using real implemented-product captures.
+
+**Status:** `BLOCKED`
+
+#### Batch 6.1.1 — Authentic Screenshots and Application Preview
+
+**Objective:** Capture and present the approved Student List, Student Detail,
+and Transaction Entry evidence from one reconciled synthetic dataset.
+
+**Dependencies:** Batch 5.1.1 complete; Product Owner approval of the exact
+synthetic dataset, screenshot capture viewport, final screenshot assets, and
+redaction/provenance record.
+
+**Affected modules:** Landing Page Hero and Application Preview components,
+approved image assets and responsive derivatives, focused visual/content tests.
+
+**Acceptance Criteria:**
+
+- Screenshot A, B, and C show exactly the approved screens, modes, and states
+  from the implemented application.
+- Synthetic Student Balance reconciles with the complete synthetic Transaction
+  history and contains no real personal or financial data.
+- Every image has approved intrinsic dimensions, alternative text, caption,
+  responsive sizing, and provenance/redaction evidence.
+- The page remains understandable if images do not load and reserves image
+  space without avoidable layout shift.
+- No fake UI, invented statistic, unsupported capability, or decorative
+  substitute for missing product evidence is introduced.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Product Owner approval of the screenshot dataset, viewport, assets,
+and redaction/provenance record required by
+`docs/24-landing-page-content.md`.
+
+#### Batch 6.1.2 — Final CTA, Identity, and Verified Destinations
+
+**Objective:** Finish the public conversion flow and closing navigation with
+only approved, reachable destinations and identity assets.
+
+**Dependencies:** Batch 6.1.1 complete; Product Owner approval of Product
+Identity behavior, primary product-entry behavior, brand mark/wordmark treatment,
+and whether a verified Documentation destination enables the Footer Resource
+group.
+
+**Affected modules:** Landing Header, Hero actions, Final CTA, Landing Footer,
+approved identity assets, route/link tests.
+
+**Acceptance Criteria:**
+
+- Hero and Final CTA labels and destinations match the Content Specification and
+  preserve access to `/login` and the authenticated application.
+- Product Identity behavior is consistent in Header and Footer.
+- Only verified destinations render; the Footer Resource group stays absent
+  unless its Documentation destination is approved and reachable.
+- Visible `Amanah Cash` text remains available even if no graphical brand mark
+  is approved.
+- All internal links, fragments, keyboard focus transfers, and product-entry
+  paths pass automated route and interaction tests.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Product Owner decisions for public entry, Product Identity, brand
+treatment, and Documentation destination remain pending in
+`docs/24-landing-page-content.md`.
+
+## 11. Sprint 7 — Landing Page Integration and Feature Completion
+
+**Sprint Goal:** Integrate and verify the complete Landing Page as an
+application feature across approved responsive, accessibility, motion, and
+deployment-independent quality contracts.
+
+**Status:** `BLOCKED`
+
+### Epic 7.1 — Responsive, Accessible, and Performant Integration
+
+**Objective:** Finish the static page experience and close every
+deployment-independent Landing Page acceptance gate.
+
+**Status:** `BLOCKED`
+
+#### Batch 7.1.1 — Responsive Composition and Approved Motion
+
+**Objective:** Apply the Blueprint compositions and approved progressive motion
+to the completed page without changing semantic source order or hiding content.
+
+**Dependencies:** Batches 6.1.1 and 6.1.2 complete.
+
+**Affected modules:** All Landing Page components/styles, minimal reveal
+boundary, responsive/motion tests.
+
+**Acceptance Criteria:**
+
+- Mobile, tablet, desktop, and wide compositions match the Blueprint while
+  preserving semantic source order.
+- The page works at 320 px CSS width, orientation changes, text resize, and
+  200% zoom without clipping, overlap, hidden content, or horizontal scrolling.
+- Touch targets, spacing, screenshot containment, and focus visibility satisfy
+  the approved token and accessibility contracts.
+- Motion is progressive enhancement, activates only where mapped, reveals once,
+  never animates financial values, and resolves immediately under reduced
+  motion.
+- Header and Footer remain static and all content remains available before
+  enhancement or when enhancement fails.
+
+**Status:** `BLOCKED`
+
+**Blocker:** The complete approved content, evidence, and conversion composition
+from Sprint 6 is required before integration.
+
+#### Batch 7.1.2 — Accessibility and Deployment-Independent Publication QA
+
+**Objective:** Verify the completed public feature and record an evidence-backed
+MVP feature-completion result without beginning deployment or release
+qualification.
+
+**Dependencies:** Batch 7.1.1 complete.
+
+**Affected modules:** Landing Page components/styles only for confirmed defects;
+metadata that does not require a public origin; Landing Page tests and local QA
+evidence.
+
+**Acceptance Criteria:**
+
+- Landmark, heading, keyboard, skip-link, anchor focus, disclosure, image
+  alternative, contrast, reflow, text-resize, reduced-motion, and screen-reader
+  contracts pass the deployment-independent verification matrix.
+- Title, description, Open Graph text, and other origin-independent metadata
+  match the Content Specification.
+- Local production build, TypeScript, lint, focused tests, broken-link audit,
+  content audit, token audit, and image/layout checks pass.
+- Avoidable local performance, image, font, layout-shift, and script findings
+  are resolved without inventing an unapproved threshold.
+- No pending marker, broken action, undefined asset, fake evidence, placeholder
+  copy, unsupported claim, or undocumented UI remains in the completed feature.
+- Canonical URL, robots, sitemap, production-origin social assets, production
+  performance measurement, browser/device qualification, and release acceptance
+  remain in Release Sprint R1 and are not implemented by this Batch.
+- Completion evidence explicitly states whether the Product Owner can declare
+  MVP feature development complete; it does not resume deployment automatically.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Batch 7.1.1 must complete before final feature-level verification.
+
+## 12. Sprint 8 — MVP Settings
+
+**Sprint Goal:** Replace Settings placeholders with the approved daily-usability,
+recovery, security-handoff, and product-transparency module.
+
+**Status:** `BLOCKED`
+
+### Epic 8.1 — Appearance and Daily Preferences
+
+**Objective:** Deliver per-user theme and default-page-size preferences through
+the authenticated role-aware Settings screens.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.1.1 — Theme and Page-Size Preferences
+
+**Objective:** Implement Light, Dark, and System theme plus the 10/20/50 default
+items-per-page preference using the approved semantic and persistence contracts.
+
+**Dependencies:** Batch 7.1.2 complete; approved MVP Settings Specification and
+Dark semantic token overrides.
+
+**Affected modules:** Admin/Operator Settings routes, presentation/theme
+foundation, preference application/persistence, compatible paginated reads,
+focused accessibility and regression tests.
+
+**Acceptance Criteria:**
+
+- Both roles can select Light, Dark, or System; System is the default and follows
+  device preference changes.
+- Dark uses the complete approved semantic palette rather than inversion and
+  passes component-state contrast verification.
+- Both roles can select 10, 20, or 50 default items per page; 20 is the default
+  and a valid explicit URL value wins for that view.
+- Preferences follow the provisioned user, fail closed on invalid values, and
+  never alter authorization, financial data, exports, or audit.
+- Delete confirmation and every financial invariant remain non-configurable.
+
+**Status:** `BLOCKED`
+
+**Blocker:** The current executable sequence completes approved Landing Page
+feature work through Batch 7.1.2 first.
+
+### Epic 8.2 — Data Continuity
+
+**Objective:** Give Platform Admin a bounded, privacy-preserving manual Backup
+and whole-state Restore workflow.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.2.1 — Operational Backup
+
+**Objective:** Generate one versioned, opaque, database-consistent artifact that
+preserves the approved operational state.
+
+**Dependencies:** Batch 8.1.1 complete; approved Settings persistence and
+maintenance-audit schema.
+
+**Affected modules:** Admin Settings Data group, maintenance application and
+persistence boundaries, backup format/validation contract, authorization and
+recovery tests.
+
+**Acceptance Criteria:**
+
+- Only Platform Admin can generate or download an application backup.
+- The artifact includes approved business, identity, preference, migration, and
+  audit state while excluding secrets, configuration, logs, caches, and
+  reusable sessions.
+- Snapshot generation is database-consistent and records privacy-minimized
+  maintenance evidence.
+- Admin presentation cannot browse decoded financial payload and makes no
+  unsupported encryption claim.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Batch 8.1.1 establishes the Settings and preference persistence
+foundation required by the Data group.
+
+#### Batch 8.2.2 — Validated Atomic Restore
+
+**Objective:** Restore a compatible whole-application backup safely for computer
+migration, device replacement, manual recovery, or disaster recovery.
+
+**Dependencies:** Batch 8.2.1 complete.
+
+**Affected modules:** Admin Settings Restore interaction, maintenance
+coordination, isolated validation, atomic replacement, session revocation,
+maintenance audit, recovery tests.
+
+**Acceptance Criteria:**
+
+- Format, version, integrity, schema, referential, ownership, Balance, and audit
+  checks complete before replacement.
+- Restore requires explicit whole-state confirmation and a verified pre-restore
+  safety backup.
+- Concurrent writes are prevented; replacement commits completely or preserves
+  current state.
+- Successful Restore revokes sessions and requires Google login again.
+- Partial merge, backup browsing, scheduled/cloud backup, and secret restoration
+  remain absent.
+
+**Status:** `BLOCKED`
+
+**Blocker:** The approved Backup artifact and maintenance boundary from Batch
+8.2.1 must exist first.
+
+### Epic 8.3 — Security and About
+
+**Objective:** Complete Settings with a truthful Google security handoff,
+application Version, and sanitized Changelog.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.3.1 — Google Password Handoff, Version, and Changelog
+
+**Objective:** Deliver the remaining read/navigation capabilities without
+creating application password management, update services, or promotional UI.
+
+**Dependencies:** Batch 8.2.2 complete.
+
+**Affected modules:** Admin/Operator Settings Security and About groups,
+read-only Changelog route/content adapter, build-version source, route and
+content tests.
+
+**Acceptance Criteria:**
+
+- `Ubah kata sandi Google` clearly opens Google Account Security externally;
+  Amanah Cash never receives or changes a password.
+- Application Version is read-only and comes from one build-time source.
+- Changelog shows sanitized released user-facing changes newest first through a
+  stable in-application route.
+- Internal unreleased notes, secrets, exploit details, developer-only migration
+  steps, update checking, telemetry, support portal, and promotional content are
+  absent.
+- Settings completes the responsive, loading, saving, failure, keyboard, focus,
+  announcement, and role-authorization contracts in the approved specification.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Earlier Settings batches must complete before final module
+integration and acceptance.
+
+## 13. Sprint R1 — Release and Deployment Qualification
 
 **Sprint Goal:** Qualify and release the completed MVP in a selected production
 environment without expanding product scope or weakening financial,
@@ -879,21 +1263,21 @@ operational documentation; application code only for confirmed release defects.
 
 **Status:** `ON HOLD`
 
-## 10. Explicitly On-Hold Extension Work
+## 14. Explicitly On-Hold Extension Work
 
 **Sprint Goal:** Preserve documented extension boundaries without treating them
 as approved implementation commitments.
 
 **Status:** `ON HOLD`
 
-### Epic 10.1 — Export Architecture Extensions
+### Epic 14.1 — Export Architecture Extensions
 
 **Objective:** Hold architecture-changing export options until measurement
 demonstrates need and separate approval defines their contracts.
 
 **Status:** `ON HOLD`
 
-#### Batch 10.1.1 — Streaming and Cross-Page Consistency
+#### Batch 14.1.1 — Streaming and Cross-Page Consistency
 
 **Objective:** If separately approved, define backpressure-aware CSV streaming
 and point-in-time/high-water-mark semantics at the Reporting read boundary.
@@ -912,7 +1296,7 @@ HTTP delivery, cancellation/backpressure tests, architecture documentation.
 
 **Status:** `ON HOLD`
 
-#### Batch 10.1.2 — Asynchronous Oversized Export
+#### Batch 14.1.2 — Asynchronous Oversized Export
 
 **Objective:** If separately approved, define background generation, queue,
 storage, expiry, notification, and secure download behavior.
@@ -931,18 +1315,18 @@ approved queue, object storage, worker, or notification boundary.
 
 **Status:** `ON HOLD`
 
-### Epic 10.2 — Product Extensions Outside the MVP
+### Epic 14.2 — Product Extensions Outside the MVP
 
 **Objective:** Keep documented future ideas out of the implementation sequence
 until product requirements explicitly approve them.
 
 **Status:** `ON HOLD`
 
-#### Batch 10.2.1 — Unapproved Product Extensions
+#### Batch 14.2.1 — Unapproved Product Extensions
 
 **Objective:** Hold schedules, monthly allowance, categories, attachments,
 approvals, notifications, bulk operations, advanced analytics, advanced export
-styling, settings, and any remaining placeholder route behavior.
+styling, and any remaining unapproved placeholder route behavior.
 
 **Dependencies:** New or amended approved Functional Requirements, Business
 Rules, flows, architecture, Design System mapping, and acceptance criteria.
@@ -959,7 +1343,7 @@ exists.
 
 **Status:** `ON HOLD`
 
-## 11. Requirement and Evidence Map
+## 15. Requirement and Evidence Map
 
 | Delivery area | Authoritative evidence |
 |---|---|
@@ -969,17 +1353,29 @@ exists.
 | Architecture and persistence | `docs/08-system-architecture.md`, `docs/28-database-design.md`, `docs/36-adr-transaction-balance-and-audit.md`, `docs/37-technical-design-transaction-foundation.md` |
 | Authentication and authorization | `docs/27-adr-authentication-authorization.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md` |
 | Design implementation | `docs/12-ui-design-system.md`, `docs/14-component-guidelines.md`, `docs/16-accessibility-guidelines.md`, `docs/18-design-tokens.md` |
+| Remaining Landing Page feature | `docs/22-landing-page-strategy.md`, `docs/23-landing-page-blueprint.md`, `docs/24-landing-page-content.md`, `docs/25-landing-page-implementation-plan.md` |
+| Remaining MVP Settings feature | `docs/01-functional-requirements.md`, `docs/03-business-rules.md`, `docs/05-user-flow.md`, `docs/07-database-design.md`, `docs/08-system-architecture.md`, `docs/12-ui-design-system.md`, `docs/18-design-tokens.md`, `docs/19-screen-specifications.md`, `docs/21-mvp-settings-specification.md` |
 | Implemented delivery state and known MVP interaction gap | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/34-operator-management-implementation.md`, `docs/35-student-management-implementation.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
 | Production/export gaps | `docs/02-non-functional-requirements.md`, `docs/45-export-production-readiness-review.md` |
 
-## 12. Roadmap Integrity Check
+## 16. Roadmap Integrity Check
 
 At this revision:
 
-- First `READY FOR IMPLEMENTATION` Batch: **none**.
+- First `READY FOR IMPLEMENTATION` Batch: **none; Product Owner approval is
+  required before a later blocked Batch is promoted**.
 - Number of `READY FOR IMPLEMENTATION` Batches: **0**.
+- Batch 5.1.1 completed the approved core Landing Page narrative and accessible
+  FAQ without beginning product evidence, final actions, integration, or
+  Settings work.
 - Batch 4.2.1 completed the approved validation/error-handling requirement
   without changing Operator or Student Domain behavior.
+- Sprints 5–8 contain all remaining approved MVP application-feature work:
+  completing the public Landing Page and the focused MVP Settings module.
+- Settings is approved only within `docs/21-mvp-settings-specification.md`;
+  implemented Transactions, Reports, reconciliation, and audit presentation are
+  not scheduled again.
 - Deployment qualification and release acceptance are isolated in Release Sprint
-  R1 and remain `ON HOLD` until MVP feature development is complete.
+  R1 and remain `ON HOLD` until the Product Owner declares MVP feature
+  development complete.
 - Architecture-changing and unapproved product extensions remain `ON HOLD`.

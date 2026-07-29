@@ -322,7 +322,39 @@ These exclusions preserve Google-only authentication, Amanah Cash authorization,
 
 Auth.js with Google and the Database Session Strategy is implemented. The Transaction Foundation architecture adds actor attribution to future financial records/audit without changing authentication sessions or exposing financial data to Platform Admin.
 
-## 9. Design Decisions
+## 9. Settings and Maintenance Model
+
+### 9.1 UserPreference
+
+`UserPreference` belongs one-to-one to a provisioned user and contains only:
+
+- Theme: `LIGHT`, `DARK`, or `SYSTEM`, default `SYSTEM`;
+- Default page size: `10`, `20`, or `50`, default `20`; and
+- server-managed creation and update timestamps.
+
+A missing record has the same defaults. Preferences carry no financial meaning
+and cannot weaken Domain, authorization, audit, or destructive-safety rules.
+
+### 9.2 BackupArtifact
+
+`BackupArtifact` is a transient, versioned maintenance value—not a persistent
+business entity. It identifies format, source application/schema version,
+creation time, integrity check, and one consistent approved operational-state
+payload. It excludes secrets, configuration, reusable sessions, logs, and
+caches.
+
+### 9.3 MaintenanceAuditEvent
+
+`MaintenanceAuditEvent` is privacy-minimized evidence of a Backup or Restore
+attempt/outcome. It stores actor, operation, time, non-sensitive artifact
+metadata, outcome, and controlled failure category. It never stores the
+artifact or financial payload.
+
+Restore is a whole-application maintenance command outside the Student
+aggregate. It must validate every Student aggregate and global relationship
+before exclusive atomic replacement; it cannot partially mutate an aggregate.
+
+## 10. Design Decisions
 
 | Decision | Rationale |
 |----------|-----------|
@@ -338,7 +370,7 @@ Auth.js with Google and the Database Session Strategy is implemented. The Transa
 | Student lifecycle is explicit | Status classifies retained records without deleting them or independently changing authorization. |
 | Ownership transfer updates one edge | Authorization follows current responsibility while Transaction rows and Balance remain unchanged and transfer audit is appended. |
 
-## 10. Traceability
+## 11. Traceability
 
 | Domain Concern | Source Rules |
 |----------------|--------------|
@@ -353,3 +385,5 @@ Auth.js with Google and the Database Session Strategy is implemented. The Transa
 | Non-negative atomic mutation | FR-3.2.1–FR-3.2.7; NFR-3.3; BR-BAL-004–006 |
 | Financial audit traceability | FR-3.3.2; NFR-6.1–6.2; BR-AUD-001–004 |
 | Progressive history | FR-3.2.3; NFR-4.1; BR-UI-002–003 |
+| User preferences | FR-3.5.1–FR-3.5.2; BR-SET-001–002 |
+| Backup, Restore, and maintenance evidence | FR-3.5.3–FR-3.5.4; NFR-6.3; BR-BACKUP-001–004 |

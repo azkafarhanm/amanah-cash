@@ -47,12 +47,12 @@ Every current sidebar destination resolves as follows:
 | `/admin/operators` | Implemented Operator Management |
 | `/admin/students` | Implemented Student Management |
 | `/admin/reports` | Implemented privacy-safe administrative reporting |
-| `/admin/settings` | Planned feature placeholder |
+| `/admin/settings` | Approved MVP Settings placeholder pending Sprint 8 |
 | `/operator` | Implemented ownership-scoped operational dashboard |
 | `/operator/students` | Implemented owned-Student list |
-| `/operator/transactions` | Planned centralized-module placeholder; current Student-level transactions remain available |
+| `/operator/transactions` | Implemented centralized Transaction Workspace |
 | `/operator/reports` | Implemented ownership-scoped financial reporting |
-| `/operator/settings` | Planned feature placeholder |
+| `/operator/settings` | Approved MVP Settings placeholder pending Sprint 8 |
 
 Generic 404 remains reserved for unknown routes and missing resources.
 
@@ -75,4 +75,9 @@ Placeholder status is visible text, headings follow the page `h1` → placeholde
 
 ## 7. Known roadmap modules
 
-Still unimplemented: centralized cross-Student transaction workspace, exports, user/platform settings, reconciliation presentation, full financial-audit history, and advanced historical analytics. Placeholders do not imply approval, dates, or hidden functionality. Dashboard and report routes are now implemented and no longer use this placeholder contract.
+Still unimplemented: the approved MVP Settings module and advanced historical
+analytics. Settings placeholders now trace to
+`docs/21-mvp-settings-specification.md` and Sprint 8; they do not imply any
+additional preference. Dashboard, Transaction Workspace, report, export,
+reconciliation, and financial-audit presentation routes are implemented and no
+longer use this placeholder contract.

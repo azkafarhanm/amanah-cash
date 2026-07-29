@@ -222,13 +222,40 @@ Student deletion remains unsupported and foreign keys restrict removal while Tra
 
 The implementation adds Balance/version with zero defaults, replaces the unused legacy Transaction table, creates the lifecycle and audit schema, and verifies constraint ordering and reconciliation indexes. Because no application workflow previously created trustworthy financial provenance, the migration requires the legacy Transaction table to be empty and rolls back if it is not. It never invents actor or audit evidence. Backup and any exceptional legacy-data recovery remain deployment responsibilities.
 
-## 13. Traceability
+## 13. Settings and Maintenance Persistence
+
+`user_preferences` stores one optional row per provisioned user:
+
+| Column | Constraint |
+|---|---|
+| `user_id` | Primary/foreign key to the provisioned user |
+| `theme` | `LIGHT`, `DARK`, or `SYSTEM`; default `SYSTEM` |
+| `default_page_size` | `10`, `20`, or `50`; default `20` |
+| `created_at` | Required server timestamp |
+| `updated_at` | Required server timestamp |
+
+Missing rows resolve to the same defaults. Preference writes contain no
+financial data and do not enter `financial_audit_events`.
+
+`maintenance_audit_events` records privacy-minimized Backup/Restore operation
+metadata and outcome. It never stores the artifact, secrets, session tokens,
+Balances, or Transaction payloads.
+
+Backup is a consistent snapshot of the approved relational operational state,
+including migration metadata. Restore operates under exclusive maintenance
+coordination, validates the snapshot and reconciliation invariants, creates a
+pre-restore safety backup, replaces the complete database state atomically, and
+invalidates restored/current sessions. Backup artifacts are generated files, not
+durable database entities.
+
+## 14. Traceability
 
 | Database concern | Authority |
 |---|---|
 | Persisted Balance/version | FR-3.3.1; BR-BAL-001–006; ADR-004 |
 | Transaction types/effects | FR-3.2.1–FR-3.2.4; BR-TXN-001–004 |
 | Edit/delete/restore lifecycle | FR-3.2.5–FR-3.2.7; BR-TXN-005–008 |
+| User preferences and maintenance recovery | FR-3.5.1–FR-3.5.4; BR-SET-001–003; BR-BACKUP-001–004 |
 | Atomic mutation/rollback | NFR-3.3, NFR-5.2; BR-TXN-009 |
 | Immutable audit | FR-3.3.2; NFR-6.1–6.2; BR-AUD-001–004 |
 | Ownership/status authorization | FR-7.2; NFR-9.1–9.2; BR-AUTHZ-001–004; ADR-003 |
