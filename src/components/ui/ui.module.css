@@ -71,6 +71,10 @@
   background: var(--button-primary-background-hover);
 }
 
+.buttonPrimary:active:not(:disabled, [aria-busy="true"]) {
+  background: var(--button-primary-background-active);
+}
+
 .buttonSecondary {
   color: var(--button-secondary-foreground);
   background: var(--button-secondary-background);
@@ -328,8 +332,14 @@
   display: block;
   min-height: var(--skeleton-line-height);
   border-radius: var(--radius-md);
-  background: linear-gradient(var(--gradient-angle-horizontal), var(--color-neutral-100), var(--color-neutral-200), var(--color-neutral-100));
+  background: linear-gradient(
+    var(--gradient-angle-horizontal),
+    var(--color-skeleton-base),
+    var(--color-skeleton-highlight),
+    var(--color-skeleton-base)
+  );
   background-size: var(--skeleton-background-size) var(--size-full);
+  box-shadow: var(--skeleton-shadow);
   animation: skeleton-loading var(--motion-duration-loading) linear infinite;
 }
 
@@ -348,6 +358,72 @@
 .loadingSkeletonCards span { min-height: calc(var(--space-16) * 2); }
 .loadingSkeletonCards span:first-child { grid-column: 1 / -1; min-height: calc(var(--space-24) + var(--space-16)); }
 .loadingSkeletonCards span:last-child { width: var(--size-full); }
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.paginationSummary {
+  margin: var(--space-0);
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.paginationSummary strong {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.paginationControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.paginationControls a,
+.paginationDisabled {
+  min-height: var(--control-height-minimum);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--pagination-control-border);
+  border-radius: var(--shape-control);
+  font: var(--type-button);
+  text-decoration: none;
+}
+
+.paginationControls a {
+  background: var(--pagination-control-background);
+  color: var(--pagination-control-foreground);
+}
+
+.paginationControls a:hover {
+  border-color: var(--pagination-control-border-hover);
+  background: var(--pagination-control-background-hover);
+}
+
+.paginationControls a:active {
+  border-color: var(--color-action-primary-active);
+  background: var(--color-primary-subtle);
+  color: var(--color-action-primary-active);
+}
+
+.paginationControls a:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.paginationDisabled {
+  border-color: var(--pagination-control-disabled-border);
+  background: var(--pagination-control-disabled-background);
+  color: var(--pagination-control-disabled-foreground);
+}
 
 @keyframes skeleton-loading {
   to { background-position: calc(var(--skeleton-background-size) * var(--direction-reverse)) 0; }

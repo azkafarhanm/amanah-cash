@@ -145,6 +145,33 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 - [ ] Settings never expose financial invariants as preferences.
 - [ ] Settings contains only the groups and controls approved by `docs/21-mvp-settings-specification.md`.
 - [ ] Light and Dark semantic palettes are reviewed independently; Dark is not inverted Light.
+- [ ] Light follows the approved Tropical Sunrise direction and uses the
+      semantic mapping in `docs/18-design-tokens.md`, not isolated reference
+      colors.
+- [ ] Light remains white-dominant; light cyan separates selected surfaces
+      without becoming a full-screen wash or oversized colored panel.
+- [ ] Teal consistently identifies primary actions, active navigation, links,
+      focus, and selected controls without coloring long-form text.
+- [ ] Orange and soft yellow are sparse, non-critical highlights and never
+      replace or compete with Success, Warning, Error, Information, Deposit, or
+      Withdrawal colors.
+- [ ] Authenticated Light screens remain productivity-oriented and avoid
+      rainbow styling, decorative illustrations, excessive gradients, and
+      unnecessary animation.
+- [ ] Dark follows the approved Modern Tech & Finance direction and uses the
+      semantic mapping in `docs/18-design-tokens.md`, not isolated reference
+      colors.
+- [ ] Dark canvas, surface, grouped surface, border, and temporary overlay
+      levels remain distinct without heavy shadows or decorative gradients.
+- [ ] Balances, transactions, tables, reports, form values, and state messages
+      have stronger clarity than decorative elements in Dark.
+- [ ] Dark accent usage is restrained to actions, focus, links, selection, and
+      meaningful information; it does not dominate the viewport.
+- [ ] Dark contains no pure-black canvas, pure-white body text, neon treatment,
+      cyberpunk or gaming styling, or saturated decorative color.
+- [ ] Both themes preserve identical spacing, typography, shape, component
+      structure, iconography, interaction behavior, and semantic meaning; only
+      semantic color mappings differ.
 - [ ] Data actions are Platform Admin-only and do not create routine financial browsing.
 - [ ] Restore communicates whole-state replacement, validates before confirmation, and ends existing sessions after success.
 - [ ] Change Password is explicitly a Google Account Security handoff and no application password field exists.

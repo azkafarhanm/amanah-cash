@@ -175,8 +175,8 @@
 
 .statisticCardHero {
   border-left: 4px solid var(--color-action-primary);
-  background: var(--color-surface-elevated, #ffffff);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: var(--color-background-elevated);
+  box-shadow: var(--surface-shadow-subtle);
 }
 
 .statisticCardHero strong {
@@ -191,8 +191,8 @@
 }
 
 .quickActionCard:hover {
-  border-color: var(--color-border-emphasis);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-color: var(--color-border-strong);
+  box-shadow: var(--surface-shadow-subtle);
 }
 
 .quickActionCard h3 { color: var(--color-text-primary); font: var(--type-section-title); }
@@ -232,7 +232,7 @@
 
 .quickActionCard a.quickActionPrimaryLink {
   background: var(--color-action-primary);
-  color: var(--color-text-inverse, #ffffff);
+  color: var(--color-text-inverse);
   border-color: var(--color-action-primary);
 }
 
@@ -247,5 +247,4 @@
   .activityList li { grid-template-columns: minmax(0, 1fr); }
   .activityKind { justify-self: start; }
 }
-
 

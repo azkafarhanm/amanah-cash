@@ -34,7 +34,7 @@ test("Financial Assurance entry reuses searchable, paginated, responsive Student
   assert.match(list, /<EmptyState kind="students"/);
   assert.match(list, /Belum ada Siswa yang ditugaskan/);
   assert.match(list, /Tidak ada hasil yang cocok/);
-  assert.match(list, /aria-label="Paginasi"/);
+  assert.match(list, /ariaLabel="Paginasi Siswa"/);
   assert.ok(styles.includes("min-height: var(--control-height-minimum)"));
   assert.match(styles, /:focus-visible/);
   assert.ok(styles.includes("@media (max-width: 48rem)"));

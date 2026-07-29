@@ -155,6 +155,7 @@ test("Admin reports paginate administrative data and expose only privacy-minimiz
 test("Reporting presentation is reusable, read-only, responsive, accessible, and export-neutral", () => {
   const service = source("src/reports/read-service.ts");
   const components = source("src/components/reports/report-components.tsx");
+  const pagination = source("src/components/ui/pagination.tsx");
   const exportActions = source("src/components/reports/report-export-actions.tsx");
   const filterForm = source("src/components/reports/report-filter-form.tsx");
   const styles = source("src/components/reports/reports.module.css");
@@ -172,7 +173,7 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.match(filterForm, /period !== "CUSTOM"/);
   assert.match(filterForm, /role="group"/);
   assert.match(filterForm, /Pilih periode Rentang khusus/);
-  assert.match(components, /aria-label="Paginasi laporan"/);
+  assert.match(components, /ariaLabel="Paginasi laporan"/);
   assert.match(components, /aria-sort=/);
   assert.match(components, /<caption/);
   assert.match(components, /Pencarian tidak menemukan transaksi/);
@@ -190,7 +191,7 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.match(components, /Export menggunakan seluruh data yang sesuai dengan filter aktif saat tombol ditekan, bukan hanya data pada halaman yang sedang terlihat\./);
   assert.match(exportActions, /Menyiapkan laporan \{state\.format\.label\}/);
   assert.match(exportActions, /`Unduh \$\{label\}`/);
-  assert.match(components, /aria-disabled="true"/);
+  assert.match(pagination, /aria-disabled="true"/);
   assert.match(filterForm, /AbortController/);
   assert.match(filterForm, /latestSearchRequest/);
   assert.match(filterForm, /router\.push\(href, \{ scroll: false \}\)/);

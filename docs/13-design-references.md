@@ -1,6 +1,6 @@
 # Amanah Cash — Design References
 
-**Version:** 1.1
+**Version:** 1.3
 
 **Status:** Approved
 
@@ -94,6 +94,31 @@ Seek references with:
 - clear focus, loading, failure, and empty states;
 - plain language and visible outcomes;
 - mobile-native reachability without imitating a specific operating system.
+
+For Dark theme, use Modern Tech & Finance as the primary visual reference.
+Linear, GitHub, Stripe Dashboard, and modern banking products are directional
+benchmarks for calm hierarchy, restrained accents, readable data density, and
+subtle surface elevation. They are not templates to copy. Amanah Cash's product
+rules, financial semantics, mobile-first layouts, and token system remain
+authoritative.
+
+Dark references must demonstrate comfortable extended reading, clear separation
+between canvas and surfaces, accessible semantic states, and stronger clarity
+for balances, transactions, tables, and reports than for decorative elements.
+Reject cyberpunk, gaming, high-contrast, neon, color-inverted, gradient-heavy,
+or shadow-heavy examples even when their individual components appear polished.
+
+For Light theme, use Tropical Sunrise as the primary palette inspiration.
+Reference modern productivity software for its white-dominant canvas, generous
+whitespace, friendly but restrained teal interaction color, and clear
+information hierarchy. Light-cyan surfaces may create gentle separation, while
+orange and soft yellow remain occasional highlights rather than brand-colored
+decoration.
+
+Reject Light references that fill whole screens with teal or cyan, use
+marketing-style colored panel grids, turn operational screens into illustrated
+experiences, or allow gradients, badges, and decorative accents to compete with
+financial information.
 
 MVP empty-state references must use a Lucide icon, title, description, and primary call to action. Do not adopt illustrations.
 

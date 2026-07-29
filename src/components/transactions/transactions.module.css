@@ -25,6 +25,7 @@
 .filterButton, .resetLink { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); cursor: pointer; }
 .filterButton { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); cursor: pointer; }
 .filterButton:hover:not(:disabled) { background: var(--color-action-primary-hover); }
+.filterButton:active:not(:disabled) { background: var(--color-action-primary-active); }
 .resetLink { border: var(--border-width-default) var(--border-style-default) var(--color-border-default); color: var(--color-action-primary); background: var(--color-background-surface); cursor: pointer; }
 .resetLink:hover:not(:disabled) { background: var(--color-primary-subtle); border-color: var(--color-action-primary); cursor: pointer; }
 .ledger { border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
@@ -64,8 +65,7 @@
 
 .timelineGroup { display: grid; gap: var(--space-4); margin-block-start: var(--space-4); }
 .timelineGroupHeader { display: flex; align-items: center; gap: var(--space-3); padding-block-end: var(--space-2); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
-.timelineGroupBadge { font: var(--type-label); font-weight: var(--font-weight-bold); color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em; background: var(--color-background-muted); padding: var(--space-1) var(--space-3); border-radius: var(--shape-control); }
-.timelineItem { display: grid; gap: var(--space-3); padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); transition: border-color var(--duration-fast); }
+.timelineGroupBadge { font: var(--type-label); font-weight: var(--font-weight-bold); color: var(--color-text-primary); text-transform: uppercase; letter-spacing: 0.05em; background: var(--color-background-subtle); padding: var(--space-1) var(--space-3); border-radius: var(--shape-control); }
+.timelineItem { display: grid; gap: var(--space-3); padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); transition: border-color var(--motion-duration-fast); }
 .timelineItem:hover { border-color: var(--color-action-primary); }
 .balanceAfterText { font: var(--type-label); color: var(--color-text-secondary); }
-

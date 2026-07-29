@@ -32,6 +32,14 @@
   cursor: pointer;
 }
 
+.systemStateButton:hover {
+  background: var(--color-action-primary-hover);
+}
+
+.systemStateButton:active {
+  background: var(--color-action-primary-active);
+}
+
 .authCard {
   width: min(100%, 28rem);
   display: grid;
@@ -79,6 +87,16 @@
   background: var(--color-action-primary);
   color: var(--color-text-inverse);
   text-decoration: none;
+}
+
+.authPrimaryButton:hover,
+.authPrimaryLink:hover {
+  background: var(--color-action-primary-hover);
+}
+
+.authPrimaryButton:active,
+.authPrimaryLink:active {
+  background: var(--color-action-primary-active);
 }
 
 .authSecondaryButton {
@@ -129,16 +147,44 @@
   --color-neutral-800: #1f2937;
   --color-neutral-900: #111827;
   --color-neutral-950: #030712;
+  --color-slate-50: #f8fafc;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-tropical-cyan-50: #ecfeff;
+  --color-tropical-cyan-100: #cbf3f0;
+  --color-teal-50: #f0fdfa;
+  --color-teal-500: #2ec4b6;
+  --color-teal-600: #20a99d;
+  --color-teal-700: #0f766e;
+  --color-teal-800: #115e59;
+  --color-ink-500: #64748b;
+  --color-ink-600: #475569;
+  --color-ink-700: #33415c;
+  --color-ink-800: #1e293b;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-900: #0c4a6e;
   --color-blue-50: #eff6ff;
   --color-blue-600: #2563eb;
   --color-blue-700: #1d4ed8;
   --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
   --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
   --color-green-50: #f0fdf4;
   --color-green-700: #15803d;
   --color-emerald-50: #ecfdf5;
+  --color-emerald-200: #a7f3d0;
   --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
   --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
   --color-amber-700: #b45309;
   --color-transparent: transparent;
 
@@ -193,8 +239,12 @@
   --border-width-emphasis: 2px;
   --border-style-default: solid;
   --shadow-none: none;
+  --shadow-subtle: 0 1px 3px rgb(17 24 39 / 5%);
+  --shadow-raised: 0 4px 12px rgb(17 24 39 / 10%);
   --shadow-large: 0 20px 48px rgb(17 24 39 / 18%);
   --shadow-focus: 0 0 0 3px rgb(37 99 235 / 28%);
+  --shadow-focus-light: 0 0 0 3px rgb(15 118 110 / 20%);
+  --shadow-focus-dark: 0 0 0 3px rgb(56 189 248 / 28%);
   --opacity-0: 0;
   --opacity-100: 1;
   --motion-duration-none: 0ms;
@@ -211,16 +261,20 @@
   --z-skip-link: 50;
   --z-overlay: 50;
 
-  --color-background-canvas: var(--color-neutral-50);
+  --color-background-canvas: var(--color-neutral-0);
+  --color-background-secondary: var(--color-slate-50);
   --color-background-surface: var(--color-neutral-0);
-  --color-background-subtle: var(--color-neutral-100);
-  --color-text-primary: var(--color-neutral-900);
-  --color-text-secondary: var(--color-neutral-600);
-  --color-text-inverse: var(--color-neutral-0);
+  --color-background-subtle: var(--color-tropical-cyan-50);
+  --color-background-elevated: var(--color-neutral-0);
+  --color-text-primary: var(--color-ink-700);
+  --color-text-secondary: var(--color-ink-600);
+  --color-text-inverse: var(--color-slate-50);
   --color-border-default: var(--color-neutral-200);
-  --color-border-focus: var(--color-blue-600);
-  --color-action-primary: var(--color-blue-600);
-  --color-action-primary-hover: var(--color-blue-700);
+  --color-border-strong: var(--color-neutral-300);
+  --color-border-focus: var(--color-teal-700);
+  --color-action-primary: var(--color-teal-700);
+  --color-action-primary-hover: var(--color-teal-800);
+  --color-action-primary-active: var(--color-teal-800);
   --color-disabled-foreground: var(--color-neutral-400);
   --color-disabled-background: var(--color-neutral-100);
   --color-error-foreground: var(--color-red-700);
@@ -233,7 +287,20 @@
   --color-deposit-background: var(--color-emerald-50);
   --color-withdrawal-foreground: var(--color-blue-700);
   --color-withdrawal-background: var(--color-blue-50);
-  --color-primary-subtle: var(--color-blue-50);
+  --color-primary-subtle: var(--color-teal-50);
+  --color-skeleton-base: var(--color-neutral-100);
+  --color-skeleton-highlight: var(--color-neutral-200);
+  --skeleton-shadow: var(--shadow-none);
+  --surface-shadow-subtle: var(--shadow-subtle);
+  --surface-shadow-raised: var(--shadow-raised);
+  --pagination-control-background: var(--color-background-surface);
+  --pagination-control-foreground: var(--color-action-primary);
+  --pagination-control-border: var(--color-border-default);
+  --pagination-control-background-hover: var(--color-primary-subtle);
+  --pagination-control-border-hover: var(--color-action-primary);
+  --pagination-control-disabled-background: var(--color-disabled-background);
+  --pagination-control-disabled-foreground: var(--color-disabled-foreground);
+  --pagination-control-disabled-border: var(--color-border-default);
   --color-overlay: rgb(3 7 18 / 48%);
   --type-screen-title: var(--font-weight-bold) var(--font-size-24) /
     var(--line-height-heading) var(--font-family-sans);
@@ -263,7 +330,7 @@
   --shape-control: var(--radius-md);
   --shape-container: var(--radius-lg);
   --focus-visible-color: var(--color-border-focus);
-  --focus-visible-shadow: var(--shadow-focus);
+  --focus-visible-shadow: var(--shadow-focus-light);
   --context-detail-drawer-background: var(--color-background-surface);
   --context-detail-drawer-border: var(--color-border-default);
   --context-detail-drawer-elevation: var(--shadow-large);
@@ -318,6 +385,7 @@
 
   --button-primary-background: var(--color-action-primary);
   --button-primary-background-hover: var(--color-action-primary-hover);
+  --button-primary-background-active: var(--color-action-primary-active);
   --button-primary-foreground: var(--color-text-inverse);
   --button-secondary-background: var(--color-background-surface);
   --button-secondary-foreground: var(--color-text-primary);
@@ -355,8 +423,51 @@
   --error-icon-size: var(--size-12);
 }
 
+:root[data-theme="dark"] {
+  --color-background-canvas: var(--color-slate-900);
+  --color-background-secondary: var(--color-slate-800);
+  --color-background-surface: var(--color-slate-800);
+  --color-background-subtle: var(--color-slate-700);
+  --color-background-elevated: var(--color-slate-800);
+  --color-text-primary: var(--color-slate-50);
+  --color-text-secondary: var(--color-slate-300);
+  --color-text-inverse: var(--color-slate-900);
+  --color-border-default: var(--color-slate-700);
+  --color-border-strong: var(--color-slate-600);
+  --color-border-focus: var(--color-sky-400);
+  --color-action-primary: var(--color-sky-400);
+  --color-action-primary-hover: var(--color-sky-300);
+  --color-action-primary-active: var(--color-sky-200);
+  --color-disabled-foreground: var(--color-slate-500);
+  --color-disabled-background: var(--color-slate-700);
+  --color-error-foreground: var(--color-red-100);
+  --color-error-background: var(--color-red-800);
+  --color-success-foreground: var(--color-emerald-200);
+  --color-success-background: var(--color-emerald-900);
+  --color-warning-foreground: var(--color-amber-100);
+  --color-warning-background: var(--color-slate-700);
+  --color-deposit-foreground: var(--color-emerald-200);
+  --color-deposit-background: var(--color-emerald-900);
+  --color-withdrawal-foreground: var(--color-sky-200);
+  --color-withdrawal-background: var(--color-sky-900);
+  --color-primary-subtle: var(--color-slate-700);
+  --color-skeleton-base: var(--color-slate-800);
+  --color-skeleton-highlight: var(--color-slate-700);
+  --skeleton-shadow: var(--shadow-none);
+  --surface-shadow-subtle: var(--shadow-none);
+  --surface-shadow-raised: var(--shadow-subtle);
+  --color-overlay: rgb(2 6 23 / 64%);
+  --focus-visible-shadow: var(--shadow-focus-dark);
+}
+
 * {
   box-sizing: border-box;
+}
+
+.theme-changing *,
+.theme-changing *::before,
+.theme-changing *::after {
+  transition: none !important;
 }
 
 body {
@@ -364,6 +475,10 @@ body {
   background: var(--color-background-canvas);
   color: var(--color-text-primary);
   font-family: var(--font-family-sans);
+}
+
+html {
+  background: var(--color-background-canvas);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -54,11 +54,13 @@
 .emptyAction { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); }
 .filterActions button { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); background: var(--color-action-primary); color: var(--color-text-inverse); cursor: pointer; }
 .filterActions button:hover:not(:disabled) { background: var(--color-action-primary-hover); cursor: pointer; }
+.filterActions button:active:not(:disabled) { background: var(--color-action-primary-active); }
 .filterActions .resetButton { border-color: var(--color-border-default); background: var(--color-background-surface); color: var(--color-action-primary); cursor: pointer; }
 .filterActions .resetButton:hover:not(:disabled) { background: var(--color-primary-subtle); border-color: var(--color-action-primary); cursor: pointer; }
 .filterActions button:disabled { border-color: var(--color-border-default); color: var(--color-text-secondary); background: var(--color-background-subtle); cursor: not-allowed; }
 .emptyAction { color: var(--color-text-inverse); background: var(--color-action-primary); text-decoration: none; }
 .emptyAction:hover { background: var(--color-action-primary-hover); }
+.emptyAction:active { background: var(--color-action-primary-active); }
 
 .filterContext { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; padding: var(--space-4) var(--space-5); border-inline-start: var(--border-width-emphasis) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-container); background: var(--color-background-subtle); }
 .filterContext h2,
@@ -86,6 +88,8 @@
 .exportFeedback p span { display: block; margin-block-start: var(--space-1); color: var(--color-text-secondary); }
 .exportError { width: var(--size-full); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-error-foreground); border-radius: var(--shape-control); background: var(--color-error-background); }
 .exportError button { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); cursor: pointer; }
+.exportError button:hover { background: var(--color-action-primary-hover); }
+.exportError button:active { background: var(--color-action-primary-active); }
 .exportEmpty { padding: var(--space-3) var(--space-4); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-secondary) !important; }
 
 .summary h2,
@@ -122,10 +126,6 @@
 .rowDetails dl div { display: grid; gap: var(--space-1); }
 .rowDetails dt { color: var(--color-text-secondary); font: var(--type-label); }
 .rowDetails dd { margin: var(--space-0); }
-.pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
-.pagination div { display: flex; gap: var(--space-4); }
-.pagination a { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; color: var(--color-action-primary); font: var(--type-button); }
-.paginationDisabled { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; color: var(--color-text-secondary); font: var(--type-button); cursor: not-allowed; }
 .field input:focus-visible,
 .field select:focus-visible,
 .filterActions button:focus-visible,
@@ -133,7 +133,6 @@
 .exportButton:focus-visible,
 .exportError button:focus-visible,
 .table a:focus-visible,
-.pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 
 .skeleton h1,
 .skeleton p { margin: var(--space-0); }
@@ -178,7 +177,6 @@
   .table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-0); text-align: end; }
   .table td::before { content: attr(data-label); color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
   .table td > * { justify-self: end; }
-  .pagination { align-items: flex-start; flex-direction: column; }
 }
 
 @media (hover: hover) {

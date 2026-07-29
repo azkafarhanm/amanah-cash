@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ContentWrapper, EmptyState, SectionHeader, StatusBadge } from "@/components/ui";
+import { ContentWrapper, EmptyState, Pagination, SectionHeader, StatusBadge } from "@/components/ui";
 import { operatorManagement } from "@/operators/service";
 import styles from "./operators.module.css";
 
@@ -21,7 +21,7 @@ export default async function OperatorsPage({ searchParams }: Props) {
     </form>
     {result.items.length === 0 ? <EmptyState title={filtered ? "Tidak ada hasil yang cocok" : "Belum ada Operator terdaftar"} description={filtered ? "Tidak ada Operator yang cocok dengan pencarian atau filter saat ini. Ubah atau reset filter untuk melihat data lainnya." : "Tambahkan akun Operator pertama. Akun baru tetap tidak aktif sampai Anda mengaktifkannya."} /> : <>
       <div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Nama</th><th>Email Google</th><th>Status</th><th>Dibuat</th><th>Login terakhir</th><th>Siswa</th></tr></thead><tbody>{result.items.map((operator) => <tr key={operator.id}><td data-label="Nama"><Link className={styles.link} href={`/admin/operators/${operator.id}`}>{operator.name}</Link></td><td data-label="Email Google">{operator.email}</td><td data-label="Status"><StatusBadge tone={operator.isActive ? "success" : "neutral"}>{operator.isActive ? "Aktif" : "Tidak aktif"}</StatusBadge></td><td data-label="Dibuat">{date(operator.createdAt)}</td><td data-label="Login terakhir">{date(operator.lastLoginAt)}</td><td data-label="Siswa">{operator.assignedStudentCount}</td></tr>)}</tbody></table></div>
-      <nav className={styles.pagination} aria-label="Paginasi"><span>Halaman {result.page} dari {result.pages} · {result.total} Operator</span><div className={styles.actions}>{result.page > 1 ? <Link className={styles.link} href={href(result.page - 1)}>Sebelumnya</Link> : null}{result.page < result.pages ? <Link className={styles.link} href={href(result.page + 1)}>Berikutnya</Link> : null}</div></nav>
+      <Pagination ariaLabel="Paginasi Operator" page={result.page} pages={result.pages} totalLabel={`${result.total} Operator`} previousHref={result.page > 1 ? href(result.page - 1) : undefined} nextHref={result.page < result.pages ? href(result.page + 1) : undefined} />
     </>}
   </ContentWrapper>;
 }

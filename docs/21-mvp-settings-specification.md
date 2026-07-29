@@ -66,13 +66,14 @@ nested enterprise menus, or decorative personalization.
 
 ### 5.1 Theme
 
-Theme has exactly three values:
+Theme has exactly four values:
 
 | Value | Behavior |
 |---|---|
 | `LIGHT` | Always use the approved light theme. |
 | `DARK` | Always use the intentionally designed dark theme. |
 | `SYSTEM` | Follow the operating-system/browser color-scheme preference and update when it changes. |
+| `TIME` | Use Light from 06:00–17:59 local time and Dark from 18:00–05:59 local time. |
 
 The default is `SYSTEM`.
 
@@ -86,6 +87,21 @@ Dark mode is not a color inversion. It requires a reviewed semantic palette for
 surfaces, text, borders, focus, controls, overlays, charts, transaction
 directions, success, warning, and error states. Deposit and Withdrawal meaning
 continues to use text and iconography; color remains reinforcement only.
+Its approved visual direction is Modern Tech & Finance: calm blue-slate
+surfaces, soft near-white text, restrained sky action emphasis, subtle
+elevation, and financial content that remains visually dominant. The complete
+mapping is governed by `docs/18-design-tokens.md`; reference colors must not be
+hard-coded into controls or screens.
+
+Light mode follows the approved Tropical Sunrise direction: a white-dominant
+canvas, quiet secondary background, optional light-cyan surface separation,
+dark neutral text, teal interaction emphasis, and sparing orange or soft-yellow
+highlights. Financial status colors remain independent, and reference colors
+must not be hard-coded into controls or screens.
+
+Light and Dark preserve identical spacing, typography, component structure,
+iconography, interaction behavior, and semantic meaning. Theme changes only
+select the reviewed semantic color mapping.
 
 Theme changes affect presentation only. They never change business data,
 financial meaning, export content, printable document styling, or audit
@@ -102,6 +118,8 @@ evidence.
   selected state.
 - `SYSTEM` is presented as a distinct choice, not as an ambiguous automatic
   toggle.
+- `TIME` uses the user's browser/device local time, changes at 06:00 and 18:00
+  without a page reload, and is presented as a distinct choice from `SYSTEM`.
 
 ## 6. Preferences
 
@@ -335,7 +353,7 @@ Each provisioned user has one Settings preference record:
 | Field | Type | Rules |
 |---|---|---|
 | `user_id` | UUID/foreign key | Primary key; cascades only with the existing approved user lifecycle |
-| `theme` | Enum | `LIGHT`, `DARK`, or `SYSTEM`; default `SYSTEM` |
+| `theme` | Enum | `LIGHT`, `DARK`, `SYSTEM`, or `TIME`; default `SYSTEM` |
 | `default_page_size` | Integer | `10`, `20`, or `50`; default `20` |
 | `created_at` | Timestamp | Server generated |
 | `updated_at` | Timestamp | Server generated on committed change |
@@ -376,7 +394,7 @@ The Settings MVP is complete only when:
 
 - both roles can use the approved Appearance, Preferences, Security, and About
   groups, while Data remains Platform Admin-only;
-- Theme supports Light, Dark, and System through complete reviewed semantic
+- Theme supports Light, Dark, System, and Time through complete reviewed semantic
   palettes;
 - default page size behaves predictably across compatible lists and URLs;
 - destructive confirmations and financial invariants remain non-configurable;

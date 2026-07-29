@@ -73,16 +73,17 @@ Landing Page defined by `docs/22-landing-page-strategy.md` through
 delivery foundation, Header, Hero, Problems, Solution, Workflow, Features,
 Security & Trust, FAQ, and Footer. Application Preview, Final CTA, responsive
 integration, motion, accessibility integration, and deployment-independent
-publication QA remain unfinished. Sprints 6–7 complete that application feature
+publication QA remain unfinished. Sprints 7–8 complete that application feature
 without starting deployment qualification.
 
 Settings is now an approved remaining MVP feature governed by
-`docs/21-mvp-settings-specification.md`. It follows Landing Page completion in
-Sprint 8 and replaces the Admin and Operator placeholders with focused
-Appearance, daily Preferences, Admin-only Data recovery, Security handoff, and
-About capabilities. Centralized cross-Student Transactions, Reports,
-reconciliation presentation, and financial audit presentation are already
-implemented; stale placeholder-era statements must not cause duplicate work.
+`docs/21-mvp-settings-specification.md`. It is Sprint 6, precedes the remaining
+blocked Landing Page work, and replaces the Admin and Operator placeholders with
+focused Appearance, daily Preferences, Admin-only Data recovery, Security
+handoff, and About capabilities. Centralized cross-Student Transactions,
+Reports, reconciliation presentation, and financial audit presentation are
+already implemented; stale placeholder-era statements must not cause duplicate
+work.
 
 ## 4. Sprint 0 — Product and Application Foundation
 
@@ -783,28 +784,170 @@ roadmap only until the Batch completion synchronization step.
 - Verified `npm test` (208 passing), `npm run typecheck`, `npm run lint`,
   `npm run prisma:validate`, `npm run build`, and `git diff --check`.
 
-## 10. Sprint 6 — Landing Page Product Evidence and Conversion
+## 10. Sprint 6 — MVP Settings
+
+**Sprint Goal:** Replace Settings placeholders with the approved daily-usability,
+recovery, security-handoff, and product-transparency module before MVP feature
+completion.
+
+**Status:** `READY FOR IMPLEMENTATION`
+
+### Epic 6.1 — Appearance and Daily Preferences
+
+**Objective:** Deliver per-user theme and default-page-size preferences through
+the authenticated role-aware Settings screens.
+
+**Status:** `READY FOR IMPLEMENTATION`
+
+#### Batch 6.1.1 — Theme and Page-Size Preferences
+
+**Objective:** Implement Light, Dark, System, and Time theme plus the 10/20/50 default
+items-per-page preference using the approved semantic and persistence contracts.
+
+**Dependencies:** Batch 5.1.1 complete; approved MVP Settings Specification,
+Dark semantic token overrides, existing authenticated Settings placeholders,
+and provisioned-user persistence.
+
+**Affected modules:** Admin/Operator Settings routes, presentation/theme
+foundation, preference application/persistence, compatible paginated reads,
+focused accessibility and regression tests.
+
+**Acceptance Criteria:**
+
+- Both roles can select Light, Dark, System, or Time; System is the default and
+  follows device preference changes. Time uses Light from 06:00–17:59 local time
+  and Dark from 18:00–05:59 local time.
+- Dark uses the complete approved semantic palette rather than inversion and
+  passes component-state contrast verification.
+- Both roles can select 10, 20, or 50 default items per page; 20 is the default
+  and a valid explicit URL value wins for that view.
+- Preferences follow the provisioned user, fail closed on invalid values, and
+  never alter authorization, financial data, exports, or audit.
+- Delete confirmation and every financial invariant remain non-configurable.
+
+**Status:** `READY FOR IMPLEMENTATION`
+
+### Epic 6.2 — Data Continuity
+
+**Objective:** Give Platform Admin a bounded, privacy-preserving manual Backup
+and whole-state Restore workflow.
+
+**Status:** `BLOCKED`
+
+#### Batch 6.2.1 — Operational Backup
+
+**Objective:** Generate one versioned, opaque, database-consistent artifact that
+preserves the approved operational state.
+
+**Dependencies:** Batch 6.1.1 complete; approved Settings persistence and
+maintenance-audit schema.
+
+**Affected modules:** Admin Settings Data group, maintenance application and
+persistence boundaries, backup format/validation contract, authorization and
+recovery tests.
+
+**Acceptance Criteria:**
+
+- Only Platform Admin can generate or download an application backup.
+- The artifact includes approved business, identity, preference, migration, and
+  audit state while excluding secrets, configuration, logs, caches, and
+  reusable sessions.
+- Snapshot generation is database-consistent and records privacy-minimized
+  maintenance evidence.
+- Admin presentation cannot browse decoded financial payload and makes no
+  unsupported encryption claim.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Batch 6.1.1 establishes the Settings and preference persistence
+foundation required by the Data group.
+
+#### Batch 6.2.2 — Validated Atomic Restore
+
+**Objective:** Restore a compatible whole-application backup safely for computer
+migration, device replacement, manual recovery, or disaster recovery.
+
+**Dependencies:** Batch 6.2.1 complete.
+
+**Affected modules:** Admin Settings Restore interaction, maintenance
+coordination, isolated validation, atomic replacement, session revocation,
+maintenance audit, recovery tests.
+
+**Acceptance Criteria:**
+
+- Format, version, integrity, schema, referential, ownership, Balance, and audit
+  checks complete before replacement.
+- Restore requires explicit whole-state confirmation and a verified pre-restore
+  safety backup.
+- Concurrent writes are prevented; replacement commits completely or preserves
+  current state.
+- Successful Restore revokes sessions and requires Google login again.
+- Partial merge, backup browsing, scheduled/cloud backup, and secret restoration
+  remain absent.
+
+**Status:** `BLOCKED`
+
+**Blocker:** The approved Backup artifact and maintenance boundary from Batch
+6.2.1 must exist first.
+
+### Epic 6.3 — Security and About
+
+**Objective:** Complete Settings with a truthful Google security handoff,
+application Version, and sanitized Changelog.
+
+**Status:** `BLOCKED`
+
+#### Batch 6.3.1 — Google Password Handoff, Version, and Changelog
+
+**Objective:** Deliver the remaining read/navigation capabilities without
+creating application password management, update services, or promotional UI.
+
+**Dependencies:** Batch 6.2.2 complete.
+
+**Affected modules:** Admin/Operator Settings Security and About groups,
+read-only Changelog route/content adapter, build-version source, route and
+content tests.
+
+**Acceptance Criteria:**
+
+- `Ubah kata sandi Google` clearly opens Google Account Security externally;
+  Amanah Cash never receives or changes a password.
+- Application Version is read-only and comes from one build-time source.
+- Changelog shows sanitized released user-facing changes newest first through a
+  stable in-application route.
+- Internal unreleased notes, secrets, exploit details, developer-only migration
+  steps, update checking, telemetry, support portal, and promotional content are
+  absent.
+- Settings completes the responsive, loading, saving, failure, keyboard, focus,
+  announcement, and role-authorization contracts in the approved specification.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Batches 6.1.1, 6.2.1, and 6.2.2 must complete before final Settings
+integration and acceptance.
+
+## 11. Sprint 7 — Landing Page Product Evidence and Conversion
 
 **Sprint Goal:** Complete authentic application evidence and approved public
 entry actions without inventing assets, destinations, or product claims.
 
 **Status:** `BLOCKED`
 
-### Epic 6.1 — Application Preview and Final Actions
+### Epic 7.1 — Application Preview and Final Actions
 
 **Objective:** Add the approved Application Preview, Hero evidence, Final CTA,
 and verified Footer destinations using real implemented-product captures.
 
 **Status:** `BLOCKED`
 
-#### Batch 6.1.1 — Authentic Screenshots and Application Preview
+#### Batch 7.1.1 — Authentic Screenshots and Application Preview
 
 **Objective:** Capture and present the approved Student List, Student Detail,
 and Transaction Entry evidence from one reconciled synthetic dataset.
 
-**Dependencies:** Batch 5.1.1 complete; Product Owner approval of the exact
-synthetic dataset, screenshot capture viewport, final screenshot assets, and
-redaction/provenance record.
+**Dependencies:** Batches 5.1.1 and 6.3.1 complete; Product Owner approval of the
+exact synthetic dataset, screenshot capture viewport, final screenshot assets,
+and redaction/provenance record.
 
 **Affected modules:** Landing Page Hero and Application Preview components,
 approved image assets and responsive derivatives, focused visual/content tests.
@@ -828,12 +971,12 @@ approved image assets and responsive derivatives, focused visual/content tests.
 and redaction/provenance record required by
 `docs/24-landing-page-content.md`.
 
-#### Batch 6.1.2 — Final CTA, Identity, and Verified Destinations
+#### Batch 7.1.2 — Final CTA, Identity, and Verified Destinations
 
 **Objective:** Finish the public conversion flow and closing navigation with
 only approved, reachable destinations and identity assets.
 
-**Dependencies:** Batch 6.1.1 complete; Product Owner approval of Product
+**Dependencies:** Batch 7.1.1 complete; Product Owner approval of Product
 Identity behavior, primary product-entry behavior, brand mark/wordmark treatment,
 and whether a verified Documentation destination enables the Footer Resource
 group.
@@ -859,7 +1002,7 @@ approved identity assets, route/link tests.
 treatment, and Documentation destination remain pending in
 `docs/24-landing-page-content.md`.
 
-## 11. Sprint 7 — Landing Page Integration and Feature Completion
+## 12. Sprint 8 — Landing Page Integration and Feature Completion
 
 **Sprint Goal:** Integrate and verify the complete Landing Page as an
 application feature across approved responsive, accessibility, motion, and
@@ -867,19 +1010,19 @@ deployment-independent quality contracts.
 
 **Status:** `BLOCKED`
 
-### Epic 7.1 — Responsive, Accessible, and Performant Integration
+### Epic 8.1 — Responsive, Accessible, and Performant Integration
 
 **Objective:** Finish the static page experience and close every
 deployment-independent Landing Page acceptance gate.
 
 **Status:** `BLOCKED`
 
-#### Batch 7.1.1 — Responsive Composition and Approved Motion
+#### Batch 8.1.1 — Responsive Composition and Approved Motion
 
 **Objective:** Apply the Blueprint compositions and approved progressive motion
 to the completed page without changing semantic source order or hiding content.
 
-**Dependencies:** Batches 6.1.1 and 6.1.2 complete.
+**Dependencies:** Batches 7.1.1 and 7.1.2 complete.
 
 **Affected modules:** All Landing Page components/styles, minimal reveal
 boundary, responsive/motion tests.
@@ -901,15 +1044,15 @@ boundary, responsive/motion tests.
 **Status:** `BLOCKED`
 
 **Blocker:** The complete approved content, evidence, and conversion composition
-from Sprint 6 is required before integration.
+from Sprint 7 is required before integration.
 
-#### Batch 7.1.2 — Accessibility and Deployment-Independent Publication QA
+#### Batch 8.1.2 — Accessibility and Deployment-Independent Publication QA
 
 **Objective:** Verify the completed public feature and record an evidence-backed
 MVP feature-completion result without beginning deployment or release
 qualification.
 
-**Dependencies:** Batch 7.1.1 complete.
+**Dependencies:** Batch 8.1.1 complete.
 
 **Affected modules:** Landing Page components/styles only for confirmed defects;
 metadata that does not require a public origin; Landing Page tests and local QA
@@ -936,149 +1079,7 @@ evidence.
 
 **Status:** `BLOCKED`
 
-**Blocker:** Batch 7.1.1 must complete before final feature-level verification.
-
-## 12. Sprint 8 — MVP Settings
-
-**Sprint Goal:** Replace Settings placeholders with the approved daily-usability,
-recovery, security-handoff, and product-transparency module.
-
-**Status:** `BLOCKED`
-
-### Epic 8.1 — Appearance and Daily Preferences
-
-**Objective:** Deliver per-user theme and default-page-size preferences through
-the authenticated role-aware Settings screens.
-
-**Status:** `BLOCKED`
-
-#### Batch 8.1.1 — Theme and Page-Size Preferences
-
-**Objective:** Implement Light, Dark, and System theme plus the 10/20/50 default
-items-per-page preference using the approved semantic and persistence contracts.
-
-**Dependencies:** Batch 7.1.2 complete; approved MVP Settings Specification and
-Dark semantic token overrides.
-
-**Affected modules:** Admin/Operator Settings routes, presentation/theme
-foundation, preference application/persistence, compatible paginated reads,
-focused accessibility and regression tests.
-
-**Acceptance Criteria:**
-
-- Both roles can select Light, Dark, or System; System is the default and follows
-  device preference changes.
-- Dark uses the complete approved semantic palette rather than inversion and
-  passes component-state contrast verification.
-- Both roles can select 10, 20, or 50 default items per page; 20 is the default
-  and a valid explicit URL value wins for that view.
-- Preferences follow the provisioned user, fail closed on invalid values, and
-  never alter authorization, financial data, exports, or audit.
-- Delete confirmation and every financial invariant remain non-configurable.
-
-**Status:** `BLOCKED`
-
-**Blocker:** The current executable sequence completes approved Landing Page
-feature work through Batch 7.1.2 first.
-
-### Epic 8.2 — Data Continuity
-
-**Objective:** Give Platform Admin a bounded, privacy-preserving manual Backup
-and whole-state Restore workflow.
-
-**Status:** `BLOCKED`
-
-#### Batch 8.2.1 — Operational Backup
-
-**Objective:** Generate one versioned, opaque, database-consistent artifact that
-preserves the approved operational state.
-
-**Dependencies:** Batch 8.1.1 complete; approved Settings persistence and
-maintenance-audit schema.
-
-**Affected modules:** Admin Settings Data group, maintenance application and
-persistence boundaries, backup format/validation contract, authorization and
-recovery tests.
-
-**Acceptance Criteria:**
-
-- Only Platform Admin can generate or download an application backup.
-- The artifact includes approved business, identity, preference, migration, and
-  audit state while excluding secrets, configuration, logs, caches, and
-  reusable sessions.
-- Snapshot generation is database-consistent and records privacy-minimized
-  maintenance evidence.
-- Admin presentation cannot browse decoded financial payload and makes no
-  unsupported encryption claim.
-
-**Status:** `BLOCKED`
-
-**Blocker:** Batch 8.1.1 establishes the Settings and preference persistence
-foundation required by the Data group.
-
-#### Batch 8.2.2 — Validated Atomic Restore
-
-**Objective:** Restore a compatible whole-application backup safely for computer
-migration, device replacement, manual recovery, or disaster recovery.
-
-**Dependencies:** Batch 8.2.1 complete.
-
-**Affected modules:** Admin Settings Restore interaction, maintenance
-coordination, isolated validation, atomic replacement, session revocation,
-maintenance audit, recovery tests.
-
-**Acceptance Criteria:**
-
-- Format, version, integrity, schema, referential, ownership, Balance, and audit
-  checks complete before replacement.
-- Restore requires explicit whole-state confirmation and a verified pre-restore
-  safety backup.
-- Concurrent writes are prevented; replacement commits completely or preserves
-  current state.
-- Successful Restore revokes sessions and requires Google login again.
-- Partial merge, backup browsing, scheduled/cloud backup, and secret restoration
-  remain absent.
-
-**Status:** `BLOCKED`
-
-**Blocker:** The approved Backup artifact and maintenance boundary from Batch
-8.2.1 must exist first.
-
-### Epic 8.3 — Security and About
-
-**Objective:** Complete Settings with a truthful Google security handoff,
-application Version, and sanitized Changelog.
-
-**Status:** `BLOCKED`
-
-#### Batch 8.3.1 — Google Password Handoff, Version, and Changelog
-
-**Objective:** Deliver the remaining read/navigation capabilities without
-creating application password management, update services, or promotional UI.
-
-**Dependencies:** Batch 8.2.2 complete.
-
-**Affected modules:** Admin/Operator Settings Security and About groups,
-read-only Changelog route/content adapter, build-version source, route and
-content tests.
-
-**Acceptance Criteria:**
-
-- `Ubah kata sandi Google` clearly opens Google Account Security externally;
-  Amanah Cash never receives or changes a password.
-- Application Version is read-only and comes from one build-time source.
-- Changelog shows sanitized released user-facing changes newest first through a
-  stable in-application route.
-- Internal unreleased notes, secrets, exploit details, developer-only migration
-  steps, update checking, telemetry, support portal, and promotional content are
-  absent.
-- Settings completes the responsive, loading, saving, failure, keyboard, focus,
-  announcement, and role-authorization contracts in the approved specification.
-
-**Status:** `BLOCKED`
-
-**Blocker:** Earlier Settings batches must complete before final module
-integration and acceptance.
+**Blocker:** Batch 8.1.1 must complete before final feature-level verification.
 
 ## 13. Sprint R1 — Release and Deployment Qualification
 
@@ -1090,7 +1091,7 @@ authorization, privacy, and export boundaries.
 
 Release Sprint R1 begins only after the Product Owner declares MVP feature
 development complete. Its environment decisions are intentionally not blockers
-for Sprint 4 feature delivery.
+for the remaining MVP feature-delivery sprints.
 
 ### Epic R1.1 — Deployment Baseline and Topology
 
@@ -1362,16 +1363,16 @@ exists.
 
 At this revision:
 
-- First `READY FOR IMPLEMENTATION` Batch: **none; Product Owner approval is
-  required before a later blocked Batch is promoted**.
-- Number of `READY FOR IMPLEMENTATION` Batches: **0**.
+- First `READY FOR IMPLEMENTATION` Batch: **Batch 6.1.1 — Theme and Page-Size
+  Preferences**.
+- Number of `READY FOR IMPLEMENTATION` Batches: **1**.
 - Batch 5.1.1 completed the approved core Landing Page narrative and accessible
   FAQ without beginning product evidence, final actions, integration, or
   Settings work.
 - Batch 4.2.1 completed the approved validation/error-handling requirement
   without changing Operator or Student Domain behavior.
-- Sprints 5–8 contain all remaining approved MVP application-feature work:
-  completing the public Landing Page and the focused MVP Settings module.
+- Sprint 6 completes the approved MVP Settings feature before Sprints 7–8
+  resume the remaining blocked Landing Page work.
 - Settings is approved only within `docs/21-mvp-settings-specification.md`;
   implemented Transactions, Reports, reconciliation, and audit presentation are
   not scheduled again.

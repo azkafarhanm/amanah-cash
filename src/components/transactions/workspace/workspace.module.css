@@ -123,7 +123,7 @@
   background: var(--color-background-surface);
   color: var(--color-action-primary);
   font-weight: var(--font-weight-semibold);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.08);
+  box-shadow: var(--surface-shadow-subtle);
 }
 
 .periodSelectGroup {
@@ -441,7 +441,7 @@
   background: var(--color-background-surface);
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   border-radius: var(--shape-container);
-  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.1);
+  box-shadow: var(--surface-shadow-raised);
   z-index: var(--z-raised);
 }
 

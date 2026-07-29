@@ -3,6 +3,25 @@ import { GeistSans } from "geist/font/sans";
 
 import "./globals.css";
 
+const themeBootstrap = `
+(() => {
+  const valid = new Set(["LIGHT", "DARK", "SYSTEM", "TIME"]);
+  let stored = null;
+  try {
+    stored = localStorage.getItem("amanah-cash-theme");
+  } catch {}
+  const preference = valid.has(stored) ? stored : "SYSTEM";
+  const hour = new Date().getHours();
+  const dark = preference === "DARK"
+    || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches)
+    || (preference === "TIME" && (hour < 6 || hour >= 18));
+  const theme = dark ? "dark" : "light";
+  document.documentElement.dataset.themePreference = preference.toLowerCase();
+  document.documentElement.dataset.theme = theme;
+  document.documentElement.style.colorScheme = theme;
+})();
+`;
+
 export const metadata: Metadata = {
   title: "Amanah Cash — Pencatatan Transaksi Keuangan Siswa",
   description:
@@ -20,7 +39,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id-ID" className={GeistSans.variable}>
+    <html lang="id-ID" className={GeistSans.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
+      </head>
       <body>{children}</body>
     </html>
   );

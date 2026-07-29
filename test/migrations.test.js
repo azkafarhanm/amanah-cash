@@ -52,7 +52,9 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "004_student_management.sql" },
     { version: "005_transaction_engine.sql" },
     { version: "006_transaction_ui_notes.sql" },
-    { version: "007_operator_self_provisioning_audit.sql" }
+    { version: "007_operator_self_provisioning_audit.sql" },
+    { version: "008_theme_preference.sql" },
+    { version: "009_theme_preference_strict.sql" }
   ]);
   first.close();
 
@@ -65,7 +67,9 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "004_student_management.sql" },
     { version: "005_transaction_engine.sql" },
     { version: "006_transaction_ui_notes.sql" },
-    { version: "007_operator_self_provisioning_audit.sql" }
+    { version: "007_operator_self_provisioning_audit.sql" },
+    { version: "008_theme_preference.sql" },
+    { version: "009_theme_preference_strict.sql" }
   ]);
   second.close();
 });
@@ -167,6 +171,20 @@ test("Transaction UI notes migration mirror matches the executable migration", (
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260721000000_transaction_ui_notes/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/006_transaction_ui_notes.sql"), "utf8")
+  );
+});
+
+test("Theme preference migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260729000000_theme_preference/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/008_theme_preference.sql"), "utf8")
+  );
+});
+
+test("Strict theme preference migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260729010000_theme_preference_strict/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/009_theme_preference_strict.sql"), "utf8")
   );
 });
 

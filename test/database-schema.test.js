@@ -56,7 +56,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     .all()
     .map(({ name }) => name);
 
-  assert.deepEqual(tables, ["accounts", "financial_audit_events", "operator_audit", "schema_migrations", "sessions", "students", "transactions", "users"]);
+  assert.deepEqual(tables, ["accounts", "financial_audit_events", "operator_audit", "schema_migrations", "sessions", "settings_preferences", "students", "transactions", "users"]);
 
   const columns = Object.fromEntries(
     tables.map((table) => [table, tableInfo(table).map(({ name, type, notnull, pk }) => ({ name, type, notnull, pk }))])
@@ -82,6 +82,12 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "user_id", type: "TEXT", notnull: 1, pk: 0 },
     { name: "expires", type: "TEXT", notnull: 1, pk: 0 }
   ]);
+  assert.deepEqual(columns.settings_preferences, [
+    { name: "user_id", type: "TEXT", notnull: 1, pk: 1 },
+    { name: "theme", type: "TEXT", notnull: 1, pk: 0 },
+    { name: "created_at", type: "TEXT", notnull: 1, pk: 0 },
+    { name: "updated_at", type: "TEXT", notnull: 1, pk: 0 }
+  ]);
   assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at", "balance", "financial_version"]);
   assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "correction_direction", "reason", "occurred_at", "created_at", "created_by", "updated_at", "updated_by", "revision", "deleted_at", "deleted_by", "notes"]);
   assert.deepEqual(columns.financial_audit_events.map(({ name }) => name), ["id", "command_id", "command_payload_hash", "event_type", "actor_id", "actor_role", "student_id", "transaction_id", "transaction_revision", "reason", "before_snapshot", "after_snapshot", "balance_before", "balance_after", "balance_delta", "old_operator_id", "new_operator_id", "occurred_at", "schema_version", "correlation_id"]);
@@ -99,6 +105,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     ["operator_audit", 1],
     ["schema_migrations", 1],
     ["sessions", 1],
+    ["settings_preferences", 1],
     ["students", 1],
     ["transactions", 1],
     ["users", 1]

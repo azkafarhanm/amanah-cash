@@ -1,6 +1,6 @@
 # Amanah Cash — Design Tokens
 
-**Version:** 1.2
+**Version:** 1.5
 
 **Status:** Approved
 
@@ -58,9 +58,16 @@ Reliability comes from consistent structure, legible type, exact values, restrai
 - Raw hexadecimal colors, pixel values, font declarations, shadows, opacity, z-index, and timing values are prohibited outside the Primitive layer.
 - Tailwind configuration and shadcn/ui variables must alias these tokens rather than create a parallel system.
 - A missing visual value requires a token proposal and review. Do not use an arbitrary value.
-- Light is the base semantic mapping. Dark uses only the approved semantic
-  overrides in Section 5.1.1. System selects between those two mappings; it does
-  not define a third palette.
+- Light is the base semantic mapping and follows the approved Tropical Sunrise
+  direction. Its reference anchors (`#FFFFFF`, `#F8FAFC`, `#CBF3F0`,
+  `#2EC4B6`, `#FF9F1C`, `#FFBF69`, and `#33415C`) inform a complete semantic
+  mapping; they are not values to copy directly into components.
+- Dark uses only the approved semantic overrides in Section 5.1.2. System
+  selects between those two mappings; it does not define a third palette.
+- The Dark palette is designed independently around the approved Modern Tech &
+  Finance direction. Its reference anchors (`#0F172A`, `#1E293B`, `#38BDF8`,
+  and `#F8FAFC`) inform a complete semantic mapping; they are not values to copy
+  directly into components.
 - Financial values never use animation tokens to interpolate, count, or transition between numbers.
 
 ## 4. Primitive Tokens
@@ -84,6 +91,55 @@ Reliability comes from consistent structure, legible type, exact values, restrai
 | `color.neutral.800` | `#1F2937` |
 | `color.neutral.900` | `#111827` |
 | `color.neutral.950` | `#030712` |
+
+#### Slate dark-theme foundation
+
+These primitives support the approved Dark direction. They are not a second set
+of component colors; Dark semantic tokens map to them in Section 5.1.2.
+
+| Token | Value |
+|-------|-------|
+| `color.slate.50` | `#F8FAFC` |
+| `color.slate.100` | `#F1F5F9` |
+| `color.slate.200` | `#E2E8F0` |
+| `color.slate.300` | `#CBD5E1` |
+| `color.slate.400` | `#94A3B8` |
+| `color.slate.500` | `#64748B` |
+| `color.slate.600` | `#475569` |
+| `color.slate.700` | `#334155` |
+| `color.slate.800` | `#1E293B` |
+| `color.slate.900` | `#0F172A` |
+| `color.slate.950` | `#020617` |
+
+#### Tropical Sunrise light-theme foundation
+
+These primitives support the approved Light direction. Components must consume
+their semantic roles in Section 5.1 rather than these raw palette values.
+
+| Token | Value |
+|-------|-------|
+| `color.tropical-cyan.50` | `#ECFEFF` |
+| `color.tropical-cyan.100` | `#CBF3F0` |
+| `color.tropical-cyan.200` | `#A5E9E4` |
+| `color.teal.50` | `#F0FDFA` |
+| `color.teal.100` | `#CCFBF1` |
+| `color.teal.200` | `#99F6E4` |
+| `color.teal.500` | `#2EC4B6` |
+| `color.teal.600` | `#20A99D` |
+| `color.teal.700` | `#0F766E` |
+| `color.teal.800` | `#115E59` |
+| `color.sunrise.100` | `#FFF1D6` |
+| `color.sunrise.300` | `#FFBF69` |
+| `color.sunrise.500` | `#FF9F1C` |
+| `color.sunrise.600` | `#E8850A` |
+| `color.ink.500` | `#64748B` |
+| `color.ink.600` | `#475569` |
+| `color.ink.700` | `#33415C` |
+| `color.ink.800` | `#1E293B` |
+
+Teal is the Light theme's interaction color. Sunrise orange and soft yellow are
+secondary highlight colors only; they never replace Success, Warning, Error,
+Information, Deposit, or Withdrawal semantics.
 
 #### Emerald success and Deposit
 
@@ -109,7 +165,25 @@ Reliability comes from consistent structure, legible type, exact values, restrai
 | `color.blue.700` | `#1D4ED8` |
 | `color.blue.800` | `#1E40AF` |
 
-`color.blue.600` is the primary action color and `color.blue.700` is its hover state. This blue is calm and familiar without the high saturation or glow treatments associated with startup and crypto interfaces. It supports operational confidence while allowing financial content to remain visually dominant.
+This professional blue family supports Withdrawal and any approved blue-specific
+information role. Primary interaction emphasis is theme-specific: teal in Light
+and sky in Dark. Blue must not create a parallel action system.
+
+#### Sky dark-theme accent
+
+| Token | Value |
+|-------|-------|
+| `color.sky.100` | `#E0F2FE` |
+| `color.sky.200` | `#BAE6FD` |
+| `color.sky.300` | `#7DD3FC` |
+| `color.sky.400` | `#38BDF8` |
+| `color.sky.500` | `#0EA5E9` |
+| `color.sky.800` | `#075985` |
+| `color.sky.900` | `#0C4A6E` |
+
+Sky is the Dark theme's restrained interactive accent. It highlights primary
+actions, focus, links, and informational emphasis only. Large decorative fills,
+glows, gradients, and repeated cyan highlights are prohibited.
 
 #### Amber warning
 
@@ -304,20 +378,25 @@ Breakpoints express composition changes, not device detection.
 
 | Token | References | Meaning |
 |-------|------------|---------|
-| `color.background.canvas` | `color.neutral.50` | Application background |
-| `color.background.surface` | `color.neutral.0` | Primary surface |
-| `color.background.subtle` | `color.neutral.100` | Quiet grouped surface |
+| `color.background.canvas` | `color.neutral.0` | Dominant application background |
+| `color.background.secondary` | `color.slate.50` | Quiet secondary page area |
+| `color.background.surface` | `color.neutral.0` | Primary surface and dialog |
+| `color.background.subtle` | `color.tropical-cyan.50` | Optional card, panel, table stripe, or grouped surface |
 | `color.background.scrim` | `color.overlay.scrim` | Modal backdrop |
-| `color.text.primary` | `color.neutral.900` | Primary content |
-| `color.text.secondary` | `color.neutral.600` | Supporting content |
-| `color.text.tertiary` | `color.neutral.500` | Low-emphasis metadata |
-| `color.text.inverse` | `color.neutral.0` | Text on strong fills |
+| `color.text.primary` | `color.ink.700` | Primary content |
+| `color.text.secondary` | `color.ink.600` | Supporting content |
+| `color.text.tertiary` | `color.ink.500` | Low-emphasis metadata |
+| `color.text.inverse` | `color.slate.50` | Soft near-white text on the primary teal fill |
 | `color.border.default` | `color.neutral.200` | Standard boundary |
 | `color.border.strong` | `color.neutral.300` | Emphasized boundary |
-| `color.border.focus` | `color.blue.600` | Keyboard focus |
-| `color.action.primary` | `color.blue.600` | Calm professional primary action |
-| `color.action.primary.hover` | `color.blue.700` | Primary hover |
-| `color.action.primary.subtle` | `color.blue.50` | Quiet action surface |
+| `color.border.focus` | `color.teal.700` | Keyboard focus |
+| `color.action.primary` | `color.teal.700` | Calm primary action, link, and active control |
+| `color.action.primary.hover` | `color.teal.800` | Primary hover |
+| `color.action.primary.active` | `color.teal.800` | Primary pressed state |
+| `color.action.primary.subtle` | `color.teal.50` | Quiet action or selection surface |
+| `color.highlight.secondary` | `color.sunrise.500` | New badge or non-critical highlight |
+| `color.highlight.soft` | `color.sunrise.300` | Tip or soft highlight |
+| `color.highlight.background` | `color.sunrise.100` | Quiet highlight surface |
 | `color.status.success` | `color.emerald.500` | Success indicator (`#10B981` at Primitive layer) |
 | `color.status.warning` | `color.amber.500` | Warning indicator (`#F59E0B` at Primitive layer) |
 | `color.status.error` | `color.red.500` | Error indicator (`#EF4444` at Primitive layer) |
@@ -331,46 +410,108 @@ Breakpoints express composition changes, not device detection.
 | `color.warning.background` | `color.amber.50` | Warning surface |
 | `color.error.foreground` | `color.red.700` | Error content |
 | `color.error.background` | `color.red.50` | Error surface |
+| `color.info.foreground` | `color.teal.800` | Teal-based informational content |
+| `color.info.background` | `color.teal.50` | Informational surface |
 | `color.disabled.foreground` | `color.neutral.400` | Disabled content |
 | `color.disabled.background` | `color.neutral.100` | Disabled surface |
 
-#### 5.1.1 Dark Theme Semantic Overrides
+#### 5.1.1 Light Theme Composition Rules
+
+- White is the dominant canvas. `color.background.secondary` may quietly divide
+  large page regions; `color.background.subtle` may separate selected cards,
+  panels, or secondary sections. Neither may become a full-screen color wash.
+- Cards, panels, dialogs, and operational sections establish elevation through
+  spacing, quiet borders, and subtle shadow before colored fills.
+- Teal is reserved for primary actions, active navigation, links, focus, and
+  selected controls. It must not be used for long-form text or broad decorative
+  areas.
+- The vivid `color.teal.500` remains a palette primitive, not the default
+  foreground on white. Routine Light interactions use the calmer teal semantic
+  mapping so financial content remains visually dominant.
+- Sunrise orange and soft yellow are limited to New badges, tips,
+  informational callouts, and non-critical highlights. They never compete with
+  or replace financial semantic colors.
+- Success remains emerald, Warning remains amber, Error remains muted red, and
+  Information remains teal-based. Financial meaning is always repeated in text
+  and, where appropriate, iconography.
+- Body copy uses dark neutral text. Teal, cyan, orange, and yellow are prohibited
+  for paragraphs, dense tables, and extended reading.
+- Use generous whitespace, restrained rounded corners, consistent spacing, and
+  subtle shadows. Avoid oversized colored panels, rainbow interfaces, excessive
+  gradients, operational-screen illustrations, and unnecessary animation.
+- Authenticated screens remain focused and productivity-oriented. Landing pages
+  may be more expressive but continue to use the same semantic token system.
+
+#### 5.1.2 Dark Theme Semantic Overrides
+
+The Dark theme uses the approved Modern Tech & Finance direction: calm
+blue-slate surfaces, soft near-white content, and a restrained sky accent. The
+four reference anchors are the starting point for the system, not isolated
+component colors. Every component continues to consume semantic or component
+tokens.
 
 Tokens not listed retain their base semantic reference only when contrast
-verification passes. These overrides form an intentional dark surface hierarchy,
-not a mechanical inversion:
+verification passes. These overrides form an intentional surface hierarchy, not
+a mechanical inversion:
 
 | Semantic token | Dark reference |
 |---|---|
-| `color.background.canvas` | `color.neutral.950` |
-| `color.background.surface` | `color.neutral.900` |
-| `color.background.subtle` | `color.neutral.800` |
-| `color.text.primary` | `color.neutral.50` |
-| `color.text.secondary` | `color.neutral.300` |
-| `color.text.tertiary` | `color.neutral.400` |
-| `color.text.inverse` | `color.neutral.950` |
-| `color.border.default` | `color.neutral.700` |
-| `color.border.strong` | `color.neutral.600` |
-| `color.border.focus` | `color.blue.500` |
-| `color.action.primary` | `color.blue.500` |
-| `color.action.primary.hover` | `color.blue.600` |
-| `color.action.primary.subtle` | `color.neutral.800` |
+| `color.background.canvas` | `color.slate.900` |
+| `color.background.secondary` | `color.slate.800` |
+| `color.background.surface` | `color.slate.800` |
+| `color.background.subtle` | `color.slate.700` |
+| `color.text.primary` | `color.slate.50` |
+| `color.text.secondary` | `color.slate.300` |
+| `color.text.tertiary` | `color.slate.400` |
+| `color.text.inverse` | `color.slate.900` |
+| `color.border.default` | `color.slate.700` |
+| `color.border.strong` | `color.slate.600` |
+| `color.border.focus` | `color.sky.400` |
+| `color.action.primary` | `color.sky.400` |
+| `color.action.primary.hover` | `color.sky.300` |
+| `color.action.primary.active` | `color.sky.200` |
+| `color.action.primary.subtle` | `color.slate.700` |
+| `color.status.success` | `color.emerald.500` |
+| `color.status.warning` | `color.amber.500` |
+| `color.status.error` | `color.red.500` |
 | `color.deposit.foreground` | `color.emerald.200` |
 | `color.deposit.background` | `color.emerald.900` |
-| `color.withdrawal.foreground` | `color.blue.100` |
-| `color.withdrawal.background` | `color.blue.800` |
+| `color.withdrawal.foreground` | `color.sky.200` |
+| `color.withdrawal.background` | `color.sky.900` |
 | `color.success.foreground` | `color.emerald.200` |
 | `color.success.background` | `color.emerald.900` |
 | `color.warning.foreground` | `color.amber.100` |
-| `color.warning.background` | `color.neutral.800` |
+| `color.warning.background` | `color.slate.700` |
 | `color.error.foreground` | `color.red.100` |
 | `color.error.background` | `color.red.800` |
-| `color.disabled.foreground` | `color.neutral.500` |
-| `color.disabled.background` | `color.neutral.800` |
+| `color.info.foreground` | `color.sky.200` |
+| `color.info.background` | `color.sky.900` |
+| `color.disabled.foreground` | `color.slate.500` |
+| `color.disabled.background` | `color.slate.700` |
 
 Status meaning remains text/icon explicit. Every actual component pairing,
 including hover, focus, disabled, scrim, chart, dialog, and native-control state,
 must pass the contrast gate before the Dark theme is complete.
+
+Dark composition rules:
+
+- Canvas, surfaces, and grouped surfaces must remain visibly distinct through
+  adjacent slate steps, quiet borders, and spacing before shadow.
+- Tables, balances, transactions, reports, form values, and state messages take
+  precedence over decorative surfaces. Their hierarchy must remain clear during
+  extended reading sessions.
+- Sky accent is reserved for actions, focus, links, selection, and restrained
+  informational emphasis. It must not dominate navigation, card backgrounds, or
+  large portions of the viewport.
+- Success, warning, error, information, Deposit, and Withdrawal use their
+  semantic families consistently. Meaning is always repeated in text and, where
+  appropriate, iconography.
+- Do not use pure black backgrounds, pure white text, neon treatments, saturated
+  decorative accents, heavy shadows, or excessive gradients.
+- Elevation is primarily a surface-and-border relationship. Shadows, when
+  required for temporary overlays, remain soft and restrained.
+- Dark layouts must feel stable and professional—closer to modern financial and
+  productivity products than cyberpunk, gaming, trading, or entertainment UI.
 
 ### 5.2 Typography Semantics
 
@@ -453,6 +594,7 @@ must pass the contrast gate before the Dark theme is complete.
 |-----------------|------------|
 | `button.primary.background` | `color.action.primary` |
 | `button.primary.background-hover` | `color.action.primary.hover` |
+| `button.primary.background-active` | `color.action.primary.active` |
 | `button.primary.foreground` | `color.text.inverse` |
 | `button.secondary.background` | `color.background.surface` |
 | `button.secondary.foreground` | `color.text.primary` |

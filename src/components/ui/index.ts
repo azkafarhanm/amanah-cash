@@ -21,5 +21,6 @@ export {
   type FeaturePlaceholderProps
 } from "./feature-placeholder";
 export { LoadingSkeleton, type LoadingSkeletonProps, type LoadingSkeletonVariant } from "./loading-skeleton";
+export { Pagination, type PaginationProps } from "./pagination";
 export { SectionHeader, type SectionHeaderProps } from "./section-header";
 export { StatusBadge, type StatusBadgeProps, type StatusBadgeTone } from "./status-badge";

@@ -8,9 +8,11 @@
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
 .table td { font: var(--type-body); }
 .link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
-.actions, .pagination { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
+.actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; }
 .button { border: 1px solid var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); }
+.button:hover { background: var(--color-action-primary-hover); }
+.button:active { background: var(--color-action-primary-active); }
 .danger { border: 1px solid var(--color-error-foreground); color: var(--color-error-foreground); background: var(--color-background-surface); }
 .panel { padding: var(--space-6); border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
 .message, .error { padding: var(--space-4); border-radius: var(--shape-control); font: var(--type-body); }
@@ -22,7 +24,7 @@
 .definition dd { margin: 0; font: var(--type-body); }
 .auditItem { padding-block: var(--space-2); border-bottom: 1px solid var(--color-border-default); }
 .auditItem p { margin: 0; }
-.input:focus-visible, .select:focus-visible, .button:focus-visible, .danger:focus-visible, .link:focus-visible, .pagination a:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
+.input:focus-visible, .select:focus-visible, .button:focus-visible, .danger:focus-visible, .link:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 @media (max-width: 48rem) {
   .toolbar, .definition { grid-template-columns: 1fr; }
   .tableWrap { overflow: visible; border: 0; background: transparent; }

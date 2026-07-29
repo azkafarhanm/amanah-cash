@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, Pagination } from "@/components/ui";
 import type { StudentRecord } from "@/students/domain";
 import type { StudentFinancialSummary } from "@/transactions/read-service";
 import { rupiah } from "@/components/transactions/presentation";
@@ -101,6 +101,6 @@ export function StudentList({
     {result.items.length === 0 ? <EmptyState kind="students" {...emptyCopy} /> : <><div className={styles.tableWrap}><table className={styles.table}><thead><tr><th>Nama Siswa</th><th>Operator</th><th>Status</th>{showFinancialSummary ? <th>Saldo saat ini</th> : null}<th>Dibuat</th></tr></thead><tbody>{result.items.map((student) => {
       const financial = financialSummaries?.[student.id];
       return <tr key={student.id}><td data-label="Nama Siswa"><Link className={styles.link} href={`${basePath}/${student.id}`}>{student.name}</Link></td><td data-label="Operator">{student.operator.name}</td><td data-label="Status"><StudentStatusBadge status={student.status} /></td>{showFinancialSummary ? <td data-label="Saldo saat ini"><span className={styles.balance}><strong>{rupiah(financial?.balance ?? "0")}</strong><small>{financial?.transactionCount ? `${financial.transactionCount.toLocaleString("id-ID")} transaksi tercatat` : "Belum ada transaksi tercatat"}</small></span></td> : null}<td data-label="Dibuat">{studentDate(student.createdAt)}</td></tr>;
-    })}</tbody></table></div><nav className={styles.pagination} aria-label="Paginasi"><span>Halaman {result.page} dari {result.pages} · {result.total} Siswa</span><div>{result.page > 1 ? <Link className={styles.link} href={href(result.page - 1)}>Sebelumnya</Link> : null} {result.page < result.pages ? <Link className={styles.link} href={href(result.page + 1)}>Berikutnya</Link> : null}</div></nav></>}
+    })}</tbody></table></div><Pagination ariaLabel="Paginasi Siswa" page={result.page} pages={result.pages} totalLabel={`${result.total} Siswa`} previousHref={result.page > 1 ? href(result.page - 1) : undefined} nextHref={result.page < result.pages ? href(result.page + 1) : undefined} /></>}
   </>;
 }

@@ -1,0 +1,114 @@
+.section {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.header h2,
+.header p,
+.success,
+.error {
+  margin: 0;
+}
+
+.header h2,
+.legend {
+  color: var(--color-text-primary);
+  font: var(--type-section-title);
+}
+
+.header p,
+.optionDescription {
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-block-end: var(--space-3);
+}
+
+.options {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.option {
+  min-height: var(--control-height-minimum);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-2) var(--space-4);
+  align-items: center;
+  padding: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  cursor: pointer;
+}
+
+.option:has(input:checked) {
+  border-color: var(--color-action-primary);
+  background: var(--color-primary-subtle);
+}
+
+.option:has(input:focus-visible) {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.option:has(input:disabled) {
+  cursor: wait;
+}
+
+.optionCopy {
+  display: grid;
+  gap: var(--space-0-5);
+}
+
+.optionLabel {
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+
+.option input {
+  width: var(--size-5);
+  height: var(--size-5);
+  margin: 0;
+  accent-color: var(--color-action-primary);
+}
+
+.optionStatus {
+  grid-column: 1 / -1;
+  min-height: var(--line-height-20);
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.success {
+  color: var(--color-success-foreground);
+  font: var(--type-supporting);
+}
+
+.error {
+  padding: var(--space-3);
+  border-radius: var(--shape-control);
+  background: var(--color-error-background);
+  color: var(--color-error-foreground);
+  font: var(--type-supporting);
+}
+
+@media (min-width: 48rem) {
+  .options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

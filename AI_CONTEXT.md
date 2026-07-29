@@ -167,7 +167,7 @@ SQLite relational database and invariant triggers
 - CSV, Excel, and PDF export are synchronous and fully buffered. They have a default 10,000-row cap and optional byte cap, but no deadline/concurrency control or cross-page snapshot and are not qualified to generate 30,000–100,000-row files. Such requests are rejected after the first Reporting page by default. See `docs/45-export-production-readiness-review.md`.
 - Settings is now an approved remaining MVP module governed by
   `docs/21-mvp-settings-specification.md`; Admin and Operator routes retain
-  explicit placeholders until Sprint 8. The centralized Transaction Workspace
+  explicit placeholders until Sprint 6. The centralized Transaction Workspace
   and Reporting routes are implemented.
 
 ## Outstanding Work
@@ -179,12 +179,12 @@ SQLite relational database and invariant triggers
 
 ## Next Recommended Sprint
 
-Batch 5.1.1 — Core Landing Content and FAQ is complete. No later Batch is
-currently `READY FOR IMPLEMENTATION`; Product Owner approval is required before
-the executable roadmap advances. Remaining Landing Page work and the approved
-MVP Settings module retain their documented blocked sequence. Release Sprint R1
-remains `ON HOLD` until the Product Owner explicitly declares MVP feature
-development complete and resumes deployment qualification.
+Batch 5.1.1 — Core Landing Content and FAQ is complete. Batch 6.1.1 — Theme and
+Page-Size Preferences is the single Batch currently `READY FOR IMPLEMENTATION`.
+The remaining Settings batches follow in dependency order before the blocked
+Landing Page evidence and integration work resumes in Sprints 7–8. Release
+Sprint R1 remains `ON HOLD` until the Product Owner explicitly declares MVP
+feature development complete and resumes deployment qualification.
 
 ## Core Business Rules to Preserve
 

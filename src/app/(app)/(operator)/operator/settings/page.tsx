@@ -1,16 +1,24 @@
-import Link from "next/link";
-import { ContentWrapper, FeaturePlaceholder, SectionHeader } from "@/components/ui";
+import { protectRoute } from "@/authorization/routes";
+import { loadAuthenticationEnvironment } from "@/auth/environment";
+import { ThemeSettings } from "@/components/settings/theme-settings";
+import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { getPrismaClient } from "@/persistence/prisma";
+import { readThemePreference } from "@/settings/service";
 
-export default function OperatorSettingsPage() {
+export default async function OperatorSettingsPage() {
+  const user = await protectRoute("operator");
+  const theme = await readThemePreference(
+    getPrismaClient(loadAuthenticationEnvironment()),
+    user.id
+  );
+
   return (
     <ContentWrapper>
-      <SectionHeader title="Pengaturan" description="Preferensi ruang kerja Operator." />
-      <FeaturePlaceholder
-        title="Pengaturan Operator"
-        description="Preferensi akun dan ruang kerja akan tersedia pada fase penyempurnaan berikutnya."
-        status="PLANNED"
-        action={<Link href="/operator">Kembali ke Dashboard</Link>}
+      <SectionHeader
+        title="Pengaturan"
+        description="Atur tampilan Amanah Cash untuk akun Anda."
       />
+      <ThemeSettings initialTheme={theme} />
     </ContentWrapper>
   );
 }
