@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 4 — Epic 4.2: Admin Form Validation Recovery
+
+- Replaced query-string validation redirects for Admin Operator and Student create/edit forms with local React Action state while preserving the existing authoritative Domain and authorization boundaries.
+- Preserved submitted name, email, active state, Operator assignment, Student status, notes, and ownership-transfer reason after correctable server rejection.
+- Added field-associated inline Domain errors, predictable first-invalid-field focus, pending labels, and duplicate-submit protection without storing form payloads in URLs, logs, cookies, or persistent browser storage.
+- Kept successful create/edit redirects and notices, Operator deletion behavior, ownership-transfer audit, persistence, privacy, and financial boundaries unchanged.
+- Added focused state-mapping and structural regression coverage; the complete suite now contains 201 passing tests.
+
 ### Sprint 4 — Epic 4.1: Repository Production Preflight
 
 - Upgraded Auth.js to 4.24.15, Next.js and its ESLint rules to the build-verified 16.2.11 patch, and the Prisma client/SQLite adapter/CLI to 7.9.1, resolving the directly actionable critical Auth.js and reported framework/tooling advisories.

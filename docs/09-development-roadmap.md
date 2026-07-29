@@ -1,6 +1,6 @@
 # Amanah Cash — Executable Engineering Roadmap
 
-**Version:** 2.1
+**Version:** 2.3
 **Status:** Approved
 **Owner:** Project Owner
 **Last Updated:** 2026-07-29
@@ -61,10 +61,11 @@ the read-only Audit Detail Drawer.
 Repository Production Preflight is complete. Direct Auth.js, Next.js, and Prisma
 advisories with supported patch releases were remediated; production
 configuration validation and redacted operational diagnostics are implemented.
-The release recommendation remains `READY WITH MINOR LIMITATIONS`. The remaining
-approved objective is Milestone 9 production readiness. Its environment-specific
-parts cannot start until the deployment and qualification baselines listed in
-Section 8 are supplied.
+The release recommendation remains `READY WITH MINOR LIMITATIONS`. Deployment
+qualification is not part of the current MVP feature-development phase and is
+held in Release Sprint R1. The next approved unfinished MVP feature is
+server-validation form recovery for Admin Student and Operator create/edit
+workflows, as required by the approved validation and error-handling contracts.
 
 ## 4. Sprint 0 — Product and Application Foundation
 
@@ -600,10 +601,10 @@ components, shared UI exports, styles, tests.
 
 **Status:** `COMPLETE`
 
-## 8. Sprint 4 — Production Readiness
+## 8. Sprint 4 — MVP Completion and Repository Readiness
 
-**Sprint Goal:** Qualify and deploy the approved MVP without expanding product
-scope or weakening financial, authorization, privacy, and export boundaries.
+**Sprint Goal:** Close approved repository-local MVP gaps without beginning
+deployment qualification or expanding product scope.
 
 **Status:** `COMPLETE`
 
@@ -649,20 +650,79 @@ documentation; focused tests.
 
 **Status:** `COMPLETE`
 
-### Epic 4.2 — Deployment Baseline and Topology
+### Epic 4.2 — Validation Interaction Completion
+
+**Objective:** Close the documented MVP interaction gap in administrative forms
+without changing Operator or Student Domain rules.
+
+**Status:** `COMPLETE`
+
+#### Batch 4.2.1 — Admin Form Validation Recovery
+
+**Objective:** Keep Admin Student and Operator create/edit validation failures in
+the current form interaction, preserve every still-valid submitted field, and
+associate actionable inline errors with the affected controls.
+
+**Dependencies:** Completed Operator Management and Student Management services,
+centralized Admin authorization, existing validation outcomes, shared form and
+error-state conventions.
+
+**Affected modules:** Admin Operator and Student create/edit Server Actions and
+form presentation under `src/app/(app)/(admin)/admin/operators` and
+`src/app/(app)/(admin)/admin/students`; focused Operator/Student presentation and
+action tests; affected implementation documentation.
+
+**Acceptance Criteria:**
+
+- A server-rejected create or edit remains on the same logical form instead of
+  redirecting through query-string error transport.
+- Name, email, Operator assignment, status, notes, ownership-transfer reason,
+  and other submitted fields retain their submitted value when that value is
+  still valid for correction.
+- Field-specific validation messages render inline, are programmatically
+  associated with their controls, and the error summary or first invalid field
+  receives focus according to the existing accessibility contract.
+- Duplicate-name/email, inactive-Operator, required transfer-reason, malformed
+  input, authorization, not-found, and unexpected failures retain their current
+  authoritative server outcomes and privacy behavior.
+- Successful create/edit navigation and notices remain unchanged.
+- No submitted form values or validation payloads are placed in URLs, logs,
+  cookies, or persistent client storage.
+- Operator/Student Domain validation, persistence, ownership transfer audit,
+  authorization, and financial-data boundaries remain unchanged.
+- Automated tests cover create and edit recovery for both resource types,
+  preserved valid values, corrected resubmission, focus/error association,
+  successful completion, and absence of query-string form payloads.
+
+**Status:** `COMPLETE`
+
+## 9. Sprint R1 — Release and Deployment Qualification
+
+**Sprint Goal:** Qualify and release the completed MVP in a selected production
+environment without expanding product scope or weakening financial,
+authorization, privacy, and export boundaries.
+
+**Status:** `ON HOLD`
+
+Release Sprint R1 begins only after the Product Owner declares MVP feature
+development complete. Its environment decisions are intentionally not blockers
+for Sprint 4 feature delivery.
+
+### Epic R1.1 — Deployment Baseline and Topology
 
 **Objective:** Select and document the production environment, resource
 envelope, database topology, backup/restore policy, OAuth registration, and
 Platform Admin bootstrap procedure.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.2.1 — Deployment Environment Decision
+#### Batch R1.1.1 — Deployment Environment Decision
 
 **Objective:** Convert the approved one-client/one-server/one-relational-database
 architecture into a concrete production topology and qualification baseline.
 
-**Dependencies:** Batch 4.1.1 complete; Project Owner decisions listed below.
+**Dependencies:** MVP feature development declared complete; Batch 4.1.1
+complete; Product Owner resumes Release Sprint R1.
 
 **Affected modules:** Deployment configuration, environment contract,
 migration/rollback scripts if required by the selected environment, operational
@@ -679,32 +739,29 @@ documentation, deployment verification tests.
 - Supported browser versions, target devices, network latency, and production
   data-volume baselines are approved.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-**Blocking documentation gaps:**
+**Decisions deferred to the Release Sprint:**
 
-- No production hosting/runtime or region is selected.
-- No decision confirms whether production remains single-process SQLite with
-  durable storage or adopts another relational database.
-- No resource envelope, backup retention, restore objective, or secret manager
-  is specified.
-- No production Google OAuth origins/callbacks or Platform Admin bootstrap owner
-  is specified.
-- No supported-browser/device/network/data-volume baseline is defined.
+- Production hosting/runtime and region.
+- Single-process SQLite with durable storage versus another relational database.
+- Resource envelope, backup retention, restore objective, and secret manager.
+- Production Google OAuth origins/callbacks and Platform Admin bootstrap owner.
+- Supported-browser/device/network/data-volume baseline.
 
-### Epic 4.3 — Deployment Qualification
+### Epic R1.2 — Deployment Qualification
 
 **Objective:** Deploy the selected topology and verify migrations, authentication,
 PWA behavior, accessibility, diagnostics, backup/restore, and operational safety.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.3.1 — Staging Deployment and Recovery Verification
+#### Batch R1.2.1 — Staging Deployment and Recovery Verification
 
 **Objective:** Execute a production-like deployment, migration, rollback, backup,
 restore, Google OAuth, and failure-diagnostic rehearsal.
 
-**Dependencies:** Batch 4.2.1 complete and access to the selected environment.
+**Dependencies:** Batch R1.1.1 complete and access to the selected environment.
 
 **Affected modules:** Deployment manifests/configuration, migration tooling,
 operational runbooks, environment-specific verification.
@@ -717,14 +774,14 @@ operational runbooks, environment-specific verification.
 - Live Google OAuth admits only provisioned active users.
 - Operator-safe failure messages and server-side diagnostics are verified.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.3.2 — Physical Device, PWA, and Accessibility Qualification
+#### Batch R1.2.2 — Physical Device, PWA, and Accessibility Qualification
 
 **Objective:** Close the remaining release-browser, mobile viewport, standalone
 PWA, screen-reader, keyboard, and 200% zoom gates.
 
-**Dependencies:** Batch 4.3.1 and the approved browser/device matrix.
+**Dependencies:** Batch R1.2.1 and the approved browser/device matrix.
 
 **Affected modules:** Presentation components/styles only for confirmed defects;
 PWA metadata/assets; qualification evidence and regression tests.
@@ -739,22 +796,22 @@ PWA metadata/assets; qualification evidence and regression tests.
 - Confirmed defects are fixed with regression coverage; no speculative redesign
   is introduced.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-### Epic 4.4 — Export Capacity Qualification
+### Epic R1.3 — Export Capacity Qualification
 
 **Objective:** Establish measured, deployment-specific service limits for the
 existing synchronous CSV, Excel, and PDF exporters.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.4.1 — Representative Export Benchmark
+#### Batch R1.3.1 — Representative Export Benchmark
 
 **Objective:** Measure small, normal, 30,000-row, and 100,000-row representative
 datasets in the selected deployment environment without claiming unsupported
 large-volume generation.
 
-**Dependencies:** Batch 4.3.1; representative row-width fixtures; monitoring for
+**Dependencies:** Batch R1.2.1; representative row-width fixtures; monitoring for
 heap, duration, database load, and timeout behavior.
 
 **Affected modules:** Export benchmark fixtures/scripts, configuration limits,
@@ -771,14 +828,14 @@ heap, duration, database load, and timeout behavior.
 - Supported synchronous volume and explicitly unsupported volume are documented
   per format.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.4.2 — Export Deadline and Concurrency Controls
+#### Batch R1.3.2 — Export Deadline and Concurrency Controls
 
 **Objective:** Apply evidence-based request deadline and allowed-concurrency
 policy to the bounded synchronous exporter.
 
-**Dependencies:** Batch 4.4.1 measurements and an approved operational policy.
+**Dependencies:** Batch R1.3.1 measurements and an approved operational policy.
 
 **Affected modules:** Export HTTP/application boundary, environment configuration,
 tests, production readiness documentation.
@@ -792,20 +849,20 @@ tests, production readiness documentation.
 - Limits fit the selected deployment resource envelope.
 - No streaming, background job, queue, or object storage is introduced.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-### Epic 4.5 — Final Release Acceptance
+### Epic R1.4 — Final Release Acceptance
 
 **Objective:** Produce the final evidence-backed MVP deployment decision.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-#### Batch 4.5.1 — Final MVP Acceptance
+#### Batch R1.4.1 — Final MVP Acceptance
 
 **Objective:** Re-run repository and environment gates, reconcile documentation,
 and issue the final release recommendation.
 
-**Dependencies:** Batches 4.1.1, 4.3.1, 4.3.2, 4.4.1, and 4.4.2 complete.
+**Dependencies:** Batches 4.1.1, R1.2.1, R1.2.2, R1.3.1, and R1.3.2 complete.
 
 **Affected modules:** Release evidence, roadmap/handoff/changelog, affected
 operational documentation; application code only for confirmed release defects.
@@ -820,28 +877,28 @@ operational documentation; application code only for confirmed release defects.
 - The final recommendation is explicitly `READY`, `READY WITH LIMITATIONS`, or
   `NOT READY`, with unresolved blockers listed.
 
-**Status:** `BLOCKED`
+**Status:** `ON HOLD`
 
-## 9. Explicitly On-Hold Extension Work
+## 10. Explicitly On-Hold Extension Work
 
 **Sprint Goal:** Preserve documented extension boundaries without treating them
 as approved implementation commitments.
 
 **Status:** `ON HOLD`
 
-### Epic 9.1 — Export Architecture Extensions
+### Epic 10.1 — Export Architecture Extensions
 
 **Objective:** Hold architecture-changing export options until measurement
 demonstrates need and separate approval defines their contracts.
 
 **Status:** `ON HOLD`
 
-#### Batch 9.1.1 — Streaming and Cross-Page Consistency
+#### Batch 10.1.1 — Streaming and Cross-Page Consistency
 
 **Objective:** If separately approved, define backpressure-aware CSV streaming
 and point-in-time/high-water-mark semantics at the Reporting read boundary.
 
-**Dependencies:** Batch 4.4.1 evidence and separate architecture approval.
+**Dependencies:** Batch R1.3.1 evidence and separate architecture approval.
 
 **Affected modules:** Reporting read boundary, Export coordinator/CSV adapter,
 HTTP delivery, cancellation/backpressure tests, architecture documentation.
@@ -855,12 +912,12 @@ HTTP delivery, cancellation/backpressure tests, architecture documentation.
 
 **Status:** `ON HOLD`
 
-#### Batch 9.1.2 — Asynchronous Oversized Export
+#### Batch 10.1.2 — Asynchronous Oversized Export
 
 **Objective:** If separately approved, define background generation, queue,
 storage, expiry, notification, and secure download behavior.
 
-**Dependencies:** Demonstrated need after Batch 4.4.1 and separate product,
+**Dependencies:** Demonstrated need after Batch R1.3.1 and separate product,
 security, operations, and architecture approval.
 
 **Affected modules:** Not determined; the current architecture contains no
@@ -874,14 +931,14 @@ approved queue, object storage, worker, or notification boundary.
 
 **Status:** `ON HOLD`
 
-### Epic 9.2 — Product Extensions Outside the MVP
+### Epic 10.2 — Product Extensions Outside the MVP
 
 **Objective:** Keep documented future ideas out of the implementation sequence
 until product requirements explicitly approve them.
 
 **Status:** `ON HOLD`
 
-#### Batch 9.2.1 — Unapproved Product Extensions
+#### Batch 10.2.1 — Unapproved Product Extensions
 
 **Objective:** Hold schedules, monthly allowance, categories, attachments,
 approvals, notifications, bulk operations, advanced analytics, advanced export
@@ -902,26 +959,27 @@ exists.
 
 **Status:** `ON HOLD`
 
-## 10. Requirement and Evidence Map
+## 11. Requirement and Evidence Map
 
 | Delivery area | Authoritative evidence |
 |---|---|
 | Product scope and exclusions | `docs/00-product-principles.md`, `docs/01-functional-requirements.md`, `README.md` |
 | Financial and ownership rules | `docs/03-business-rules.md`, `docs/04-domain-model.md` |
-| User behavior and states | `docs/05-user-flow.md`, `docs/06-wireframe.md`, `docs/19-screen-specifications.md` |
+| User behavior and states | `docs/05-user-flow.md`, `docs/06-wireframe.md`, `docs/14-component-guidelines.md`, `docs/19-screen-specifications.md` |
 | Architecture and persistence | `docs/08-system-architecture.md`, `docs/28-database-design.md`, `docs/36-adr-transaction-balance-and-audit.md`, `docs/37-technical-design-transaction-foundation.md` |
 | Authentication and authorization | `docs/27-adr-authentication-authorization.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md` |
 | Design implementation | `docs/12-ui-design-system.md`, `docs/14-component-guidelines.md`, `docs/16-accessibility-guidelines.md`, `docs/18-design-tokens.md` |
-| Implemented delivery state | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
+| Implemented delivery state and known MVP interaction gap | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/34-operator-management-implementation.md`, `docs/35-student-management-implementation.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
 | Production/export gaps | `docs/02-non-functional-requirements.md`, `docs/45-export-production-readiness-review.md` |
 
-## 11. Roadmap Integrity Check
+## 12. Roadmap Integrity Check
 
 At this revision:
 
-- First `READY FOR IMPLEMENTATION` Batch: **none**. Batch 4.2.1 is the next
-  sequential Batch and remains `BLOCKED` on the decisions listed in Section 8.
+- First `READY FOR IMPLEMENTATION` Batch: **none**.
 - Number of `READY FOR IMPLEMENTATION` Batches: **0**.
-- No new product feature is authorized by this roadmap.
-- Deployment-dependent Batches remain `BLOCKED` with their missing inputs named.
+- Batch 4.2.1 completed the approved validation/error-handling requirement
+  without changing Operator or Student Domain behavior.
+- Deployment qualification and release acceptance are isolated in Release Sprint
+  R1 and remain `ON HOLD` until MVP feature development is complete.
 - Architecture-changing and unapproved product extensions remain `ON HOLD`.

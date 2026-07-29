@@ -1,7 +1,7 @@
 # Student Management Implementation
 
 **Status:** Implemented  
-**Date:** 2026-07-20
+**Date:** 2026-07-29
 
 Student Management provides Platform Admin write access and ownership-scoped Operator read access. It reuses the approved admin, operator, and owner authorization policies; feature code does not recreate role or ownership decisions.
 
@@ -22,10 +22,26 @@ Statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. Status does not independently
 
 All validation is server-side in `src/students/domain.ts`. UI constraints are convenience only. Partial Student/Operator-name search, status filtering, newest-first ordering, and ten-row pagination execute in the repository query. Invalid page and status query values safely fall back to page one and no status filter. Cross-Operator detail access uses the existing masked owner policy and returns the established not-found response.
 
-## Known interaction limitation
+## Validation interaction recovery
 
-Browser-native form validation preserves entered values, but a server-side create/edit validation error redirects to the form page and reloads persisted/default values. Submitted invalid values are not restored. This does not create a partial Student update, but preserving server-rejected input remains future interaction-state work.
+Admin create/edit forms now use local React Action state for expected
+`StudentManagementError` outcomes. Server-rejected submissions remain in the
+same form and preserve name, Operator assignment, status, notes, and
+ownership-transfer reason. Domain messages render beside the affected field and
+focus moves to the first invalid control. Pending submission disables the submit
+action and announces an explicit busy label.
+
+Successful create/edit redirects and notices remain unchanged. Authorization,
+not-found, ownership-transfer audit, and unexpected-error behavior remain
+server-owned. No submitted form value or validation payload is transported in a
+URL, log, cookie, or persistent browser store.
 
 ## Verification
 
-Tests cover creation, editing, assignment and ownership updates, required transfer reason, atomic transfer-audit rollback, immutable transfer audit, validation, inactive Operator rejection, Student/Operator-name search, status filtering, pagination, Platform Admin visibility, and Operator isolation. Existing authorization tests continue to cover admin 403 behavior and masked ownership failures.
+Tests cover creation, editing, assignment and ownership updates, required
+transfer reason, atomic transfer-audit rollback, immutable transfer audit,
+validation, inactive Operator rejection, preserved create/edit values, inline
+error association, focus recovery, pending protection, absence of query-string
+form payloads, Student/Operator-name search, status filtering, pagination,
+Platform Admin visibility, and Operator isolation. Existing authorization tests
+continue to cover admin 403 behavior and masked ownership failures.

@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
 **Last updated:** 2026-07-28
-**Current delivery state:** Sprint 4 Epic 4.1 Batch 4.1.1 complete: repository Production Preflight; deployment baseline decisions and environment qualification remain blocked
+**Current delivery state:** Sprint 4 Epic 4.2 Batch 4.2.1 complete: Admin Operator and Student form validation recovery; Release Sprint R1 remains on hold
 
 ## Project Purpose
 
@@ -43,6 +43,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 3 — Export Experience (Epic 2): added a reusable report-local CSV/Excel/PDF interaction with immediate duplicate protection, per-attempt stale-result guards, preparing/success/failure/Retry feedback, truthful browser-download handoff language, zero-result guidance, responsive equal-weight format choices, stable focus and report context, and isolated per-tab state. Existing export endpoints, coordinator, adapters, limits, filenames, Reporting reads, authorization, ownership, schema, and business logic remain unchanged.
 - Sprint 3 — Export Experience refinement: simplified operational CSV, Excel, and PDF documents to parent-readable financial columns, including `Saldo Tersisa`, and removed Audit Reference, revision/update metadata, Student status, the separate Correction-direction column, and net-movement summary. Correction direction remains readable within Jenis Transaksi; Reporting still retains all metadata and immutable audit persistence is unchanged for the future dedicated Audit Log product.
 - Sprint 4 — Repository Production Preflight: upgraded Auth.js, Next.js, and Prisma to supported advisory-fixing patch releases; added forced production environment validation with redacted summaries; made migration diagnostics operator-safe; added focused regression coverage; and recorded unresolved upstream ExcelJS/Archiver and Next.js PostCSS/Sharp advisory chains in `docs/49-production-preflight.md`.
+- Sprint 4 — Admin Form Validation Recovery: expected Admin Operator and Student create/edit Domain failures now return local React Action state, preserve submitted values, render associated inline errors, focus the first invalid control, and prevent duplicate submission without query-string or persistent-browser form payloads.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 
 
@@ -72,7 +73,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 197 passed, 0 failed.
+- Automated tests: 201 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -157,7 +158,6 @@ SQLite relational database and invariant triggers
 
 - Financial Audit detail presentation is implemented as a lazy, allow-listed, page-cached read-only drawer. Cross-page caching, export, print, mutation, and client-side schema decoding remain intentionally excluded.
 - Transaction migration intentionally refuses databases containing legacy financial rows because trustworthy actor/command/audit provenance cannot be inferred.
-- Student create/edit Server Action validation redirects do not restore submitted invalid values; the form reloads default or persisted values.
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
 - A populated database predating mandatory ownership still requires an explicit Student-to-Operator mapping; the ownership migration intentionally refuses to invent one.
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.
@@ -176,11 +176,10 @@ SQLite relational database and invariant triggers
 
 ## Next Recommended Sprint
 
-The next sequential target is Sprint 4 Batch 4.2.1, but it is `BLOCKED`.
-Do not begin implementation until the Project Owner supplies the hosting/runtime,
-region, persistence topology, resource envelope, backup/restore, secret manager,
-production OAuth/bootstrap ownership, and browser/device/network/data-volume
-baseline decisions listed in `docs/09-development-roadmap.md`. No later Batch may
+No feature Batch is currently `READY FOR IMPLEMENTATION`. Sprint 4 feature work
+defined by the executable roadmap is complete. Release Sprint R1 remains
+`ON HOLD` until the Product Owner explicitly declares MVP feature development
+complete and resumes deployment qualification. On-hold extension work must not
 be pulled forward.
 
 ## Core Business Rules to Preserve

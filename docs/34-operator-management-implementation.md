@@ -1,7 +1,7 @@
 # Operator Management Implementation
 
 **Status:** Implemented  
-**Date:** 2026-07-20
+**Date:** 2026-07-29
 
 Operator Management is the first business module and is available only below `/admin/operators` and `/api/admin/operators`. Both UI and API reuse the approved `admin` authorization policy; navigation remains presentational and is not an access boundary.
 
@@ -23,6 +23,27 @@ Successful verified Google admission records `lastLoginAt`. Authentication and a
 
 Client constraints improve usability, but all inputs are validated again in the domain service. API and Server Actions authorize before invoking business behavior.
 
+## Validation interaction recovery
+
+Admin create/edit forms use local React Action state for expected
+`OperatorManagementError` outcomes. A rejected submission remains in the same
+form, preserves the submitted name, email, and active-state values, renders the
+Domain message beside the affected field, and focuses the first invalid control.
+Pending submission disables the submit action and exposes an explicit busy
+label.
+
+Successful create/edit behavior is unchanged and still redirects with the
+existing notice. Authorization and unexpected errors continue through their
+existing server boundaries. Form values and validation payloads are never placed
+in URLs, logs, cookies, or persistent browser storage. Logical deletion retains
+its existing separate outcome and query-string notice/error behavior because it
+has no editable recovery fields.
+
 ## Verification
 
-The Operator test suite covers create, normalization, duplicate email, validation, edit, activation/deactivation, inactive provisioning, deletion success/failure, search, status filtering, and pagination. Existing authorization tests verify that Operators receive 403 for the shared admin policy.
+The Operator test suite covers create, normalization, duplicate email,
+validation, edit, activation/deactivation, inactive provisioning, deletion
+success/failure, search, status filtering, pagination, preserved create/edit
+values, inline error association, focus recovery, pending protection, and the
+absence of query-string form payloads. Existing authorization tests verify that
+Operators receive 403 for the shared admin policy.
