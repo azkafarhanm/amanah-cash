@@ -1,11 +1,11 @@
 # Amanah Cash — Design References
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -59,6 +59,16 @@ Use only for supportive state continuity, feedback, or spatial orientation. Moti
 ### 4.4 Lucide
 
 Import icons individually. Use consistent size and stroke. Icons must not become the sole carrier of a label, transaction direction, or status.
+
+### 4.5 Contextual Detail Surfaces
+
+Stripe-style contextual extension surfaces, Notion-style side peek, and
+similar record inspectors may inform the platform Context Detail Drawer only
+at the level of reusable principles: preserve source orientation, isolate
+scrolling, maintain stable overlay chrome, and expose explicit states. Do not
+copy another product's dimensions, navigation, density, styling, or action
+model. Amanah Cash tokens, privacy rules, mobile behavior, and component
+selection criteria remain authoritative.
 
 ## 5. Inspiration Boundaries
 

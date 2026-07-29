@@ -53,7 +53,7 @@ Implemented financial engine scope:
 - Date-grouped Student Financial History timeline with Jakarta timezone categorization (today, yesterday, month/year).
 - Debounced live search (350ms) supporting amount, notes, and operator matching.
 - Complete Deposit, Withdrawal, Correction, edit, soft-delete, and restore workflows from mobile-first accessible dialogs.
-- Ownership-scoped Financial Assurance reconciliation and immutable audit timeline reads for an Operator's currently assigned Student.
+- Ownership-scoped Financial Assurance reconciliation, immutable audit timeline reads, and lazy allow-listed Audit Detail rendered through the platform Context Detail Drawer for an Operator's currently assigned Student.
 
 Excluded:
 
@@ -61,7 +61,7 @@ Excluded:
 - Hard Transaction deletion and Student deletion.
 - Transaction transfer, schedules, monthly allowance, categories, attachments, approval workflow, advanced export document styling, advanced analytics, notifications, and bulk operations remain unimplemented extension scope.
 - Multiple currencies and distributed infrastructure.
-- Audit-detail inspection remains a future Financial Assurance milestone; the implemented audit timeline never exposes raw snapshots.
+- Audit-detail inspection is read-only and allow-listed; the timeline and drawer never expose raw snapshots or internal metadata.
 
 Auth.js with Google and Database Sessions is implemented. Platform Admin provisions Operator identities; Amanah Cash owns roles, activation, and authorization. Platform Admin has no routine financial-data access. SQLite remains the current approved persistence target, while production deployment decisions remain deferred to the Deployment phase.
 
@@ -137,6 +137,14 @@ Open `http://localhost:3000/login`. The example configuration enables the explic
 | `AUTH_DEV_MODE` | Optional; defaults to `false` | Enables seeded local sign-in only outside production. A production process fails closed if this is `true`. |
 | `GOOGLE_CLIENT_ID` | When `AUTH_DEV_MODE=false` | Google OAuth 2.0 Web application client ID. |
 | `GOOGLE_CLIENT_SECRET` | When `AUTH_DEV_MODE=false` | Secret matching the Google client ID. |
+| `EXPORT_MAX_ROWS` | Optional; defaults to `10000` | Positive synchronous export row guard rail; this is not a measured capacity guarantee. |
+| `EXPORT_MAX_BYTES` | Optional | Positive estimated and final rendered-byte guard rail. |
+
+Run `npm run env:check:production` before deployment qualification. It forces
+production-mode validation of Google OAuth, HTTPS origin, server-only SQLite,
+secrets, and export limits while redacting database location and secret values.
+See [Production Preflight](docs/49-production-preflight.md) for dependency review,
+diagnostic evidence, remaining blockers, and Manual QA.
 | `DEV_SEED_ADMIN_EMAIL` | Development seed; local auth | Platform Admin seed email and local-auth allowlist entry. |
 | `DEV_SEED_OPERATOR_EMAIL` | Development seed; local auth | Operator seed email and local-auth allowlist entry. |
 | `DEV_SEED_STUDENT_NAME` | Development seed | Seeded Student name. |
@@ -162,7 +170,7 @@ Known roadmap routes render an explicit planned or in-development placeholder in
 
 ## Development Roadmap
 
-Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, guard-railed Export Foundation with CSV, Excel, and PDF, Sprint 2 (Student Financial History, Global Currency Standardization, Search UX, QA Fixes, UI Polish), Sprint 3 report/export presentation enhancements, and the Financial Assurance reconciliation/audit-timeline reads are complete. The application is tagged `v1.1.0`. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured per-format export capacity, streaming/snapshot architecture, advanced export document styling, audit-detail presentation, and deployment qualification remain bounded future work.
+Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, guard-railed Export Foundation with CSV, Excel, and PDF, Sprint 2 (Student Financial History, Global Currency Standardization, Search UX, QA Fixes, UI Polish), Sprint 3 report/export presentation enhancements, and Financial Assurance through the Audit Detail Drawer are complete. The application is tagged `v1.1.0`. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured per-format export capacity, streaming/snapshot architecture, advanced export document styling, and deployment qualification remain bounded future work.
 
 ## Contributing
 

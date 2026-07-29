@@ -8,9 +8,10 @@ import type {
   FinancialAuditTimelineResult
 } from "@/financial-assurance/types";
 import { reportDate } from "@/presentation/formatting";
+import { FinancialAuditDetail } from "./financial-audit-detail";
 import styles from "./financial-assurance.module.css";
 
-const EVENT_PRESENTATION: Record<
+export const FINANCIAL_AUDIT_EVENT_PRESENTATION: Record<
   FinancialAuditEventType,
   { label: string; summary: string; tone: "success" | "warning" | "danger" | "neutral" }
 > = {
@@ -30,7 +31,7 @@ function auditUrl(studentId: string, cursor?: string) {
 }
 
 function summary(item: FinancialAuditTimelineItem) {
-  const presentation = EVENT_PRESENTATION[item.eventType];
+  const presentation = FINANCIAL_AUDIT_EVENT_PRESENTATION[item.eventType];
   return item.reason
     ? `${presentation.summary}: ${item.reason}`
     : presentation.summary;
@@ -56,6 +57,8 @@ export function FinancialAuditTimeline({ studentId }: { studentId: string }) {
   const latestAttempt = useRef(0);
   const focusAfterLoadMore = useRef<string | null>(null);
   const loadMoreInFlight = useRef(false);
+  const selectedTrigger = useRef<HTMLButtonElement | null>(null);
+  const [selectedAuditEventId, setSelectedAuditEventId] = useState<string | null>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -163,7 +166,7 @@ export function FinancialAuditTimeline({ studentId }: { studentId: string }) {
       ) : (
         <ol className={styles.auditTimelineList} aria-label="Riwayat audit keuangan">
           {visibleItems.map((item) => {
-            const presentation = EVENT_PRESENTATION[item.eventType];
+            const presentation = FINANCIAL_AUDIT_EVENT_PRESENTATION[item.eventType];
             return (
               <li
                 key={item.id}
@@ -171,16 +174,28 @@ export function FinancialAuditTimeline({ studentId }: { studentId: string }) {
                 className={styles.auditTimelineItem}
                 tabIndex={-1}
               >
-                <Card className={styles.auditTimelineCard}>
-                  <header className={styles.auditTimelineCardHeader}>
-                    <StatusBadge tone={presentation.tone}>{presentation.label}</StatusBadge>
-                    <time dateTime={item.committedAt}>{reportDate(item.committedAt)}</time>
-                  </header>
-                  <p>{summary(item)}</p>
-                  {item.transactionRevision !== null ? (
-                    <span className={styles.auditRevision}>Revisi {item.transactionRevision}</span>
-                  ) : null}
-                </Card>
+                <button
+                  className={styles.auditTimelineTrigger}
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={selectedAuditEventId === item.id}
+                  data-selected={selectedAuditEventId === item.id}
+                  onClick={(event) => {
+                    selectedTrigger.current = event.currentTarget;
+                    setSelectedAuditEventId(item.id);
+                  }}
+                >
+                  <Card className={styles.auditTimelineCard}>
+                    <header className={styles.auditTimelineCardHeader}>
+                      <StatusBadge tone={presentation.tone}>{presentation.label}</StatusBadge>
+                      <time dateTime={item.committedAt}>{reportDate(item.committedAt)}</time>
+                    </header>
+                    <p>{summary(item)}</p>
+                    {item.transactionRevision !== null ? (
+                      <span className={styles.auditRevision}>Revisi {item.transactionRevision}</span>
+                    ) : null}
+                  </Card>
+                </button>
               </li>
             );
           })}
@@ -207,6 +222,14 @@ export function FinancialAuditTimeline({ studentId }: { studentId: string }) {
           </span>
         </div>
       ) : null}
+      <FinancialAuditDetail
+        studentId={studentId}
+        auditEventId={selectedAuditEventId}
+        onClose={() => {
+          setSelectedAuditEventId(null);
+          selectedTrigger.current?.focus();
+        }}
+      />
     </section>
   );
 }

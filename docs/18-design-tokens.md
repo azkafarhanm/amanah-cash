@@ -1,11 +1,11 @@
 # Amanah Cash — Design Tokens
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -207,10 +207,12 @@ The base rhythm is 8 points. Intermediate 4-, 6-, 12-, and 20-point values exist
 | `size.12` | `3rem` / 48px |
 | `size.14` | `3.5rem` / 56px |
 | `size.content.80` | `20rem` / 320px |
+| `size.content.136` | `34rem` / 544px |
 | `size.content.160` | `40rem` / 640px |
 | `size.content.192` | `48rem` / 768px |
 | `size.content.240` | `60rem` / 960px |
 | `size.content.300` | `75rem` / 1200px |
+| `size.viewport.dynamic` | `100dvh` |
 
 ### 4.5 Radius Primitives
 
@@ -282,6 +284,7 @@ Default Cards and persistent financial surfaces use `shadow.none` with `color.bo
 | `motion.ease.exit` | `cubic-bezier(0.4, 0, 1, 1)` |
 | `motion.distance.small` | `0.25rem` / 4px |
 | `motion.distance.medium` | `0.5rem` / 8px |
+| `motion.distance.large` | `1rem` / 16px |
 
 ### 4.11 Breakpoint Primitives
 
@@ -354,12 +357,19 @@ Breakpoints express composition changes, not device detection.
 | `layout.section.gap` | `space.8` |
 | `layout.related.gap` | `space.4` |
 | `layout.inline.gap` | `space.2` |
+| `layout.context-detail.width-desktop` | `size.content.136` |
+| `layout.context-detail.width-tablet` | `size.content.136` |
+| `layout.context-detail.width-mobile` | `size.full` |
+| `layout.context-detail.height` | `size.viewport.dynamic` |
+| `layout.context-detail.padding-desktop` | `space.6` |
+| `layout.context-detail.padding-mobile` | `space.4` |
 | `control.height.minimum` | `size.11` |
 | `control.height.default` | `size.12` |
 | `control.height.prominent` | `size.14` |
 | `shape.control` | `radius.md` |
 | `shape.container` | `radius.lg` |
 | `shape.overlay` | `radius.xl` |
+| `shape.context-detail` | `radius.none` |
 | `border.control` | `border.width.default` + `border.style.default` + `color.border.default` |
 | `focus.visible` | `border.width.emphasis` + `color.border.focus` + `shadow.focus` |
 | `elevation.surface` | `elevation.base` + `shadow.none` |
@@ -448,6 +458,23 @@ Breakpoints express composition changes, not device detection.
 | `overlay.radius` | `shape.overlay` |
 | `overlay.padding` | `space.6` |
 | `overlay.elevation` | `elevation.temporary` |
+| `context-detail-drawer.background` | `color.background.surface` |
+| `context-detail-drawer.border` | `border.control` |
+| `context-detail-drawer.elevation` | `elevation.temporary` |
+| `context-detail-drawer.width-desktop` | `layout.context-detail.width-desktop` |
+| `context-detail-drawer.width-tablet` | `layout.context-detail.width-tablet` |
+| `context-detail-drawer.width-mobile` | `layout.context-detail.width-mobile` |
+| `context-detail-drawer.height` | `layout.context-detail.height` |
+| `context-detail-drawer.padding-desktop` | `layout.context-detail.padding-desktop` |
+| `context-detail-drawer.padding-mobile` | `layout.context-detail.padding-mobile` |
+| `context-detail-drawer.section-gap` | `layout.section.gap` |
+| `context-detail-drawer.related-gap` | `layout.related.gap` |
+| `context-detail-drawer.radius` | `shape.context-detail` |
+| `context-detail-drawer.scrim` | `overlay.scrim` |
+| `context-detail-drawer.z-index` | `z.overlay` |
+| `context-detail-drawer.motion.enter` | `motion.duration.standard` + `motion.ease.standard` |
+| `context-detail-drawer.motion.exit` | `motion.duration.fast` + `motion.ease.exit` |
+| `context-detail-drawer.motion.distance` | `motion.distance.large` |
 | `skeleton.background` | `color.neutral.200` |
 | `skeleton.radius` | `radius.sm` |
 | `landing.nav.height` | `size.14` |
@@ -488,6 +515,9 @@ Breakpoints express composition changes, not device detection.
 | `screen.empty.max-width` | `size.content.80` |
 | `screen.overlay.desktop.max-width` | `size.content.80` |
 | `screen.overlay.mobile.radius-top` | `shape.overlay` |
+| `screen.context-detail-drawer.width-desktop` | `context-detail-drawer.width-desktop` |
+| `screen.context-detail-drawer.width-tablet` | `context-detail-drawer.width-tablet` |
+| `screen.context-detail-drawer.width-mobile` | `context-detail-drawer.width-mobile` |
 | `landing.screen.background` | `landing.canvas` |
 | `landing.screen.content-max` | `landing.content.max` |
 | `landing.screen.gutter-mobile` | `layout.gutter.mobile` |
@@ -503,6 +533,10 @@ Breakpoints express composition changes, not device detection.
 - Content never exceeds `screen.shell.content-max` and remains centered.
 - Desktop does not introduce sidebar, dashboard grid, or multi-column workflow.
 - Mobile browser and installed PWA overlays use the bottom-Sheet screen tokens. Desktop/web overlays use the centered-Dialog screen tokens.
+- Context Detail Drawer is the approved exception to centered-Dialog and
+  bottom-Sheet geometry. It uses inline-end desktop/tablet and full-screen
+  mobile presentation through `screen.context-detail-drawer.*`; its purpose
+  and behavior remain constrained by the platform component contract.
 
 ## 9. Token Governance
 

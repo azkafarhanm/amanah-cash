@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
 **Last updated:** 2026-07-28
-**Current delivery state:** Sprint 3 Epic 3 Batch 3C complete: Financial Assurance reconciliation and immutable audit timeline reads; audit detail UI and deployment remain
+**Current delivery state:** Sprint 4 Epic 4.1 Batch 4.1.1 complete: repository Production Preflight; deployment baseline decisions and environment qualification remain blocked
 
 ## Project Purpose
 
@@ -27,6 +27,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Financial Assurance implemented as a read-only, Operator-only layer. `financialAssuranceReadService().reconcile()` performs snapshot-consistent persisted-versus-active-Transaction comparison without repair. `financialAuditReadService()` returns ownership-scoped immutable timeline/detail DTOs, validates opaque cursors and filters, decodes only supported snapshot schemas into allow-listed changes, and never exposes raw snapshots or ORM models.
 - `GET /api/operator/reconciliation/students/:studentId/audit` and `GET /api/operator/reconciliation/students/:studentId/audit/:auditEventId` require the centralized Operator policy, return private no-store JSON, mask missing/cross-owner Student and audit resources as one 404 response, and preserve typed `UNSUPPORTED_SCHEMA` detail responses.
 - `/operator/reconciliation/students/[studentId]` renders the reconciliation result plus the API-only Financial Audit Timeline. The client treats `nextCursor` as opaque, appends only later pages, performs no financial calculation, and moves focus to the first appended audit item after Load More.
+- Selecting an audit timeline entry opens the platform `ContextDetailDrawer` with `FinancialAuditDetail` content, which calls only the existing ownership-protected detail endpoint after opening. It presents allow-listed DTO fields, caches successful details for the mounted page lifetime, deduplicates concurrent event requests, and never preloads all details.
+- `ContextDetailDrawer` owns native modal semantics, sticky chrome, isolated scrolling, semantic responsive widths, inline-end desktop/tablet and full-screen mobile presentation, tokenized overlay motion, reduced motion, and the named Lucide-style close control. Closing restores the selected trigger; loading, error/Retry, empty optional fields, and `UNSUPPORTED_SCHEMA` unavailable presentation are explicit.
 - Transaction Workspace Batch 1 (Read Service & API Route Extension) implemented: added `transactionReadService().workspaceHistory(operatorId, query)` for multi-student cursor-paginated transaction streams, student notes/class identity, and today's cash flow drawer summaries (`todayDeposits`, `todayWithdrawals`, `todayTransactionCount`), and created `GET /api/operator/transactions` endpoint guarded by `withAuthorization({ role: "operator" })` with 403 Forbidden enforcement for Platform Admin.
 - Transaction Workspace Batch 2A (Workspace Foundation & Table Stream) implemented: replaced `FeaturePlaceholder` on `/operator/transactions` with production-ready `TransactionWorkspaceView`, desktop semantic data table (`WorkspaceTransactionTable`), touch-friendly mobile cards (`WorkspaceTransactionCards`), contextual empty state (`WorkspaceEmptyState`), loading skeleton (`WorkspaceSkeleton`), and cursor pagination bar (`WorkspacePaginationBar`). Client consumes server API as single source of truth without client-side total recalculations.
 - Transaction Workspace Batch 2B (Operational Filters & Today's Cash Flow Metrics) implemented: added `WorkspaceMetricsBanner` displaying today's drawer cash metrics (`Kas Masuk Hari Ini`, `Kas Keluar Hari Ini`, `Transaksi Hari Ini`) consumed directly from API summary, and `WorkspaceFilterToolbar` supporting debounced search, transaction type segmented pills (`Semua`, `Setoran`, `Penarikan`, `Koreksi`), and period presets (`Hari Ini`, `7 Hari Terakhir`, `Bulan Ini`, `Semua`) with URL SearchParams synchronization and server-side query refetching.
@@ -40,6 +42,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 3 — Reports Enhancement (Epic 1): added 350 ms debounced Report search with cancellation and newest-request protection, concise applied-filter/result context for Operator and Admin reports, table-heading-only sorting, net-movement-first statistics, compact responsive audit-detail disclosures, and explicit all-matching-filtered-data export communication. Reporting reads, authorization, ownership isolation, calculations, export contracts, and adapters remain unchanged.
 - Sprint 3 — Export Experience (Epic 2): added a reusable report-local CSV/Excel/PDF interaction with immediate duplicate protection, per-attempt stale-result guards, preparing/success/failure/Retry feedback, truthful browser-download handoff language, zero-result guidance, responsive equal-weight format choices, stable focus and report context, and isolated per-tab state. Existing export endpoints, coordinator, adapters, limits, filenames, Reporting reads, authorization, ownership, schema, and business logic remain unchanged.
 - Sprint 3 — Export Experience refinement: simplified operational CSV, Excel, and PDF documents to parent-readable financial columns, including `Saldo Tersisa`, and removed Audit Reference, revision/update metadata, Student status, the separate Correction-direction column, and net-movement summary. Correction direction remains readable within Jenis Transaksi; Reporting still retains all metadata and immutable audit persistence is unchanged for the future dedicated Audit Log product.
+- Sprint 4 — Repository Production Preflight: upgraded Auth.js, Next.js, and Prisma to supported advisory-fixing patch releases; added forced production environment validation with redacted summaries; made migration diagnostics operator-safe; added focused regression coverage; and recorded unresolved upstream ExcelJS/Archiver and Next.js PostCSS/Sharp advisory chains in `docs/49-production-preflight.md`.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 
 
@@ -69,7 +72,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 187 passed, 0 failed.
+- Automated tests: 197 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -98,7 +101,7 @@ SQLite relational database and invariant triggers
 - `src/presentation/formatting.ts` is the single source of truth for Rupiah formatting (`rupiah()`, `formatThousand()`, `signedRupiah()`), date formatting (`reportDate()`, `formatTimelineGroup()`), and transaction presentation labels.
 - `src/components/transactions/` owns financial presentation, filters, dialogs, Student Financial History timeline, accessibility, and API invocation without authoritative business logic.
 - `src/components/transactions/student-timeline.tsx` owns the date-grouped financial timeline component for Operator Student Detail, rendering history grouped by Jakarta timezone date headers.
-- `src/components/financial-assurance/` owns API-only reconciliation and Financial Audit Timeline presentation. It has no Prisma dependency, no financial calculation, and no audit-detail UI in Batch 3C.
+- `src/components/financial-assurance/` owns API-only reconciliation, Financial Audit Timeline, and read-only Audit Detail Drawer presentation. It has no Prisma dependency, financial calculation, schema decoding, raw-snapshot access, or mutation behavior.
 - `src/components/ui/feature-placeholder.tsx` is the only planned-feature placeholder primitive; implemented dashboards no longer use it.
 - `src/dashboard/` owns the fixed-query, read-only Admin and Operator dashboard projections.
 - `src/components/dashboard/` owns reusable statistic, trend, summary, activity, quick-action, grid, and skeleton presentation components.
@@ -110,6 +113,7 @@ SQLite relational database and invariant triggers
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
 - `src/components/app-shell/` remains the only authenticated application chrome.
 - `src/components/ui/` remains the shared design-system primitive layer.
+- `src/components/ui/context-detail-drawer.tsx` is the single platform Context Detail Drawer primitive. Feature consumers provide read-only content and do not own drawer geometry, modality, motion, or scrolling.
 - The implemented financial model uses Student persisted Balance/version, Student-owned Transactions, and immutable FinancialAuditEvents. Identity, account lifecycle, and authentication/session data remain separate from financial data.
 
 ## Important Implementation Decisions
@@ -151,7 +155,7 @@ SQLite relational database and invariant triggers
 
 ## Known Limitations
 
-- Financial Audit detail presentation is not implemented; Batch 3C provides immutable audit timeline cards only.
+- Financial Audit detail presentation is implemented as a lazy, allow-listed, page-cached read-only drawer. Cross-page caching, export, print, mutation, and client-side schema decoding remain intentionally excluded.
 - Transaction migration intentionally refuses databases containing legacy financial rows because trustworthy actor/command/audit provenance cannot be inferred.
 - Student create/edit Server Action validation redirects do not restore submitted invalid values; the form reloads default or persisted values.
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
@@ -165,14 +169,19 @@ SQLite relational database and invariant triggers
 
 ## Outstanding Work
 
-- Implement an accessible Financial Audit detail view without exposing raw snapshots or creating a Platform Admin financial bypass.
 - Review production deployment, database topology, backups, OAuth configuration, dependency advisories, and Platform Admin bootstrap in their separately approved phases.
+- Resolve the documented ExcelJS/Archiver and Next.js PostCSS/Sharp high advisory chains through supported upstream releases or a separately approved and validated adapter/override decision.
 - Benchmark representative export workloads, tune the implemented row/byte limits, and define deadline/concurrency policy before claiming measured production capacity.
 - Decide on backpressure-aware CSV streaming and multipage consistency at the Reporting read boundary. Any background-job export path requires a separately approved architecture change.
 
 ## Next Recommended Sprint
 
-Continue Financial Assurance with the separately approved audit-detail presentation batch. Advanced export document styling, advanced analytics, and future extension implementation remain outside that bounded sprint.
+The next sequential target is Sprint 4 Batch 4.2.1, but it is `BLOCKED`.
+Do not begin implementation until the Project Owner supplies the hosting/runtime,
+region, persistence topology, resource envelope, backup/restore, secret manager,
+production OAuth/bootstrap ownership, and browser/device/network/data-volume
+baseline decisions listed in `docs/09-development-roadmap.md`. No later Batch may
+be pulled forward.
 
 ## Core Business Rules to Preserve
 

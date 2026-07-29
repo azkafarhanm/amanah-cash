@@ -6,8 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 4 — Epic 4.1: Repository Production Preflight
+
+- Upgraded Auth.js to 4.24.15, Next.js and its ESLint rules to the build-verified 16.2.11 patch, and the Prisma client/SQLite adapter/CLI to 7.9.1, resolving the directly actionable critical Auth.js and reported framework/tooling advisories.
+- Added `npm run env:check:production` to force production-mode OAuth, HTTPS-origin, SQLite, secret, and export-limit validation while redacting database location and all secret values.
+- Redacted database targets from environment and migration command output and mapped migration failures to an actionable operator-safe message without SQL, stack traces, or exception payloads.
+- Added Production Preflight regression coverage and documented the remaining ExcelJS/Archiver and Next.js PostCSS/Sharp high advisory chains, their current reachability, and the required supported-upgrade or separately approved replacement/override decision.
+- Preserved the approved single-server SQLite architecture, authorization and ownership boundaries, Admin financial privacy, bounded synchronous export behavior, and all product scope.
+
 ### Sprint 3 — Epic 3: Financial Assurance
 
+- Added the Batch 4 Financial Audit Detail Drawer: selecting a timeline event lazily loads the existing ownership-protected detail endpoint, deduplicates concurrent requests, caches successful DTOs for the page lifetime, and presents only allow-listed audit fields.
+- Added native modal focus containment, Escape/backdrop/close-button dismissal, trigger-focus restoration, loading announcements, visible error Retry, and a dedicated `UNSUPPORTED_SCHEMA` unavailable state without client-side decoding.
+- Added the platform `ContextDetailDrawer` with semantic responsive tokens, inline-end desktop/tablet and full-screen mobile presentation, sticky header, isolated native scrolling, temporary-layer elevation, reduced motion, and reusable consumer boundaries. Financial Audit now supplies content rather than owning a feature-local drawer primitive.
+- Added component regression coverage and synchronized the affected architecture, roadmap, README, accessibility handoff, and AI context. No backend, HTTP, business, Prisma, schema, or financial-write behavior changed.
 - Added ownership-scoped, read-only reconciliation and immutable Financial Audit read services with typed DTOs, opaque cursor pagination, event/date filtering, schema-version-aware allow-listed detail projection, and no repair path.
 - Added protected Operator HTTP endpoints for audit timelines and projected detail: `GET /api/operator/reconciliation/students/:studentId/audit` and `GET /api/operator/reconciliation/students/:studentId/audit/:auditEventId`.
 - Added the Financial Audit Timeline beneath the Student Reconciliation result. It renders semantic event cards, committed timestamps, summaries, available revisions, loading/empty/error/retry states, and incremental opaque-cursor Load More pagination without client-side financial calculations.

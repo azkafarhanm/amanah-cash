@@ -1,11 +1,11 @@
 # Amanah Cash — Accessibility Guidelines
 
-**Version:** 1.2
+**Version:** 1.3
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -101,6 +101,34 @@ Report export uses native text buttons for CSV, Excel, and PDF. Enter and Space 
 
 Announce that the application is checking whether the Transaction was saved. Disable unsafe duplicate action and provide no false success language.
 
+### Financial Audit Detail
+
+Audit timeline entries are semantic dialog triggers for the platform
+`ContextDetailDrawer`. The drawer exposes a programmatic title and description,
+makes background content inert, contains focus while modal, supports Escape
+and an explicitly named close control, returns focus to the exact selected
+entry, announces loading once, exposes a specific Retry action, and presents
+unsupported schemas as unavailable without invented values.
+
+### Context Detail Drawer
+
+- Desktop/tablet inline-end and mobile full-screen presentations expose the
+  same name, description, content, states, controls, and outcomes.
+- Focus moves synchronously to the heading or first useful control and never
+  waits for motion.
+- The sticky header and close control remain reachable at 200% zoom.
+- Only drawer content scrolls; the background is inert and scroll-locked.
+- Native scrollbars remain available, overscroll is contained, and reflow does
+  not introduce core horizontal scrolling.
+- The close control has a visible Lucide icon, a specific accessible name, and
+  at least the approved minimum target.
+- Loading shapes are hidden from accessibility APIs while one polite status
+  communicates loading.
+- Known load failure uses an appropriate alert and contextual Retry.
+- Unavailable read-only detail is a status, not an urgent error.
+- Browser Back behavior is not assumed by the component; any history
+  integration requires a Technical Design or Routing ADR.
+
 ## 10. Motion and Media
 
 - Follow `docs/15-motion-guidelines.md` and the user's reduced-motion preference.
@@ -113,7 +141,8 @@ Announce that the application is checking whether the Transaction was saved. Dis
 
 - Use proven accessible primitives, but verify them in the actual composition.
 - Icon-only controls have accessible names; decorative icons are hidden.
-- Dialog/Sheet exposes name, description where needed, modality, focus trap, focus return, and safe dismissal.
+- Dialog, Sheet, and Context Detail Drawer expose name, description where
+  needed, modality, focus containment, focus return, and safe dismissal.
 - The centered desktop Dialog and mobile/PWA bottom Sheet expose the same accessible name, description, controls, validation, focus behavior, and outcomes.
 - Toasts do not contain the only copy of critical information.
 - Lists and rows expose one coherent navigation target rather than nested competing controls.

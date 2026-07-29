@@ -186,6 +186,41 @@
   border-inline-start-color: var(--color-action-primary);
 }
 
+.auditTimelineTrigger {
+  width: 100%;
+  padding: var(--space-0);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.auditTimelineTrigger:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  border-radius: var(--shape-control);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.auditTimelineTrigger:hover .auditTimelineCard {
+  background: var(--color-background-subtle);
+}
+
+.auditTimelineTrigger:active .auditTimelineCard,
+.auditTimelineTrigger[data-selected="true"] .auditTimelineCard {
+  background: var(--color-primary-subtle);
+}
+
+.auditTimelineTrigger[data-selected="true"] .auditTimelineCard {
+  border-inline-start-color: var(--color-action-primary);
+}
+
+.auditTimelineTrigger .auditTimelineCard {
+  height: 100%;
+}
+
 .auditTimelineCardHeader {
   display: flex;
   flex-wrap: wrap;
@@ -219,6 +254,89 @@
   min-height: var(--space-5);
 }
 
+.auditDetailDrawer {
+  display: grid;
+  align-content: start;
+  gap: var(--space-6);
+}
+
+.auditDetailSummary {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.auditDetailState,
+.auditDetailContent {
+  min-width: 0;
+}
+
+.auditDetailState h3,
+.auditDetailState p {
+  margin: var(--space-0);
+}
+
+.auditDetailState p,
+.auditDetailSummary time,
+.auditDetailEmptyValue,
+.auditDetailAnnouncement {
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+}
+
+.auditDetailState,
+.auditDetailContent {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.auditDetailState {
+  padding: var(--space-4);
+}
+
+.auditDetailState > button {
+  justify-self: start;
+}
+
+.auditDetailAnnouncement {
+  margin: var(--space-0);
+}
+
+.auditDetailSummary {
+  align-items: center;
+}
+
+.auditDetailSummary time {
+  font: var(--type-label);
+}
+
+.auditDetailValues {
+  display: grid;
+  margin: var(--space-0);
+}
+
+.auditDetailValues > div {
+  display: grid;
+  gap: var(--space-2);
+  padding-block: var(--space-4);
+  border-block-end: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+}
+
+.auditDetailValues dt {
+  color: var(--color-text-secondary);
+  font: var(--type-label);
+}
+
+.auditDetailValues dd {
+  margin: var(--space-0);
+  overflow-wrap: anywhere;
+  color: var(--color-text-primary);
+  font: var(--type-body);
+  font-variant-numeric: tabular-nums;
+}
+
 @media (max-width: 48rem) {
   .resultValues {
     grid-template-columns: minmax(0, 1fr);
@@ -230,5 +348,10 @@
 
   .auditTimelineCardHeader {
     align-items: flex-start;
+  }
+
+  .auditDetailSummary {
+    align-items: flex-start;
+    flex-direction: column;
   }
 }

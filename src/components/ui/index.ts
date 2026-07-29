@@ -9,6 +9,10 @@ export {
 } from "./page-container";
 export { Section, type SectionProps } from "./section";
 export { ContentWrapper, type ContentWrapperProps } from "./content-wrapper";
+export {
+  ContextDetailDrawer,
+  type ContextDetailDrawerProps
+} from "./context-detail-drawer";
 export { EmptyState, type EmptyStateKind, type EmptyStateProps } from "./empty-state";
 export { ErrorState, type ErrorStateProps } from "./error-state";
 export {

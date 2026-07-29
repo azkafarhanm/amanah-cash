@@ -1,14 +1,25 @@
 import "dotenv/config";
 import { loadAuthenticationEnvironment } from "../src/auth/environment";
 import { loadExportLimits } from "../src/exports/config";
+import {
+  formatProductionPreflight,
+  loadProductionPreflight
+} from "../src/operations/production-preflight";
 
 try {
+  if (process.argv.includes("--production")) {
+    for (const line of formatProductionPreflight(loadProductionPreflight())) {
+      console.log(line);
+    }
+    process.exit(0);
+  }
+
   const environment = loadAuthenticationEnvironment();
   const exportLimits = loadExportLimits();
   console.log("Environment is valid.");
   console.log(`  authentication: ${environment.developmentAuth ? "local development" : "Google OAuth"}`);
   console.log(`  application URL: ${environment.nextAuthUrl}`);
-  console.log(`  database: ${environment.databaseUrl}`);
+  console.log("  database: configured SQLite file (server-only location redacted)");
   console.log(`  export maximum rows: ${exportLimits.maxRows}`);
   console.log(`  export maximum bytes: ${exportLimits.maxBytes ?? "disabled"}`);
 } catch (error) {

@@ -1,11 +1,11 @@
 # Amanah Cash — UI Design System
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -70,6 +70,25 @@ Avoid template-like dashboards, excessive cards, gradients used as decoration, g
 - Keep a consistent stroke weight and use `size.4` inline, `size.5` in controls, and `size.6` for prominent action icons through approved component aliases.
 - Decorative icons are hidden from assistive technology. Icon-only buttons require an accessible name and visible tooltip where hover is available.
 - Never use ambiguous arrows alone for Deposit or Withdrawal. Pair direction with explicit text.
+
+### 4.4 Context Detail Drawers
+
+A Context Detail Drawer is a platform overlay for read-only inspection of a
+selected list, table, timeline, or ledger record while preserving orientation
+to its source. It complements rather than replaces Dialog and Sheet:
+
+- use Dialog for focused decisions and short forms;
+- use Sheet for compact mobile actions and short forms; and
+- use Context Detail Drawer when source context materially helps interpret
+  structured read-only detail that is too long or dense for the standard
+  Dialog.
+
+The component is approved only when it introduces no mutation workflow,
+destructive confirmation, or independent navigation layer. Desktop and tablet
+use an inline-end drawer. Mobile uses a full-screen detail surface with the
+same name, description, content, state, focus, and dismissal contract. Browser
+Back integration is not part of the visual component contract and requires a
+separate Technical Design or Routing ADR decision.
 
 ## 5. Typography
 

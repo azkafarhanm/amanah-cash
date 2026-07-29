@@ -1,11 +1,11 @@
 # Amanah Cash — Motion Guidelines
 
-**Version:** 1.0
+**Version:** 1.1
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-18
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -72,6 +72,13 @@ Focus and validation feedback should be immediate. Do not shake invalid inputs. 
 ### Overlays
 
 Fade the backdrop and move the surface no more than a small distance. Focus is managed synchronously; users must never wait for entrance animation before typing.
+
+For `ContextDetailDrawer`, fade the scrim with
+`context-detail-drawer.motion.enter` and translate the surface from inline-end
+by no more than `context-detail-drawer.motion.distance`. Exit uses
+`context-detail-drawer.motion.exit`. Motion is interruptible and never delays
+focus, close, loading, error reading, or Retry. Reduced motion removes the
+translation and applies `motion.reduced`.
 
 ### Loading
 

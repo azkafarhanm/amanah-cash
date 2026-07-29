@@ -1,11 +1,11 @@
 # Amanah Cash — Design Review Checklist
 
-**Version:** 1.2
+**Version:** 1.3
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -126,6 +126,16 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 - [ ] Create Student uses a centered Dialog on desktop/web.
 - [ ] Create Student uses a bottom Sheet in mobile browsers and installed PWA mode.
 - [ ] Both presentations preserve the identical interaction, validation, focus, dismissal, and outcome contract.
+
+### Context Detail Drawer
+
+- [ ] The platform `ContextDetailDrawer` is used instead of a feature-local implementation.
+- [ ] The selected record, read-only purpose, source-context benefit, and need for more space than Dialog are documented.
+- [ ] The component is not used for forms, destructive confirmation, unresolved financial writes, navigation, settings, filters, or content requiring a canonical page URL.
+- [ ] Desktop/tablet inline-end and mobile full-screen presentations use the approved semantic tokens.
+- [ ] Header and close control remain stable while only content scrolls.
+- [ ] Scrim, elevation, motion, focus, inert background, focus return, loading, error, Retry, unavailable, reflow, and reduced-motion behavior are verified.
+- [ ] Browser Back behavior is absent unless an approved Technical Design or Routing ADR authorizes it.
 
 ### Future Dashboard, Reports, Settings
 

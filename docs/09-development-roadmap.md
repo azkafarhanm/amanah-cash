@@ -1,441 +1,927 @@
-# Amanah Cash — Development Roadmap
+# Amanah Cash — Executable Engineering Roadmap
 
-**Version:** 1.16
+**Version:** 2.1
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-28
+**Last Updated:** 2026-07-29
 
 ---
 
 ## 1. Purpose
 
-This roadmap organizes implementation of the approved Amanah Cash MVP into sequential milestones. It does not add features or select application frameworks.
-
-Roadmap milestones and delivery sprints are distinct planning units. Project Foundation, Student Management, the authentication/authorization/App Shell/Operator Management track, the Transaction Engine, Transaction UI, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, the separately approved Export Foundation sprint, Sprint 2 (Student Financial History, Global Currency Standardization, Search UX & Filter Experience, QA Bug Fixes, Final UI Polish — tagged v1.1.0), and Sprint 3 Financial Assurance reconciliation/audit-timeline reads are complete. The next bounded Financial Assurance step is audit-detail presentation.
-
-## 2. Delivery Rules
-
-- Complete milestones in dependency order.
-- Preserve exact whole-Rupiah arithmetic from the first financial implementation.
-- Keep persisted Student Balance atomically synchronized and reconcilable with non-deleted Transaction effects.
-- Test financial integrity before adding presentation refinements.
-- Treat mobile as the primary verification viewport.
-- Do not add offline behavior or other excluded scope during financial MVP milestones. Reuse the implemented authentication and centralized authorization layers.
-- A milestone is complete only when its listed criteria are verified.
-- Every implementation sprint must synchronize `AI_CONTEXT.md`, `CHANGELOG.md`, and any affected README or roadmap status.
+This document is the authoritative implementation sequence for Amanah Cash. It
+records completed delivery, identifies the next executable batch, and separates
+implementation-ready work from work that still needs an owner decision or a
+separate architecture approval.
 
-### 2.1 Current Delivery Status
+An engineer or AI agent must select work from this document without inferring a
+new feature from placeholders, extension points, or marketing copy.
 
-- Milestone 1 — Project Foundation: complete.
-- Milestone 2 — Student Management: complete under the approved multi-user ownership architecture.
-- Dedicated authentication and authorization track: complete through provisioning, login, session enforcement, role/ownership enforcement, assignment, and transfer behavior.
-- Application Shell and Operator Management: complete.
-- Transaction Engine and Operator Transaction UI: complete at domain, persistence, protected API, read projection, presentation, audit, rollback, accessibility, and test levels.
-- UX Polish and Placeholder Consistency sprint: complete; every sidebar destination resolves, planned modules use one placeholder primitive, data states are contextual, and mobile list tables use labeled record cards.
-- MVP Quality Assurance and Business Workflow Validation: complete with five defects fixed, regression coverage added, and a `READY WITH MINOR LIMITATIONS` recommendation documented in `docs/41-mvp-quality-assurance-report.md`.
-- Dashboard and Analytics Foundation: complete as a read-only presentation layer with privacy-safe Admin aggregates, ownership-scoped Operator metrics, reusable cards, bounded activity reads, responsive loading/empty states, and regression coverage. No authorization, ownership, schema, or financial-write behavior changed.
-- Reporting Foundation: complete and production-polished with privacy-safe Admin activity reports, ownership-scoped Operator financial history, composable Jakarta-period filters with grouped dates and pending/disabled feedback, distinct no-assignment/search/filter states, explanatory zero summaries, accessible responsive tables with live results and pointer/keyboard feedback, Student detail timelines, and an export adapter contract. No export or financial write was introduced.
-- Export Foundation: complete with a Reporting Read Service-only coordinator, presentation-neutral documents, an extensible format registry, authorized complete-filtered-result CSV, Excel, and paginated PDF downloads, centralized default 10,000-row and optional byte guard rails, controlled oversized errors, and privacy-safe Jakarta filenames. No query/calculation, authorization, ownership, schema, Dashboard, Transaction Engine, or Export Contract behavior changed.
-- Export Production Hardening: partial. Safe synchronous guard rails are complete, but buffering, deployment capacity measurement, deadline/concurrency control, cross-page snapshot semantics, streaming, and any separately approved asynchronous path remain outstanding; see `docs/45-export-production-readiness-review.md`.
-- Sprint 2 (v1.1.0): complete. Student Financial History timeline with Jakarta timezone date grouping, centralized Rupiah formatting in `src/presentation/formatting.ts`, debounced live search with amount matching, Transaction controlled form state and URL SearchParams sync, Correction button visual polish, cursor/hover UX standardization, and 151 automated tests passing.
-- Milestone 4 is partial: Balance/history, reconciliation, and immutable audit-timeline reads are complete; audit-detail presentation remains outstanding. Milestones 5–7 are complete; Milestone 8 is complete for repository/application verification but retains physical-device and deployment-environment gates; Milestone 9 remains outstanding.
-- Production hosting, external database selection, and deployment topology remain deferred to Milestone 9.
+## 2. Execution Rules
 
-## 3. Milestone Overview
+1. The next implementation target is the first Batch, in document order, whose
+   Status is `READY FOR IMPLEMENTATION`.
+2. Only one Batch may be `READY FOR IMPLEMENTATION` at a time.
+3. Complete and verify that Batch before changing the next eligible Batch to
+   `READY FOR IMPLEMENTATION`.
+4. A `BLOCKED` Batch must name the missing decision, environment, or dependency.
+   Do not implement around the blocker.
+5. An `ON HOLD` Batch is outside the currently approved implementation sequence.
+   It requires explicit scope or architecture approval before its status changes.
+6. Preserve exact whole-Rupiah arithmetic, persisted-Balance reconciliation,
+   immutable audit, current Student ownership, Platform Admin financial privacy,
+   and the approved Presentation → Application → Domain → Persistence dependency
+   direction.
+7. Reuse existing Design Tokens before proposing a new token. A new token is
+   permitted only when the existing semantic and component vocabulary cannot
+   express the required meaning.
+8. Every completed implementation Batch must update its Status here and
+   synchronize `AI_CONTEXT.md`, `CHANGELOG.md`, and affected implementation
+   documentation.
+9. No Batch may add offline financial mutation, hard deletion, password
+   authentication, public registration, direct client database access, or
+   unapproved distributed infrastructure.
 
-| Milestone | Name | Status | Primary Requirements |
-|-----------|------|--------|----------------------|
-| 1 | Project Foundation | Complete | FR-3.4.1–3.4.3 |
-| 2 | Student Management | Complete | FR-3.1.1–3.1.3, FR-3.1.5 |
-| 3 | Transaction Engine | Complete | FR-3.2.1–FR-3.2.7, FR-3.3.1–FR-3.3.2 |
-| 4 | Reconciliation and Financial Reads | Partial — Balance/history, reconciliation, and audit timeline complete; audit detail UI outstanding | FR-3.1.4, FR-3.2.3, FR-3.3.1–FR-3.3.2 |
-| 5 | Financial Presentation and Progressive History | Complete | FR-3.1.4, FR-3.2.3–FR-3.2.7 |
-| 6 | Validation and Interaction States | Complete for financial flows | FR-3.2.1–FR-3.2.7 |
-| 7 | Failure Handling and Safe Retry | Complete | FR-3.2.1–FR-3.2.7; NFR-5.1–5.2 |
-| 8 | Verification and Quality | Complete — environment gates remain in Milestone 9 | All FR and NFR |
-| 9 | Production Readiness | Outstanding | FR-3.4.1–3.4.3; NFR Sections 5–8 |
+Allowed Status values:
 
-## 4. Milestone 1 — Project Foundation
+- `COMPLETE`
+- `READY FOR IMPLEMENTATION`
+- `BLOCKED`
+- `ON HOLD`
 
-### Goal
+## 3. Current Progress
 
-Establish the smallest runnable client, server, and relational database foundation for the approved layered architecture.
+The repository is complete through Sprint 3, Epic 3, Batch 4. The implemented
+system includes the application foundation, authentication and authorization,
+Operator and Student management, the complete Transaction lifecycle, persisted
+Balance and immutable audit, dashboards, reports, bounded CSV/Excel/PDF export,
+the Transaction Workspace, reconciliation, the Financial Audit Timeline, and
+the read-only Audit Detail Drawer.
 
-### Scope
+Repository Production Preflight is complete. Direct Auth.js, Next.js, and Prisma
+advisories with supported patch releases were remediated; production
+configuration validation and redacted operational diagnostics are implemented.
+The release recommendation remains `READY WITH MINOR LIMITATIONS`. The remaining
+approved objective is Milestone 9 production readiness. Its environment-specific
+parts cannot start until the deployment and qualification baselines listed in
+Section 8 are supplied.
 
-- Presentation, Application, Domain, and Persistence boundaries.
-- Single server deployable and single database connection.
-- Initial Student and Transaction schema migrations.
-- PWA manifest, service-worker registration, and standalone presentation shell.
-- Three-screen navigation shell and mobile-first layout foundation.
+## 4. Sprint 0 — Product and Application Foundation
 
-### Deliverables
+**Sprint Goal:** Establish the approved mobile-first PWA, layered application,
+relational persistence, identity boundary, and core administrative capabilities.
 
-- Runnable application shell.
-- Database schema with approved tables, keys, constraints, and indexes.
-- Configuration boundary for database connection.
-- Baseline automated test structure.
-- 320px–480px layout and 44px touch-target primitives.
+**Status:** `COMPLETE`
 
-### Dependencies
+### Epic 0.1 — Project Foundation
 
-- Approved Domain Model, Database Design, User Flows, Wireframes, and System Architecture.
+**Objective:** Create the runnable Next.js PWA shell, local SQLite persistence,
+schema migration path, shared presentation foundation, and test baseline.
 
-### Completion Criteria
+**Status:** `COMPLETE`
 
-- Client communicates with the single server boundary.
-- Server communicates with the single relational database.
-- Schema contains the approved Student, Transaction, identity/session, and Operator-audit tables without Balance persistence.
-- No Balance persistence or excluded infrastructure exists.
-- PWA metadata is valid and the application shell launches in supported browser context.
+#### Batch 0.1.1 — Bootstrap and Landing Foundation
 
-## 5. Milestone 2 — Student Management
+**Objective:** Deliver the application shell, landing route, metadata, local
+font, PWA assets, approved Design Tokens, and reusable UI primitives.
 
-### Goal
+**Dependencies:** Approved requirements, architecture, wireframes, and Design
+System.
 
-Enable Platform Admin to manage Students and assignments while Operators view only their assigned Students.
+**Affected modules:** `src/app`, `src/components/ui`, `src/app/globals.css`,
+`public`, Prisma configuration, migration scripts, foundation tests.
 
-### Scope
+**Acceptance Criteria:**
 
-- StudentName normalization and validation.
-- Case-insensitive uniqueness.
-- Platform Admin create and edit Student outcomes.
-- Required active-Operator assignment and reassignment.
-- Active, inactive, and archived Student status plus optional notes.
-- Operator-owned Student list and detail access.
-- Server-side paginated Student list.
-- Partial case-insensitive search.
-- First-time, empty-list, empty-search, loading, and failure states.
+- The application builds and launches as one Next.js deployable.
+- PWA metadata and service-worker registration are present.
+- Visual values resolve through approved Design Tokens.
+- The local SQLite schema and ordered migration runner work from a fresh setup.
 
-### Deliverables
+**Status:** `COMPLETE`
 
-- Create Student use case and persistence.
-- Student list and search reads.
-- Admin and Operator Student list/detail UI plus Admin create/edit UI.
-- Tests for validation, active Operator assignment, ownership transfer, visibility, search, and pagination.
+### Epic 0.2 — Authentication, Authorization, and App Shell
 
-### Dependencies
+**Objective:** Admit only provisioned active users and enforce role and current
+Student ownership at server boundaries.
 
-- Milestone 1 schema, layers, navigation shell, and test structure.
+**Status:** `COMPLETE`
 
-### Completion Criteria
+#### Batch 0.2.1 — Google Authentication and Database Sessions
 
-- Student Management tests and authorization isolation tests pass.
-- Concurrent duplicate creation is prevented by the database unique constraint.
-- Search and uniqueness use the same normalized representation.
-- Student edit and ownership reassignment exist; Student deletion and financial workflows do not.
+**Objective:** Implement Google-only Auth.js admission, database sessions,
+provisioned-user checks, logout, and isolated development authentication.
 
-## 6. Milestone 3 — Transaction Engine
+**Dependencies:** Batch 0.1.1 and approved authentication architecture.
 
-### Goal
+**Affected modules:** `src/auth`, Auth.js routes, persistence schema/migrations,
+login presentation, authentication tests.
 
-Implement the complete ownership-scoped Transaction lifecycle, persisted Balance, and immutable financial audit as one atomic engine.
+**Acceptance Criteria:**
 
-### Scope
+- Production authentication uses Google only and database sessions.
+- Unknown, inactive, or deleted users fail closed.
+- Secrets and financial data never enter client-visible session state.
+- Development authentication remains isolated from production behavior.
 
-- Deposit, Withdrawal, and Correction types/effects.
-- Transaction create, edit, soft delete, and restore lifecycle.
-- Persisted Student Balance and financial version.
-- Immutable `CREATE`, `EDIT`, `DELETE`, `RESTORE`, and privacy-minimized `OWNERSHIP_TRANSFER` audit.
-- Positive whole-Rupiah, Correction direction/reason, lifecycle, and non-negative Balance validation.
-- SQLite `BEGIN IMMEDIATE` financial-write serialization.
-- Expected Transaction revision and unique command-ID idempotency.
-- Transaction, Balance/version, and audit atomic rollback.
-- Physical migration/backfill and reconciliation verification designed under the approved implementation gate.
+**Status:** `COMPLETE`
 
-### Deliverables
+#### Batch 0.2.2 — Central Authorization and Role-Aware Shell
 
-- Transaction Engine domain/application/persistence boundaries.
-- Reviewed physical schema and reversible migration for Balance/version, lifecycle metadata, and financial audit.
-- Atomic lifecycle commands without UI scope.
-- Tests for every effect/delta, status/ownership failure, revision conflict, soft-delete/restore state, command replay, concurrency, rollback, audit, overflow, and reconciliation invariant.
+**Objective:** Centralize Admin, Operator, and Student-owner policies and render
+the authenticated role-aware application shell.
 
-### Dependencies
+**Dependencies:** Batch 0.2.1.
 
-- ADR-004 and Transaction Foundation TDS.
-- Milestone 1 Transaction schema and Persistence boundary, which require reviewed evolution.
-- Milestone 2 Student identity and retrieval.
+**Affected modules:** `src/authorization`, protected route groups, App Shell,
+navigation, authorization tests.
 
-### Completion Criteria
+**Acceptance Criteria:**
 
-- FR-3.2.1–FR-3.2.7 and FR-3.3.1–FR-3.3.2 engine acceptance criteria pass at service/persistence level.
-- Every successful mutation commits Transaction state, non-negative Balance/version, and immutable audit together.
-- No hard-delete path exists.
-- Ownership and ACTIVE Student status are rechecked inside the write transaction.
-- Repeated command IDs cannot apply a Balance delta twice.
+- Protected pages, APIs, and Server Actions reuse centralized policies.
+- Operator financial access is restricted to currently owned Students.
+- Platform Admin has no routine financial-data bypass.
+- Unauthorized, forbidden, missing, and unexpected states are distinct.
 
-## 7. Milestone 4 — Reconciliation and Financial Reads
+**Status:** `COMPLETE`
 
-### Goal
+### Epic 0.3 — Administrative Management
 
-Expose correct ownership-scoped financial reads and prove persisted Balance reconciliation.
+**Objective:** Deliver Operator and Student lifecycle management with assignment
+integrity and privacy-minimized audit.
 
-### Scope
+**Status:** `COMPLETE`
 
-- Persisted Balance read independent of history pagination.
-- Reconciliation aggregation across non-deleted Deposit, Withdrawal, and Correction effects.
-- Active, deleted/restored, and audit-history read contracts.
-- Stable newest-first business-time history and cursor pagination.
-- Ownership-transfer visibility behavior.
+#### Batch 0.3.1 — Operator Management
 
-### Deliverables
+**Objective:** Implement Admin Operator provisioning, search, detail, editing,
+activation, deactivation, logical deletion, and assignment safety.
 
-- Ownership-scoped Balance/Transaction/audit read services.
-- Explicit reconciliation command/report for verification use, without automatic repair.
-- Progressive history query and continuation contract.
-- Tests for filtering, ordering, deletion state, transfer visibility, and reconciliation mismatch detection.
+**Dependencies:** Batch 0.2.2.
 
-### Dependencies
+**Affected modules:** `src/operators`, Admin Operator routes/components,
+Operator audit persistence, tests.
 
-- Milestone 3 Transaction Engine, audit, persisted Balance, and serialization protocol.
+**Acceptance Criteria:**
 
-### Completion Criteria
+- Operator lifecycle operations enforce documented validation and restrictions.
+- Assigned Operators cannot be deactivated or logically deleted.
+- Identity and audit history are retained.
+- Admin list/search/pagination and explicit UI states are implemented.
 
-- FR-3.2.3 and FR-3.3.1–FR-3.3.2 read/reconciliation criteria pass.
-- Persisted Balance equals non-deleted Transaction effects.
-- Mismatch is surfaced as an integrity incident and never repaired silently.
-- Platform Admin has no routine financial read or audit bypass.
+**Status:** `COMPLETE`
 
-## 8. Milestone 5 — Financial Presentation and Progressive History
+#### Batch 0.3.2 — Student Management and Ownership Transfer
 
-### Goal
+**Objective:** Implement Student create/edit/search/lifecycle behavior, required
+active Operator assignment, reassignment, and ownership-scoped Operator reads.
 
-Present correct Student financial detail while loading Transaction history progressively.
+**Dependencies:** Batches 0.2.2 and 0.3.1.
 
-### Scope
+**Affected modules:** `src/students`, Admin and Operator Student routes/components,
+ownership-transfer audit, persistence constraints, tests.
 
-- Student Detail loading and error states.
-- Correct persisted Balance presentation.
-- Newest-first Transaction items with type, effect, Amount, business time, revision, and lifecycle state.
-- Deposit, Withdrawal, Correction, edit, soft-delete, restore, and audit interactions defined from approved requirements.
-- Stable cursor-based older-history retrieval.
-- Empty history, loading-older, end-of-history, and page-failure states.
+**Acceptance Criteria:**
 
-### Deliverables
+- Student names use one normalized case-insensitive uniqueness representation.
+- Every Student has one valid active Operator owner.
+- Reassignment requires a reason and atomically appends
+  `OWNERSHIP_TRANSFER` evidence.
+- Current ownership immediately controls Operator visibility.
 
-- Student Detail read use case.
-- Progressive history query and continuation contract.
-- Student Detail and Transaction History UI.
-- Tests for deterministic ordering, equal timestamps, and appended events between page requests.
-- Tests proving history pagination does not affect persisted Balance.
+**Status:** `COMPLETE`
 
-### Dependencies
+#### Batch 0.3.3 — Operator Student Self-Provisioning
 
-- Milestone 2 Student navigation.
-- Milestone 4 authoritative Balance/read contracts.
+**Objective:** Allow an authenticated Operator to create a Student bound to the
+server-derived Operator identity.
 
-### Completion Criteria
+**Dependencies:** Batch 0.3.2.
 
-- FR-3.1.4 and FR-3.2.3 acceptance criteria pass.
-- Older history can be loaded until complete.
-- No provisional or page-derived Balance is displayed.
-- Transaction lifecycle actions are available only when ownership, Student status, Transaction state, and revision permit them.
+**Affected modules:** Student service/actions, Operator Student presentation,
+Operator audit migration, tests.
 
-## 9. Milestone 6 — Validation and Interaction States
+**Acceptance Criteria:**
 
-### Goal
+- Client input cannot select or spoof the owning Operator.
+- Creation appends the approved `STUDENT_CREATE` Operator audit.
+- The created Student is immediately available for transaction entry.
 
-Make all approved validation and interaction states consistent, fast, and mobile-first.
+**Status:** `COMPLETE`
 
-### Scope
+## 5. Sprint 1 — Financial MVP and Read-Only Operations
 
-- Client and server validation responsibility alignment.
-- Approved inline error messages.
-- Loading placeholders and disabled submission states.
-- Input preservation after failure.
-- Deposit, Withdrawal, and directional Correction effect clarity.
-- Browser Back and Cancel behavior.
-- Touch targets and mobile keyboard behavior.
+**Sprint Goal:** Deliver the complete atomic Transaction lifecycle and the
+read-only operational surfaces that consume authoritative financial data.
 
-### Deliverables
+**Status:** `COMPLETE`
 
-- Shared validation outcome mapping across layers.
-- Complete validation, loading, empty, and submitting states from the wireframes.
-- Mobile viewport interaction verification.
-- Tests for repeated confirmation prevention.
+### Epic 1.1 — Transaction Foundation
 
-### Dependencies
+**Objective:** Implement exact-IDR financial writes, persisted Balance,
+controlled lifecycle, safe retry, and immutable audit as one atomic engine.
 
-- Milestones 2–5 completed use cases and screens.
+**Status:** `COMPLETE`
 
-### Completion Criteria
+#### Batch 1.1.1 — Transaction Engine
 
-- All validation scenarios in Functional Requirements Section 6.1 behave as documented.
-- Every interactive target is at least 44px by 44px.
-- Forms preserve valid input after correctable failures.
-- Core workflows match documented tap counts.
+**Objective:** Implement Deposit, Withdrawal, directional Correction, edit,
+soft delete, restore, Balance/version updates, and immutable audit.
 
-## 10. Milestone 7 — Failure Handling and Safe Retry
+**Dependencies:** Sprint 0 and approved ADR-004/TDS.
 
-### Goal
+**Affected modules:** `src/transactions`, Prisma schema/migrations, SQLite write
+adapter, protected Transaction APIs, engine tests.
 
-Handle persistence, network, and unexpected failures without silent loss, partial writes, or duplicate Transactions.
+**Acceptance Criteria:**
 
-### Scope
+- Every financial mutation atomically commits Transaction, Balance/version, and
+  audit or commits none of them.
+- Whole-Rupiah, non-negative Balance, revision, status, and ownership rules pass.
+- `BEGIN IMMEDIATE` serialization and command idempotency prevent duplicate or
+  conflicting effects.
+- Hard delete and direct Balance mutation do not exist.
 
-- Explicit server failure outcomes.
-- Database rollback behavior.
-- Student List, Student Detail, history-page, and Transaction failure UI.
-- Unique lifecycle command ID resolution and retry, with a stable Transaction UUID for create commands.
-- Unknown commit-outcome handling.
-- Explicit offline/network failure with no offline queue.
+**Status:** `COMPLETE`
 
-### Deliverables
+#### Batch 1.1.2 — Student Financial Experience
 
-- Consistent error classification and response mapping.
-- Safe Retry behavior for reads and Transaction writes.
-- Unknown-outcome resolution path.
-- Failure-injection tests before insert, before commit, and after uncertain client response.
-- Duplicate retry tests.
+**Objective:** Present persisted Balance, progressive newest-first history, and
+every approved Transaction lifecycle action on Operator Student Detail.
 
-### Dependencies
+**Dependencies:** Batch 1.1.1.
 
-- Milestone 3–5 persistence and read flows.
-- Milestone 6 interaction-state behavior.
+**Affected modules:** Transaction read service, Operator Student Detail,
+Transaction dialogs/components, presentation formatters, tests.
 
-### Completion Criteria
+**Acceptance Criteria:**
 
-- NFR-5.1 and NFR-5.2 pass.
-- A failed operation leaves no partial financial event.
-- Retry cannot create an unintended duplicate Transaction.
-- No client state reports an unconfirmed Transaction as successful.
-- Network failure never queues an offline Transaction.
+- Balance is read from persisted Student state, never calculated from a page.
+- History pagination uses the stable server cursor.
+- Create/edit/delete/restore interactions expose explicit loading, validation,
+  error, retry, and success states.
+- Mobile, keyboard, focus, and touch-target contracts pass.
 
-## 11. Milestone 8 — Verification and Quality
+**Status:** `COMPLETE`
 
-### Goal
+### Epic 1.2 — Operational Read Surfaces
 
-Verify all functional, financial, responsive, and traceability requirements as one MVP system.
+**Objective:** Provide privacy-safe dashboards, reports, and bounded exports
+without changing financial write behavior.
 
-### Scope
+**Status:** `COMPLETE`
 
-- Full automated test suite.
-- Domain invariant tests.
-- Persistence constraint and transaction tests.
-- End-to-end core workflow tests.
-- Mobile-primary and desktop-secondary verification.
-- Accessibility checks for touch size, text readability, and error communication.
+#### Batch 1.2.1 — Dashboard and Analytics Foundation
 
-### Deliverables
+**Objective:** Deliver bounded Admin operational aggregates and ownership-scoped
+Operator financial summaries/activity.
 
-- Requirement-to-test traceability matrix.
-- Happy-path and error-path coverage for every FR.
-- Financial edge-case and concurrency test results.
-- PWA installability and standalone-launch verification.
-- Verified empty, loading, failure, and retry states.
+**Dependencies:** Batch 1.1.2 and centralized authorization.
 
-### Dependencies
+**Affected modules:** `src/dashboard`, dashboard components/routes, tests.
 
-- Milestones 1–7 complete.
+**Acceptance Criteria:**
 
-### Completion Criteria
+- Admin dashboard contains no financial data.
+- Operator metrics are scoped by authenticated Operator ID.
+- Persisted Balance is used directly.
+- Empty, loading, responsive, and failure states are implemented.
 
-- Every FR acceptance criterion has a passing verification.
-- NFR-3.1–3.3, NFR-5.1–5.2, NFR-6.1, and NFR-7.1–7.2 pass.
-- Zero, negative, decimal, overflow, duplicate, concurrency, and retry cases pass.
-- Balance is reproducible from persisted Transactions in every financial test.
-- No skipped test hides a failed requirement.
+**Status:** `COMPLETE`
 
-## 12. Milestone 9 — Production Readiness
+#### Batch 1.2.2 — Reporting Foundation
 
-### Goal
+**Objective:** Deliver privacy-safe Admin activity reports and ownership-scoped
+Operator financial reports with server filtering and pagination.
 
-Prepare the approved MVP for reliable deployment without expanding its scope.
+**Dependencies:** Batch 1.2.1 and authoritative financial reads.
 
-This is the Deployment phase in which production hosting and database compatibility decisions are made. No production deployment decision is pulled forward into Sprint 1.
+**Affected modules:** `src/reports`, report routes/components, tests.
 
-### Scope
+**Acceptance Criteria:**
 
-- Production configuration and database migration execution.
-- PWA asset and server deployment as one logical application.
-- Database connectivity restricted to the server boundary.
-- Production error diagnostics and operator-safe messages.
-- Final requirement, documentation, and deployment review.
-- Definition of the open NFR deployment measurement baseline.
-- Export workload qualification using realistic row widths and 30,000-/100,000-row cases.
-- Measured tuning of the implemented synchronous row/byte limits plus deadline/concurrency policy.
-- A decision on backpressure-aware CSV streaming and cross-page consistency; any asynchronous export infrastructure requires separate architecture approval.
+- Reporting reads remain read-only and authorization-scoped.
+- Filters, sorting, Jakarta periods, summaries, and pagination are server-owned.
+- Admin reports exclude financial data.
+- Exact Balance evidence is shown only from authorized persisted audit evidence.
 
-### Deliverables
+**Status:** `COMPLETE`
 
-- Repeatable deployment procedure.
-- Migration and rollback procedure.
-- Production configuration checklist.
-- Error-diagnostic verification.
-- Agreed supported-browser, network-latency, and data-volume test baseline.
-- Recorded export page/query count, duration, time-to-first-byte, peak heap, output size, database load, and timeout behavior at the selected limits.
-- Verification that configured export limits fit the selected deployment resource envelope.
-- Final MVP acceptance report.
+#### Batch 1.2.3 — CSV, Excel, and PDF Export Foundation
 
-### Dependencies
+**Objective:** Export the complete authorized filtered report through a
+Reporting-read-only coordinator and presentation adapters.
 
-- Milestone 8 verification complete.
-- Deployment environment selected.
+**Dependencies:** Batch 1.2.2.
 
-### Completion Criteria
+**Affected modules:** Export coordinator/registry/documents/adapters, export API
+routes, report export presentation, tests.
 
-- Application and schema deploy consistently to the selected environment.
-- Database is not directly exposed to the client.
-- PWA installability, standalone mode, and online failure behavior are verified.
-- Open NFR measurement baseline is resolved and tested.
-- CSV export limits are enforced from measured deployment capacity, or large-volume export remains explicitly unsupported.
-- The supported CSV volume completes within the agreed resource envelope without weakening Reporting, authorization, ownership, or Admin privacy boundaries.
-- Documentation matches the delivered MVP.
-- No excluded infrastructure or product capability is present.
+**Acceptance Criteria:**
 
-## 13. Cross-Milestone Traceability
+- Export adapters do not query Prisma or recalculate financial meaning.
+- Operator scope is forwarded on every Reporting page read.
+- CSV, Excel, and PDF share centralized row/optional-byte guard rails.
+- Oversized requests fail with controlled `413`; filenames contain no personal
+  data or internal identifiers.
 
-| Requirement | Primary Milestone | Verification Milestone |
-|-------------|-------------------|------------------------|
-| FR-3.1.1 Create Student | 2 | 8 |
-| FR-3.1.2 View Student List | 2 | 8 |
-| FR-3.1.3 Search Student | 2 | 8 |
-| FR-3.1.4 View Student Detail | 5 | 8 |
-| FR-3.1.5 Edit and Transfer Student | 2 | 8 |
-| FR-3.2.1 Record Deposit | 3 | 8 |
-| FR-3.2.2 Record Withdrawal | 3 | 8 |
-| FR-3.2.3 View Transaction History | 4 and 5 | 8 |
-| FR-3.2.4 Record Correction | 3 | 8 |
-| FR-3.2.5 Edit Transaction | 3 and 5 | 8 |
-| FR-3.2.6 Soft Delete Transaction | 3 and 5 | 8 |
-| FR-3.2.7 Restore Transaction | 3 and 5 | 8 |
-| FR-3.3.1 Maintain Balance | 3 and 4 | 8 |
-| FR-3.3.2 Record Financial Audit | 3 and 4 | 8 |
-| FR-3.4.1 PWA Installation | 1 and 9 | 8 and 9 |
-| FR-3.4.2 Navigation | 1 and 6 | 8 |
-| FR-3.4.3 Responsive Layout | 1 and 6 | 8 |
-| NFR-3.1–3.4 Financial correctness | 3 and 4 | 8 |
-| NFR-4.1 Progressive history | 5 | 8 |
-| NFR-4.2 Interactive search | 2 | 8 |
-| NFR-4.3 Workflow usability | 6 | 8 |
-| NFR-5.1–5.2 Reliability | 7 | 8 |
-| NFR-6.1–6.2 Traceability | 3–5 | 8 |
-| NFR-7.1–7.2 PWA and responsive interaction | 1, 6, and 9 | 8 and 9 |
+**Status:** `COMPLETE`
 
-## 14. Explicitly Excluded Work
+### Epic 1.3 — Transaction Workspace
 
-No milestone includes:
+**Objective:** Provide one ownership-scoped multi-Student operational stream and
+fast consecutive transaction entry.
 
-- Password authentication, public registration, password recovery, provider-assigned roles, and routine Platform Admin financial access.
-- Offline data or Transaction synchronization.
-- Hard Transaction deletion.
-- Transaction transfer, scheduled Transactions, monthly allowance, categories, attachments, approval workflow, advanced Excel/PDF presentation, and advanced historical analytics implementation. Their extension boundaries are reserved by the Transaction Foundation TDS and Export Foundation. Implemented Dashboard, Reporting, CSV, Excel, and PDF Export Foundations remain read-only projections.
-- Student deletion or bulk operations.
-- Multiple currencies.
-- Microservices, event sourcing, CQRS, message queues, background workers, caches, read replicas, multiple databases, distributed transactions, service mesh, Kubernetes, or API gateway.
+**Status:** `COMPLETE`
 
-Any such work requires a separately approved change to product requirements and is not part of this roadmap.
+#### Batch 1.3.1 — Workspace Read Service and API
 
-## 15. Dedicated Authentication and Authorization Track
+**Objective:** Add the authorized multi-Student transaction stream and
+server-computed daily cash summary.
 
-This approved track is separate from the numbered financial MVP milestones and is now implemented:
+**Dependencies:** Batch 1.1.1.
 
-1. Review the physical identity, Google linkage, database-session, and Student-ownership schema.
-2. Implement Platform Admin provisioning and deactivation.
-3. Implement Auth.js Google login and registered-email admission.
-4. Protect `/app` and implement logout/session expiry.
-5. Enforce role and Student ownership on every server operation.
-6. Implement assignment and transfer operations.
-7. Verify security, privacy, denial paths, and accessibility.
+**Affected modules:** Transaction read service, Operator workspace API, tests.
 
-All seven steps are complete. Future financial work must reuse these boundaries. No step may introduce an unscoped financial query or administrative financial bypass.
+**Acceptance Criteria:**
+
+- Every result is scoped by the authenticated Operator.
+- Cursor pagination and filters are server-owned.
+- Daily summary values come from authoritative reads.
+
+**Status:** `COMPLETE`
+
+#### Batch 1.3.2 — Workspace Presentation and Filters
+
+**Objective:** Deliver responsive stream presentation, operational filters,
+metrics, pagination, and contextual states.
+
+**Dependencies:** Batch 1.3.1.
+
+**Affected modules:** Transaction Workspace components/routes/styles, tests.
+
+**Acceptance Criteria:**
+
+- Desktop table and mobile cards expose the same authorized records.
+- Filters synchronize with URL SearchParams and refetch server results.
+- Client code does not recalculate financial totals.
+
+**Status:** `COMPLETE`
+
+#### Batch 1.3.3 — Consecutive Entry and Inline Lifecycle Actions
+
+**Objective:** Enable rapid multi-Student transaction entry and inline
+edit/delete/restore from the workspace.
+
+**Dependencies:** Batch 1.3.2 and existing Transaction Engine commands.
+
+**Affected modules:** Workspace Student picker, Transaction dialog, table/cards,
+feedback presentation, tests.
+
+**Acceptance Criteria:**
+
+- Consecutive entry preserves only approved local form preferences.
+- Every mutation reuses existing protected Transaction commands.
+- Successful mutations refresh authoritative workspace data.
+
+**Status:** `COMPLETE`
+
+## 6. Sprint 2 — Financial UX and Quality
+
+**Sprint Goal:** Improve financial comprehension and interaction efficiency
+without changing domain, persistence, authorization, or ownership behavior.
+
+**Status:** `COMPLETE`
+
+### Epic 2.1 — Student History and Search Experience
+
+**Objective:** Standardize financial presentation and make history discovery
+fast and predictable.
+
+**Status:** `COMPLETE`
+
+#### Batch 2.1.1 — Timeline and Currency Standardization
+
+**Objective:** Add Jakarta date-grouped Student history and establish centralized
+Rupiah/date/transaction presentation formatting.
+
+**Dependencies:** Sprint 1 financial reads.
+
+**Affected modules:** Student timeline, `src/presentation/formatting.ts`,
+financial components, tests.
+
+**Acceptance Criteria:**
+
+- Timeline grouping uses documented Jakarta date semantics.
+- All financial surfaces reuse centralized formatters.
+- Presentation changes do not alter financial calculations.
+
+**Status:** `COMPLETE`
+
+#### Batch 2.1.2 — Search, Filter, and Interaction Polish
+
+**Objective:** Add protected debounced search, URL-synchronized controlled
+filters, Correction clarity, and consistent pointer/disabled behavior.
+
+**Dependencies:** Batch 2.1.1.
+
+**Affected modules:** Report and Transaction filter components/styles, tests.
+
+**Acceptance Criteria:**
+
+- Search waits 350 ms and stale requests cannot win.
+- Filter controls and URLs remain synchronized.
+- Reset, enabled, and disabled interactions are visually and semantically clear.
+
+**Status:** `COMPLETE`
+
+### Epic 2.2 — MVP Quality Assurance
+
+**Objective:** Verify the complete business workflow and remediate confirmed
+defects without expanding scope.
+
+**Status:** `COMPLETE`
+
+#### Batch 2.2.1 — Workflow Validation and Regression Fixes
+
+**Objective:** Execute the approved authentication, ownership, financial,
+responsive, database, and release test matrix and fix verified defects.
+
+**Dependencies:** All Sprint 1 capabilities.
+
+**Affected modules:** Cross-application tests and the minimal modules implicated
+by confirmed defects.
+
+**Acceptance Criteria:**
+
+- Static, migration, automated, isolated HTTP, reconciliation, and integrity
+  checks pass.
+- Every fixed defect has regression coverage.
+- No unresolved defect permits unauthorized financial access, negative Balance,
+  duplicate effect, lost audit, or hard deletion.
+
+**Status:** `COMPLETE`
+
+## 7. Sprint 3 — Reports, Export, and Financial Assurance
+
+**Sprint Goal:** Improve read-only financial review, export interaction, and
+Operator trust evidence without widening financial access or mutation scope.
+
+**Status:** `COMPLETE`
+
+### Epic 3.1 — Reports Enhancement
+
+**Objective:** Improve report discovery and interpretation using the existing
+Reporting Read Service.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.1.1 — Report Search, Context, Sorting, and Audit Disclosure
+
+**Objective:** Add cancellable debounced search, applied-filter context,
+table-heading sorting, net-movement-first summaries, and compact audit evidence.
+
+**Dependencies:** Batch 1.2.2.
+
+**Affected modules:** Report components/styles and tests.
+
+**Acceptance Criteria:**
+
+- Newest search wins and canceled work cannot navigate.
+- Filter/result context describes the currently authorized result.
+- Reporting calculations, URLs, reads, and authorization remain unchanged.
+
+**Status:** `COMPLETE`
+
+### Epic 3.2 — Export Experience
+
+**Objective:** Add reliable browser-side feedback around the existing bounded
+export endpoints and simplify operational document presentation.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.2.1 — Export Interaction and Document Refinement
+
+**Objective:** Provide per-format preparing/success/failure/Retry states and
+parent-readable CSV/Excel/PDF columns.
+
+**Dependencies:** Batch 1.2.3.
+
+**Affected modules:** Report export components, export document/adapters, tests.
+
+**Acceptance Criteria:**
+
+- Duplicate activation and stale attempt updates are prevented.
+- The server filename and media content are preserved.
+- Operational files retain only approved parent-readable columns.
+- Export limits, endpoints, authorization, coordinator, and Reporting reads are
+  unchanged.
+
+**Status:** `COMPLETE`
+
+### Epic 3.3 — Financial Assurance
+
+**Objective:** Let an Operator verify persisted Balance and inspect allow-listed
+immutable audit evidence for a currently owned Student.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.3.1 — Reconciliation Read Boundary
+
+**Objective:** Compare persisted Balance with active Transaction effects without
+repairing a mismatch.
+
+**Dependencies:** Transaction Engine and authoritative financial reads.
+
+**Affected modules:** `src/financial-assurance/read-service.ts`, protected
+reconciliation route, reconciliation presentation, tests.
+
+**Acceptance Criteria:**
+
+- Reconciliation is snapshot-consistent and read-only.
+- Cross-owner and missing Student resources are masked consistently.
+- Mismatch is reported as an integrity incident and never silently repaired.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.3.2 — Immutable Audit Read Service and Protected API
+
+**Objective:** Expose ownership-scoped timeline/detail DTOs with opaque cursors
+and supported-schema allow-listed projection.
+
+**Dependencies:** Batch 3.3.1 and immutable audit persistence.
+
+**Affected modules:** Financial audit read service, protected API routes, tests.
+
+**Acceptance Criteria:**
+
+- APIs are Operator-only, ownership-scoped, private, and no-store.
+- Raw snapshots and ORM models never cross the read boundary.
+- Unsupported schemas return a typed unavailable result.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.3.3 — Financial Audit Timeline
+
+**Objective:** Present semantic audit events with filters, explicit states, and
+opaque-cursor progressive loading.
+
+**Dependencies:** Batch 3.3.2.
+
+**Affected modules:** Financial Audit Timeline components/styles, reconciliation
+page integration, tests.
+
+**Acceptance Criteria:**
+
+- The client appends later pages and forwards cursors unchanged.
+- No financial calculation or schema decoding occurs in Presentation.
+- Loading, empty, error/Retry, and focus-after-append behavior are explicit.
+
+**Status:** `COMPLETE`
+
+#### Batch 3.3.4 — Audit Detail Drawer
+
+**Objective:** Lazily present allow-listed audit detail in the reusable platform
+Context Detail Drawer.
+
+**Dependencies:** Batches 3.3.2 and 3.3.3.
+
+**Affected modules:** Context Detail Drawer, Financial Audit detail/timeline
+components, shared UI exports, styles, tests.
+
+**Acceptance Criteria:**
+
+- Detail loads only after selection through the protected endpoint.
+- Successful results are page-cached and concurrent requests are deduplicated.
+- Native modal, responsive, focus restoration, loading, error/Retry, reduced
+  motion, and unsupported-schema states pass.
+- Raw snapshots, internal identifiers, actor metadata, and client schema
+  decoding are absent.
+
+**Status:** `COMPLETE`
+
+## 8. Sprint 4 — Production Readiness
+
+**Sprint Goal:** Qualify and deploy the approved MVP without expanding product
+scope or weakening financial, authorization, privacy, and export boundaries.
+
+**Status:** `COMPLETE`
+
+### Epic 4.1 — Repository Production Preflight
+
+**Objective:** Close repository-local production risks that do not depend on a
+selected hosting vendor, external database, or physical-device lab.
+
+**Status:** `COMPLETE`
+
+#### Batch 4.1.1 — Dependency, Configuration, and Diagnostic Preflight
+
+**Objective:** Produce a clean, reproducible production preflight by reviewing
+runtime dependency advisories, validating production configuration contracts,
+and verifying that production failures remain diagnostic to operators without
+disclosing secrets or internals.
+
+**Dependencies:** Sprint 3 complete; existing local release commands and
+`.env.example`.
+
+**Affected modules:** `package.json` and lockfile only if a safe advisory fix is
+required; environment loaders; production error boundaries and logging adapters
+only where a verified defect exists; `.env.example`; deployment/configuration
+documentation; focused tests.
+
+**Acceptance Criteria:**
+
+- Runtime dependency advisories are reviewed; every unresolved high/critical
+  advisory is either safely remediated or recorded as a blocker with package,
+  impact, and required decision.
+- Required production environment variables, validation, secret boundaries, and
+  Google OAuth callback requirements are accurate and reproducible from
+  repository documentation.
+- Production-safe error behavior is verified for authentication, database
+  connectivity, migration, protected routes, and export-limit failures; no
+  secret, token, SQL detail, stack trace, or financial payload is exposed.
+- `npm test`, `npm run typecheck`, `npm run lint`,
+  `npm run prisma:validate`, `npm run build`, and `git diff --check` pass.
+- No hosting vendor, external database, streaming, queue, or new product feature
+  is introduced.
+- `AI_CONTEXT.md`, `CHANGELOG.md`, and affected operational documentation are
+  synchronized with evidence and remaining blockers.
+
+**Status:** `COMPLETE`
+
+### Epic 4.2 — Deployment Baseline and Topology
+
+**Objective:** Select and document the production environment, resource
+envelope, database topology, backup/restore policy, OAuth registration, and
+Platform Admin bootstrap procedure.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.2.1 — Deployment Environment Decision
+
+**Objective:** Convert the approved one-client/one-server/one-relational-database
+architecture into a concrete production topology and qualification baseline.
+
+**Dependencies:** Batch 4.1.1 complete; Project Owner decisions listed below.
+
+**Affected modules:** Deployment configuration, environment contract,
+migration/rollback scripts if required by the selected environment, operational
+documentation, deployment verification tests.
+
+**Acceptance Criteria:**
+
+- Hosting/runtime, region, resource limits, process count, and persistent storage
+  are explicitly selected.
+- The database remains server-only and the topology preserves the approved
+  financial serialization guarantees.
+- Backup, restore, migration, rollback, secret management, Google OAuth callback,
+  and Platform Admin bootstrap procedures are documented and rehearsable.
+- Supported browser versions, target devices, network latency, and production
+  data-volume baselines are approved.
+
+**Status:** `BLOCKED`
+
+**Blocking documentation gaps:**
+
+- No production hosting/runtime or region is selected.
+- No decision confirms whether production remains single-process SQLite with
+  durable storage or adopts another relational database.
+- No resource envelope, backup retention, restore objective, or secret manager
+  is specified.
+- No production Google OAuth origins/callbacks or Platform Admin bootstrap owner
+  is specified.
+- No supported-browser/device/network/data-volume baseline is defined.
+
+### Epic 4.3 — Deployment Qualification
+
+**Objective:** Deploy the selected topology and verify migrations, authentication,
+PWA behavior, accessibility, diagnostics, backup/restore, and operational safety.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.3.1 — Staging Deployment and Recovery Verification
+
+**Objective:** Execute a production-like deployment, migration, rollback, backup,
+restore, Google OAuth, and failure-diagnostic rehearsal.
+
+**Dependencies:** Batch 4.2.1 complete and access to the selected environment.
+
+**Affected modules:** Deployment manifests/configuration, migration tooling,
+operational runbooks, environment-specific verification.
+
+**Acceptance Criteria:**
+
+- A clean environment deploys the server/PWA and schema reproducibly.
+- Migration, rollback, backup, and restore procedures are executed and recorded.
+- Database access is restricted to the server boundary.
+- Live Google OAuth admits only provisioned active users.
+- Operator-safe failure messages and server-side diagnostics are verified.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.3.2 — Physical Device, PWA, and Accessibility Qualification
+
+**Objective:** Close the remaining release-browser, mobile viewport, standalone
+PWA, screen-reader, keyboard, and 200% zoom gates.
+
+**Dependencies:** Batch 4.3.1 and the approved browser/device matrix.
+
+**Affected modules:** Presentation components/styles only for confirmed defects;
+PWA metadata/assets; qualification evidence and regression tests.
+
+**Acceptance Criteria:**
+
+- Approved mobile browsers verify 320–480 px operation and 44 px touch targets.
+- Installability and standalone launch pass on supported platforms.
+- Keyboard, focus, native dialog/drawer, screen-reader announcements, and 200%
+  zoom pass the approved matrix.
+- Network failure is explicit and no offline Transaction is queued.
+- Confirmed defects are fixed with regression coverage; no speculative redesign
+  is introduced.
+
+**Status:** `BLOCKED`
+
+### Epic 4.4 — Export Capacity Qualification
+
+**Objective:** Establish measured, deployment-specific service limits for the
+existing synchronous CSV, Excel, and PDF exporters.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.4.1 — Representative Export Benchmark
+
+**Objective:** Measure small, normal, 30,000-row, and 100,000-row representative
+datasets in the selected deployment environment without claiming unsupported
+large-volume generation.
+
+**Dependencies:** Batch 4.3.1; representative row-width fixtures; monitoring for
+heap, duration, database load, and timeout behavior.
+
+**Affected modules:** Export benchmark fixtures/scripts, configuration limits,
+`docs/45-export-production-readiness-review.md`, operational evidence.
+
+**Acceptance Criteria:**
+
+- CSV, Excel, and PDF record page/query count, duration, time-to-first-byte, peak
+  heap, output size, database load, and timeout behavior.
+- Existing 30,000-/100,000-row preflight rejection is verified where the active
+  cap rejects those datasets.
+- `EXPORT_MAX_ROWS` and optional `EXPORT_MAX_BYTES` are tuned from evidence, not
+  estimates.
+- Supported synchronous volume and explicitly unsupported volume are documented
+  per format.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.4.2 — Export Deadline and Concurrency Controls
+
+**Objective:** Apply evidence-based request deadline and allowed-concurrency
+policy to the bounded synchronous exporter.
+
+**Dependencies:** Batch 4.4.1 measurements and an approved operational policy.
+
+**Affected modules:** Export HTTP/application boundary, environment configuration,
+tests, production readiness documentation.
+
+**Acceptance Criteria:**
+
+- Deadline and concurrency limits are explicit, configuration-validated, and
+  tested under contention and cancellation.
+- Controlled failures preserve authorization, ownership, Admin privacy, and
+  existing size guard rails.
+- Limits fit the selected deployment resource envelope.
+- No streaming, background job, queue, or object storage is introduced.
+
+**Status:** `BLOCKED`
+
+### Epic 4.5 — Final Release Acceptance
+
+**Objective:** Produce the final evidence-backed MVP deployment decision.
+
+**Status:** `BLOCKED`
+
+#### Batch 4.5.1 — Final MVP Acceptance
+
+**Objective:** Re-run repository and environment gates, reconcile documentation,
+and issue the final release recommendation.
+
+**Dependencies:** Batches 4.1.1, 4.3.1, 4.3.2, 4.4.1, and 4.4.2 complete.
+
+**Affected modules:** Release evidence, roadmap/handoff/changelog, affected
+operational documentation; application code only for confirmed release defects.
+
+**Acceptance Criteria:**
+
+- All automated repository gates and approved environment qualification checks
+  pass.
+- Production migrations, recovery, OAuth, PWA, accessibility, and bounded export
+  service levels have recorded evidence.
+- Documentation matches the deployed behavior and remaining limitations.
+- The final recommendation is explicitly `READY`, `READY WITH LIMITATIONS`, or
+  `NOT READY`, with unresolved blockers listed.
+
+**Status:** `BLOCKED`
+
+## 9. Explicitly On-Hold Extension Work
+
+**Sprint Goal:** Preserve documented extension boundaries without treating them
+as approved implementation commitments.
+
+**Status:** `ON HOLD`
+
+### Epic 9.1 — Export Architecture Extensions
+
+**Objective:** Hold architecture-changing export options until measurement
+demonstrates need and separate approval defines their contracts.
+
+**Status:** `ON HOLD`
+
+#### Batch 9.1.1 — Streaming and Cross-Page Consistency
+
+**Objective:** If separately approved, define backpressure-aware CSV streaming
+and point-in-time/high-water-mark semantics at the Reporting read boundary.
+
+**Dependencies:** Batch 4.4.1 evidence and separate architecture approval.
+
+**Affected modules:** Reporting read boundary, Export coordinator/CSV adapter,
+HTTP delivery, cancellation/backpressure tests, architecture documentation.
+
+**Acceptance Criteria:**
+
+- Separate approval defines bounded memory, cancellation, backpressure, and
+  consistency semantics.
+- Export does not query Prisma directly or duplicate Reporting calculations.
+- Ownership, authorization, and Admin privacy remain unchanged.
+
+**Status:** `ON HOLD`
+
+#### Batch 9.1.2 — Asynchronous Oversized Export
+
+**Objective:** If separately approved, define background generation, queue,
+storage, expiry, notification, and secure download behavior.
+
+**Dependencies:** Demonstrated need after Batch 4.4.1 and separate product,
+security, operations, and architecture approval.
+
+**Affected modules:** Not determined; the current architecture contains no
+approved queue, object storage, worker, or notification boundary.
+
+**Acceptance Criteria:**
+
+- A separately approved design defines ownership revalidation, expiry, secure
+  retrieval, operational limits, and deletion.
+- No implementation starts from the current roadmap alone.
+
+**Status:** `ON HOLD`
+
+### Epic 9.2 — Product Extensions Outside the MVP
+
+**Objective:** Keep documented future ideas out of the implementation sequence
+until product requirements explicitly approve them.
+
+**Status:** `ON HOLD`
+
+#### Batch 9.2.1 — Unapproved Product Extensions
+
+**Objective:** Hold schedules, monthly allowance, categories, attachments,
+approvals, notifications, bulk operations, advanced analytics, advanced export
+styling, settings, and any remaining placeholder route behavior.
+
+**Dependencies:** New or amended approved Functional Requirements, Business
+Rules, flows, architecture, Design System mapping, and acceptance criteria.
+
+**Affected modules:** Not determined because no approved implementation contract
+exists.
+
+**Acceptance Criteria:**
+
+- The Project Owner approves explicit scope and requirement traceability.
+- Architecture, privacy, authorization, Domain meaning, Design Tokens, and tests
+  are defined before a Batch becomes implementation-ready.
+- Placeholder or landing-page language alone is not treated as approval.
+
+**Status:** `ON HOLD`
+
+## 10. Requirement and Evidence Map
+
+| Delivery area | Authoritative evidence |
+|---|---|
+| Product scope and exclusions | `docs/00-product-principles.md`, `docs/01-functional-requirements.md`, `README.md` |
+| Financial and ownership rules | `docs/03-business-rules.md`, `docs/04-domain-model.md` |
+| User behavior and states | `docs/05-user-flow.md`, `docs/06-wireframe.md`, `docs/19-screen-specifications.md` |
+| Architecture and persistence | `docs/08-system-architecture.md`, `docs/28-database-design.md`, `docs/36-adr-transaction-balance-and-audit.md`, `docs/37-technical-design-transaction-foundation.md` |
+| Authentication and authorization | `docs/27-adr-authentication-authorization.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md` |
+| Design implementation | `docs/12-ui-design-system.md`, `docs/14-component-guidelines.md`, `docs/16-accessibility-guidelines.md`, `docs/18-design-tokens.md` |
+| Implemented delivery state | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
+| Production/export gaps | `docs/02-non-functional-requirements.md`, `docs/45-export-production-readiness-review.md` |
+
+## 11. Roadmap Integrity Check
+
+At this revision:
+
+- First `READY FOR IMPLEMENTATION` Batch: **none**. Batch 4.2.1 is the next
+  sequential Batch and remains `BLOCKED` on the decisions listed in Section 8.
+- Number of `READY FOR IMPLEMENTATION` Batches: **0**.
+- No new product feature is authorized by this roadmap.
+- Deployment-dependent Batches remain `BLOCKED` with their missing inputs named.
+- Architecture-changing and unapproved product extensions remain `ON HOLD`.

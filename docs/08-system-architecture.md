@@ -223,6 +223,8 @@ The protected JSON boundary is `GET /api/operator/reconciliation/students/:stude
 
 `FinancialAuditEvent.occurredAt` is the server-generated audit commit timestamp, exposed as `committedAt`; it is not the operator-supplied business occurrence time on `Transaction.occurredAt`. Audit detail decodes supported schemas only and exposes allow-listed typed fields, never raw snapshots.
 
+The audit-detail presentation is a DTO-only client drawer. It lazy-loads the protected detail endpoint after timeline selection, deduplicates an event's concurrent request, and caches only successful DTOs for the mounted page lifetime. It neither accesses Persistence nor decodes snapshot schemas; `UNSUPPORTED_SCHEMA` produces an unavailable state.
+
 ## 10. Balance Lifecycle Flow
 
 References: FR-3.1.2, FR-3.1.4, FR-3.3.1; NFR-3.1–3.3; BR-BAL-001–005

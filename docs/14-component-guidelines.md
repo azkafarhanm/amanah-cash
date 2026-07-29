@@ -1,11 +1,11 @@
 # Amanah Cash — Component Guidelines
 
-**Version:** 1.2
+**Version:** 1.3
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -120,14 +120,73 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 - The title, label, Confirm, Cancel, errors, initial focus, focus return, and dismissal behavior are mandatory.
 - Accidental outside dismissal must not discard entered data without a deliberate product decision.
 
-### 4.11 Alert and Inline Error
+### 4.11 Context Detail Drawer
+
+`ContextDetailDrawer` is one platform component, not a feature-local drawer.
+It displays read-only detail for a selected list, table, timeline, or ledger
+record while preserving orientation to the source.
+
+Use it only when all selection criteria pass:
+
+- the detail is opened from a selected record;
+- source context materially helps interpretation;
+- content is primarily read-only and too structured or long for the standard
+  Dialog;
+- a new page would unnecessarily interrupt the current task;
+- no destructive confirmation or unresolved financial write occurs; and
+- the same information can reflow into a full-screen mobile surface.
+
+Its required anatomy is:
+
+```text
+ContextDetailDrawer
+├── Trigger
+├── ModalSurface
+│   ├── StickyHeader
+│   │   ├── Title
+│   │   ├── Description
+│   │   └── CloseControl
+│   ├── ScrollableContent
+│   │   ├── Summary
+│   │   ├── DetailSections
+│   │   └── Loading / Error / Unavailable states
+│   └── OptionalStickyFooter
+└── Scrim
+```
+
+The footer exists only for separately approved actions. Background content is
+inert while the drawer is modal. Desktop and tablet open from inline-end;
+their inline size uses the approved semantic drawer-width token and is capped
+by the available viewport. Mobile uses the approved full-screen semantic size.
+Browser Back behavior is excluded from this component contract and belongs in
+an approved Technical Design or Routing ADR.
+
+Future consumers, subject to their own approved feature scope:
+
+- Financial Audit event detail;
+- Transaction Workspace read-only Transaction inspection;
+- read-only report-row evidence inspection; and
+- administrative audit-event detail that contains no Operator financial data.
+
+Non-consumers:
+
+- create/edit forms;
+- Deposit, Withdrawal, or Correction workflows;
+- destructive confirmation;
+- unknown Transaction outcome resolution;
+- application navigation or sidebar content;
+- settings, filters, or command menus;
+- content requiring a canonical shareable page URL; and
+- any Platform Admin surface exposing Operator financial data.
+
+### 4.12 Alert and Inline Error
 
 - Inline validation sits adjacent to its field.
 - Screen/system failures use an alert or status region with a safe action.
 - Error copy is concise, specific, and does not expose internals.
 - Color is never the only signal.
 
-### 4.12 Loading and Skeleton
+### 4.13 Loading and Skeleton
 
 - Prefer Skeleton Loading for initial page and page-section loading.
 - Prefer Button Loading during form submission and other button-initiated writes.
@@ -137,7 +196,7 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 - Do not use indefinite shimmer under reduced motion.
 - Progressive history loading changes only the history footer; existing Balance and history remain visible.
 
-### 4.13 Empty State
+### 4.14 Empty State
 
 - Every MVP empty state uses exactly this hierarchy: Lucide icon, title, description, and primary call to action when an approved next action exists.
 - Do not use illustrations.
@@ -146,7 +205,7 @@ Do not create arbitrary color variants. Deposit and Withdrawal variants reinforc
 - No search result: offer change/clear search, not contextual creation.
 - No Transactions: show `Rp 0` and the approved Deposit/Withdrawal actions.
 
-### 4.14 Toasts and Success Feedback
+### 4.15 Toasts and Success Feedback
 
 - A toast may reinforce a confirmed outcome but must not be the only confirmation.
 - Never report Transaction success before persistence is confirmed.

@@ -1,11 +1,11 @@
 # Amanah Cash — MVP Screen Specifications
 
-**Version:** 1.2
+**Version:** 1.3
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-29
 
 ---
 
@@ -41,6 +41,31 @@ Create Student remains a responsive overlay owned by Student List. Dashboard, Re
 - Every keyboard-focus treatment uses the tokenized `:focus-visible` strategy.
 - Every visual value references `docs/18-design-tokens.md`.
 - Reusable state behavior references `docs/20-interaction-states.md`.
+- Read-only contextual record inspection may use the platform
+  `ContextDetailDrawer` when every selection criterion in
+  `docs/14-component-guidelines.md` passes. Desktop/tablet use inline-end
+  presentation and mobile uses a full-screen detail surface. This exception
+  does not authorize another navigation layer or a mutation workflow.
+
+### 2.1 Financial Audit Detail
+
+Financial Audit Detail is a read-only contextual inspection surface selected
+from the immutable audit timeline. It uses the platform
+`ContextDetailDrawer`, renders only the approved allow-listed DTO, and keeps
+the underlying timeline inert while open.
+
+Required order:
+
+1. Sticky title, description, and explicitly named close control.
+2. Event badge and committed timestamp summary.
+3. Divider-led allow-listed detail fields.
+4. Loading, known error/Retry, or unsupported-schema unavailable state as
+   applicable.
+
+It has no footer because it has no approved action. It never exposes raw
+snapshots, internal identifiers, actor metadata, command/correlation values,
+Balance evidence, or schema implementation details. Browser Back integration
+is not specified here and requires an approved Technical Design or Routing ADR.
 
 ## 3. Student List
 
