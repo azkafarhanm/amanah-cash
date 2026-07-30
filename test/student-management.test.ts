@@ -125,5 +125,5 @@ test("search covers Student, Operator, status, and server-side pagination", asyn
   const { service } = fixture(seed);
   assert.equal((await service.list({ kind: "admin" }, { search: "khusus" })).total, 1);
   assert.equal((await service.list({ kind: "admin" }, { search: "Satu" })).total, 11);
-  const second = await service.list({ kind: "admin" }, { status: "ARCHIVED", page: 2 }); assert.equal(second.total, 12); assert.equal(second.items.length, 2);
+  const second = await service.list({ kind: "admin" }, { status: "ARCHIVED", page: 2, pageSize: 10 }); assert.equal(second.total, 12); assert.equal(second.items.length, 2);
 });

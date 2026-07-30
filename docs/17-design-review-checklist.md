@@ -1,11 +1,11 @@
 # Amanah Cash — Design Review Checklist
 
-**Version:** 1.3
+**Version:** 1.4
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -145,16 +145,17 @@ This checklist is the approval gate for every future Amanah Cash UI design and i
 - [ ] Settings never expose financial invariants as preferences.
 - [ ] Settings contains only the groups and controls approved by `docs/21-mvp-settings-specification.md`.
 - [ ] Light and Dark semantic palettes are reviewed independently; Dark is not inverted Light.
-- [ ] Light follows the approved Tropical Sunrise direction and uses the
+- [ ] Light follows the approved Calm Financial direction and uses the
       semantic mapping in `docs/18-design-tokens.md`, not isolated reference
       colors.
-- [ ] Light remains white-dominant; light cyan separates selected surfaces
-      without becoming a full-screen wash or oversized colored panel.
-- [ ] Teal consistently identifies primary actions, active navigation, links,
-      focus, and selected controls without coloring long-form text.
-- [ ] Orange and soft yellow are sparse, non-critical highlights and never
-      replace or compete with Success, Warning, Error, Information, Deposit, or
-      Withdrawal colors.
+- [ ] Light uses cool off-white canvas, white primary surfaces, and neutral
+      blue-gray separation without a full-screen colored wash.
+- [ ] Desaturated ink blue consistently identifies primary actions, active
+      navigation, links, focus, and selected controls without coloring
+      long-form text or broad surfaces.
+- [ ] Accent and status colors are functional, sparse, and never replace or
+      compete with Success, Warning, Error, Information, Deposit, or Withdrawal
+      meaning.
 - [ ] Authenticated Light screens remain productivity-oriented and avoid
       rainbow styling, decorative illustrations, excessive gradients, and
       unnecessary animation.

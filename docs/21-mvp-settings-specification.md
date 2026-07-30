@@ -1,9 +1,9 @@
 # Amanah Cash — MVP Settings Specification
 
-**Version:** 1.0  
-**Status:** Approved Product and Design Specification  
+**Version:** 1.2  
+**Status:** Final Approved Product and Design Specification  
 **Owner:** Product Owner  
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -31,6 +31,25 @@ Every Settings control must:
 Settings never exposes Student ownership, financial rules, transaction types,
 Balance calculation, audit retention, authorization, or privacy boundaries as
 configurable preferences.
+
+### 2.1 Perceived Responsiveness
+
+Settings responds locally before persistence completes. A valid preference
+selection appears immediately in its control and saves in the background
+whenever optimistic presentation is safe. Pending, success, rollback, and Retry
+remain scoped to the affected control.
+
+Ordinary Settings mutations must not disable the page, disable an entire
+Settings group, show a full-page loading state, reload the route, remount
+unrelated Settings content, or move surrounding layout. Duplicate submission
+may be guarded only at the narrowest affected control. Any saving indicator is
+subtle, uses reserved geometry, and may be withheld for a short fast operation
+to avoid flicker.
+
+Perceived responsiveness comes from immediate state, stable layout, narrow
+update scope, and truthful feedback—not from decorative motion. Destructive
+Restore is the sole approved whole-page maintenance exception because concurrent
+interaction would be unsafe.
 
 ## 3. Roles and Routes
 
@@ -66,14 +85,13 @@ nested enterprise menus, or decorative personalization.
 
 ### 5.1 Theme
 
-Theme has exactly four values:
+Theme has exactly three values:
 
 | Value | Behavior |
 |---|---|
 | `LIGHT` | Always use the approved light theme. |
 | `DARK` | Always use the intentionally designed dark theme. |
 | `SYSTEM` | Follow the operating-system/browser color-scheme preference and update when it changes. |
-| `TIME` | Use Light from 06:00–17:59 local time and Dark from 18:00–05:59 local time. |
 
 The default is `SYSTEM`.
 
@@ -93,11 +111,14 @@ elevation, and financial content that remains visually dominant. The complete
 mapping is governed by `docs/18-design-tokens.md`; reference colors must not be
 hard-coded into controls or screens.
 
-Light mode follows the approved Tropical Sunrise direction: a white-dominant
-canvas, quiet secondary background, optional light-cyan surface separation,
-dark neutral text, teal interaction emphasis, and sparing orange or soft-yellow
-highlights. Financial status colors remain independent, and reference colors
-must not be hard-coded into controls or screens.
+Light mode follows the approved Calm Financial direction: a cool off-white
+canvas, white primary surfaces, neutral blue-gray separation, deep neutral text,
+and a desaturated ink-blue interaction family. Neutral structure carries most
+of the interface. Accent color is reserved for action, focus, links, and
+selection; semantic financial and status colors remain independent. The choice
+is grounded in professional product design-system practices and WCAG contrast,
+not personal color preference. Reference colors must not be hard-coded into
+controls or screens.
 
 Light and Dark preserve identical spacing, typography, component structure,
 iconography, interaction behavior, and semantic meaning. Theme changes only
@@ -118,8 +139,6 @@ evidence.
   selected state.
 - `SYSTEM` is presented as a distinct choice, not as an ambiguous automatic
   toggle.
-- `TIME` uses the user's browser/device local time, changes at 06:00 and 18:00
-  without a page reload, and is presented as a distinct choice from `SYSTEM`.
 
 ## 6. Preferences
 
@@ -141,21 +160,17 @@ Changing the default:
   retention, or database query safety limits; and
 - must not expose records outside the user's existing authorization scope.
 
-### 6.2 Delete Confirmation
+Delete confirmation is not configurable. Confirmation behavior is determined
+consistently by the consequence of the action. Financial and domain safeguards
+remain mandatory.
 
-Delete confirmation is not configurable in the MVP.
-
-Transaction soft delete and logical administrative deletion retain their
-required confirmation, reason, revision, and server validation. Removing a
-safety confirmation offers insufficient daily value compared with the risk of
-mistakes. Settings must not present a non-functional or misleading toggle for
-it.
-
-### 6.3 Preference Persistence and Failure
+### 6.2 Preference Persistence and Failure
 
 Preferences are stored per provisioned user, not per browser.
 
 - A successful save takes effect without requiring logout.
+- A valid selection updates its local presentation immediately and persistence
+  proceeds in the background.
 - Concurrent updates use a last-accepted-write rule for independent preference
   fields; the server returns the committed preference state.
 - Invalid or unsupported values fail closed and do not alter the stored value.
@@ -163,6 +178,8 @@ Preferences are stored per provisioned user, not per browser.
   request and shows a non-destructive retry state in Settings.
 - A failed save retains the previous committed value and exposes an explicit
   error; optimistic presentation must reconcile to the server result.
+- Pending, success, error, and Retry feedback reuse reserved control-local
+  geometry and never reload or remount unrelated Settings content.
 - Preference changes contain no financial payload and do not enter financial
   audit history.
 
@@ -338,13 +355,39 @@ Settings defines:
   success/session-ended, and failure states; and
 - About/Changelog loaded, empty, and failure states.
 
-Only one preference mutation is disabled while that same row is saving. Backup
-and Restore may lock their Data group while active. Whole-page disabling is
-reserved for the actual Restore maintenance window.
+Only the narrowest affected preference control may reject duplicate activation
+while saving. The page, Settings group, and unrelated rows remain interactive.
+Backup and Restore may lock their Data group while active. Whole-page disabling
+is reserved for the actual Restore maintenance window.
 
 Focus moves only for validation errors, the Restore confirmation dialog, or the
 post-Restore sign-in transition. Dialog close restores focus to its trigger.
 Progress and terminal outcomes use concise accessible status messages.
+
+## 10.1 Navigation and Interaction Motion
+
+Settings remains one grouped responsive page. It has no nested Settings routes,
+multi-level menu, permanent secondary sidebar, or animated section carousel.
+The internal Changelog is the only normal child navigation approved for the
+MVP.
+
+Navigation into Settings or Changelog preserves the application shell and page
+geometry. New content may enter over `180ms` with opacity from `0.96` to `1`
+and, on capable devices, a downward-to-rest translation no greater than `4px`.
+The old screen does not travel across the viewport. Motion is interruptible and
+never delays navigation, focus, Back/forward behavior, or input.
+
+Pressed, hover, focus, selection, and active-navigation feedback begins
+immediately and may settle within `120–160ms`. Preference selection is correct
+in the first response frame; background persistence and duplicate guards are
+local to the affected control. A route pending treatment appears only when the
+response is not immediate, may be delayed by approximately `100ms` to avoid a
+flash, and preserves expected geometry. Actual state presentation or navigation
+is never delayed to make animation visible.
+
+Reduced motion removes translation and uses an immediate replacement or only a
+brief opacity change. Implementations prefer opacity and transform, add no
+animation library solely for this behavior, and do not animate financial values.
 
 ## 11. Data Model Contract
 
@@ -353,7 +396,7 @@ Each provisioned user has one Settings preference record:
 | Field | Type | Rules |
 |---|---|---|
 | `user_id` | UUID/foreign key | Primary key; cascades only with the existing approved user lifecycle |
-| `theme` | Enum | `LIGHT`, `DARK`, `SYSTEM`, or `TIME`; default `SYSTEM` |
+| `theme` | Enum | `LIGHT`, `DARK`, or `SYSTEM`; default `SYSTEM` |
 | `default_page_size` | Integer | `10`, `20`, or `50`; default `20` |
 | `created_at` | Timestamp | Server generated |
 | `updated_at` | Timestamp | Server generated on committed change |
@@ -379,8 +422,10 @@ The MVP Settings module does not include:
 - API keys;
 - SMTP configuration;
 - notification settings;
+- time-scheduled theme;
+- configurable delete-confirmation behavior;
 - application-managed password, password reset, or public account self-service;
-- delete-confirmation bypass;
+- bypass of financial, administrative, or domain-level deletion safeguards;
 - configurable currency, transaction types, Balance rules, audit retention,
   ownership, roles, or authorization;
 - partial/selective backup or restore;
@@ -394,10 +439,11 @@ The Settings MVP is complete only when:
 
 - both roles can use the approved Appearance, Preferences, Security, and About
   groups, while Data remains Platform Admin-only;
-- Theme supports Light, Dark, System, and Time through complete reviewed semantic
+- Theme supports Light, Dark, and System through complete reviewed semantic
   palettes;
 - default page size behaves predictably across compatible lists and URLs;
-- destructive confirmations and financial invariants remain non-configurable;
+- deletion confirmations, destructive safeguards, and financial invariants
+  remain non-configurable;
 - Backup preserves the approved operational state in one consistent artifact;
 - Restore validates, safety-backs-up, atomically replaces, invalidates sessions,
   and fails without partial change;

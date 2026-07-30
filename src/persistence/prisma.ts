@@ -25,3 +25,11 @@ export function getPrismaClient(environment: AuthenticationEnvironment): PrismaC
 
   return client;
 }
+
+export async function disconnectPrismaClient(): Promise<void> {
+  if (globalPrisma.amanahCashPrisma) {
+    await globalPrisma.amanahCashPrisma.$disconnect();
+  }
+  delete globalPrisma.amanahCashPrisma;
+  delete globalPrisma.amanahCashDatabaseUrl;
+}

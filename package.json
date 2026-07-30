@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "predev": "npm run db:migrate && prisma generate",
     "dev": "next dev",
     "prebuild": "prisma generate",
     "build": "next build",

@@ -1,9 +1,9 @@
 # Amanah Cash — Functional Requirements (SRS)
 
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -356,8 +356,9 @@ never alter financial meaning, business data, exports, or audit.
 Authenticated users can choose a default page size of 10, 20, or 50 items for
 compatible paginated views; the default is 20. A valid explicit URL page size
 wins for that view. The preference never changes export limits, authorization
-scope, or non-paginated query limits. Delete confirmation and financial
-invariants are not configurable.
+scope, or non-paginated query limits. Delete-confirmation behavior and all
+financial and domain safeguards are consistent product rules, not user
+preferences.
 
 #### FR-3.5.3: Back Up Operational State
 

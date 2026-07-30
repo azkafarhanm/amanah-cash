@@ -7,10 +7,16 @@
   background: var(--color-background-surface);
 }
 
+.header {
+  display: grid;
+  gap: var(--space-2);
+}
+
 .header h2,
 .header p,
-.success,
-.error {
+.resultStatus,
+.help,
+.controlStatus {
   margin: 0;
 }
 
@@ -21,7 +27,8 @@
 }
 
 .header p,
-.optionDescription {
+.optionDescription,
+.help {
   color: var(--color-text-secondary);
   font: var(--type-supporting);
 }
@@ -34,6 +41,7 @@
 }
 
 .legend {
+  display: block;
   margin-block-end: var(--space-3);
 }
 
@@ -53,6 +61,9 @@
   border-radius: var(--shape-control);
   background: var(--color-background-surface);
   cursor: pointer;
+  transition:
+    border-color var(--motion-duration-settings) var(--motion-ease-standard),
+    background-color var(--motion-duration-settings) var(--motion-ease-standard);
 }
 
 .option:has(input:checked) {
@@ -64,10 +75,6 @@
   outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
   outline-offset: var(--space-0-5);
   box-shadow: var(--focus-visible-shadow);
-}
-
-.option:has(input:disabled) {
-  cursor: wait;
 }
 
 .optionCopy {
@@ -94,21 +101,84 @@
   font: var(--type-supporting);
 }
 
-.success {
-  color: var(--color-success-foreground);
+.preferenceRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.selectArea {
+  width: min(100%, 12rem);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.select {
+  width: 100%;
+  min-height: var(--control-height-minimum);
+  padding-inline: var(--space-3);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-strong);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font: var(--type-body);
+  cursor: pointer;
+  transition:
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.select:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.controlStatus {
+  min-height: var(--line-height-20);
+  color: var(--color-text-secondary);
   font: var(--type-supporting);
 }
 
-.error {
-  padding: var(--space-3);
-  border-radius: var(--shape-control);
-  background: var(--color-error-background);
+.controlStatus[role="alert"] {
   color: var(--color-error-foreground);
+}
+
+.resultStatus {
+  min-height: var(--line-height-20);
+  margin: 0;
+  color: var(--color-text-secondary);
   font: var(--type-supporting);
+}
+
+.resultStatus[data-tone="success"] {
+  color: var(--color-success-foreground);
+}
+
+.resultStatus[data-tone="error"] {
+  color: var(--color-error-foreground);
 }
 
 @media (min-width: 48rem) {
   .options {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 30rem) {
+  .preferenceRow {
+    grid-template-columns: 1fr;
+  }
+
+  .selectArea {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .option,
+  .select {
+    transition-duration: var(--motion-duration-none);
   }
 }

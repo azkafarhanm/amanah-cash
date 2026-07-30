@@ -1,4 +1,4 @@
-export const THEME_PREFERENCES = ["LIGHT", "DARK", "SYSTEM", "TIME"] as const;
+export const THEME_PREFERENCES = ["LIGHT", "DARK", "SYSTEM"] as const;
 
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
 export type ResolvedTheme = "light" | "dark";
@@ -11,35 +11,13 @@ export function isThemePreference(value: unknown): value is ThemePreference {
   return typeof value === "string" && THEME_PREFERENCES.includes(value as ThemePreference);
 }
 
-export function resolveTimeTheme(hour: number): ResolvedTheme {
-  return hour >= 6 && hour < 18 ? "light" : "dark";
-}
-
 export function resolveTheme(
   preference: ThemePreference,
-  prefersDark: boolean,
-  date = new Date()
+  prefersDark: boolean
 ): ResolvedTheme {
   if (preference === "LIGHT") return "light";
   if (preference === "DARK") return "dark";
-  if (preference === "TIME") return resolveTimeTheme(date.getHours());
   return prefersDark ? "dark" : "light";
-}
-
-export function millisecondsUntilNextTimeBoundary(date = new Date()): number {
-  const next = new Date(date);
-  const hour = date.getHours();
-
-  if (hour < 6) {
-    next.setHours(6, 0, 0, 0);
-  } else if (hour < 18) {
-    next.setHours(18, 0, 0, 0);
-  } else {
-    next.setDate(next.getDate() + 1);
-    next.setHours(6, 0, 0, 0);
-  }
-
-  return Math.max(1, next.getTime() - date.getTime());
 }
 
 export function applyThemeToDocument(preference: ThemePreference): void {

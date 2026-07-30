@@ -5,6 +5,7 @@ import { getPrismaClient } from "@/persistence/prisma";
 import { normalizeAdminReportQuery, normalizeReportFilters, periodLabel } from "@/reports/filters";
 import type { AdminReportQuery, AdminReportResult, OperatorReportResult, ReportQuery } from "@/reports/types";
 import { effect } from "@/transactions/domain";
+import { resolvePageSize, type PageSizePreference } from "@/settings/preferences";
 
 export const REPORT_PAGE_SIZE = 20;
 
@@ -14,8 +15,8 @@ function transactionOrder(filters: ReturnType<typeof normalizeReportFilters>): P
   return [{ occurredAt: filters.direction }, { id: filters.direction }];
 }
 
-function pageCount(total: number) {
-  return Math.max(1, Math.ceil(total / REPORT_PAGE_SIZE));
+function pageCount(total: number, pageSize: PageSizePreference) {
+  return Math.max(1, Math.ceil(total / pageSize));
 }
 
 export function reportReadService(
@@ -25,8 +26,9 @@ export function reportReadService(
   const prisma = getPrismaClient(environment);
 
   return {
-    async operator(operatorId: string, query: ReportQuery): Promise<OperatorReportResult> {
+    async operator(operatorId: string, query: ReportQuery, preferredPageSize: unknown = REPORT_PAGE_SIZE): Promise<OperatorReportResult> {
       const filters = normalizeReportFilters(query, now());
+      const pageSize = resolvePageSize(preferredPageSize);
       const ownedStudentWhere: Prisma.StudentWhereInput = {
         operatorId,
         ...(filters.studentId ? { id: filters.studentId } : {}),
@@ -65,8 +67,8 @@ export function reportReadService(
           where,
           select,
           orderBy: transactionOrder(filters),
-          skip: (filters.page - 1) * REPORT_PAGE_SIZE,
-          take: REPORT_PAGE_SIZE
+          skip: (filters.page - 1) * pageSize,
+          take: pageSize
         }),
         prisma.transaction.count({ where }),
         prisma.transaction.groupBy({
@@ -147,18 +149,19 @@ export function reportReadService(
           };
         }),
         total,
-        page: Math.min(filters.page, pageCount(total)),
-        pages: pageCount(total)
+        page: Math.min(filters.page, pageCount(total, pageSize)),
+        pages: pageCount(total, pageSize)
       };
     },
 
-    async admin(query: AdminReportQuery): Promise<AdminReportResult> {
+    async admin(query: AdminReportQuery, preferredPageSize: unknown = REPORT_PAGE_SIZE): Promise<AdminReportResult> {
       const filters = normalizeAdminReportQuery(query, now());
+      const pageSize = resolvePageSize(preferredPageSize);
       const occurredAt = filters.from || filters.to ? {
         ...(filters.from ? { gte: filters.from } : {}),
         ...(filters.to ? { lte: filters.to } : {})
       } : undefined;
-      const skip = (filters.page - 1) * REPORT_PAGE_SIZE;
+      const skip = (filters.page - 1) * pageSize;
 
       if (filters.kind === "OWNERSHIP_CHANGE") {
         const where: Prisma.FinancialAuditEventWhereInput = {
@@ -175,7 +178,7 @@ export function reportReadService(
             select: { id: true, reason: true, oldOperatorId: true, newOperatorId: true, occurredAt: true, student: { select: { id: true, name: true } } },
             orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
             skip,
-            take: REPORT_PAGE_SIZE
+            take: pageSize
           }),
           prisma.financialAuditEvent.count({ where }),
           prisma.user.findMany({ where: { role: "OPERATOR" }, select: { id: true, name: true } })
@@ -193,8 +196,8 @@ export function reportReadService(
             href: `/admin/students/${encodeURIComponent(item.student.id)}`
           })),
           total,
-          page: Math.min(filters.page, pageCount(total)),
-          pages: pageCount(total)
+          page: Math.min(filters.page, pageCount(total, pageSize)),
+          pages: pageCount(total, pageSize)
         };
       }
 
@@ -207,7 +210,7 @@ export function reportReadService(
           ] } : {})
         };
         const [items, total] = await Promise.all([
-          prisma.student.findMany({ where, select: { id: true, name: true, createdAt: true, operator: { select: { name: true } } }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip, take: REPORT_PAGE_SIZE }),
+          prisma.student.findMany({ where, select: { id: true, name: true, createdAt: true, operator: { select: { name: true } } }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip, take: pageSize }),
           prisma.student.count({ where })
         ]);
         return {
@@ -215,8 +218,8 @@ export function reportReadService(
           periodLabel: periodLabel(filters.period, filters.dateFrom, filters.dateTo),
           items: items.map((item) => ({ id: item.id, kind: "STUDENT_ASSIGNMENT", subject: item.name, description: `Penugasan awal kepada ${item.operator.name}.`, occurredAt: item.createdAt.toISOString(), href: `/admin/students/${encodeURIComponent(item.id)}` })),
           total,
-          page: Math.min(filters.page, pageCount(total)),
-          pages: pageCount(total)
+          page: Math.min(filters.page, pageCount(total, pageSize)),
+          pages: pageCount(total, pageSize)
         };
       }
 
@@ -233,7 +236,7 @@ export function reportReadService(
         ] } : {})
       };
       const [items, total, operators] = await Promise.all([
-        prisma.operatorAudit.findMany({ where, select: { id: true, operatorId: true, action: true, summary: true, createdAt: true }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip, take: REPORT_PAGE_SIZE }),
+        prisma.operatorAudit.findMany({ where, select: { id: true, operatorId: true, action: true, summary: true, createdAt: true }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], skip, take: pageSize }),
         prisma.operatorAudit.count({ where }),
         prisma.user.findMany({ where: { role: "OPERATOR" }, select: { id: true, name: true, deletedAt: true } })
       ]);
@@ -253,8 +256,8 @@ export function reportReadService(
           };
         }),
         total,
-        page: Math.min(filters.page, pageCount(total)),
-        pages: pageCount(total)
+        page: Math.min(filters.page, pageCount(total, pageSize)),
+        pages: pageCount(total, pageSize)
       };
     }
   };

@@ -1,9 +1,9 @@
 # Amanah Cash — Database Design
 
-**Version:** 1.7
+**Version:** 1.8
 **Status:** Implemented Transaction Engine persistence design
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-30
 
 ## 1. Purpose and architecture boundary
 

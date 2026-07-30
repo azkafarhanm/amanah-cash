@@ -1,6 +1,6 @@
 import { normalizeGoogleEmail } from "@/auth/admission";
+import { resolvePageSize } from "@/settings/preferences";
 
-export const OPERATOR_PAGE_SIZE = 10;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export type OperatorStatus = "active" | "inactive";
@@ -109,13 +109,14 @@ export function createOperatorManagement(repository: OperatorRepository) {
 
     detail: requireOperator,
     audits: repository.audits,
-    async list(input: { search?: unknown; status?: unknown; page?: unknown }) {
+    async list(input: { search?: unknown; status?: unknown; page?: unknown; pageSize?: unknown }) {
       const search = typeof input.search === "string" ? input.search.trim().slice(0, 100) : "";
       const status = input.status === "active" || input.status === "inactive" ? input.status : undefined;
       const numericPage = typeof input.page === "number" ? input.page : Number(input.page ?? 1);
       const page = Number.isSafeInteger(numericPage) && numericPage > 0 ? numericPage : 1;
-      const result = await repository.list({ search, status, skip: (page - 1) * OPERATOR_PAGE_SIZE, take: OPERATOR_PAGE_SIZE });
-      return { ...result, page, pages: Math.max(1, Math.ceil(result.total / OPERATOR_PAGE_SIZE)) };
+      const pageSize = resolvePageSize(input.pageSize);
+      const result = await repository.list({ search, status, skip: (page - 1) * pageSize, take: pageSize });
+      return { ...result, page, pageSize, pages: Math.max(1, Math.ceil(result.total / pageSize)) };
     }
   };
 }

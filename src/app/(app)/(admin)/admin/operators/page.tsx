@@ -2,19 +2,23 @@ import Link from "next/link";
 import { ContentWrapper, EmptyState, Pagination, SectionHeader, StatusBadge } from "@/components/ui";
 import { operatorManagement } from "@/operators/service";
 import styles from "./operators.module.css";
+import { protectRoute } from "@/authorization/routes";
+import { readCurrentDefaultPageSize } from "@/settings/service";
 
-type Props = { searchParams: Promise<{ search?: string; status?: string; page?: string; notice?: string }> };
+type Props = { searchParams: Promise<{ search?: string; status?: string; page?: string; pageSize?: string; notice?: string }> };
 const date = (value: Date | null) => value ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(value) : "Belum pernah";
 
 export default async function OperatorsPage({ searchParams }: Props) {
-  const query = await searchParams;
-  const result = await operatorManagement().list(query);
+  const [query, user] = await Promise.all([searchParams, protectRoute("admin")]);
+  const defaultPageSize = await readCurrentDefaultPageSize(user.id);
+  const result = await operatorManagement().list({ ...query, pageSize: query.pageSize ?? defaultPageSize });
   const filtered = Boolean(query.search || query.status);
-  const href = (page: number) => `/admin/operators?${new URLSearchParams({ ...(query.search ? { search: query.search } : {}), ...(query.status ? { status: query.status } : {}), page: String(page) })}`;
+  const href = (page: number) => `/admin/operators?${new URLSearchParams({ ...(query.search ? { search: query.search } : {}), ...(query.status ? { status: query.status } : {}), ...(query.pageSize ? { pageSize: query.pageSize } : {}), page: String(page) })}`;
   return <ContentWrapper>
     <SectionHeader title="Operator" description="Kelola akun Google Operator tanpa akses ke data keuangan." action={<Link className={styles.button} href="/admin/operators/new">Tambah Operator</Link>} />
     {query.notice ? <p className={styles.message}>{query.notice}</p> : null}
     <form className={styles.toolbar} method="get">
+      {query.pageSize ? <input type="hidden" name="pageSize" value={query.pageSize} /> : null}
       <label className={styles.field}>Cari nama atau email<input className={styles.input} name="search" defaultValue={query.search} /></label>
       <label className={styles.field}>Status<select className={styles.select} name="status" defaultValue={query.status ?? ""}><option value="">Semua</option><option value="active">Aktif</option><option value="inactive">Tidak aktif</option></select></label>
       <button className={styles.button} type="submit">Terapkan</button>

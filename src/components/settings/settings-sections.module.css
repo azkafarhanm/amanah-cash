@@ -1,0 +1,185 @@
+.page {
+  animation: settings-enter var(--motion-duration-settings) var(--motion-ease-standard);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
+  background: var(--color-background-surface);
+}
+
+.header,
+.row > div,
+.restoreActions {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.header h2,
+.header p,
+.row h3,
+.row p,
+.status,
+.metadata {
+  margin: 0;
+}
+
+.header h2 {
+  color: var(--color-text-primary);
+  font: var(--type-section-title);
+}
+
+.header p,
+.row p,
+.status,
+.metadata {
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-4);
+  align-items: start;
+  padding-block-start: var(--space-5);
+  border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+}
+
+.row h3 {
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+
+.secondaryButton,
+.dangerButton {
+  min-height: var(--control-height-minimum);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-strong);
+  border-radius: var(--shape-control);
+  background: var(--color-background-surface);
+  color: var(--color-text-primary);
+  font: var(--type-label);
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  border-color: var(--color-action-primary);
+  background: var(--color-primary-subtle);
+}
+
+.dangerButton {
+  border-color: var(--color-error-foreground);
+  background: var(--color-error-foreground);
+  color: var(--color-text-inverse);
+}
+
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible,
+.fileInput:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.secondaryButton:disabled,
+.dangerButton:disabled,
+.fileInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.restoreActions {
+  width: min(100%, 18rem);
+}
+
+.fileInput {
+  max-width: 100%;
+  color: var(--color-text-primary);
+  font: var(--type-supporting);
+}
+
+.metadata {
+  display: grid;
+  gap: var(--space-2);
+  padding-block-start: var(--space-2);
+}
+
+.metadata div {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.metadata dt {
+  font-weight: var(--font-weight-semibold);
+}
+
+.metadata dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  min-height: var(--line-height-20);
+}
+
+.status[role="alert"] {
+  color: var(--color-error-foreground);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes settings-enter {
+  from {
+    opacity: 0.96;
+    transform: translateY(var(--space-1));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 40rem) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+
+  .restoreActions,
+  .secondaryButton,
+  .dangerButton {
+    width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page {
+    animation: none;
+  }
+
+  .secondaryButton,
+  .dangerButton {
+    transition-duration: var(--motion-duration-none);
+  }
+}

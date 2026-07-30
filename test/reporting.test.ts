@@ -164,7 +164,7 @@ test("Reporting presentation is reusable, read-only, responsive, accessible, and
   assert.doesNotMatch(service, /\.create\(|\.update\(|\.delete\(|transactionEngine/);
   assert.match(service, /effect\(/);
   assert.match(service, /skip:/);
-  assert.match(service, /take: REPORT_PAGE_SIZE/);
+  assert.match(service, /take: pageSize/);
   assert.match(components, /<table/);
   assert.match(components, /ariaLabel="Filter laporan keuangan"/);
   assert.match(filterForm, /aria-label=\{ariaLabel\}/);

@@ -3,10 +3,12 @@ import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { OperatorReportExport, OperatorReportFilterContext, OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
 import { reportReadService } from "@/reports/read-service";
 import type { ReportQuery } from "@/reports/types";
+import { readCurrentDefaultPageSize } from "@/settings/service";
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<ReportQuery> }) {
   const [operator, query] = await Promise.all([currentOperator(), searchParams]);
-  const report = await reportReadService().operator(operator.id, query);
+  const pageSize = await readCurrentDefaultPageSize(operator.id);
+  const report = await reportReadService().operator(operator.id, query, pageSize);
   return <ContentWrapper>
     <SectionHeader title="Laporan Keuangan" description="Riwayat keuangan hanya untuk Siswa yang saat ini ditugaskan kepada Anda." />
     <ReportFilters filters={report.filters} students={report.students} basePath="/operator/reports" />

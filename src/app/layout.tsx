@@ -5,16 +5,14 @@ import "./globals.css";
 
 const themeBootstrap = `
 (() => {
-  const valid = new Set(["LIGHT", "DARK", "SYSTEM", "TIME"]);
+  const valid = new Set(["LIGHT", "DARK", "SYSTEM"]);
   let stored = null;
   try {
     stored = localStorage.getItem("amanah-cash-theme");
   } catch {}
   const preference = valid.has(stored) ? stored : "SYSTEM";
-  const hour = new Date().getHours();
   const dark = preference === "DARK"
-    || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches)
-    || (preference === "TIME" && (hour < 6 || hour >= 18));
+    || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches);
   const theme = dark ? "dark" : "light";
   document.documentElement.dataset.themePreference = preference.toLowerCase();
   document.documentElement.dataset.theme = theme;

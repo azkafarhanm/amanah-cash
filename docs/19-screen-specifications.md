@@ -1,11 +1,11 @@
 # Amanah Cash — MVP Screen Specifications
 
-**Version:** 1.3
+**Version:** 1.5
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -497,6 +497,7 @@ Appearance, Preferences, Data for Platform Admin only, Security, and About.
 
 - Theme is one mutually exclusive Light/Dark/System control.
 - Default items per page is limited to 10/20/50.
+- Delete confirmation is not a user preference.
 - Backup prepares/downloads one sensitive artifact.
 - Restore uses file selection, server validation, metadata review, and a
   destructive whole-state confirmation.
@@ -506,7 +507,11 @@ Appearance, Preferences, Data for Platform Admin only, Security, and About.
 ### 8.3 States and Accessibility
 
 Loading reserves group/row geometry. Preference saving is local to its row;
-failure retains the committed value. Backup and Restore have explicit
+the selected value updates immediately, persistence continues in the background,
+and failure restores the committed value locally. Only the affected control may
+guard duplicate activation; the page, group, and unrelated controls remain
+interactive and mounted. Saving, success, error, and Retry share reserved
+geometry. Backup and Restore have explicit
 preparing, validation, confirmation, replacement, success, and failure states.
 Restore confirmation names both replacement and post-success sign-out.
 
@@ -515,3 +520,16 @@ focus. Status changes are announced once. Dialog close restores trigger focus;
 successful Restore intentionally moves to sign-in. Light and Dark presentations
 independently pass contrast, zoom, reflow, keyboard, screen-reader, and
 reduced-motion verification.
+
+### 8.4 Navigation and Visual Composition
+
+Settings remains one responsive page of five groups and introduces no secondary
+sidebar or nested section routes. Shell-to-Settings and Settings-to-Changelog
+content may enter over `180ms` with a subtle opacity transition and no more than
+`4px` downward-to-rest movement. The shell and expected content geometry remain
+stable; reduced motion removes translation.
+
+Light uses neutral surfaces for hierarchy and desaturated ink blue only for
+action, focus, links, and selection. Settings groups are not individually
+tinted. Dark retains the approved blue-slate hierarchy and restrained sky
+accent.

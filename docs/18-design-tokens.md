@@ -1,11 +1,11 @@
 # Amanah Cash — Design Tokens
 
-**Version:** 1.5
+**Version:** 1.6
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -58,10 +58,10 @@ Reliability comes from consistent structure, legible type, exact values, restrai
 - Raw hexadecimal colors, pixel values, font declarations, shadows, opacity, z-index, and timing values are prohibited outside the Primitive layer.
 - Tailwind configuration and shadcn/ui variables must alias these tokens rather than create a parallel system.
 - A missing visual value requires a token proposal and review. Do not use an arbitrary value.
-- Light is the base semantic mapping and follows the approved Tropical Sunrise
-  direction. Its reference anchors (`#FFFFFF`, `#F8FAFC`, `#CBF3F0`,
-  `#2EC4B6`, `#FF9F1C`, `#FFBF69`, and `#33415C`) inform a complete semantic
-  mapping; they are not values to copy directly into components.
+- Light is the base semantic mapping and follows the approved Calm Financial
+  direction. Its reference anchors (`#F6F8FA`, `#FFFFFF`, `#F1F4F7`,
+  `#315E7D`, `#274C66`, `#203F55`, `#1F2937`, and `#52606D`) inform a complete
+  semantic mapping; they are not values to copy directly into components.
 - Dark uses only the approved semantic overrides in Section 5.1.2. System
   selects between those two mappings; it does not define a third palette.
 - The Dark palette is designed independently around the approved Modern Tech &
@@ -111,35 +111,27 @@ of component colors; Dark semantic tokens map to them in Section 5.1.2.
 | `color.slate.900` | `#0F172A` |
 | `color.slate.950` | `#020617` |
 
-#### Tropical Sunrise light-theme foundation
+#### Calm Financial light-theme foundation
 
 These primitives support the approved Light direction. Components must consume
 their semantic roles in Section 5.1 rather than these raw palette values.
 
 | Token | Value |
 |-------|-------|
-| `color.tropical-cyan.50` | `#ECFEFF` |
-| `color.tropical-cyan.100` | `#CBF3F0` |
-| `color.tropical-cyan.200` | `#A5E9E4` |
-| `color.teal.50` | `#F0FDFA` |
-| `color.teal.100` | `#CCFBF1` |
-| `color.teal.200` | `#99F6E4` |
-| `color.teal.500` | `#2EC4B6` |
-| `color.teal.600` | `#20A99D` |
-| `color.teal.700` | `#0F766E` |
-| `color.teal.800` | `#115E59` |
-| `color.sunrise.100` | `#FFF1D6` |
-| `color.sunrise.300` | `#FFBF69` |
-| `color.sunrise.500` | `#FF9F1C` |
-| `color.sunrise.600` | `#E8850A` |
-| `color.ink.500` | `#64748B` |
-| `color.ink.600` | `#475569` |
-| `color.ink.700` | `#33415C` |
-| `color.ink.800` | `#1E293B` |
+| `color.calm.25` | `#F6F8FA` |
+| `color.calm.50` | `#F1F4F7` |
+| `color.calm.200` | `#DDE3E8` |
+| `color.calm.500` | `#7B8C9D` |
+| `color.calm.600` | `#52606D` |
+| `color.ink-blue.700` | `#315E7D` |
+| `color.ink-blue.800` | `#274C66` |
+| `color.ink-blue.900` | `#203F55` |
 
-Teal is the Light theme's interaction color. Sunrise orange and soft yellow are
-secondary highlight colors only; they never replace Success, Warning, Error,
-Information, Deposit, or Withdrawal semantics.
+Ink blue is the Light theme's interaction family. It is deliberately
+desaturated and never replaces Success, Warning, Error, Information, Deposit,
+or Withdrawal semantics. `color.ink-blue.700` has calculated WCAG contrast
+ratios of `6.94:1` on white, `6.51:1` on `color.calm.25`, and `6.28:1` on
+`color.calm.50`.
 
 #### Emerald success and Deposit
 
@@ -166,7 +158,7 @@ Information, Deposit, or Withdrawal semantics.
 | `color.blue.800` | `#1E40AF` |
 
 This professional blue family supports Withdrawal and any approved blue-specific
-information role. Primary interaction emphasis is theme-specific: teal in Light
+information role. Primary interaction emphasis is theme-specific: ink blue in Light
 and sky in Dark. Blue must not create a parallel action system.
 
 #### Sky dark-theme accent
@@ -334,6 +326,7 @@ Default Cards and persistent financial surfaces use `shadow.none` with `color.bo
 | `opacity.40` | `0.40` |
 | `opacity.60` | `0.60` |
 | `opacity.80` | `0.80` |
+| `opacity.96` | `0.96` |
 | `opacity.100` | `1` |
 
 ### 4.9 Z-Index Primitives
@@ -354,6 +347,7 @@ Default Cards and persistent financial surfaces use `shadow.none` with `color.bo
 | `motion.duration.none` | `0ms` |
 | `motion.duration.instant` | `80ms` |
 | `motion.duration.fast` | `140ms` |
+| `motion.duration.settings` | `180ms` |
 | `motion.duration.standard` | `200ms` |
 | `motion.duration.deliberate` | `280ms` |
 | `motion.ease.standard` | `cubic-bezier(0.2, 0, 0, 1)` |
@@ -378,25 +372,22 @@ Breakpoints express composition changes, not device detection.
 
 | Token | References | Meaning |
 |-------|------------|---------|
-| `color.background.canvas` | `color.neutral.0` | Dominant application background |
-| `color.background.secondary` | `color.slate.50` | Quiet secondary page area |
+| `color.background.canvas` | `color.calm.25` | Dominant application background |
+| `color.background.secondary` | `color.calm.50` | Quiet secondary page area |
 | `color.background.surface` | `color.neutral.0` | Primary surface and dialog |
-| `color.background.subtle` | `color.tropical-cyan.50` | Optional card, panel, table stripe, or grouped surface |
+| `color.background.subtle` | `color.calm.50` | Optional selection, table stripe, or grouped surface |
 | `color.background.scrim` | `color.overlay.scrim` | Modal backdrop |
-| `color.text.primary` | `color.ink.700` | Primary content |
-| `color.text.secondary` | `color.ink.600` | Supporting content |
-| `color.text.tertiary` | `color.ink.500` | Low-emphasis metadata |
-| `color.text.inverse` | `color.slate.50` | Soft near-white text on the primary teal fill |
-| `color.border.default` | `color.neutral.200` | Standard boundary |
-| `color.border.strong` | `color.neutral.300` | Emphasized boundary |
-| `color.border.focus` | `color.teal.700` | Keyboard focus |
-| `color.action.primary` | `color.teal.700` | Calm primary action, link, and active control |
-| `color.action.primary.hover` | `color.teal.800` | Primary hover |
-| `color.action.primary.active` | `color.teal.800` | Primary pressed state |
-| `color.action.primary.subtle` | `color.teal.50` | Quiet action or selection surface |
-| `color.highlight.secondary` | `color.sunrise.500` | New badge or non-critical highlight |
-| `color.highlight.soft` | `color.sunrise.300` | Tip or soft highlight |
-| `color.highlight.background` | `color.sunrise.100` | Quiet highlight surface |
+| `color.text.primary` | `color.neutral.800` | Primary content |
+| `color.text.secondary` | `color.calm.600` | Supporting content |
+| `color.text.tertiary` | `color.neutral.500` | Low-emphasis metadata |
+| `color.text.inverse` | `color.neutral.0` | Text on the primary ink-blue fill |
+| `color.border.default` | `color.calm.200` | Quiet structural separator |
+| `color.border.strong` | `color.calm.500` | Essential control or emphasized boundary |
+| `color.border.focus` | `color.ink-blue.700` | Keyboard focus |
+| `color.action.primary` | `color.ink-blue.700` | Calm primary action, link, and active control |
+| `color.action.primary.hover` | `color.ink-blue.800` | Primary hover |
+| `color.action.primary.active` | `color.ink-blue.900` | Primary pressed state |
+| `color.action.primary.subtle` | `color.calm.50` | Quiet action or selection surface |
 | `color.status.success` | `color.emerald.500` | Success indicator (`#10B981` at Primitive layer) |
 | `color.status.warning` | `color.amber.500` | Warning indicator (`#F59E0B` at Primitive layer) |
 | `color.status.error` | `color.red.500` | Error indicator (`#EF4444` at Primitive layer) |
@@ -410,37 +401,46 @@ Breakpoints express composition changes, not device detection.
 | `color.warning.background` | `color.amber.50` | Warning surface |
 | `color.error.foreground` | `color.red.700` | Error content |
 | `color.error.background` | `color.red.50` | Error surface |
-| `color.info.foreground` | `color.teal.800` | Teal-based informational content |
-| `color.info.background` | `color.teal.50` | Informational surface |
+| `color.info.foreground` | `color.blue.800` | Informational content |
+| `color.info.background` | `color.blue.50` | Informational surface |
 | `color.disabled.foreground` | `color.neutral.400` | Disabled content |
 | `color.disabled.background` | `color.neutral.100` | Disabled surface |
 
 #### 5.1.1 Light Theme Composition Rules
 
-- White is the dominant canvas. `color.background.secondary` may quietly divide
-  large page regions; `color.background.subtle` may separate selected cards,
-  panels, or secondary sections. Neither may become a full-screen color wash.
+- Cool off-white is the dominant canvas and white is the primary surface.
+  `color.background.secondary` may quietly divide large page regions;
+  `color.background.subtle` may separate selected controls or secondary
+  sections. Neither may become a decorative color wash.
 - Cards, panels, dialogs, and operational sections establish elevation through
   spacing, quiet borders, and subtle shadow before colored fills.
-- Teal is reserved for primary actions, active navigation, links, focus, and
-  selected controls. It must not be used for long-form text or broad decorative
-  areas.
-- The vivid `color.teal.500` remains a palette primitive, not the default
-  foreground on white. Routine Light interactions use the calmer teal semantic
-  mapping so financial content remains visually dominant.
-- Sunrise orange and soft yellow are limited to New badges, tips,
-  informational callouts, and non-critical highlights. They never compete with
-  or replace financial semantic colors.
+- Ink blue is reserved for primary actions, active navigation, links, focus,
+  and selected controls. It must not be used for long-form text, broad fills,
+  or decorative areas.
+- Authenticated Light screens do not use cyan, teal, orange, or yellow as
+  decorative accent families. Status and financial colors appear only through
+  their semantic roles.
 - Success remains emerald, Warning remains amber, Error remains muted red, and
-  Information remains teal-based. Financial meaning is always repeated in text
+  Information remains blue-based. Financial meaning is always repeated in text
   and, where appropriate, iconography.
-- Body copy uses dark neutral text. Teal, cyan, orange, and yellow are prohibited
-  for paragraphs, dense tables, and extended reading.
+- Body copy uses dark neutral text. Accent and status colors are prohibited for
+  paragraphs, dense tables, and extended reading.
 - Use generous whitespace, restrained rounded corners, consistent spacing, and
   subtle shadows. Avoid oversized colored panels, rainbow interfaces, excessive
   gradients, operational-screen illustrations, and unnecessary animation.
 - Authenticated screens remain focused and productivity-oriented. Landing pages
   may be more expressive but continue to use the same semantic token system.
+
+The palette is derived from semantic role, professional product-system
+practice, and measured accessibility rather than personal preference:
+
+- [WCAG 2.2](https://www.w3.org/TR/WCAG22/) defines `4.5:1` minimum contrast for
+  normal text and `3:1` for essential non-text UI components and states.
+- [Atlassian Design System color guidance](https://atlassian.design/foundations/color-new/)
+  demonstrates theme-dependent values behind stable semantic design tokens.
+- Default separators may be visually quiet, but any boundary required to
+  identify a control uses `color.border.strong` or another pairing that reaches
+  `3:1` against adjacent surfaces.
 
 #### 5.1.2 Dark Theme Semantic Overrides
 
@@ -557,6 +557,7 @@ Dark composition rules:
 | `elevation.hover` | `elevation.raised` + `shadow.medium` |
 | `elevation.temporary` | `elevation.overlay` + `shadow.large` |
 | `motion.feedback` | `motion.duration.fast` + `motion.ease.standard` |
+| `motion.settings-navigation` | `motion.duration.settings` + `motion.ease.standard` + `motion.distance.small` |
 | `motion.presence` | `motion.duration.standard` + `motion.ease.standard` |
 | `motion.exit` | `motion.duration.fast` + `motion.ease.exit` |
 | `motion.reduced` | `motion.duration.none` |
@@ -657,6 +658,10 @@ Dark composition rules:
 | `context-detail-drawer.motion.enter` | `motion.duration.standard` + `motion.ease.standard` |
 | `context-detail-drawer.motion.exit` | `motion.duration.fast` + `motion.ease.exit` |
 | `context-detail-drawer.motion.distance` | `motion.distance.large` |
+| `settings.navigation.enter` | `motion.settings-navigation` |
+| `settings.navigation.opacity-start` | `opacity.96` |
+| `settings.navigation.opacity-end` | `opacity.100` |
+| `settings.navigation.reduced` | `motion.reduced` |
 | `skeleton.background` | `color.neutral.200` |
 | `skeleton.radius` | `radius.sm` |
 | `landing.nav.height` | `size.14` |

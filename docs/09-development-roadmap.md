@@ -1,9 +1,9 @@
 # Amanah Cash — Executable Engineering Roadmap
 
-**Version:** 3.1
+**Version:** 3.2
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -801,7 +801,7 @@ the authenticated role-aware Settings screens.
 
 #### Batch 6.1.1 — Theme and Page-Size Preferences
 
-**Objective:** Implement Light, Dark, System, and Time theme plus the 10/20/50 default
+**Objective:** Implement Light, Dark, and System theme plus the 10/20/50 default
 items-per-page preference using the approved semantic and persistence contracts.
 
 **Dependencies:** Batch 5.1.1 complete; approved MVP Settings Specification,
@@ -814,18 +814,20 @@ focused accessibility and regression tests.
 
 **Acceptance Criteria:**
 
-- Both roles can select Light, Dark, System, or Time; System is the default and
-  follows device preference changes. Time uses Light from 06:00–17:59 local time
-  and Dark from 18:00–05:59 local time.
+- Both roles can select Light, Dark, or System; System is the default and follows
+  device preference changes.
 - Dark uses the complete approved semantic palette rather than inversion and
   passes component-state contrast verification.
 - Both roles can select 10, 20, or 50 default items per page; 20 is the default
   and a valid explicit URL value wins for that view.
 - Preferences follow the provisioned user, fail closed on invalid values, and
   never alter authorization, financial data, exports, or audit.
-- Delete confirmation and every financial invariant remain non-configurable.
+- Delete-confirmation behavior is not configurable; financial, administrative,
+  and domain safeguards remain mandatory.
 
-**Status:** `READY FOR IMPLEMENTATION`
+**Status:** `REQUIRES ALIGNMENT` — the 2026-07-30 final Settings design removes
+Time theme and delete-confirmation customization; implementation has not yet
+been authorized.
 
 ### Epic 6.2 — Data Continuity
 

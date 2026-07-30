@@ -1,9 +1,9 @@
 # Amanah Cash — Domain Model
 
-**Version:** 1.5
+**Version:** 1.6
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -329,11 +329,12 @@ Auth.js with Google and the Database Session Strategy is implemented. The Transa
 `UserPreference` belongs one-to-one to a provisioned user and contains only:
 
 - Theme: `LIGHT`, `DARK`, or `SYSTEM`, default `SYSTEM`;
-- Default page size: `10`, `20`, or `50`, default `20`; and
+- Default page size: `10`, `20`, or `50`, default `20`;
 - server-managed creation and update timestamps.
 
 A missing record has the same defaults. Preferences carry no financial meaning
-and cannot weaken Domain, authorization, audit, or destructive-safety rules.
+and cannot weaken Domain, authorization, audit, financial confirmation, or
+destructive-safety rules.
 
 ### 9.2 BackupArtifact
 

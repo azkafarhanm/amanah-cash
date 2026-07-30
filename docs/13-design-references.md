@@ -1,11 +1,11 @@
 # Amanah Cash — Design References
 
-**Version:** 1.3
+**Version:** 1.4
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -108,14 +108,20 @@ for balances, transactions, tables, and reports than for decorative elements.
 Reject cyberpunk, gaming, high-contrast, neon, color-inverted, gradient-heavy,
 or shadow-heavy examples even when their individual components appear polished.
 
-For Light theme, use Tropical Sunrise as the primary palette inspiration.
-Reference modern productivity software for its white-dominant canvas, generous
-whitespace, friendly but restrained teal interaction color, and clear
-information hierarchy. Light-cyan surfaces may create gentle separation, while
-orange and soft yellow remain occasional highlights rather than brand-colored
-decoration.
+For Light theme, use the Calm Financial token direction in
+`docs/18-design-tokens.md`. Reference mature banking, accounting, and
+productivity products for neutral-dominant surfaces, clear hierarchy, compact
+and legible controls, restrained ink-blue interaction emphasis, and predictable
+feedback. References inform principles, not copied layouts or arbitrary color
+sampling.
 
-Reject Light references that fill whole screens with teal or cyan, use
+Color decisions must be justified by semantic role, measured WCAG contrast, and
+cross-theme token consistency. [WCAG 2.2](https://www.w3.org/TR/WCAG22/) is the
+accessibility authority; professional token systems such as
+[Atlassian Design System](https://atlassian.design/foundations/color-new/)
+provide directional evidence for separating semantic roles from theme values.
+
+Reject Light references that fill whole screens with brand color, use
 marketing-style colored panel grids, turn operational screens into illustrated
 experiences, or allow gradients, badges, and decorative accents to compete with
 financial information.

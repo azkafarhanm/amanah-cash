@@ -54,7 +54,10 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "006_transaction_ui_notes.sql" },
     { version: "007_operator_self_provisioning_audit.sql" },
     { version: "008_theme_preference.sql" },
-    { version: "009_theme_preference_strict.sql" }
+    { version: "009_theme_preference_strict.sql" },
+    { version: "010_settings_preferences.sql" },
+    { version: "011_settings_final_contract.sql" },
+    { version: "012_maintenance_audit.sql" }
   ]);
   first.close();
 
@@ -69,7 +72,10 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "006_transaction_ui_notes.sql" },
     { version: "007_operator_self_provisioning_audit.sql" },
     { version: "008_theme_preference.sql" },
-    { version: "009_theme_preference_strict.sql" }
+    { version: "009_theme_preference_strict.sql" },
+    { version: "010_settings_preferences.sql" },
+    { version: "011_settings_final_contract.sql" },
+    { version: "012_maintenance_audit.sql" }
   ]);
   second.close();
 });
@@ -185,6 +191,27 @@ test("Strict theme preference migration mirror matches the executable migration"
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260729010000_theme_preference_strict/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/009_theme_preference_strict.sql"), "utf8")
+  );
+});
+
+test("Settings preferences migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260730000000_settings_preferences/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/010_settings_preferences.sql"), "utf8")
+  );
+});
+
+test("Final Settings contract migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260730010000_settings_final_contract/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/011_settings_final_contract.sql"), "utf8")
+  );
+});
+
+test("Maintenance audit migration mirror matches the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260730020000_maintenance_audit/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/012_maintenance_audit.sql"), "utf8")
   );
 });
 

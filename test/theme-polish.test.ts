@@ -55,15 +55,15 @@ test("authenticated theme is bootstrapped before the application shell", async (
   assert.match(globals, /\.theme-changing \*/);
 });
 
-test("Light interactions use calm semantic teal mappings without changing Dark foundations", async () => {
+test("Light interactions use calm ink-blue mappings without changing Dark foundations", async () => {
   const globals = await readFile("src/app/globals.css", "utf8");
   const darkTheme = globals.match(/:root\[data-theme="dark"\] \{[\s\S]*?\n\}/)?.[0] ?? "";
 
-  assert.match(globals, /--color-action-primary: var\(--color-teal-700\)/);
-  assert.match(globals, /--color-action-primary-hover: var\(--color-teal-800\)/);
-  assert.match(globals, /--color-action-primary-active: var\(--color-teal-800\)/);
-  assert.match(globals, /--color-background-subtle: var\(--color-tropical-cyan-50\)/);
-  assert.match(globals, /--color-text-inverse: var\(--color-slate-50\)/);
+  assert.match(globals, /--color-action-primary: var\(--color-ink-blue-700\)/);
+  assert.match(globals, /--color-action-primary-hover: var\(--color-ink-blue-800\)/);
+  assert.match(globals, /--color-action-primary-active: var\(--color-ink-blue-900\)/);
+  assert.match(globals, /--color-background-subtle: var\(--color-calm-50\)/);
+  assert.match(globals, /--color-text-inverse: var\(--color-neutral-0\)/);
   assert.match(globals, /--focus-visible-shadow: var\(--shadow-focus-light\)/);
   assert.match(darkTheme, /--color-action-primary: var\(--color-sky-400\)/);
   assert.match(darkTheme, /--color-background-canvas: var\(--color-slate-900\)/);

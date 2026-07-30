@@ -1,9 +1,9 @@
 # Amanah Cash — Business Rules
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -193,8 +193,9 @@ are never configurable.
 ### BR-SET-002: Preferences Belong to the Provisioned User
 
 Theme and default page size persist per user. Theme is `LIGHT`, `DARK`, or
-`SYSTEM`; page size is `10`, `20`, or `50`. Invalid values fail without changing
-the committed preference.
+`SYSTEM`; page size is `10`, `20`, or `50`. Delete-confirmation behavior is not
+configurable. Invalid preference values fail without changing the committed
+preference.
 
 ### BR-SET-003: Passwords Remain Google-Owned
 

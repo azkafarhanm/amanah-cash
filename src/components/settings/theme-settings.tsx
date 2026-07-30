@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { updateThemePreference } from "@/settings/actions";
 import {
   applyThemeToDocument,
@@ -21,11 +21,6 @@ const OPTIONS: ReadonlyArray<{
     label: "System",
     description: "Ikuti pengaturan tampilan perangkat."
   },
-  {
-    value: "TIME",
-    label: "Time",
-    description: "Terang pukul 06.00–17.59, gelap pukul 18.00–05.59."
-  }
 ];
 
 function announceTheme(theme: ThemePreference) {
@@ -35,25 +30,38 @@ function announceTheme(theme: ThemePreference) {
 
 export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference }) {
   const legendId = useId();
+  const requestId = useRef(0);
+  const saveChain = useRef(Promise.resolve());
+  const committed = useRef(initialTheme);
   const [selected, setSelected] = useState(initialTheme);
-  const [committed, setCommitted] = useState(initialTheme);
-  const [saving, setSaving] = useState<ThemePreference | null>(null);
+  const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string>();
   const [error, setError] = useState<string>();
 
   async function selectTheme(theme: ThemePreference) {
-    if (theme === selected || saving) return;
+    if (theme === selected) return;
 
-    const previous = committed;
+    const currentRequest = ++requestId.current;
+    const previous = committed.current;
     setSelected(theme);
-    setSaving(theme);
+    setSaving(false);
     setMessage(undefined);
     setError(undefined);
     announceTheme(theme);
 
-    const result = await updateThemePreference(theme);
-    setSaving(null);
+    const savingTimer = window.setTimeout(() => {
+      if (currentRequest === requestId.current) setSaving(true);
+    }, 100);
+    let result: Awaited<ReturnType<typeof updateThemePreference>> | undefined;
+    saveChain.current = saveChain.current.then(async () => {
+      result = await updateThemePreference(theme);
+    });
+    await saveChain.current;
+    window.clearTimeout(savingTimer);
+    if (currentRequest !== requestId.current) return;
+    setSaving(false);
 
+    if (!result) return;
     if (result.status === "error") {
       setSelected(previous);
       announceTheme(previous);
@@ -61,9 +69,10 @@ export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference 
       return;
     }
 
-    setCommitted(result.theme);
-    setSelected(result.theme);
-    setMessage(`Tema ${OPTIONS.find((option) => option.value === result.theme)?.label} disimpan.`);
+    const savedTheme = result.theme;
+    committed.current = savedTheme;
+    setSelected(savedTheme);
+    setMessage(`Tema ${OPTIONS.find((option) => option.value === savedTheme)?.label} disimpan.`);
   }
 
   return (
@@ -80,7 +89,6 @@ export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference 
         <div className={styles.options}>
           {OPTIONS.map((option) => {
             const id = `${legendId}-${option.value.toLowerCase()}`;
-            const isSaving = saving === option.value;
             return (
               <label className={styles.option} key={option.value} htmlFor={id}>
                 <span className={styles.optionCopy}>
@@ -93,12 +101,11 @@ export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference 
                   name="theme"
                   value={option.value}
                   checked={selected === option.value}
-                  disabled={saving !== null}
                   aria-describedby={`${id}-status`}
                   onChange={() => void selectTheme(option.value)}
                 />
                 <span id={`${id}-status`} className={styles.optionStatus}>
-                  {isSaving ? "Menyimpan…" : ""}
+                  {saving && selected === option.value ? "Menyimpan…" : ""}
                 </span>
               </label>
             );
@@ -106,8 +113,14 @@ export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference 
         </div>
       </fieldset>
 
-      {message ? <p className={styles.success} role="status" aria-live="polite">{message}</p> : null}
-      {error ? <p className={styles.error} role="alert">{error}</p> : null}
+      <p
+        className={styles.resultStatus}
+        data-tone={error ? "error" : message ? "success" : "neutral"}
+        role={error ? "alert" : "status"}
+        aria-live="polite"
+      >
+        {error ?? message ?? ""}
+      </p>
     </section>
   );
 }

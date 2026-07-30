@@ -1,24 +1,36 @@
 import { protectRoute } from "@/authorization/routes";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import { ThemeSettings } from "@/components/settings/theme-settings";
+import { PreferencesSettings } from "@/components/settings/preferences-settings";
+import {
+  AboutSettings,
+  SecuritySettings
+} from "@/components/settings/security-about-settings";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { getPrismaClient } from "@/persistence/prisma";
-import { readThemePreference } from "@/settings/service";
+import { readSettingsPreferences } from "@/settings/service";
+import { APPLICATION_VERSION } from "@/settings/about";
+import styles from "@/components/settings/settings-sections.module.css";
 
 export default async function OperatorSettingsPage() {
   const user = await protectRoute("operator");
-  const theme = await readThemePreference(
+  const preferences = await readSettingsPreferences(
     getPrismaClient(loadAuthenticationEnvironment()),
     user.id
   );
 
   return (
-    <ContentWrapper>
+    <ContentWrapper className={styles.page}>
       <SectionHeader
         title="Pengaturan"
-        description="Atur tampilan Amanah Cash untuk akun Anda."
+        description="Atur tampilan dan preferensi Amanah Cash untuk akun Anda."
       />
-      <ThemeSettings initialTheme={theme} />
+      <ThemeSettings initialTheme={preferences.theme} />
+      <PreferencesSettings
+        initialPageSize={preferences.defaultPageSize}
+      />
+      <SecuritySettings />
+      <AboutSettings version={APPLICATION_VERSION} />
     </ContentWrapper>
   );
 }

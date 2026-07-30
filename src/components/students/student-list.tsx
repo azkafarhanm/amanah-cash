@@ -21,8 +21,8 @@ export function StudentList({
   searchLabel = "Cari Siswa atau Operator",
   searchPlaceholder = "Cari nama Siswa atau Operator..."
 }: {
-  result: { items: StudentRecord[]; total: number; page: number; pages: number };
-  query: { search?: string; status?: string };
+  result: { items: StudentRecord[]; total: number; page: number; pages: number; pageSize?: number };
+  query: { search?: string; status?: string; pageSize?: string };
   basePath: string;
   scope: "admin" | "operator";
   financialSummaries?: Record<string, StudentFinancialSummary>;
@@ -45,6 +45,7 @@ export function StudentList({
     const params = new URLSearchParams();
     if (newSearch.trim()) params.set("search", newSearch.trim());
     if (newStatus) params.set("status", newStatus);
+    if (query.pageSize) params.set("pageSize", query.pageSize);
     const queryString = params.toString();
     const target = queryString ? `${basePath}?${queryString}` : basePath;
     router.replace(target, { scroll: false });
@@ -62,7 +63,7 @@ export function StudentList({
     }
   }
 
-  const href = (page: number) => `${basePath}?${new URLSearchParams({ ...(query.search ? { search: query.search } : {}), ...(query.status ? { status: query.status } : {}), page: String(page) })}`;
+  const href = (page: number) => `${basePath}?${new URLSearchParams({ ...(query.search ? { search: query.search } : {}), ...(query.status ? { status: query.status } : {}), ...(query.pageSize ? { pageSize: query.pageSize } : {}), page: String(page) })}`;
   const filtered = Boolean(query.search || query.status);
   const emptyCopy = filtered
     ? { title: "Tidak ada hasil yang cocok", description: "Tidak ada Siswa yang cocok dengan pencarian atau filter saat ini. Ubah atau reset filter untuk melihat data lainnya." }

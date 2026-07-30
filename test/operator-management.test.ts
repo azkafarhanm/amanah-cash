@@ -72,5 +72,5 @@ test("search, status filtering, and pagination are server-side", async () => {
   const seed = Array.from({ length: 23 }, (_, index) => ({ name: index === 12 ? "Siti Khusus" : `Operator ${index}`, email: `person${index}@example.com`, isActive: index % 2 === 0 }));
   const { service } = fixture(seed);
   const search = await service.list({ search: "khusus", page: 1 }); assert.equal(search.total, 1);
-  const page = await service.list({ status: "active", page: 2 }); assert.equal(page.total, 12); assert.equal(page.items.length, 2); assert.equal(page.pages, 2);
+  const page = await service.list({ status: "active", page: 2, pageSize: 10 }); assert.equal(page.total, 12); assert.equal(page.items.length, 2); assert.equal(page.pages, 2);
 });

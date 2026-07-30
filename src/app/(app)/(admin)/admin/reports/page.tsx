@@ -3,10 +3,12 @@ import { AdminReportExport, AdminReportFilterContext, AdminReportFilters, AdminR
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { reportReadService } from "@/reports/read-service";
 import type { AdminReportQuery } from "@/reports/types";
+import { readCurrentDefaultPageSize } from "@/settings/service";
 
 export default async function AdminReportsPage({ searchParams }: { searchParams: Promise<AdminReportQuery> }) {
-  const [, query] = await Promise.all([requirePlatformAdmin(), searchParams]);
-  const report = await reportReadService().admin(query);
+  const [admin, query] = await Promise.all([requirePlatformAdmin(), searchParams]);
+  const pageSize = await readCurrentDefaultPageSize(admin.id);
+  const report = await reportReadService().admin(query, pageSize);
   return <ContentWrapper>
     <SectionHeader title="Laporan Administratif" description="Aktivitas Operator dan penugasan tanpa akses ke saldo, transaksi, atau rincian audit keuangan." />
     <AdminReportFilters result={report} basePath="/admin/reports" />

@@ -1,4 +1,4 @@
-export const STUDENT_PAGE_SIZE = 10;
+import { resolvePageSize } from "@/settings/preferences";
 export type StudentStatus = "ACTIVE" | "INACTIVE" | "ARCHIVED";
 export type StudentScope = { kind: "admin" } | { kind: "operator"; operatorId: string };
 
@@ -141,13 +141,14 @@ export function createStudentManagement(repository: StudentRepository) {
       if (!student) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
       return student;
     },
-    async list(scope: StudentScope, input: { search?: unknown; status?: unknown; page?: unknown }) {
+    async list(scope: StudentScope, input: { search?: unknown; status?: unknown; page?: unknown; pageSize?: unknown }) {
       const search = typeof input.search === "string" ? input.search.trim().slice(0, 100) : "";
       const status = typeof input.status === "string" && STATUSES.has(input.status as StudentStatus) ? input.status as StudentStatus : undefined;
       const numericPage = typeof input.page === "number" ? input.page : Number(input.page ?? 1);
       const page = Number.isSafeInteger(numericPage) && numericPage > 0 ? numericPage : 1;
-      const result = await repository.list({ search, status, operatorId: scope.kind === "operator" ? scope.operatorId : undefined, skip: (page - 1) * STUDENT_PAGE_SIZE, take: STUDENT_PAGE_SIZE });
-      return { ...result, page, pages: Math.max(1, Math.ceil(result.total / STUDENT_PAGE_SIZE)) };
+      const pageSize = resolvePageSize(input.pageSize);
+      const result = await repository.list({ search, status, operatorId: scope.kind === "operator" ? scope.operatorId : undefined, skip: (page - 1) * pageSize, take: pageSize });
+      return { ...result, page, pageSize, pages: Math.max(1, Math.ceil(result.total / pageSize)) };
     }
   };
 }

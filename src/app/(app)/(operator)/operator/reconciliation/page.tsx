@@ -2,16 +2,18 @@ import { currentOperator } from "@/authorization";
 import { StudentList } from "@/components/students/student-list";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { studentManagement } from "@/students/service";
+import { readCurrentDefaultPageSize } from "@/settings/service";
 
 export default async function FinancialAssurancePage({
   searchParams
 }: {
-  searchParams: Promise<{ search?: string; page?: string }>;
+  searchParams: Promise<{ search?: string; page?: string; pageSize?: string }>;
 }) {
   const [query, operator] = await Promise.all([searchParams, currentOperator()]);
+  const defaultPageSize = await readCurrentDefaultPageSize(operator.id);
   const result = await studentManagement().list(
     { kind: "operator", operatorId: operator.id },
-    query
+    { ...query, pageSize: query.pageSize ?? defaultPageSize }
   );
 
   return (

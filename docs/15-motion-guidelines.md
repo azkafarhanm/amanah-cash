@@ -1,11 +1,11 @@
 # Amanah Cash — Motion Guidelines
 
-**Version:** 1.1
+**Version:** 1.2
 
 **Status:** Approved
 
 **Owner:** Project Owner
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
 ---
 
@@ -63,7 +63,14 @@ Use a calm ease-out for entrances and ease-in for exits. Avoid elastic, springy,
 
 ### Navigation
 
-Use browser navigation without theatrical page transitions. If screen transitions are later approved, use a brief opacity transition or small directional shift that preserves Back/forward orientation. Do not animate both old and new screens across long distances.
+Use browser navigation without theatrical page transitions. Navigation into
+Settings and its Changelog preserves the application shell and may introduce
+new content over `180ms` using opacity from `0.96` to `1` and a
+downward-to-rest shift no greater than `4px`. Do not move the old screen across
+the viewport, delay navigation for motion, or interfere with Back/forward
+behavior. Interaction feedback begins immediately and completes within the Fast
+range. Reduced motion removes the translation and uses immediate replacement or
+only a brief opacity change.
 
 ### Forms
 

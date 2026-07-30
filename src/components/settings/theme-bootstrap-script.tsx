@@ -4,10 +4,8 @@ export function ThemeBootstrapScript({ preference }: { preference: ThemePreferen
   const script = `
 (() => {
   const preference = ${JSON.stringify(preference)};
-  const hour = new Date().getHours();
   const dark = preference === "DARK"
-    || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches)
-    || (preference === "TIME" && (hour < 6 || hour >= 18));
+    || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches);
   const theme = dark ? "dark" : "light";
   document.documentElement.dataset.themePreference = preference.toLowerCase();
   document.documentElement.dataset.theme = theme;
