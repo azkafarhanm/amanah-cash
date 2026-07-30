@@ -1,0 +1,57 @@
+.toggleGroup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0-5);
+  padding: var(--space-1);
+  background: var(--color-background-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-8);
+  height: var(--size-8);
+  padding: var(--space-0);
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--color-transparent);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition:
+    background var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.toggleButton:hover {
+  color: var(--color-text-primary);
+  background: var(--color-primary-subtle);
+}
+
+.toggleButton[data-active] {
+  color: var(--color-action-primary);
+  background: var(--color-background-surface);
+  box-shadow: var(--shadow-subtle);
+}
+
+.toggleButton svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.toggleButton:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggleButton {
+    transition: none;
+  }
+}

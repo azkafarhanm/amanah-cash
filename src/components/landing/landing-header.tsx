@@ -7,6 +7,7 @@ import { ArrowRight, Menu, X } from "lucide-react";
 import { Logo, PageContainer } from "@/components/ui";
 
 import styles from "./landing-header.module.css";
+import { LandingThemeToggle } from "./landing-theme-toggle";
 
 export function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -25,12 +26,26 @@ export function LandingHeader() {
           aria-label="Navigasi utama"
           className={`${styles.navigation} ${menuOpen ? styles.navigationOpen : ""} desktop:flex`}
         >
-          <Link href="#cara-kerja" onClick={() => setMenuOpen(false)}>Cara kerja</Link>
-          <Link href="#fitur" onClick={() => setMenuOpen(false)}>Fitur</Link>
-          <Link href="#keamanan" onClick={() => setMenuOpen(false)}>Keamanan</Link>
-          <Link href="#tanya-jawab" onClick={() => setMenuOpen(false)}>Tanya jawab</Link>
+          <Link href="#cara-kerja" onClick={() => setMenuOpen(false)}>
+            Cara kerja
+          </Link>
+          <Link href="#fitur" onClick={() => setMenuOpen(false)}>
+            Fitur
+          </Link>
+          <Link href="#keamanan" onClick={() => setMenuOpen(false)}>
+            Keamanan
+          </Link>
+          <Link href="#tanya-jawab" onClick={() => setMenuOpen(false)}>
+            Tanya jawab
+          </Link>
+          <div className={styles.navigationTheme}>
+            <LandingThemeToggle />
+          </div>
         </nav>
         <div className={styles.headerActions}>
+          <div className={styles.headerThemeToggle}>
+            <LandingThemeToggle />
+          </div>
           <Link className={styles.headerAction} href="/login">
             <span className="tablet:inline">Mulai menggunakan</span>
             <ArrowRight aria-hidden="true" />
@@ -41,7 +56,11 @@ export function LandingHeader() {
             className={styles.menuToggle}
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            {menuOpen ? (
+              <X aria-hidden="true" />
+            ) : (
+              <Menu aria-hidden="true" />
+            )}
           </button>
         </div>
       </PageContainer>
