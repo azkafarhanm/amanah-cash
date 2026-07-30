@@ -3,148 +3,193 @@ export const problems = [
     icon: "Files",
     title: "Catatan tersebar",
     description:
-      "Transaksi dapat tersimpan di buku, pesan, lembar kerja, atau ingatan orang yang mencatatnya.",
+      "Transaksi dapat tersimpan di beberapa tempat dan mengikuti cara pencatatan yang berbeda.",
   },
   {
     icon: "Calculator",
-    title: "Saldo perlu dihitung ulang",
+    title: "Saldo harus dihitung ulang",
     description:
-      "Perhitungan manual harus diulang ketika ada transaksi baru atau catatan perlu diperiksa.",
+      "Setiap transaksi baru atau koreksi dapat memerlukan perhitungan manual kembali.",
   },
   {
     icon: "Search",
-    title: "Riwayat sulit ditemukan",
+    title: "Riwayat sulit ditelusuri",
     description:
-      "Mencari transaksi tertentu membutuhkan waktu ketika urutan dan tempat pencatatannya tidak konsisten.",
+      "Menemukan transaksi tertentu menjadi lambat ketika urutan dan keterangannya tidak konsisten.",
   },
   {
-    icon: "ArrowLeftRight",
-    title: "Arah transaksi kurang jelas",
+    icon: "FileClock",
+    title: "Laporan menyita waktu",
     description:
-      "Pemasukan dan pengeluaran dapat tertukar ketika istilah dan keterangannya tidak seragam.",
+      "Rekap membutuhkan pengumpulan dan pemeriksaan ulang dari catatan yang terpisah.",
   },
   {
-    icon: "MessageCircleQuestion",
-    title: "Penjelasan membutuhkan waktu",
+    icon: "CircleAlert",
+    title: "Kesalahan sulit ditemukan",
     description:
-      "Pertanyaan tentang saldo sulit dijawab dengan cepat ketika bukti transaksi tidak berada dalam satu riwayat.",
+      "Salah jumlah, arah transaksi, atau siswa dapat terlambat diketahui tanpa jejak yang jelas.",
   },
 ] as const;
 
 export const solutions = [
   {
     icon: "UserRoundCheck",
-    title: "Catatan terpusat per siswa",
+    title: "Konteks siswa yang jelas",
     description:
-      "Pencatatan dan riwayat transaksi tersedia dalam konteks siswa yang sama.",
-  },
-  {
-    icon: "History",
-    title: "Saldo dari riwayat lengkap",
-    description:
-      "Saldo dihitung dari seluruh transaksi yang tersimpan, bukan diubah secara manual.",
+      "Cari siswa lalu lihat saldo, transaksi, dan tindakan yang tersedia pada konteks yang tepat.",
   },
   {
     icon: "ArrowLeftRight",
-    title: "Arah transaksi yang jelas",
+    title: "Pencatatan terarah",
     description:
-      "Setiap transaksi menunjukkan apakah dana dititipkan kepada siswa atau dikembalikan oleh siswa.",
+      "Setoran dan penarikan membedakan jenis, jumlah, waktu, dan keterangan transaksi.",
   },
   {
-    icon: "ListOrdered",
-    title: "Riwayat yang mudah ditelusuri",
+    icon: "Scale",
+    title: "Saldo dari transaksi",
     description:
-      "Transaksi ditampilkan dari yang terbaru dengan jenis, jumlah, dan waktu yang jelas.",
+      "Saldo terbaru dan riwayat dapat diperiksa tanpa mengubah angka saldo secara manual.",
+  },
+  {
+    icon: "ChartNoAxesCombined",
+    title: "Pelaporan siap ditinjau",
+    description:
+      "Ringkasan dan laporan membantu pengguna memahami aktivitas tanpa menyusun ulang catatan.",
+  },
+  {
+    icon: "History",
+    title: "Perubahan dapat ditelusuri",
+    description:
+      "Tindakan penting meninggalkan riwayat untuk mendukung pemeriksaan dan pertanggungjawaban.",
   },
 ] as const;
 
 export const workflowSteps = [
   {
-    title: "Cari siswa",
+    title: "Pilih siswa",
     description:
-      "Gunakan pencarian nama untuk membuka detail siswa yang tepat.",
+      "Cari nama siswa dan buka detail yang tepat sebelum mencatat transaksi.",
   },
   {
     title: "Catat transaksi",
     description:
-      "Pilih Setor atau Tarik, lalu masukkan jumlah Rupiah utuh.",
+      "Pilih Setor atau Tarik, lalu masukkan jumlah, waktu, dan keterangan.",
   },
   {
-    title: "Periksa saldo dan riwayat",
+    title: "Periksa hasil",
     description:
-      "Setelah transaksi berhasil tersimpan, saldo terbaru dan transaksi baru langsung terlihat.",
+      "Konfirmasi transaksi tersimpan dan saldo terbaru tampil sesuai hasil.",
+  },
+  {
+    title: "Tinjau aktivitas",
+    description:
+      "Gunakan riwayat dan laporan untuk memahami transaksi pada periode tertentu.",
+  },
+  {
+    title: "Telusuri perubahan",
+    description:
+      "Periksa jejak audit untuk melihat tindakan penting dan konteks pelakunya.",
+  },
+  {
+    title: "Jaga keberlanjutan",
+    description:
+      "Admin membuat backup dan memulihkannya melalui proses yang tervalidasi.",
   },
 ] as const;
 
 export const features = [
   {
-    icon: "Search",
-    title: "Pencarian siswa",
+    icon: "Users",
+    title: "Pengelolaan siswa",
     description:
-      "Cari nama secara langsung dan buka catatan siswa yang dibutuhkan.",
+      "Tambah, cari, perbarui, dan kelola data siswa sesuai kewenangan pengguna.",
   },
   {
     icon: "ArrowLeftRight",
-    title: "Pencatatan transaksi",
+    title: "Setoran dan penarikan",
     description:
-      "Catat Setoran atau Penarikan dalam Rupiah utuh melalui alur yang terfokus.",
+      "Catat dana yang masuk atau keluar dari saldo siswa melalui alur yang terarah.",
   },
   {
     icon: "Scale",
-    title: "Saldo yang dapat dijelaskan",
+    title: "Saldo terkini",
     description:
-      "Lihat saldo yang dihitung dari seluruh riwayat transaksi siswa.",
+      "Lihat saldo siswa yang disimpan dan direkonsiliasi dengan riwayat transaksi.",
   },
   {
     icon: "ListOrdered",
     title: "Riwayat transaksi",
     description:
-      "Tinjau jenis, jumlah, dan waktu transaksi dari yang terbaru.",
+      "Tinjau jenis, jumlah, waktu, keterangan, dan status transaksi secara berurutan.",
+  },
+  {
+    icon: "FileDown",
+    title: "Laporan dan ekspor",
+    description:
+      "Tinjau ringkasan dan hasilkan dokumen sesuai kebutuhan operasional serta kewenangan.",
+  },
+  {
+    icon: "History",
+    title: "Jejak audit",
+    description:
+      "Telusuri tindakan penting yang memengaruhi data keuangan atau kepemilikan.",
+  },
+  {
+    icon: "ShieldCheck",
+    title: "Akses berbasis peran",
+    description:
+      "Admin dan Operator menerima tindakan sesuai kewenangan yang ditegakkan di server.",
+  },
+  {
+    icon: "DatabaseBackup",
+    title: "Backup dan restore",
+    description:
+      "Admin membuat backup dan memulihkan backup kompatibel melalui validasi dan konfirmasi.",
+  },
+  {
+    icon: "Settings",
+    title: "Pengaturan",
+    description:
+      "Atur tema, jumlah item per halaman, keamanan akun, dan informasi aplikasi.",
   },
   {
     icon: "Smartphone",
-    title: "Akses melalui ponsel",
+    title: "Antarmuka responsif",
     description:
-      "Gunakan melalui browser di ponsel atau komputer, lalu pasang pada perangkat yang mendukung untuk akses seperti aplikasi.",
-  },
-  {
-    icon: "CircleCheckBig",
-    title: "Hasil operasi yang jelas",
-    description:
-      "Keberhasilan, kegagalan, dan kondisi koneksi ditampilkan tanpa menyamarkan hasil transaksi.",
+      "Gunakan alur utama melalui browser di ponsel maupun komputer.",
   },
 ] as const;
 
 export const trustPrinciples = [
   {
     icon: "History",
-    title: "Saldo berubah bersama transaksi",
+    title: "Jejak audit",
     description:
-      "Transaksi, saldo siswa, dan catatan audit disimpan sebagai satu perubahan yang utuh.",
-  },
-  {
-    icon: "ListChecks",
-    title: "Perubahan tetap dapat ditelusuri",
-    description:
-      "Edit, penghapusan lunak, dan pemulihan transaksi menyimpan pelaku, alasan, serta keadaan sebelum dan sesudah.",
-  },
-  {
-    icon: "ArrowLeftRight",
-    title: "Arah transaksi dinyatakan dengan jelas",
-    description:
-      "Aplikasi menjelaskan apakah dana dititipkan kepada siswa atau dikembalikan oleh siswa.",
+      "Tindakan penting menyimpan konteks perubahan dan pelaku untuk mendukung pemeriksaan.",
   },
   {
     icon: "DatabaseZap",
-    title: "Keberhasilan menunggu penyimpanan",
+    title: "Integritas data keuangan",
     description:
-      "Transaksi hanya dinyatakan berhasil setelah penyimpanan dikonfirmasi.",
+      "Transaksi dan saldo disimpan dalam satu batas konsistensi menggunakan Rupiah utuh.",
   },
   {
-    icon: "CircleAlert",
-    title: "Kegagalan tidak disamarkan",
+    icon: "ShieldCheck",
+    title: "Akses berbasis peran",
     description:
-      "Kesalahan dan hasil yang belum pasti ditampilkan secara eksplisit agar tindakan tidak diulang sebelum hasilnya diketahui.",
+      "Kewenangan Admin dan Operator diperiksa di server, bukan hanya disembunyikan dari tampilan.",
+  },
+  {
+    icon: "DatabaseBackup",
+    title: "Backup dan restore",
+    description:
+      "Restore memerlukan backup kompatibel, validasi, konfirmasi, dan proses pemeliharaan.",
+  },
+  {
+    icon: "Eye",
+    title: "Transparansi finansial",
+    description:
+      "Saldo, transaksi, laporan, dan audit memberi konteks yang dapat diperiksa sesuai kewenangan.",
   },
 ] as const;
 
@@ -152,36 +197,51 @@ export const frequentlyAskedQuestions = [
   {
     question: "Apa itu Amanah Cash?",
     answer:
-      "Amanah Cash adalah aplikasi pencatatan transaksi keuangan siswa. Aplikasi ini membantu operator sekolah mencatat Setoran, Penarikan, dan Koreksi beralasan, melihat saldo, serta menelusuri perubahan transaksi setiap siswa.",
+      "Amanah Cash adalah aplikasi pengelolaan keuangan siswa untuk membantu sekolah, pesantren, yayasan, panti asuhan, dan lembaga sejenis mencatat transaksi, memantau saldo, meninjau laporan, dan menelusuri riwayat.",
   },
   {
     question: "Siapa yang dapat menggunakan Amanah Cash?",
     answer:
-      "Amanah Cash dirancang untuk orang yang menangani pencatatan transaksi keuangan siswa, termasuk guru, wali kelas, bendahara sekolah, dan pengelola asrama.",
+      "Amanah Cash digunakan oleh pengguna yang telah disediakan pengelola sistem. Admin mengelola cakupan administratif dan pemulihan data, sedangkan Operator menjalankan pekerjaan harian sesuai siswa dan kewenangannya.",
   },
   {
     question: "Transaksi apa yang dapat dicatat?",
     answer:
-      "Amanah Cash mencatat Setoran, Penarikan, dan Koreksi beralasan yang secara jelas menambah atau mengurangi saldo. Setiap jumlah menggunakan Rupiah utuh.",
+      "Pengguna berwenang dapat mencatat Setoran, Penarikan, dan Koreksi beralasan. Jumlah menggunakan Rupiah utuh dan hasil tersimpan dapat ditinjau pada saldo serta riwayat.",
   },
   {
     question: "Bagaimana saldo siswa dihitung?",
     answer:
-      "Saldo disimpan pada data siswa dan hanya berubah bersama transaksi dalam satu operasi yang utuh. Nilainya dapat diperiksa kembali dari seluruh transaksi aktif siswa.",
+      "Saldo berubah melalui transaksi yang berhasil disimpan. Saldo tersimpan dan riwayat dipertahankan dalam batas konsistensi yang dapat direkonsiliasi; saldo tidak diedit sebagai angka bebas.",
   },
   {
-    question: "Apakah Amanah Cash dapat digunakan melalui ponsel?",
+    question: "Apakah tersedia laporan?",
     answer:
-      "Ya. Amanah Cash dirancang untuk digunakan melalui browser di ponsel maupun komputer. Pada perangkat dan browser yang mendukung, Amanah Cash juga dapat dipasang untuk akses seperti aplikasi.",
+      "Ya. Pengguna dapat meninjau laporan sesuai perannya dan menghasilkan ekspor CSV, Excel, atau PDF yang didukung. Isi tetap mengikuti kewenangan akses.",
   },
   {
-    question: "Apakah transaksi dapat dicatat saat offline?",
+    question: "Apakah setiap pengguna memiliki akses yang sama?",
     answer:
-      "Belum. Koneksi ke layanan aplikasi diperlukan untuk memuat data dan menyimpan transaksi. Amanah Cash tidak mengantrekan transaksi untuk dikirim otomatis ketika koneksi kembali.",
+      "Tidak. Admin dan Operator memiliki kewenangan berbeda. Pemeriksaan akses dilakukan di server sehingga menyembunyikan menu bukan satu-satunya batas keamanan.",
   },
   {
-    question: "Apakah transaksi dapat diedit atau dihapus?",
+    question: "Apakah perubahan transaksi dapat ditelusuri?",
     answer:
-      "Dapat. Edit, penghapusan lunak, dan pemulihan transaksi selalu memperbarui saldo secara utuh dan mencatat pelaku, alasan, serta perubahan sebelum dan sesudah. Transaksi tidak dihapus permanen.",
+      "Tindakan penting pada transaksi menyimpan jejak audit yang mendukung pemeriksaan perubahan, waktu, dan pelaku sesuai cakupan yang diterapkan.",
+  },
+  {
+    question: "Bagaimana backup dan restore bekerja?",
+    answer:
+      "Admin dapat mengunduh backup keadaan operasional. Restore hanya menerima backup kompatibel yang tervalidasi, memerlukan konfirmasi, dan berjalan dalam mode pemeliharaan.",
+  },
+  {
+    question: "Apakah Amanah Cash dapat digunakan di ponsel?",
+    answer:
+      "Ya. Antarmuka responsif digunakan melalui browser di ponsel maupun komputer. Koneksi tetap diperlukan untuk memuat data dan menyimpan perubahan keuangan.",
+  },
+  {
+    question: "Apakah Amanah Cash terhubung ke bank?",
+    answer:
+      "Tidak. MVP tidak memiliki integrasi bank atau pemrosesan pembayaran. Amanah Cash mencatat aktivitas keuangan siswa dan tidak memindahkan atau menyimpan dana sebagai layanan keuangan.",
   },
 ] as const;

@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-29
-**Current delivery state:** Sprint 5 Epic 5.1 Batch 5.1.1 complete: Core Landing Content and FAQ; Release Sprint R1 remains on hold
+**Last updated:** 2026-07-30
+**Current delivery state:** The approved premium Landing Page experience is implemented; Release Sprint R1 remains on hold
 
 ## Project Purpose
 
@@ -10,7 +10,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 ## Completed Milestones
 
 - Product architecture, ADRs, technical design, database foundation, and engineering rules.
-- Next.js application foundation, Landing Page foundation and approved core narrative/FAQ, shared design tokens, reusable UI primitives, metadata, and local Geist font.
+- Next.js application foundation, premium public Landing Page experience, shared design tokens, reusable UI primitives, metadata, and local Geist font. The page has a responsive Hero product preview, guided MVP narrative, role/report/audit/backup trust evidence, FAQ disclosure, reduced-motion-safe reveal enhancement, and no financial-service claims.
 - Google-only Auth.js authentication with registered-active-user admission and database sessions.
 - Centralized role and Student-ownership authorization with consistent route, API, and Server Action adapters.
 - Authenticated App Shell with role-aware navigation, protected route groups, loading, empty, forbidden, not-found, and error states.
@@ -247,6 +247,7 @@ feature development complete and resumes deployment qualification.
 | `docs/45-export-production-readiness-review.md` | Export buffering, pagination cost, filenames, volume limits, consistency, and Production Hardening gates |
 | `docs/46-excel-export-foundation.md` | ExcelJS adapter, workbook presentation, registry integration, guard rails, tests, and deferred presentation work |
 | `docs/47-pdf-export-foundation.md` | PDFKit adapter, pagination, document-derived layout, registry integration, guard rails, tests, and deferred presentation work |
+| `docs/48-landing-page-design-content-specification.md` | Proposed approval-gated Landing Page positioning, information architecture, final copy, visual direction, motion, accessibility, and claim governance |
 
 ## Sprint Completion Rule
 

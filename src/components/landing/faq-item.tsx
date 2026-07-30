@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { useId, useState } from "react";
 
 import styles from "./landing-content.module.css";
@@ -16,7 +16,6 @@ export function FAQItem({
   const id = useId();
   const answerId = `${id}-answer`;
   const buttonId = `${id}-button`;
-  const Indicator = isOpen ? ChevronUp : ChevronDown;
 
   return (
     <li className={styles.faqItem}>
@@ -30,17 +29,20 @@ export function FAQItem({
           type="button"
         >
           {question}
-          <Indicator aria-hidden="true" className={styles.faqIndicator} />
+          <ChevronDown aria-hidden="true" className={styles.faqIndicator} />
         </button>
       </h3>
       <div
         aria-labelledby={buttonId}
         className={styles.faqAnswer}
-        hidden={!isOpen}
+        aria-hidden={!isOpen}
         id={answerId}
         role="region"
+        data-open={isOpen}
       >
-        {answer}
+        <div className={styles.faqAnswerInner}>
+          <p>{answer}</p>
+        </div>
       </div>
     </li>
   );

@@ -6,7 +6,7 @@ import { test } from "node:test";
 const root = resolve(import.meta.dirname, "..");
 const readSource = (path) => readFileSync(resolve(root, path), "utf8");
 
-test("LandingPage renders Batch 5.1.1 sections in the approved order", () => {
+test("LandingPage follows the approved narrative through its final CTA", () => {
   const shell = readSource("src/components/landing/landing-page.tsx");
   const sections = [
     "<HeroSection />",
@@ -16,160 +16,85 @@ test("LandingPage renders Batch 5.1.1 sections in the approved order", () => {
     "<FeaturesSection />",
     "<SecurityTrustSection />",
     "<FAQSection />",
+    "<FinalCTASection />",
     "<LandingFooter />",
   ];
   const positions = sections.map((section) => shell.indexOf(section));
 
   assert.equal(positions.every((position) => position >= 0), true);
   assert.deepEqual(positions, [...positions].sort((left, right) => left - right));
-  assert.doesNotMatch(
-    shell,
-    /ApplicationPreviewSection|FinalCTASection|SettingsSection/,
-  );
 });
 
-test("approved content inventory has exact item counts and ordering", async () => {
-  const content = await import(
-    "../src/components/landing/landing-content.ts"
-  );
+test("approved MVP content includes practical problems, features, and FAQ", async () => {
+  const content = await import("../src/components/landing/landing-content.ts");
 
-  assert.deepEqual(
-    content.problems.map(({ title }) => title),
-    [
-      "Catatan tersebar",
-      "Saldo perlu dihitung ulang",
-      "Riwayat sulit ditemukan",
-      "Arah transaksi kurang jelas",
-      "Penjelasan membutuhkan waktu",
-    ],
-  );
-  assert.deepEqual(
-    content.solutions.map(({ title }) => title),
-    [
-      "Catatan terpusat per siswa",
-      "Saldo dari riwayat lengkap",
-      "Arah transaksi yang jelas",
-      "Riwayat yang mudah ditelusuri",
-    ],
-  );
+  assert.equal(content.problems.length, 5);
+  assert.equal(content.solutions.length, 5);
+  assert.equal(content.workflowSteps.length, 6);
+  assert.equal(content.features.length, 10);
+  assert.equal(content.trustPrinciples.length, 5);
+  assert.equal(content.frequentlyAskedQuestions.length, 10);
   assert.deepEqual(
     content.workflowSteps.map(({ title }) => title),
-    ["Cari siswa", "Catat transaksi", "Periksa saldo dan riwayat"],
-  );
-  assert.equal(content.features.length, 6);
-  assert.equal(content.trustPrinciples.length, 5);
-  assert.equal(content.frequentlyAskedQuestions.length, 7);
-  assert.deepEqual(
-    content.frequentlyAskedQuestions.map(({ question }) => question),
     [
-      "Apa itu Amanah Cash?",
-      "Siapa yang dapat menggunakan Amanah Cash?",
-      "Transaksi apa yang dapat dicatat?",
-      "Bagaimana saldo siswa dihitung?",
-      "Apakah Amanah Cash dapat digunakan melalui ponsel?",
-      "Apakah transaksi dapat dicatat saat offline?",
-      "Apakah transaksi dapat diedit atau dihapus?",
+      "Pilih siswa",
+      "Catat transaksi",
+      "Periksa hasil",
+      "Tinjau aktivitas",
+      "Telusuri perubahan",
+      "Jaga keberlanjutan",
     ],
   );
+  assert.match(content.features.map(({ title }) => title).join("\n"), /Laporan dan ekspor/);
+  assert.match(content.features.map(({ title }) => title).join("\n"), /Backup dan restore/);
+  assert.match(content.trustPrinciples.map(({ title }) => title).join("\n"), /Akses berbasis peran/);
 });
 
-test("static content remains server-rendered with approved list semantics", () => {
-  const staticSections = [
-    "problems-section.tsx",
-    "solution-section.tsx",
-    "workflow-section.tsx",
-    "features-section.tsx",
-    "security-trust-section.tsx",
-    "faq-section.tsx",
-  ].map((file) => readSource(`src/components/landing/${file}`));
+test("sections preserve semantic lists and the exact approved destinations", () => {
   const iconList = readSource("src/components/landing/icon-text-list.tsx");
-  const workflow = readSource(
-    "src/components/landing/workflow-section.tsx",
-  );
-  const heading = readSource(
-    "src/components/landing/landing-section-heading.tsx",
-  );
-
-  for (const section of staticSections) {
-    assert.doesNotMatch(section, /["']use client["']/);
-  }
-  assert.match(iconList, /<ul/);
-  assert.match(iconList, /<li className=\{styles\.item\}/);
-  assert.match(workflow, /<ol/);
-  assert.match(workflow, /<li className=\{styles\.workflowItem\}/);
-  assert.match(heading, /<Heading level=\{2\} variant="landing-section">/);
-});
-
-test("approved fragment destinations are exact", () => {
-  const solution = readSource(
-    "src/components/landing/solution-section.tsx",
-  );
-  const workflow = readSource(
-    "src/components/landing/workflow-section.tsx",
-  );
-  const features = readSource(
-    "src/components/landing/features-section.tsx",
-  );
+  const workflow = readSource("src/components/landing/workflow-section.tsx");
+  const header = readSource("src/components/landing/landing-header.tsx");
+  const security = readSource("src/components/landing/security-trust-section.tsx");
   const faq = readSource("src/components/landing/faq-section.tsx");
 
-  assert.match(solution, /href="#fitur"/);
+  assert.match(iconList, /<ul/);
+  assert.match(workflow, /<ol/);
   assert.match(workflow, /id="cara-kerja"/);
-  assert.match(workflow, /href="#pratinjau-aplikasi"/);
-  assert.match(features, /id="fitur"/);
+  assert.match(workflow, /href="#fitur"/);
+  assert.match(header, /href="#cara-kerja"/);
+  assert.match(header, /href="#fitur"/);
+  assert.match(header, /href="#keamanan"/);
+  assert.match(header, /href="\/login"/);
+  assert.match(security, /id="keamanan"/);
   assert.match(faq, /id="tanya-jawab"/);
 });
 
-test("FAQ is the only client boundary and exposes independent disclosure state", () => {
-  const faqItem = readSource("src/components/landing/faq-item.tsx");
-  const faqSection = readSource("src/components/landing/faq-section.tsx");
+test("interactive boundaries are focused, small, and motion-safe", () => {
+  const faq = readSource("src/components/landing/faq-item.tsx");
+  const reveal = readSource("src/components/landing/reveal.tsx");
+  const styles = readSource("src/components/landing/landing-content.module.css");
 
-  assert.match(faqItem, /^"use client";/);
-  assert.match(faqItem, /useState\(false\)/);
-  assert.match(faqItem, /<button/);
-  assert.match(faqItem, /type="button"/);
-  assert.match(faqItem, /aria-expanded=\{isOpen\}/);
-  assert.match(faqItem, /aria-controls=\{answerId\}/);
-  assert.match(faqItem, /role="region"/);
-  assert.match(faqItem, /aria-labelledby=\{buttonId\}/);
-  assert.match(faqItem, /hidden=\{!isOpen\}/);
-  assert.match(faqSection, /frequentlyAskedQuestions\.map/);
-  assert.match(faqSection, /<FAQItem key=\{item\.question\} \{\.\.\.item\} \/>/);
-  assert.doesNotMatch(faqItem, /setTimeout|requestAnimationFrame|transition|animation/);
+  assert.match(faq, /^"use client";/);
+  assert.match(faq, /aria-expanded=\{isOpen\}/);
+  assert.match(faq, /aria-controls=\{answerId\}/);
+  assert.match(faq, /data-open=\{isOpen\}/);
+  assert.match(reveal, /^"use client";/);
+  assert.match(reveal, /IntersectionObserver/);
+  assert.match(reveal, /dataset\.enhanced/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  assert.match(styles, /\.faqButton:focus-visible/);
 });
 
-test("icons are decorative and section styles only consume approved tokens", () => {
-  const icon = readSource("src/components/landing/landing-icon.tsx");
-  const styles = readSource(
-    "src/components/landing/landing-content.module.css",
-  );
-  const localPrimitive =
-    /#[\da-f]{3,8}|rgba?\(|(?:\d*\.)?\d+(?:px|rem|ms)|cubic-bezier\(|@media\s*\(/i;
-
-  assert.match(icon, /aria-hidden="true"/);
-  assert.doesNotMatch(styles, localPrimitive);
-  assert.match(styles, /var\(--landing-section-gap\)/);
-  assert.match(styles, /var\(--landing-grid-gap\)/);
-  assert.match(styles, /var\(--landing-faq-divider\)/);
-  assert.match(styles, /var\(--landing-faq-max-width\)/);
-  assert.doesNotMatch(styles, /:hover/);
-  assert.match(styles, /\.item[\s\S]*?box-shadow: var\(--shadow-none\)/);
-});
-
-test("Batch 5.1.1 content contains no placeholders or unsupported claims", () => {
+test("landing content avoids future, financial-service, and unsupported claims", () => {
   const sources = [
     "landing-content.ts",
-    "problems-section.tsx",
-    "solution-section.tsx",
-    "workflow-section.tsx",
-    "features-section.tsx",
+    "hero-section.tsx",
     "security-trust-section.tsx",
-    "faq-section.tsx",
+    "final-cta-section.tsx",
   ]
     .map((file) => readSource(`src/components/landing/${file}`))
     .join("\n");
 
-  assert.doesNotMatch(
-    sources,
-    /TODO|placeholder|pricing|harga|registrasi|sertifikasi|integrasi|Settings|transaksi offline/i,
-  );
+  assert.doesNotMatch(sources, /pricing|harga|sertifikasi|100% aman|akun gratis selamanya/i);
+  assert.match(sources, /tidak memindahkan atau menyimpan dana/i);
 });

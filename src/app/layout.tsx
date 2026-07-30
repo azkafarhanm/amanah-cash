@@ -21,13 +21,13 @@ const themeBootstrap = `
 `;
 
 export const metadata: Metadata = {
-  title: "Amanah Cash — Pencatatan Transaksi Keuangan Siswa",
+  title: "Amanah Cash — Pengelolaan Keuangan Siswa yang Lebih Jelas",
   description:
-    "Amanah Cash membantu guru dan pengelola sekolah mencatat transaksi keuangan siswa, memahami saldo, dan menelusuri riwayat transaksi dengan lebih jelas.",
+    "Amanah Cash membantu sekolah, pesantren, yayasan, dan lembaga sejenis mencatat transaksi, memantau saldo, meninjau laporan, dan menelusuri aktivitas keuangan siswa.",
   openGraph: {
-    title: "Amanah Cash — Transaksi Keuangan Siswa Lebih Jelas",
+    title: "Amanah Cash — Kelola Keuangan Siswa dengan Lebih Jelas",
     description:
-      "Catat pemasukan dan pengeluaran, lihat saldo, dan telusuri riwayat transaksi siswa melalui alur sederhana yang mudah digunakan lewat ponsel.",
+      "Satu aplikasi untuk mencatat setoran dan penarikan, memantau saldo, meninjau laporan, dan menjaga riwayat keuangan siswa tetap dapat ditelusuri.",
   },
 };
 

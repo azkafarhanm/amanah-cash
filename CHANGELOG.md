@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Landing Page — Approved Premium Experience
+
+- Implemented the Product Owner-approved Landing Page specification with a premium responsive Hero, authentic product-style visual evidence, guided narrative sections, expanded MVP feature inventory, trust evidence, final CTA, and consistent Header/Footer navigation.
+- Added lightweight progressive reveal enhancement, refined hover/press states, smoothly expanding FAQ answers, and reduced-motion fallbacks while preserving server-rendered content, keyboard navigation, visible focus, and semantic lists/landmarks.
+- Updated public metadata and landing copy to reflect the implemented MVP: reports and export, audit history, server-enforced role permissions, backup and restore, settings, responsive use, and explicit non-bank scope.
+- Added focused Landing Page regression coverage; the full suite now contains 216 passing tests.
+
 ### Sprint 5 — Epic 5.1: Core Landing Content and FAQ
 
 - Added the approved Problems, Solution, Workflow, Features, Security & Trust, and seven-question FAQ sections in the exact narrative order between the existing Hero and Footer.
