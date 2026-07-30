@@ -229,6 +229,7 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
+  --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
   --space-24: 6rem;
@@ -236,6 +237,7 @@
   --size-12: 3rem;
   --size-14: 3.5rem;
   --size-5: 1.25rem;
+  --size-8: 2rem;
   --size-content-136: 34rem;
   --size-content-160: 40rem;
   --size-content-300: 75rem;
@@ -324,6 +326,8 @@
     var(--line-height-body) var(--font-family-sans);
   --type-body: var(--font-weight-regular) var(--font-size-16) /
     var(--line-height-body) var(--font-family-sans);
+  --type-body-strong: var(--font-weight-semibold) var(--font-size-16) /
+    var(--line-height-body) var(--font-family-sans);
   --layout-gutter-mobile: var(--space-4);
   --layout-gutter-wide: var(--space-6);
   --layout-content-max: var(--size-content-160);
@@ -392,6 +396,67 @@
     var(--line-height-heading) var(--font-family-sans);
   --landing-nav-height: var(--size-14);
   --landing-nav-background: var(--landing-canvas);
+  --landing-nav-border: var(--border-width-default)
+    var(--border-style-default) var(--color-border-default);
+  --landing-hero-background: var(--landing-canvas);
+  --landing-hero-decoration: radial-gradient(
+      ellipse 80% 60% at 80% 10%,
+      rgb(49 94 125 / 14%),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 65% 75%,
+      rgb(37 99 235 / 8%),
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 20% 50%,
+      rgb(49 94 125 / 5%),
+      transparent 40%
+    );
+  --landing-hero-gap: var(--space-12);
+  --landing-hero-motion-duration: 700ms;
+  --landing-preview-motion-duration: 800ms;
+  --landing-float-duration: 4000ms;
+  --landing-preview-enter-distance: var(--space-10);
+  --landing-preview-enter-scale: 0.96;
+  --landing-float-distance: calc(var(--space-3) * -1);
+  --landing-interaction-lift: calc(var(--space-1) * -1);
+  --landing-action-min-width: 10rem;
+  --landing-cta-height: var(--size-12);
+  --landing-cta-radius: var(--shape-control);
+  --landing-cta-shadow: 0 4px 16px rgb(49 94 125 / 20%);
+  --landing-preview-stage-padding: var(--space-6);
+  --landing-preview-glow-inset: var(--space-12);
+  --landing-preview-glow: radial-gradient(
+      ellipse 70% 60% at 50% 40%,
+      rgb(49 94 125 / 18%),
+      transparent 70%
+    );
+  --landing-preview-blur: var(--space-16);
+  --landing-preview-background: var(--color-background-surface);
+  --landing-preview-border: var(--color-border-default);
+  --landing-preview-radius: var(--space-4);
+  --landing-preview-shadow: 0 8px 32px rgb(17 24 39 / 12%),
+    0 20px 60px rgb(17 24 39 / 10%);
+  --landing-preview-padding-mobile: var(--space-4);
+  --landing-trust-note-max: var(--size-content-136);
+  --landing-reveal-distance: var(--space-8);
+  --landing-reveal-duration: 500ms;
+  --landing-final-cta-background: var(--color-action-primary);
+  --landing-final-cta-foreground: var(--color-text-inverse);
+  --landing-card-gradient-border: linear-gradient(
+      135deg,
+      rgb(49 94 125 / 15%),
+      rgb(37 99 235 / 8%),
+      rgb(49 94 125 / 5%)
+    );
+  --landing-card-hover-shadow: 0 8px 24px rgb(17 24 39 / 12%),
+    0 2px 8px rgb(17 24 39 / 6%);
+  --landing-stagger-base: 80ms;
+  --landing-stagger-max: 400ms;
+  --landing-connector-color: var(--color-border-default);
+  --landing-connector-active: var(--color-action-primary);
 
   --button-primary-background: var(--color-action-primary);
   --button-primary-background-hover: var(--color-action-primary-hover);

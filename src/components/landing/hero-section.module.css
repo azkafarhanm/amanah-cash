@@ -1,18 +1,59 @@
 .section {
+  position: relative;
+  overflow: hidden;
   padding-block: var(--landing-section-padding-mobile);
-  background: var(--landing-canvas);
+  background: var(--landing-hero-background);
+}
+
+.backdrop {
+  position: absolute;
+  inset: var(--space-0);
+  background: var(--landing-hero-decoration);
+  pointer-events: none;
+}
+
+.backdropGrid {
+  position: absolute;
+  inset: var(--space-0);
+  background-image:
+    linear-gradient(rgba(49 94 125 / 3%) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(49 94 125 / 3%) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent);
+  pointer-events: none;
+}
+
+.layout {
+  position: relative;
+  display: grid;
+  align-items: center;
+  gap: var(--landing-hero-gap);
 }
 
 .content {
   display: grid;
+  justify-items: start;
   gap: var(--landing-content-gap);
   max-width: var(--landing-copy-max);
+  animation: hero-enter var(--landing-hero-motion-duration)
+    var(--motion-ease-standard) both;
 }
 
+.eyebrow,
 .title,
 .subheading,
 .supportingCopy {
   margin: var(--space-0);
+}
+
+.eyebrow {
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-action-primary);
+  background: var(--color-primary-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--radius-full);
+  font: var(--type-label);
 }
 
 .title {
@@ -29,4 +70,373 @@
 .supportingCopy {
   color: var(--color-text-secondary);
   font: var(--type-body);
+}
+
+.actions {
+  display: flex;
+  width: var(--size-full);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  padding-block-start: var(--space-2);
+}
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  min-height: var(--landing-cta-height);
+  flex: 1 1 var(--landing-action-min-width);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-5);
+  border: var(--border-width-default) var(--border-style-default);
+  border-radius: var(--landing-cta-radius);
+  font: var(--type-button);
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.primaryAction {
+  color: var(--button-primary-foreground);
+  background: var(--button-primary-background);
+  border-color: var(--button-primary-background);
+  box-shadow: var(--landing-cta-shadow);
+}
+
+.secondaryAction {
+  color: var(--button-secondary-foreground);
+  background: var(--button-secondary-background);
+  border-color: var(--button-secondary-border);
+}
+
+.primaryAction:hover,
+.secondaryAction:hover {
+  transform: translateY(var(--landing-interaction-lift));
+  box-shadow: var(--surface-shadow-raised);
+}
+
+.primaryAction:hover {
+  background: var(--button-primary-background-hover);
+  border-color: var(--button-primary-background-hover);
+}
+
+.primaryAction:active,
+.secondaryAction:active {
+  transform: translateY(var(--space-0));
+}
+
+.primaryAction:focus-visible,
+.secondaryAction:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+.primaryAction svg,
+.secondaryAction svg {
+  width: var(--size-5);
+  height: var(--size-5);
+}
+
+.previewStage {
+  position: relative;
+  min-width: var(--space-0);
+  padding: var(--landing-preview-stage-padding);
+  animation: preview-enter var(--landing-preview-motion-duration)
+    var(--motion-ease-standard) both;
+}
+
+.previewGlow {
+  position: absolute;
+  inset: var(--landing-preview-glow-inset);
+  background: var(--landing-preview-glow);
+  border-radius: var(--landing-preview-radius);
+  filter: blur(var(--landing-preview-blur));
+  opacity: 0.7;
+}
+
+.previewLayerBack {
+  position: absolute;
+  inset: var(--space-4) var(--space-8) var(--space-0) var(--space-2);
+  background: var(--color-background-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--landing-preview-radius);
+  opacity: 0.5;
+  transform: translateY(var(--space-2));
+}
+
+.previewLayerMid {
+  position: absolute;
+  inset: var(--space-2) var(--space-4) var(--space-0) var(--space-1);
+  background: var(--color-background-surface);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--landing-preview-radius);
+  opacity: 0.7;
+  transform: translateY(var(--space-1));
+}
+
+.previewWindow {
+  position: relative;
+  overflow: hidden;
+  background: var(--landing-preview-background);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--landing-preview-border);
+  border-radius: var(--landing-preview-radius);
+  box-shadow: var(--landing-preview-shadow);
+}
+
+.previewBar,
+.previewHeading,
+.previewActions,
+.activityHeader,
+.transaction,
+.trustNote {
+  display: flex;
+  align-items: center;
+}
+
+.previewBar {
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  background: var(--landing-surface-subtle);
+  border-block-end: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+}
+
+.previewBarDots {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.previewBarDot {
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-full);
+  background: var(--color-border-default);
+}
+
+.previewBarDot:first-child {
+  background: var(--color-error-foreground);
+  opacity: 0.6;
+}
+
+.previewBarDot:nth-child(2) {
+  background: var(--color-warning-foreground);
+  opacity: 0.6;
+}
+
+.previewBarDot:nth-child(3) {
+  background: var(--color-success-foreground);
+  opacity: 0.6;
+}
+
+.previewBrand {
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+
+.previewStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-success-foreground);
+  font: var(--type-supporting);
+}
+
+.previewStatus svg {
+  width: var(--size-5);
+  height: var(--size-5);
+}
+
+.previewBody {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--landing-preview-padding-mobile);
+}
+
+.previewHeading {
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.previewHeading > div {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.previewHeading strong,
+.balance strong,
+.activityHeader strong,
+.transaction strong,
+.trustNote strong {
+  color: var(--color-text-primary);
+}
+
+.previewHeading strong {
+  font: var(--type-section-title);
+}
+
+.previewHeading span,
+.balance span,
+.activityHeader span,
+.transaction small,
+.trustNote small {
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+}
+
+.previewLabel {
+  color: var(--color-action-primary) !important;
+  font: var(--type-label) !important;
+}
+
+.balance {
+  text-align: end;
+}
+
+.balance strong {
+  font: var(--type-section-title);
+}
+
+.previewActions {
+  gap: var(--space-2);
+}
+
+.previewActions span {
+  display: inline-flex;
+  min-height: var(--control-height-minimum);
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-action-primary);
+  background: var(--color-primary-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--shape-control);
+  font: var(--type-label);
+}
+
+.activityHeader {
+  justify-content: space-between;
+  padding-block-start: var(--space-2);
+}
+
+.transaction {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--landing-surface-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--shape-control);
+}
+
+.transaction > span:nth-child(2) {
+  display: grid;
+}
+
+.transactionIcon {
+  display: grid;
+  width: var(--size-8);
+  height: var(--size-8);
+  place-items: center;
+  color: var(--color-deposit-foreground);
+  background: var(--color-deposit-background);
+  border-radius: var(--radius-full);
+  font: var(--type-label);
+}
+
+.transactionIcon.withdrawal {
+  color: var(--color-withdrawal-foreground);
+  background: var(--color-withdrawal-background);
+}
+
+.trustNote {
+  position: relative;
+  width: fit-content;
+  max-width: var(--landing-trust-note-max);
+  gap: var(--space-3);
+  margin: calc(var(--space-8) * -1) auto var(--space-0);
+  padding: var(--space-3) var(--space-4);
+  background: var(--landing-preview-background);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--landing-preview-border);
+  border-radius: var(--shape-control);
+  box-shadow: var(--surface-shadow-raised);
+  animation: gentle-float var(--landing-float-duration)
+    var(--motion-ease-standard) infinite alternate;
+}
+
+.trustNote > span {
+  display: grid;
+}
+
+.trustNote svg {
+  flex: none;
+  color: var(--color-action-primary);
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: var(--opacity-0);
+    transform: translateY(var(--motion-distance-large));
+  }
+}
+
+@keyframes preview-enter {
+  from {
+    opacity: var(--opacity-0);
+    transform: translateY(var(--landing-preview-enter-distance))
+      scale(var(--landing-preview-enter-scale));
+  }
+}
+
+@keyframes gentle-float {
+  to {
+    transform: translateY(var(--landing-float-distance));
+  }
+}
+
+@keyframes dot-pulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.previewBarDot {
+  animation: dot-pulse 2s var(--motion-ease-standard) infinite;
+}
+
+.previewBarDot:nth-child(2) {
+  animation-delay: 200ms;
+}
+
+.previewBarDot:nth-child(3) {
+  animation-delay: 400ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .content,
+  .previewStage,
+  .trustNote,
+  .previewBarDot {
+    animation: none;
+  }
+
+  .primaryAction,
+  .secondaryAction {
+    transition: none;
+  }
 }
