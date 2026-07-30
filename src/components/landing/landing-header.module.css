@@ -40,6 +40,25 @@
   gap: var(--space-6);
 }
 
+.navigationOpen {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  background: var(--landing-nav-background);
+  border-block-end: var(--landing-nav-border);
+  padding: var(--space-4) var(--space-6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: color-mix(in srgb, var(--landing-nav-background) 95%, transparent);
+}
+
+.navigationOpen a {
+  width: 100%;
+  padding-block: var(--space-3);
+}
+
 .navigation a {
   position: relative;
   color: var(--color-text-secondary);
@@ -64,6 +83,12 @@
 
 .navigation a:hover::after {
   transform: scaleX(1);
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
 }
 
 .headerAction {
@@ -95,13 +120,56 @@
   box-shadow: var(--surface-shadow-raised);
 }
 
+.menuToggle {
+  display: inline-flex;
+  min-height: var(--control-height-minimum);
+  min-width: var(--control-height-minimum);
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-primary);
+  background: var(--color-transparent);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--button-radius);
+  cursor: pointer;
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.menuToggle svg {
+  width: var(--size-5);
+  height: var(--size-5);
+}
+
+.menuToggle:hover {
+  background: var(--color-primary-subtle);
+}
+
 .identity:focus-visible,
 .navigation a:focus-visible,
-.headerAction:focus-visible {
+.headerAction:focus-visible,
+.menuToggle:focus-visible {
   outline: var(--border-width-emphasis) var(--border-style-default)
     var(--focus-visible-color);
   outline-offset: var(--space-0-5);
   box-shadow: var(--focus-visible-shadow);
+}
+
+@media (min-width: 48rem) {
+  .headerAction span {
+    display: inline;
+  }
+}
+
+@media (min-width: 64rem) {
+  .menuToggle {
+    display: none;
+  }
+
+  .navigation {
+    display: flex;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -114,6 +182,7 @@
   .identity,
   .navigation a,
   .headerAction,
+  .menuToggle,
   .navigation a::after {
     transition: none;
   }

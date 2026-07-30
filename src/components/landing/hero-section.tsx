@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { ArrowDown, ArrowRight, Check, ShieldCheck } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowRight,
+  Check,
+  ChevronRight,
+  ShieldCheck,
+  TrendingUp,
+  Users,
+} from "lucide-react";
 
 import { PageContainer } from "@/components/ui";
 
@@ -29,6 +37,11 @@ function HeroPreview() {
           </span>
         </div>
         <div className={styles.previewBody}>
+          <div className={styles.previewBreadcrumb} aria-hidden="true">
+            <span>Siswa</span>
+            <ChevronRight />
+            <span className={styles.previewBreadcrumbActive}>Detail</span>
+          </div>
           <div className={styles.previewHeading}>
             <div>
               <span className={styles.previewLabel}>Detail siswa</span>
@@ -38,6 +51,26 @@ function HeroPreview() {
             <div className={styles.balance}>
               <span>Saldo terkini</span>
               <strong>Rp425.000</strong>
+            </div>
+          </div>
+          <div className={styles.previewMetrics} aria-hidden="true">
+            <div className={styles.metricCard}>
+              <span className={styles.metricIcon}>
+                <TrendingUp />
+              </span>
+              <div>
+                <small>Setoran bulan ini</small>
+                <strong>Rp350.000</strong>
+              </div>
+            </div>
+            <div className={styles.metricCard}>
+              <span className={`${styles.metricIcon} ${styles.metricIconWithdrawal}`}>
+                <Users />
+              </span>
+              <div>
+                <small>Transaksi</small>
+                <strong>12 riwayat</strong>
+              </div>
             </div>
           </div>
           <div className={styles.previewActions}>
@@ -65,6 +98,14 @@ function HeroPreview() {
               <small>Kemarin · 13.10</small>
             </span>
             <strong>−Rp25.000</strong>
+          </div>
+          <div className={styles.transaction}>
+            <span className={styles.transactionIcon}>+</span>
+            <span>
+              <strong>Setoran</strong>
+              <small>2 hari lalu · 08.15</small>
+            </span>
+            <strong>+Rp75.000</strong>
           </div>
         </div>
       </div>

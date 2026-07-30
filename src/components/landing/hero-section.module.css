@@ -260,6 +260,76 @@
   padding: var(--landing-preview-padding-mobile);
 }
 
+.previewBreadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-tertiary);
+  font: var(--type-caption);
+}
+
+.previewBreadcrumb svg {
+  width: var(--space-3);
+  height: var(--space-3);
+}
+
+.previewBreadcrumbActive {
+  color: var(--color-text-secondary);
+}
+
+.previewMetrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.metricCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--landing-surface-subtle);
+  border: var(--border-width-default) var(--border-style-default)
+    var(--color-border-default);
+  border-radius: var(--shape-control);
+}
+
+.metricCard > div {
+  display: grid;
+  gap: var(--space-0-5);
+}
+
+.metricCard small {
+  color: var(--color-text-tertiary);
+  font: var(--type-caption);
+}
+
+.metricCard strong {
+  font: var(--type-label);
+  color: var(--color-text-primary);
+}
+
+.metricIcon {
+  display: grid;
+  width: var(--size-8);
+  height: var(--size-8);
+  place-items: center;
+  color: var(--color-deposit-foreground);
+  background: var(--color-deposit-background);
+  border-radius: var(--shape-control);
+  flex-shrink: 0;
+}
+
+.metricIcon svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.metricIconWithdrawal {
+  color: var(--color-info-foreground);
+  background: var(--color-info-background);
+}
+
 .previewHeading {
   align-items: flex-start;
   justify-content: space-between;

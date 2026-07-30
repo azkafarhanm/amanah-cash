@@ -280,6 +280,7 @@
   --color-background-elevated: var(--color-neutral-0);
   --color-text-primary: var(--color-neutral-800);
   --color-text-secondary: var(--color-calm-600);
+  --color-text-tertiary: var(--color-neutral-500);
   --color-text-inverse: var(--color-neutral-0);
   --color-border-default: var(--color-calm-200);
   --color-border-strong: var(--color-calm-500);
@@ -295,6 +296,8 @@
   --color-success-background: var(--color-green-50);
   --color-warning-foreground: var(--color-amber-700);
   --color-warning-background: var(--color-amber-50);
+  --color-info-foreground: var(--color-blue-700);
+  --color-info-background: var(--color-blue-50);
   --color-deposit-foreground: var(--color-emerald-800);
   --color-deposit-background: var(--color-emerald-50);
   --color-withdrawal-foreground: var(--color-blue-700);
@@ -506,6 +509,7 @@
   --color-background-elevated: var(--color-slate-800);
   --color-text-primary: var(--color-slate-50);
   --color-text-secondary: var(--color-slate-300);
+  --color-text-tertiary: var(--color-slate-400);
   --color-text-inverse: var(--color-slate-900);
   --color-border-default: var(--color-slate-700);
   --color-border-strong: var(--color-slate-600);
@@ -521,6 +525,8 @@
   --color-success-background: var(--color-emerald-900);
   --color-warning-foreground: var(--color-amber-100);
   --color-warning-background: var(--color-slate-700);
+  --color-info-foreground: var(--color-sky-200);
+  --color-info-background: var(--color-sky-900);
   --color-deposit-foreground: var(--color-emerald-200);
   --color-deposit-background: var(--color-emerald-900);
   --color-withdrawal-foreground: var(--color-sky-200);
@@ -533,6 +539,40 @@
   --surface-shadow-raised: var(--shadow-subtle);
   --color-overlay: rgb(2 6 23 / 64%);
   --focus-visible-shadow: var(--shadow-focus-dark);
+
+  --landing-hero-decoration: radial-gradient(
+      ellipse 80% 60% at 80% 10%,
+      rgb(56 189 248 / 10%),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse 60% 50% at 65% 75%,
+      rgb(14 165 233 / 6%),
+      transparent 45%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 20% 50%,
+      rgb(56 189 248 / 4%),
+      transparent 40%
+    );
+  --landing-preview-glow: radial-gradient(
+      ellipse 70% 60% at 50% 40%,
+      rgb(56 189 248 / 12%),
+      transparent 70%
+    );
+  --landing-preview-shadow: 0 8px 32px rgb(0 0 0 / 30%),
+    0 20px 60px rgb(0 0 0 / 25%);
+  --landing-card-gradient-border: linear-gradient(
+      135deg,
+      rgb(56 189 248 / 15%),
+      rgb(14 165 233 / 8%),
+      rgb(56 189 248 / 5%)
+    );
+  --landing-card-hover-shadow: 0 8px 24px rgb(0 0 0 / 30%),
+    0 2px 8px rgb(0 0 0 / 20%);
+  --landing-cta-shadow: 0 4px 16px rgb(0 0 0 / 30%);
+  --landing-final-cta-background: var(--color-slate-800);
+  --landing-final-cta-foreground: var(--color-slate-50);
 }
 
 * {
