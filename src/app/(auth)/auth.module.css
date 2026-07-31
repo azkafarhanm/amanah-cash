@@ -227,6 +227,28 @@
   box-shadow: var(--focus-visible-shadow);
 }
 
+.returnLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
+  text-decoration: none;
+  transition: color var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.returnLink:hover {
+  color: var(--color-action-primary);
+}
+
+.returnLink:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default)
+    var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
 .loadingSpinner {
   width: var(--space-5);
   height: var(--space-5);

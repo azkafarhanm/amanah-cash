@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 
 import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
@@ -72,6 +72,10 @@ export default async function LoginPage() {
             <p>Belum memiliki akses? Hubungi administrator.</p>
           </div>
         )}
+        <Link className={styles.returnLink} href="/">
+          <ArrowLeft aria-hidden="true" size={16} />
+          Kembali ke beranda
+        </Link>
       </section>
     </main>
   );

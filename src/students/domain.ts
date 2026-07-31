@@ -53,7 +53,8 @@ const STATUSES = new Set<StudentStatus>(["ACTIVE", "INACTIVE", "ARCHIVED"]);
 function nameValue(value: unknown) {
   if (typeof value !== "string") throw new StudentManagementError("VALIDATION", "Nama lengkap wajib diisi.", 400);
   const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 1 || name.length > 100) throw new StudentManagementError("VALIDATION", "Nama harus terdiri dari 1–100 karakter.", 400);
+  if (!name) throw new StudentManagementError("VALIDATION", "Nama lengkap wajib diisi.", 400);
+  if (name.length > 100) throw new StudentManagementError("VALIDATION", "Nama lengkap maksimal 100 karakter.", 400);
   return name;
 }
 
@@ -75,9 +76,8 @@ function ownershipTransferReasonValue(value: unknown) {
     throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator wajib diisi.", 400);
   }
   const reason = value.trim();
-  if (reason.length < 1 || reason.length > 500) {
-    throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator harus terdiri dari 1–500 karakter.", 400);
-  }
+  if (!reason) throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator wajib diisi.", 400);
+  if (reason.length > 500) throw new StudentManagementError("VALIDATION", "Alasan perpindahan Operator maksimal 500 karakter.", 400);
   return reason;
 }
 
