@@ -46,9 +46,9 @@ export type OperatorRepository = {
 function nameValue(value: unknown) {
   if (typeof value !== "string") throw new OperatorManagementError("VALIDATION", "Nama lengkap wajib diisi.", 400);
   const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 2 || name.length > 100) {
-    throw new OperatorManagementError("VALIDATION", "Nama lengkap harus terdiri dari 2–100 karakter.", 400);
-  }
+  if (!name) throw new OperatorManagementError("VALIDATION", "Nama lengkap wajib diisi.", 400);
+  if (name.length < 2) throw new OperatorManagementError("VALIDATION", "Nama lengkap minimal 2 karakter.", 400);
+  if (name.length > 100) throw new OperatorManagementError("VALIDATION", "Nama lengkap maksimal 100 karakter.", 400);
   return name;
 }
 

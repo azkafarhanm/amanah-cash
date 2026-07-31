@@ -1,9 +1,14 @@
 import {
   ArrowLeftRight,
   Calculator,
+  ChartNoAxesCombined,
   CircleAlert,
   CircleCheckBig,
   DatabaseZap,
+  DatabaseBackup,
+  Eye,
+  FileClock,
+  FileDown,
   Files,
   History,
   ListChecks,
@@ -11,8 +16,11 @@ import {
   MessageCircleQuestion,
   Scale,
   Search,
+  Settings,
+  ShieldCheck,
   Smartphone,
   UserRoundCheck,
+  Users,
 } from "lucide-react";
 
 import styles from "./landing-content.module.css";
@@ -20,9 +28,14 @@ import styles from "./landing-content.module.css";
 const icons = {
   ArrowLeftRight,
   Calculator,
+  ChartNoAxesCombined,
   CircleAlert,
   CircleCheckBig,
   DatabaseZap,
+  DatabaseBackup,
+  Eye,
+  FileClock,
+  FileDown,
   Files,
   History,
   ListChecks,
@@ -30,8 +43,11 @@ const icons = {
   MessageCircleQuestion,
   Scale,
   Search,
+  Settings,
+  ShieldCheck,
   Smartphone,
   UserRoundCheck,
+  Users,
 } as const;
 
 export type LandingIconName = keyof typeof icons;

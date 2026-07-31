@@ -143,9 +143,8 @@ export function revisionValue(value: unknown): number {
 export function reasonValue(value: unknown, label = "Alasan"): string {
   if (typeof value !== "string") throw new TransactionEngineError("VALIDATION", `${label} wajib diisi.`, 400);
   const reason = value.trim();
-  if (!reason || reason.length > 500) {
-    throw new TransactionEngineError("VALIDATION", `${label} harus terdiri dari 1–500 karakter.`, 400);
-  }
+  if (!reason) throw new TransactionEngineError("VALIDATION", `${label} wajib diisi.`, 400);
+  if (reason.length > 500) throw new TransactionEngineError("VALIDATION", `${label} maksimal 500 karakter.`, 400);
   return reason;
 }
 

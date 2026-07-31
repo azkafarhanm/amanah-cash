@@ -40,47 +40,48 @@ export function buildAuthOptions(
     }
   });
   const secureCookies = new URL(environment.nextAuthUrl).protocol === "https:";
-  const providers = environment.developmentAuth
-    ? [
-        Credentials({
-          name: "Local development",
-          credentials: { email: { label: "Seeded email", type: "email" } },
-          async authorize(credentials) {
-            const email = credentials?.email?.trim().toLocaleLowerCase("en-US");
-            const allowedEmails = new Set([
-              environment.developmentAdminEmail,
-              environment.developmentOperatorEmail
-            ]);
-            if (!email || !allowedEmails.has(email)) return null;
+  const googleProvider = Google({
+    clientId: environment.googleClientId,
+    clientSecret: environment.googleClientSecret,
+    allowDangerousEmailAccountLinking: true,
+    authorization: {
+      params: {
+        scope: "openid email profile"
+      }
+    },
+    profile(profile) {
+      return {
+        id: profile.sub,
+        name: profile.name ?? null,
+        email: profile.email ? normalizeGoogleEmail(profile.email) : null,
+        image: profile.picture ?? null
+      };
+    }
+  });
+  const credentialsProvider = Credentials({
+    name: "Local development",
+    credentials: { email: { label: "Seeded email", type: "email" } },
+    async authorize(credentials) {
+      const email = credentials?.email?.trim().toLocaleLowerCase("en-US");
+      const allowedEmails = new Set([
+        environment.developmentAdminEmail,
+        environment.developmentOperatorEmail
+      ]);
+      if (!email || !allowedEmails.has(email)) return null;
 
-            const user = await prisma.user.findFirst({
-              where: { email, isActive: true, deletedAt: null },
-              select: { id: true, name: true, email: true, image: true }
-            });
-            return user ?? null;
-          }
-        })
-      ]
-    : [
-        Google({
-          clientId: environment.googleClientId,
-          clientSecret: environment.googleClientSecret,
-          allowDangerousEmailAccountLinking: true,
-          authorization: {
-            params: {
-              scope: "openid email profile"
-            }
-          },
-          profile(profile) {
-            return {
-              id: profile.sub,
-              name: profile.name ?? null,
-              email: profile.email ? normalizeGoogleEmail(profile.email) : null,
-              image: profile.picture ?? null
-            };
-          }
-        })
-      ];
+      const user = await prisma.user.findFirst({
+        where: { email, isActive: true, deletedAt: null },
+        select: { id: true, name: true, email: true, image: true }
+      });
+      return user ?? null;
+    }
+  });
+  const hasGoogleCredentials = Boolean(environment.googleClientId && environment.googleClientSecret);
+  const providers = environment.developmentAuth
+    ? hasGoogleCredentials
+      ? [credentialsProvider, googleProvider]
+      : [credentialsProvider]
+    : [googleProvider];
 
   return {
     adapter,
@@ -109,7 +110,14 @@ export function buildAuthOptions(
     providers,
     callbacks: {
       async signIn({ account, profile }) {
-        if (environment.developmentAuth) return account?.provider === "credentials";
+        if (environment.developmentAuth) {
+          if (account?.provider === "credentials") return true;
+          if (account?.provider === "google") {
+            // Fall through to Google admission logic below
+          } else {
+            return false;
+          }
+        }
         const decision = await evaluateGoogleAdmission({
           provider: account?.provider,
           profile: isVerifiedGoogleProfile(profile) ? profile : undefined,

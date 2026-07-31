@@ -4,14 +4,17 @@ import { IconTextList } from "./icon-text-list";
 import { features } from "./landing-content";
 import styles from "./landing-content.module.css";
 import { LandingSectionHeading } from "./landing-section-heading";
+import { Reveal } from "./reveal";
 
 export function FeaturesSection() {
   return (
+    <Reveal>
     <Section id="fitur" spacing="landing" surface="canvas">
       <PageContainer className={styles.sectionContent}>
         <LandingSectionHeading
-          title="Fitur inti untuk pencatatan sehari-hari"
-          description="Setiap fitur mendukung alur kerja yang singkat, jelas, dan mudah digunakan melalui ponsel."
+          eyebrow="Kemampuan yang tersedia"
+          title="Fitur untuk pekerjaan harian yang nyata"
+          description="Setiap fitur mendukung pencatatan, peninjauan, pengendalian akses, atau keberlanjutan operasional."
         />
         <IconTextList
           className="tablet:grid-cols-2 desktop:grid-cols-3"
@@ -19,5 +22,6 @@ export function FeaturesSection() {
         />
       </PageContainer>
     </Section>
+    </Reveal>
   );
 }

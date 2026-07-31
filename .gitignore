@@ -6,6 +6,7 @@ out/
 coverage/
 .env*
 !.env.example
+!.env.local.example
 *.tsbuildinfo
 next-env.d.ts
 src/generated/prisma/

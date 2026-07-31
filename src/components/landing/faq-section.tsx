@@ -4,16 +4,19 @@ import { FAQItem } from "./faq-item";
 import { frequentlyAskedQuestions } from "./landing-content";
 import styles from "./landing-content.module.css";
 import { LandingSectionHeading } from "./landing-section-heading";
+import { Reveal } from "./reveal";
 
 export function FAQSection() {
   return (
+    <Reveal>
     <Section id="tanya-jawab" spacing="landing" surface="canvas">
       <PageContainer
         className={`${styles.sectionContent} ${styles.faqContent}`}
       >
         <LandingSectionHeading
           title="Pertanyaan yang sering diajukan"
-          description="Jawaban singkat tentang cara kerja dan cakupan Amanah Cash saat ini."
+          eyebrow="Sebelum mulai"
+          description="Jawaban singkat tentang penggunaan, akses, pencatatan, laporan, dan pemulihan data."
         />
         <ul className={styles.faqList}>
           {frequentlyAskedQuestions.map((item) => (
@@ -22,5 +25,6 @@ export function FAQSection() {
         </ul>
       </PageContainer>
     </Section>
+    </Reveal>
   );
 }

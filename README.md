@@ -78,6 +78,7 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Wireframes](docs/06-wireframe.md) | Structured UI specification |
 | [Database Design](docs/07-database-design.md) | Schema and integrity |
 | [System Architecture](docs/08-system-architecture.md) | Technical responsibilities |
+| [Landing Page Design & Content Specification](docs/48-landing-page-design-content-specification.md) | Proposed approval-gated public product narrative and experience specification |
 | [Development Roadmap](docs/09-development-roadmap.md) | Executable feature and release sequence |
 | [MVP Settings Specification](docs/21-mvp-settings-specification.md) | Approved appearance, preferences, Backup/Restore, Security, About, roles, states, and exclusions |
 | [Settings UI/UX Review Decision](docs/50-settings-ui-ux-review-proposal.md) | Approved decision record for the Light/Dark direction, restrained navigation motion, and lean MVP Settings scope |
@@ -150,6 +151,66 @@ diagnostic evidence, remaining blockers, and Manual QA.
 | `DEV_SEED_ADMIN_EMAIL` | Development seed; local auth | Platform Admin seed email and local-auth allowlist entry. |
 | `DEV_SEED_OPERATOR_EMAIL` | Development seed; local auth | Operator seed email and local-auth allowlist entry. |
 | `DEV_SEED_STUDENT_NAME` | Development seed | Seeded Student name. |
+
+### Authentication Modes
+
+#### Development (Default)
+
+Uses local seeded accounts. No Google OAuth setup required.
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/login`. Two buttons appear:
+
+- **Masuk sebagai admin@amanah-cash.example** — Platform Admin
+- **Masuk sebagai operator@amanah-cash.example** — Operator
+
+#### Google OAuth Testing
+
+Create `.env.local` from `.env.local.example`:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Fill in:
+
+| Variable | Source |
+|----------|--------|
+| `GOOGLE_CLIENT_ID` | Google Cloud Console → APIs & Services → Credentials |
+| `GOOGLE_CLIENT_SECRET` | Same as above |
+| `NEXTAUTH_SECRET` | Generate: `openssl rand -base64 32` |
+
+Restart the dev server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/login`. The "Lanjutkan dengan Google" button appears.
+
+The Google account email must match an active, pre-provisioned user in the database. Create one via `npm run db:seed` or the Admin Operator management screen.
+
+#### Switching Between Modes
+
+```bash
+# Development mode (default)
+rm -f .env.local && npm run dev
+
+# Google OAuth mode
+# (ensure .env.local exists with real credentials)
+npm run dev
+```
+
+#### Verify Current Mode
+
+```bash
+npm run env:check
+```
+
+Output shows `authentication: local development` or `authentication: Google OAuth`.
 
 ### Google OAuth setup
 

@@ -1,4 +1,5 @@
 import { FAQSection } from "./faq-section";
+import { FinalCTASection } from "./final-cta-section";
 import { FeaturesSection } from "./features-section";
 import { HeroSection } from "./hero-section";
 import { LandingFooter } from "./landing-footer";
@@ -22,6 +23,7 @@ export function LandingPage() {
         <FeaturesSection />
         <SecurityTrustSection />
         <FAQSection />
+        <FinalCTASection />
       </main>
       <LandingFooter />
     </>

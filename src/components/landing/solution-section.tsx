@@ -6,14 +6,17 @@ import { IconTextList } from "./icon-text-list";
 import { solutions } from "./landing-content";
 import styles from "./landing-content.module.css";
 import { LandingSectionHeading } from "./landing-section-heading";
+import { Reveal } from "./reveal";
 
 export function SolutionSection() {
   return (
+    <Reveal>
     <Section spacing="landing" surface="canvas">
       <PageContainer className={styles.sectionContent}>
         <LandingSectionHeading
-          title="Satu alur yang lebih mudah dipahami"
-          description="Amanah Cash menyatukan pencatatan, saldo, dan riwayat transaksi agar aktivitas keuangan setiap siswa lebih mudah ditinjau."
+          eyebrow="Solusi yang praktis"
+          title="Satu alur untuk mencatat, memeriksa, dan mempertanggungjawabkan"
+          description="Data siswa, transaksi, saldo, laporan, dan riwayat perubahan tersedia dalam konteks yang saling terhubung."
         />
         <IconTextList
           className="desktop:grid-cols-2"
@@ -28,5 +31,6 @@ export function SolutionSection() {
         </Link>
       </PageContainer>
     </Section>
+    </Reveal>
   );
 }

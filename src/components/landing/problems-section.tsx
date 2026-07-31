@@ -4,16 +4,19 @@ import { IconTextList } from "./icon-text-list";
 import { problems } from "./landing-content";
 import styles from "./landing-content.module.css";
 import { LandingSectionHeading } from "./landing-section-heading";
+import { Reveal } from "./reveal";
 
 export function ProblemsSection() {
   return (
+    <Reveal>
     <Section spacing="landing" surface="subtle">
       <PageContainer
         className={`${styles.sectionContent} desktop:grid-cols-2`}
       >
         <LandingSectionHeading
-          title="Pencatatan keuangan siswa seharusnya tidak merepotkan"
-          description="Ketika catatan tersebar dan saldo harus dihitung ulang, aktivitas sederhana dapat menyita waktu lebih banyak dari yang seharusnya."
+          eyebrow="Masalah yang nyata"
+          title="Pencatatan manual membuat informasi sulit diikuti"
+          description="Ketika transaksi tersebar di buku, pesan, atau lembar kerja, saldo dan riwayat siswa membutuhkan lebih banyak waktu untuk diperiksa."
         />
         <IconTextList
           className="tablet:grid-cols-2 desktop:grid-cols-1"
@@ -21,5 +24,6 @@ export function ProblemsSection() {
         />
       </PageContainer>
     </Section>
+    </Reveal>
   );
 }
