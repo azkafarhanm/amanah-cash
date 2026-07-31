@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 import {
@@ -28,11 +28,21 @@ function readStoredTheme(): ThemePreference {
   return "SYSTEM";
 }
 
+function subscribeToTheme(onStoreChange: () => void) {
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  return () => window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+}
+
 export function LandingThemeToggle() {
-  const [active, setActive] = useState<ThemePreference>(readStoredTheme);
+  // The server snapshot makes the hydration render deterministic; the stored
+  // browser preference is read immediately after hydration.
+  const active = useSyncExternalStore(
+    subscribeToTheme,
+    readStoredTheme,
+    () => "SYSTEM"
+  );
 
   const handleToggle = useCallback((theme: ThemePreference) => {
-    setActive(theme);
     applyThemeToDocument(theme);
     window.dispatchEvent(
       new CustomEvent(THEME_CHANGE_EVENT, { detail: theme })

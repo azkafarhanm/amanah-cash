@@ -499,6 +499,49 @@
   --skeleton-last-line-width: 68%;
   --error-state-max-width: 32rem;
   --error-icon-size: var(--size-12);
+
+  /* Dashboard design tokens */
+  --glass-background: rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.40);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.50) 0%, rgba(255, 255, 255, 0.00) 100%);
+  --glass-blur: 16px;
+  --glass-saturate: 1.8;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --glass-radius: var(--radius-lg);
+
+  --kpi-card-padding: var(--space-5);
+  --kpi-card-radius: var(--radius-lg);
+  --kpi-card-gap: var(--space-3);
+  --kpi-icon-size: 40px;
+  --kpi-sparkline-height: 40px;
+
+  --chart-height: 280px;
+  --chart-radius: var(--radius-lg);
+  --chart-padding: var(--space-5);
+  --chart-grid-color: var(--color-border-default);
+  --chart-label-color: var(--color-text-secondary);
+  --chart-tooltip-background: var(--color-background-elevated);
+  --chart-tooltip-border: var(--color-border-default);
+  --chart-tooltip-radius: var(--radius-md);
+  --chart-tooltip-padding: var(--space-3);
+
+  --deposit-color: var(--color-deposit-foreground);
+  --deposit-surface: var(--color-deposit-background);
+  --withdrawal-color: var(--color-withdrawal-foreground);
+  --withdrawal-surface: var(--color-withdrawal-background);
+
+  --insight-card-padding: var(--space-4);
+  --insight-card-radius: var(--radius-lg);
+  --insight-card-gap: var(--space-3);
+  --insight-accent-width: 4px;
+
+  --activity-item-padding: var(--space-3);
+  --activity-item-gap: var(--space-3);
+  --activity-icon-size: 20px;
+
+  --quick-action-padding: var(--space-4);
+  --quick-action-radius: var(--radius-md);
+  --quick-action-gap: var(--space-3);
 }
 
 :root[data-theme="dark"] {
@@ -571,6 +614,18 @@
   --landing-card-hover-shadow: 0 8px 24px rgb(0 0 0 / 30%),
     0 2px 8px rgb(0 0 0 / 20%);
   --landing-cta-shadow: 0 4px 16px rgb(0 0 0 / 30%);
+
+  /* Dark theme glass tokens */
+  --glass-background: rgba(15, 22, 41, 0.72);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.00) 100%);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  --chart-grid-color: var(--color-border-default);
+  --chart-label-color: var(--color-text-secondary);
+  --chart-tooltip-background: var(--color-background-elevated);
+  --chart-tooltip-border: var(--color-border-default);
   --landing-final-cta-background: var(--color-slate-800);
   --landing-final-cta-foreground: var(--color-slate-50);
 }
