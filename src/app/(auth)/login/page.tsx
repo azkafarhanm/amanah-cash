@@ -1,8 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
+
 import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import { LoginButton } from "@/components/auth/login-button";
+
+import styles from "../auth.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -17,23 +21,56 @@ export default async function LoginPage() {
   }
   if (session) redirect("/app");
 
+  const hasGoogleCredentials = Boolean(
+    environment.googleClientId && environment.googleClientSecret
+  );
+
   return (
-    <main className="authPage">
-      <section className="authCard" aria-labelledby="login-title">
-        <Link href="/" className="authBrand">Amanah Cash</Link>
-        <h1 id="login-title">Masuk</h1>
-        <p>
-          {environment.developmentAuth
-            ? "Mode autentikasi lokal aktif. Pilih akun pengembangan yang telah di-seed."
-            : "Gunakan akun Google yang telah didaftarkan oleh Administrator Platform."}
-        </p>
-        {environment.developmentAuth ? (
-          <div className="authActions">
-            <LoginButton provider="credentials" email={environment.developmentAdminEmail!} />
-            <LoginButton provider="credentials" email={environment.developmentOperatorEmail!} />
+    <main className={styles.page}>
+      <div aria-hidden="true" className={styles.pageDecoration} />
+      <section className={styles.card} aria-labelledby="login-title">
+        <div className={styles.cardHeader}>
+          <Link className={styles.brand} href="/">
+            <ShieldCheck aria-hidden="true" className={styles.brandIcon} />
+            Amanah Cash
+          </Link>
+          <h1 className={styles.title} id="login-title">
+            Masuk
+          </h1>
+          <p className={styles.description}>
+            {environment.developmentAuth
+              ? "Mode pengembangan aktif."
+              : "Masuk menggunakan akun Google yang telah didaftarkan oleh administrator."}
+          </p>
+        </div>
+        <hr className={styles.divider} />
+        {environment.developmentAuth && (
+          <>
+            <div className={styles.devSection}>
+              <p className={styles.devLabel}>Akun pengembangan</p>
+              <div className={styles.actions}>
+                <LoginButton
+                  provider="credentials"
+                  email={environment.developmentAdminEmail!}
+                />
+                <LoginButton
+                  provider="credentials"
+                  email={environment.developmentOperatorEmail!}
+                />
+              </div>
+            </div>
+            {hasGoogleCredentials && <hr className={styles.divider} />}
+          </>
+        )}
+        {(!environment.developmentAuth || hasGoogleCredentials) && (
+          <div className={styles.actions}>
+            <LoginButton />
           </div>
-        ) : (
-          <LoginButton />
+        )}
+        {!environment.developmentAuth && (
+          <div className={styles.helpText}>
+            <p>Belum memiliki akses? Hubungi administrator.</p>
+          </div>
         )}
       </section>
     </main>

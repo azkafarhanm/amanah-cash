@@ -12,6 +12,8 @@
     "lint": "eslint .",
     "env:check": "tsx scripts/check-environment.ts",
     "env:check:production": "tsx scripts/check-environment.ts --production",
+    "auth:dev": "rm -f .env.local && echo 'Switched to development mode (AUTH_DEV_MODE=true). Restart: npm run dev'",
+    "auth:google": "test -f .env.local && echo 'Google OAuth mode active (.env.local exists). Restart: npm run dev' || echo 'Create .env.local first: cp .env.local.example .env.local'",
     "db:migrate": "tsx scripts/migrate-database.ts",
     "db:seed": "prisma generate && tsx scripts/seed-development.ts",
     "db:setup": "npm run env:check && npm run db:migrate && npm run db:seed",

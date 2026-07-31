@@ -152,6 +152,66 @@ diagnostic evidence, remaining blockers, and Manual QA.
 | `DEV_SEED_OPERATOR_EMAIL` | Development seed; local auth | Operator seed email and local-auth allowlist entry. |
 | `DEV_SEED_STUDENT_NAME` | Development seed | Seeded Student name. |
 
+### Authentication Modes
+
+#### Development (Default)
+
+Uses local seeded accounts. No Google OAuth setup required.
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/login`. Two buttons appear:
+
+- **Masuk sebagai admin@amanah-cash.example** — Platform Admin
+- **Masuk sebagai operator@amanah-cash.example** — Operator
+
+#### Google OAuth Testing
+
+Create `.env.local` from `.env.local.example`:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Fill in:
+
+| Variable | Source |
+|----------|--------|
+| `GOOGLE_CLIENT_ID` | Google Cloud Console → APIs & Services → Credentials |
+| `GOOGLE_CLIENT_SECRET` | Same as above |
+| `NEXTAUTH_SECRET` | Generate: `openssl rand -base64 32` |
+
+Restart the dev server:
+
+```bash
+npm run dev
+```
+
+Open `http://localhost:3000/login`. The "Lanjutkan dengan Google" button appears.
+
+The Google account email must match an active, pre-provisioned user in the database. Create one via `npm run db:seed` or the Admin Operator management screen.
+
+#### Switching Between Modes
+
+```bash
+# Development mode (default)
+rm -f .env.local && npm run dev
+
+# Google OAuth mode
+# (ensure .env.local exists with real credentials)
+npm run dev
+```
+
+#### Verify Current Mode
+
+```bash
+npm run env:check
+```
+
+Output shows `authentication: local development` or `authentication: Google OAuth`.
+
 ### Google OAuth setup
 
 To test the production authentication path locally:
