@@ -1,9 +1,9 @@
 # Amanah Cash — Executable Engineering Roadmap
 
-**Version:** 3.2
+**Version:** 4.0
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-30
+**Last Updated:** 2026-07-31
 
 ---
 
@@ -51,12 +51,14 @@ Allowed Status values:
 
 ## 3. Current Progress
 
-The repository is complete through Sprint 4. The implemented
+The repository is complete through Sprint 6. The implemented
 system includes the application foundation, authentication and authorization,
 Operator and Student management, the complete Transaction lifecycle, persisted
 Balance and immutable audit, dashboards, reports, bounded CSV/Excel/PDF export,
-the Transaction Workspace, reconciliation, the Financial Audit Timeline, and
-the read-only Audit Detail Drawer. Admin Student and Operator create/edit forms
+the Transaction Workspace, reconciliation, the Financial Audit Timeline, the
+read-only Audit Detail Drawer, and the complete MVP Settings module (theme,
+page-size preferences, admin-only backup/restore, Google security handoff,
+version, and sanitized changelog). Admin Student and Operator create/edit forms
 also preserve submitted values and expose accessible inline server-validation
 recovery.
 
@@ -67,23 +69,29 @@ The release recommendation remains `READY WITH MINOR LIMITATIONS`. Deployment
 qualification is not part of the current MVP feature-development phase and is
 held in Release Sprint R1.
 
-The remaining approved MVP application feature is completion of the public
-Landing Page defined by `docs/22-landing-page-strategy.md` through
-`docs/25-landing-page-implementation-plan.md`. The public route now provides its
-delivery foundation, Header, Hero, Problems, Solution, Workflow, Features,
-Security & Trust, FAQ, and Footer. Application Preview, Final CTA, responsive
-integration, motion, accessibility integration, and deployment-independent
-publication QA remain unfinished. Sprints 7–8 complete that application feature
-without starting deployment qualification.
+Sprint 6 (MVP Settings) is complete. All five Settings groups — Appearance
+(Light/Dark/System theme), Preferences (10/20/50 page size), Data (admin-only
+backup/restore), Security (Google handoff), and About (version/changelog) — are
+implemented, persisted per provisioned user, and covered by automated tests.
 
-Settings is now an approved remaining MVP feature governed by
-`docs/21-mvp-settings-specification.md`. It is Sprint 6, precedes the remaining
-blocked Landing Page work, and replaces the Admin and Operator placeholders with
-focused Appearance, daily Preferences, Admin-only Data recovery, Security
-handoff, and About capabilities. Centralized cross-Student Transactions,
-Reports, reconciliation presentation, and financial audit presentation are
-already implemented; stale placeholder-era statements must not cause duplicate
-work.
+Phase 1 (Functional MVP, Sprints 0–6) is complete. Phase 2 (Product Quality)
+begins with Sprint 7 — Design System Polish. The Design System Foundation
+(`docs/51-design-system-foundation-v2.md`) is the visual reference. No new
+business features are added in Phase 2. The remaining Landing Page visual
+evidence work (authentic screenshots, brand identity) is folded into Sprint 7
+and remains blocked by Product Owner decisions. Release qualification remains
+in the Release Phase (Sprint R1) and is `ON HOLD` until the Product Owner
+declares "MVP Quality Complete" based on the Sprint 8 completion report.
+
+
+## Phase 1 — Functional MVP
+
+Sprints 0–6 delivered the complete functional MVP: application foundation,
+authentication, authorization, Operator and Student management, the Transaction
+Engine, persisted Balance and immutable audit, dashboards, reports, bounded
+export, the Transaction Workspace, reconciliation, the Financial Audit Timeline,
+the Audit Detail Drawer, the Landing Page core narrative, and the complete MVP
+Settings module. No new business features are added after Phase 1.
 
 ## 4. Sprint 0 — Product and Application Foundation
 
@@ -790,14 +798,14 @@ roadmap only until the Batch completion synchronization step.
 recovery, security-handoff, and product-transparency module before MVP feature
 completion.
 
-**Status:** `READY FOR IMPLEMENTATION`
+**Status:** `COMPLETE`
 
 ### Epic 6.1 — Appearance and Daily Preferences
 
 **Objective:** Deliver per-user theme and default-page-size preferences through
 the authenticated role-aware Settings screens.
 
-**Status:** `READY FOR IMPLEMENTATION`
+**Status:** `COMPLETE`
 
 #### Batch 6.1.1 — Theme and Page-Size Preferences
 
@@ -825,16 +833,36 @@ focused accessibility and regression tests.
 - Delete-confirmation behavior is not configurable; financial, administrative,
   and domain safeguards remain mandatory.
 
-**Status:** `REQUIRES ALIGNMENT` — the 2026-07-30 final Settings design removes
-Time theme and delete-confirmation customization; implementation has not yet
-been authorized.
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-07-31):**
+
+- `src/settings/theme.ts` defines `THEME_PREFERENCES = ["LIGHT", "DARK", "SYSTEM"]`
+  with `DEFAULT_THEME_PREFERENCE = "SYSTEM"`; `src/settings/preferences.ts` defines
+  `PAGE_SIZE_OPTIONS = [10, 20, 50]` with `DEFAULT_PAGE_SIZE = 20`.
+- Per-user persistence via `settingsPreference` Prisma model; `src/settings/service.ts`
+  reads/writes theme and page-size; `src/settings/actions.ts` guards with
+  `authorizeServerAction({ role: "authenticated" })`.
+- `src/components/settings/theme-settings.tsx` renders a three-option radio group
+  (Light/Dark/System) with optimistic update and `aria-live` feedback.
+- `src/components/settings/preferences-settings.tsx` renders a native select with
+  10/20/50 options and reserved-geometry saving feedback.
+- Dark theme uses the complete approved semantic palette in `src/app/globals.css`
+  (`:root[data-theme="dark"]` block), verified by `test/theme-polish.test.ts`.
+- No Time theme option or delete-confirmation preference exists; confirmed by
+  `test/settings-preferences.test.ts`.
+- Theme bootstrap script (`src/components/settings/theme-bootstrap-script.tsx`)
+  prevents flash-of-wrong-theme on SSR.
+- `test/theme-settings.test.ts`, `test/theme-polish.test.ts`,
+  `test/settings-preferences.test.ts`, and `test/settings-data.test.ts` pass
+  within the 216-test suite.
 
 ### Epic 6.2 — Data Continuity
 
 **Objective:** Give Platform Admin a bounded, privacy-preserving manual Backup
 and whole-state Restore workflow.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
 
 #### Batch 6.2.1 — Operational Backup
 
@@ -859,10 +887,24 @@ recovery tests.
 - Admin presentation cannot browse decoded financial payload and makes no
   unsupported encryption claim.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
 
-**Blocker:** Batch 6.1.1 establishes the Settings and preference persistence
-foundation required by the Data group.
+**Completion evidence (2026-07-31):**
+
+- `src/settings/backup.ts` implements `createBackupArtifact()` using
+  `better-sqlite3` `.backup()` for a database-consistent snapshot; `sanitizeSnapshot`
+  clears sessions and nulls OAuth tokens before artifact creation.
+- `src/app/api/admin/settings/backup/route.ts` guards with
+  `withAuthorization({ role: "admin" })`; Operator settings page omits the Data
+  group (asserted in `test/settings-data.test.ts`).
+- `inspectBackupArtifact()` returns only `BackupMetadata` (format version, source
+  version, schema version, creation timestamp, integrity digest) — no financial
+  payload browsing.
+- `recordMaintenanceEvent` stores actor/operation/outcome/metadata only — no
+  Transaction rows, Balances, or secrets.
+- Migration `012_maintenance_audit.sql` creates the maintenance audit table.
+- `test/settings-data.test.ts` covers admin-only access, artifact structure,
+  and round-trip backup/restore.
 
 #### Batch 6.2.2 — Validated Atomic Restore
 
@@ -887,17 +929,32 @@ maintenance audit, recovery tests.
 - Partial merge, backup browsing, scheduled/cloud backup, and secret restoration
   remain absent.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
 
-**Blocker:** The approved Backup artifact and maintenance boundary from Batch
-6.2.1 must exist first.
+**Completion evidence (2026-07-31):**
+
+- `src/settings/backup.ts` `restoreBackupArtifact()` validates format
+  (`parseEnvelope`), version (`FORMAT_VERSION`), integrity (`integrity_check`
+  pragma), schema (`SCHEMA_VERSION` comparison), referential integrity
+  (`foreign_key_check` pragma), and Balance reconciliation (SUM-by-direction vs
+  `students.balance`).
+- Pre-restore safety backup created via `current.backup(safetyPath)` +
+  `verifySnapshot(safetyPath)` before any replacement.
+- Atomic replacement via `rename(candidatePath, targetPath)` after
+  `disconnectPrismaClient()`; on error, safety backup retained and candidate
+  cleaned.
+- `src/components/settings/data-settings.tsx` requires `window.confirm` before
+  restore; on success, client calls `signOut({ callbackUrl: "/login" })`.
+- `src/app/api/admin/settings/restore/route.ts` returns `{ sessionEnded: true }`.
+- No partial merge, browsing, scheduler, cloud, or secret-restore code exists.
+- `test/settings-data.test.ts` covers round-trip restore.
 
 ### Epic 6.3 — Security and About
 
 **Objective:** Complete Settings with a truthful Google security handoff,
 application Version, and sanitized Changelog.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
 
 #### Batch 6.3.1 — Google Password Handoff, Version, and Changelog
 
@@ -923,165 +980,479 @@ content tests.
 - Settings completes the responsive, loading, saving, failure, keyboard, focus,
   announcement, and role-authorization contracts in the approved specification.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
 
-**Blocker:** Batches 6.1.1, 6.2.1, and 6.2.2 must complete before final Settings
-integration and acceptance.
+**Completion evidence (2026-07-31):**
 
-## 11. Sprint 7 — Landing Page Product Evidence and Conversion
+- `src/components/settings/security-about-settings.tsx` renders the Google
+  Security handoff (`href="https://myaccount.google.com/security"`,
+  `target="_blank"`, `rel="noreferrer"`) with truthful "tidak menyimpan atau
+  mengubah kata sandi" copy.
+- `src/settings/about.ts` reads `APPLICATION_VERSION` from `package.json`
+  metadata (one build-time source); rendered read-only.
+- `src/app/(app)/changelog/page.tsx` renders the sanitized changelog route;
+  `releasedChangelog()` skips `## [Unreleased]` and only emits released version
+  sections, newest first.
+- All Settings groups use `aria-live="polite"` / `role="alert"` / `role="status"`
+  for feedback; `useId` associates labels with controls; role-gated page
+  composition (Admin gets Data, Operator does not).
+- No update checker, telemetry, feedback form, support portal, or promotional
+  content exists.
 
-**Sprint Goal:** Complete authentic application evidence and approved public
-entry actions without inventing assets, destinations, or product claims.
+## Phase 2 — Product Quality
 
-**Status:** `BLOCKED`
+Phase 2 improves visual quality, consistency, responsiveness, motion, and
+assurance without adding business features, changing workflows, or expanding
+MVP scope. Every batch preserves existing functionality, domain rules,
+authorization boundaries, and financial integrity. The Design System Foundation
+(`docs/51-design-system-foundation-v2.md`), Dashboard Analytics Specification
+(`docs/52-dashboard-analytics-specification.md`), and Students Management
+Specification (`docs/53-students-management-specification.md`) are the visual
+references for Phase 2 work.
 
-### Epic 7.1 — Application Preview and Final Actions
+## 11. Sprint 7 — Design System Polish
 
-**Objective:** Add the approved Application Preview, Hero evidence, Final CTA,
-and verified Footer destinations using real implemented-product captures.
+**Sprint Goal:** Improve visual quality and consistency across every surface
+while preserving all existing functionality, business logic, and authorization
+boundaries.
 
-**Status:** `BLOCKED`
+**Status:** `READY FOR IMPLEMENTATION`
 
-#### Batch 7.1.1 — Authentic Screenshots and Application Preview
+### Epic 7.1 — Visual Identity
 
-**Objective:** Capture and present the approved Student List, Student Detail,
-and Transaction Entry evidence from one reconciled synthetic dataset.
+**Objective:** Refine the color system, surface hierarchy, borders, shadows, and
+radii so the visual foundation is consistent, accessible, and premium across
+light and dark themes.
 
-**Dependencies:** Batches 5.1.1 and 6.3.1 complete; Product Owner approval of the
-exact synthetic dataset, screenshot capture viewport, final screenshot assets,
-and redaction/provenance record.
+**Status:** `READY FOR IMPLEMENTATION`
 
-**Affected modules:** Landing Page Hero and Application Preview components,
-approved image assets and responsive derivatives, focused visual/content tests.
+#### Batch 7.1.1 — Design Token Alignment
+
+**Objective:** Align the implemented CSS custom properties and component styles
+with the Design System Foundation (`docs/51-design-system-foundation-v2.md`).
+Refine semantic color mappings, surface hierarchy steps, border weights, shadow
+levels, and radius consistency for both light and dark themes without changing
+component behavior, business logic, or workflow structure.
+
+**Dependencies:** Phase 1 complete (Sprints 0–6); Design System Foundation
+document approved.
+
+**Affected modules:** `src/app/globals.css`, component CSS modules across
+`src/components/`, focused visual-regression and token-consistency tests.
 
 **Acceptance Criteria:**
 
-- Screenshot A, B, and C show exactly the approved screens, modes, and states
-  from the implemented application.
-- Synthetic Student Balance reconciles with the complete synthetic Transaction
-  history and contains no real personal or financial data.
+- Semantic color tokens map cleanly to the approved primitive palette for both
+  light and dark themes with no hardcoded color values in component CSS.
+- Surface hierarchy (canvas, surface, elevated, subtle, glass) is visually
+  distinct through tonal steps and borders in both themes.
+- Border weights, shadow levels, and radii are consistent within each component
+  category (controls, containers, overlays).
+- Deposit, Withdrawal, Correction, Success, Warning, and Error semantic colors
+  are consistent across every surface that uses them.
+- Dark theme uses independently designed semantic values, never CSS inversion,
+  filters, or opacity tricks.
+- Glass treatment is applied only to approved accent surfaces (hero KPI cards,
+  dialogs, login) and absent from tables, forms, and lists.
+- Financial values remain flat, bordered, and visually stable; no glass or
+  animated surface touches financial data.
+- All existing tests pass; no business logic, authorization, or domain behavior
+  changes.
+
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-07-31):**
+
+- Added missing primitive tokens from `docs/51` to `src/app/globals.css`:
+  `--radius-sm` (4px), `--radius-xl` (16px), `--radius-2xl` (20px), `--space-1-5`
+  (6px), `--space-20` (80px), `--size-4`/`--size-6`/`--size-10`,
+  `--font-size-12`/`--font-size-20`/`--font-size-28`, full `--line-height-*`
+  scale, `--shadow-xs` through `--shadow-xl`, `--shadow-focus-error`,
+  `--motion-duration-instant`/`--motion-duration-deliberate`/`--motion-duration-slow`,
+  `--motion-ease-in`/`--motion-ease-out`, `--motion-distance-small`/`--motion-distance-medium`,
+  `--z-base`/`--z-sticky`/`--z-dropdown`/`--z-popover`/`--z-tooltip`/`--z-toast`/`--z-loading`,
+  `--opacity-40`/`--opacity-60`/`--opacity-80`/`--opacity-96`.
+- Added typography semantic tokens: `--type-body-small`, `--type-caption`,
+  `--type-overline`, `--type-h1` through `--type-h6`, `--type-money`,
+  `--type-balance`.
+- Added `--shape-overlay` semantic token.
+- Existing `--shadow-subtle`/`--shadow-raised`/`--shadow-large` aliased to new
+  scale for backward compatibility.
+- Dark-theme shadow overrides use reduced opacity and larger blur radii.
+- Replaced hardcoded `0.15s ease` transitions in `dashboard.module.css` with
+  `var(--motion-duration-fast) var(--motion-ease-standard)`.
+- Replaced hardcoded `500ms`/`600ms` animations in `auth.module.css` with
+  `var(--motion-duration-slow)`/`var(--motion-duration-loading)`.
+- Replaced hardcoded `200ms`/`400ms` animation delays in `hero-section.module.css`
+  with `var(--motion-duration-panel)` and `calc()`.
+- Replaced hardcoded `blur(12px)` in `landing-header.module.css` with
+  `var(--glass-blur)`.
+- Replaced hardcoded `rgb()` decorative values with `color-mix()` referencing
+  `var(--color-action-primary)`.
+- Replaced hardcoded `32px`/`20px`/`11px` in `dashboard-v2.module.css` with
+  `var(--size-8)`/`var(--size-5)`/`var(--font-size-12)`.
+- No hardcoded transition durations, animation durations, or blur values remain
+  in component CSS modules.
+- `npm test` (216 passing), `npm run typecheck`, `npm run lint`, `npm run build`
+    all pass.
+
+### Epic 7.2 — Component Polish
+
+**Objective:** Review and polish every reusable component for visual consistency,
+state clarity, and accessibility without changing its API, behavior, or contract.
+
+**Status:** `READY FOR IMPLEMENTATION`
+
+#### Batch 7.2.1 — Component Visual Consistency
+
+**Objective:** Polish buttons, cards, inputs, selects, tables, dialogs, badges,
+toasts, dropdowns, and navigation items so each component category shares
+consistent padding, radius, typography, elevation, hover/focus/active/disabled
+states, and semantic color usage across light and dark themes.
+
+**Dependencies:** Batch 7.1.1 complete.
+
+**Affected modules:** `src/components/ui/`, `src/components/dashboard/`,
+`src/components/app-shell/`, `src/components/students/`,
+`src/components/transactions/`, `src/components/settings/`,
+`src/components/reports/`, `src/components/financial-assurance/`, focused
+component visual-regression tests.
+
+**Acceptance Criteria:**
+
+- Every interactive component defines visually distinct default, hover, focus,
+  active, disabled, and loading states using the approved token vocabulary.
+- Button variants (primary, secondary, ghost, danger, deposit, withdrawal) are
+  visually consistent in height, padding, radius, and typography.
+- Card surfaces use consistent padding, radius, border, and elevation across
+  dashboard, reports, and settings.
+- Input and select controls share consistent height, padding, border, focus ring,
+  and error treatment.
+- Tables use consistent row height, cell padding, header treatment, and zebra
+  behavior; financial columns use tabular numerals and right alignment.
+- Dialogs and sheets use consistent radius, padding, scrim, and elevation.
+- Badges use consistent height, padding, radius, and semantic color across all
+  surfaces.
+- All changes are token-driven; no hardcoded values are introduced.
+- All existing tests pass; no behavior, API, or contract changes.
+
+**Status:** `READY FOR IMPLEMENTATION`
+
+### Epic 7.3 — Screen Polish
+
+**Objective:** Review every application screen for spacing, typography,
+hierarchy, and visual consistency without redesigning workflows or changing
+functionality.
+
+**Status:** `BLOCKED`
+
+**Blocker:** Batch 7.2.1 must complete component polish before screen-level
+composition is reviewed.
+
+#### Batch 7.3.1 — Authenticated Screen Polish
+
+**Objective:** Polish Dashboard, Students, Operators, Transactions, Reports,
+Reconciliation, and Settings screens for consistent spacing rhythm, typography
+hierarchy, section structure, and visual balance across desktop, tablet, and
+mobile.
+
+**Dependencies:** Batch 7.2.1 complete.
+
+**Affected modules:** All authenticated page components under
+`src/app/(app)/`, focused screen-level visual tests.
+
+**Acceptance Criteria:**
+
+- Every screen follows the 8px spacing system consistently for padding, gaps,
+  and section separation.
+- Typography hierarchy (page title, section title, card title, body, caption) is
+  consistent across all screens.
+- KPI cards, charts, tables, forms, and action groups use consistent section
+  spacing and alignment.
+- Empty states, loading skeletons, and error states are visually consistent
+  across all screens.
+- Dark and light theme produce equivalent hierarchy and readability on every
+  screen.
+- No workflow, route, field, action, or business behavior changes.
+- All existing tests pass.
+
+**Status:** `BLOCKED`
+
+#### Batch 7.3.2 — Landing Page Visual Evidence and Identity
+
+**Objective:** Add authentic product screenshots to the Landing Page, finalize
+brand identity treatment, and verify all public-facing visual elements are
+consistent with the polished design system.
+
+**Dependencies:** Batch 7.3.1 complete; Product Owner approval of the exact
+synthetic screenshot dataset, capture viewport, final screenshot assets,
+redaction/provenance record, brand mark/wordmark treatment, and whether a
+verified Documentation destination enables the Footer Resource group.
+
+**Affected modules:** `src/components/landing/`, approved image assets,
+focused visual/content tests.
+
+**Acceptance Criteria:**
+
+- Screenshots show exactly the approved screens, modes, and states from the
+  implemented application using a reconciled synthetic dataset with no real
+  personal or financial data.
 - Every image has approved intrinsic dimensions, alternative text, caption,
   responsive sizing, and provenance/redaction evidence.
-- The page remains understandable if images do not load and reserves image
-  space without avoidable layout shift.
-- No fake UI, invented statistic, unsupported capability, or decorative
-  substitute for missing product evidence is introduced.
+- Brand identity (logo, wordmark, header, footer) is consistent and approved.
+- Hero and Final CTA labels and destinations match the Content Specification.
+- Only verified destinations render; unsupported claims or placeholder content
+  are absent.
+- The page remains understandable if images do not load and reserves image space
+  without avoidable layout shift.
+- All existing tests pass; no business behavior changes.
 
 **Status:** `BLOCKED`
 
 **Blocker:** Product Owner approval of the screenshot dataset, viewport, assets,
-and redaction/provenance record required by
-`docs/24-landing-page-content.md`.
+redaction record, brand mark treatment, and Documentation destination.
 
-#### Batch 7.1.2 — Final CTA, Identity, and Verified Destinations
+### Epic 7.4 — Motion and Micro-interactions
 
-**Objective:** Finish the public conversion flow and closing navigation with
-only approved, reachable destinations and identity assets.
+**Objective:** Polish hover, focus, loading, success, error, navigation, and
+transition motion so it remains subtle, purposeful, and consistent with the
+approved Motion Guidelines.
 
-**Dependencies:** Batch 7.1.1 complete; Product Owner approval of Product
-Identity behavior, primary product-entry behavior, brand mark/wordmark treatment,
-and whether a verified Documentation destination enables the Footer Resource
-group.
+**Status:** `BLOCKED`
 
-**Affected modules:** Landing Header, Hero actions, Final CTA, Landing Footer,
-approved identity assets, route/link tests.
+**Blocker:** Batch 7.2.1 must complete component polish before motion is
+reconciled.
+
+#### Batch 7.4.1 — Motion Polish
+
+**Objective:** Review and refine all transitions, hover effects, focus rings,
+loading indicators, success/error feedback, navigation transitions, and overlay
+animations for consistency, subtlety, and reduced-motion compliance.
+
+**Dependencies:** Batch 7.2.1 complete.
+
+**Affected modules:** Component CSS modules, `src/app/globals.css`, focused
+motion and reduced-motion tests.
 
 **Acceptance Criteria:**
 
-- Hero and Final CTA labels and destinations match the Content Specification and
-  preserve access to `/login` and the authenticated application.
-- Product Identity behavior is consistent in Header and Footer.
-- Only verified destinations render; the Footer Resource group stays absent
-  unless its Documentation destination is approved and reachable.
-- Visible `Amanah Cash` text remains available even if no graphical brand mark
-  is approved.
-- All internal links, fragments, keyboard focus transfers, and product-entry
-  paths pass automated route and interaction tests.
+- Transition durations and easing functions are consistent within each
+  interaction category (feedback, overlay, navigation).
+- Hover and focus states use consistent visual treatment across all interactive
+  components.
+- Loading skeletons and spinners are visually consistent across all screens.
+- Success and error feedback (toasts, inline messages, alerts) use consistent
+  motion and timing.
+- Navigation and overlay transitions are subtle, interruptible, and never delay
+  input or comprehension.
+- Financial values never animate, count, interpolate, or transition.
+- `prefers-reduced-motion: reduce` disables all non-essential motion across the
+  entire application.
+- All existing tests pass; no behavior changes.
 
 **Status:** `BLOCKED`
 
-**Blocker:** Product Owner decisions for public entry, Product Identity, brand
-treatment, and Documentation destination remain pending in
-`docs/24-landing-page-content.md`.
+### Epic 7.5 — Responsive Polish
 
-## 12. Sprint 8 — Landing Page Integration and Feature Completion
-
-**Sprint Goal:** Integrate and verify the complete Landing Page as an
-application feature across approved responsive, accessibility, motion, and
-deployment-independent quality contracts.
+**Objective:** Verify and polish responsive behavior across desktop, tablet, and
+mobile for consistent touch spacing, responsive hierarchy, and layout stability.
 
 **Status:** `BLOCKED`
 
-### Epic 8.1 — Responsive, Accessible, and Performant Integration
+**Blocker:** Batch 7.3.1 must complete screen polish before responsive behavior
+is verified.
 
-**Objective:** Finish the static page experience and close every
-deployment-independent Landing Page acceptance gate.
+#### Batch 7.5.1 — Responsive Consistency
 
-**Status:** `BLOCKED`
+**Objective:** Review every screen at 320px, 360px, 390px, 480px, 768px, 1024px,
+1280px, and 1536px for consistent touch targets, spacing adaptation, content
+reflow, sidebar behavior, and layout stability.
 
-#### Batch 8.1.1 — Responsive Composition and Approved Motion
+**Dependencies:** Batches 7.3.1 and 7.3.2 complete.
 
-**Objective:** Apply the Blueprint compositions and approved progressive motion
-to the completed page without changing semantic source order or hiding content.
-
-**Dependencies:** Batches 7.1.1 and 7.1.2 complete.
-
-**Affected modules:** All Landing Page components/styles, minimal reveal
-boundary, responsive/motion tests.
+**Affected modules:** All component CSS modules, focused responsive tests.
 
 **Acceptance Criteria:**
 
-- Mobile, tablet, desktop, and wide compositions match the Blueprint while
-  preserving semantic source order.
-- The page works at 320 px CSS width, orientation changes, text resize, and
-  200% zoom without clipping, overlap, hidden content, or horizontal scrolling.
-- Touch targets, spacing, screenshot containment, and focus visibility satisfy
-  the approved token and accessibility contracts.
-- Motion is progressive enhancement, activates only where mapped, reveals once,
-  never animates financial values, and resolves immediately under reduced
-  motion.
-- Header and Footer remain static and all content remains available before
-  enhancement or when enhancement fails.
+- Touch targets are at least 44px in both dimensions on mobile across all
+  interactive elements.
+- Content reflows without horizontal scrolling at 320px on every screen.
+- Sidebar collapses correctly on tablet and overlays on mobile.
+- Tables convert to card layouts on mobile with consistent field labeling.
+- Dialogs use bottom-sheet presentation on mobile and centered dialog on desktop.
+- KPI grids, chart layouts, and form layouts adapt cleanly at each breakpoint.
+- Layout shift is minimized during loading and data updates.
+- All existing tests pass; no behavior changes.
 
 **Status:** `BLOCKED`
 
-**Blocker:** The complete approved content, evidence, and conversion composition
-from Sprint 7 is required before integration.
+## 12. Sprint 8 — Product Quality Assurance
 
-#### Batch 8.1.2 — Accessibility and Deployment-Independent Publication QA
+**Sprint Goal:** Validate the polished application across accessibility,
+performance, cross-device compatibility, visual consistency, and final MVP
+compliance. Produce the evidence-backed MVP Quality Completion report.
 
-**Objective:** Verify the completed public feature and record an evidence-backed
-MVP feature-completion result without beginning deployment or release
-qualification.
+**Status:** `BLOCKED`
 
-**Dependencies:** Batch 8.1.1 complete.
+**Blocker:** Sprint 7 (Design System Polish) must complete before quality
+assurance begins.
 
-**Affected modules:** Landing Page components/styles only for confirmed defects;
-metadata that does not require a public origin; Landing Page tests and local QA
+### Epic 8.1 — Accessibility Audit
+
+**Objective:** Verify WCAG 2.2 AA compliance across keyboard navigation, screen
+reader support, contrast, reduced motion, and touch targets.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.1.1 — Accessibility Audit and Remediation
+
+**Objective:** Execute a comprehensive accessibility audit across every
+authenticated and public screen, remediate confirmed defects, and record
 evidence.
 
+**Dependencies:** Sprint 7 complete.
+
+**Affected modules:** Any component with confirmed accessibility defects;
+accessibility test coverage.
+
 **Acceptance Criteria:**
 
-- Landmark, heading, keyboard, skip-link, anchor focus, disclosure, image
-  alternative, contrast, reflow, text-resize, reduced-motion, and screen-reader
-  contracts pass the deployment-independent verification matrix.
-- Title, description, Open Graph text, and other origin-independent metadata
-  match the Content Specification.
-- Local production build, TypeScript, lint, focused tests, broken-link audit,
-  content audit, token audit, and image/layout checks pass.
-- Avoidable local performance, image, font, layout-shift, and script findings
-  are resolved without inventing an unapproved threshold.
-- No pending marker, broken action, undefined asset, fake evidence, placeholder
-  copy, unsupported claim, or undocumented UI remains in the completed feature.
-- Canonical URL, robots, sitemap, production-origin social assets, production
-  performance measurement, browser/device qualification, and release acceptance
-  remain in Release Sprint R1 and are not implemented by this Batch.
-- Completion evidence explicitly states whether the Product Owner can declare
-  MVP feature development complete; it does not resume deployment automatically.
+- Keyboard navigation works on every interactive element with visible focus.
+- Screen reader labels and announcements are correct for all financial values,
+  statuses, and actions.
+- Color contrast meets WCAG 2.2 AA (4.5:1 text, 3:1 UI components) in both
+  themes.
+- `prefers-reduced-motion` is respected globally with no essential motion lost.
+- Touch targets meet minimum size requirements on all mobile surfaces.
+- Accessible charts have data-table alternatives and keyboard-navigable data
+  points.
+- Confirmed defects are fixed with regression coverage.
 
 **Status:** `BLOCKED`
 
-**Blocker:** Batch 8.1.1 must complete before final feature-level verification.
+### Epic 8.2 — Performance Review
+
+**Objective:** Verify rendering performance, bundle size, animation efficiency,
+and loading state quality.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.2.1 — Performance Review and Optimization
+
+**Objective:** Measure and optimize First Contentful Paint, Largest Contentful
+Paint, Time to Interactive, bundle size, and animation performance.
+
+**Dependencies:** Sprint 7 complete.
+
+**Affected modules:** Components with confirmed performance issues;
+build configuration.
+
+**Acceptance Criteria:**
+
+- First Contentful Paint is under 1.5s on representative hardware.
+- Largest Contentful Paint (dashboard KPI cards) is under 2.0s.
+- Bundle size is reviewed and unnecessary dependencies are absent.
+- Animations use opacity and transform exclusively; no layout-triggering
+  properties are animated in scrolling lists.
+- Loading skeletons approximate final geometry to minimize layout shift.
+- No animation degrades search input, scrolling, or keyboard response.
+
+**Status:** `BLOCKED`
+
+### Epic 8.3 — Cross-device QA
+
+**Objective:** Validate the application across desktop, tablet, mobile, dark
+theme, light theme, and PWA installation.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.3.1 — Cross-device Validation
+
+**Objective:** Test every approved workflow on representative desktop, tablet,
+and mobile browsers in both themes and PWA mode.
+
+**Dependencies:** Sprint 7 complete.
+
+**Affected modules:** Components with confirmed device-specific defects.
+
+**Acceptance Criteria:**
+
+- Desktop (Chrome, Firefox, Safari), tablet, and mobile browsers render all
+  screens correctly.
+- Dark and light themes produce equivalent readability and hierarchy.
+- PWA installation and standalone launch work on supported platforms.
+- Network failure is explicit on every screen; no offline transaction is queued.
+- Orientation changes reflow without clipping or overlap.
+- Confirmed defects are fixed with regression coverage.
+
+**Status:** `BLOCKED`
+
+### Epic 8.4 — Visual Review
+
+**Objective:** Verify visual consistency, empty states, error states, charts,
+dashboard, landing page, and authentication surfaces.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.4.1 — Visual Consistency Review
+
+**Objective:** Conduct a comprehensive visual review of every surface for
+consistency, polish, and professional quality.
+
+**Dependencies:** Sprint 7 complete.
+
+**Affected modules:** Components with confirmed visual defects.
+
+**Acceptance Criteria:**
+
+- Visual consistency is verified across all dashboard widgets, charts, tables,
+  forms, dialogs, and navigation.
+- Empty states are contextual, consistent, and actionable across all screens.
+- Error states are clear, consistent, and non-alarming.
+- Charts use the approved color palette, tabular numerals, and accessible
+  alternatives.
+- Landing page visual evidence, identity, and conversion flow are consistent.
+- Authentication screen is polished and trustworthy.
+- Confirmed defects are fixed with regression coverage.
+
+**Status:** `BLOCKED`
+
+### Epic 8.5 — Final MVP Audit
+
+**Objective:** Produce the final evidence-backed MVP Quality Completion report.
+
+**Status:** `BLOCKED`
+
+#### Batch 8.5.1 — MVP Quality Completion Report
+
+**Objective:** Re-run all repository gates, verify business rules, architecture,
+roadmap alignment, design system compliance, accessibility, and performance, and
+issue the MVP Quality Completion declaration.
+
+**Dependencies:** Batches 8.1.1, 8.2.1, 8.3.1, and 8.4.1 complete.
+
+**Affected modules:** Quality evidence, roadmap/handoff/changelog, affected
+documentation.
+
+**Acceptance Criteria:**
+
+- All automated repository gates pass: TypeScript, ESLint, Prisma, build, tests.
+- Business rules, authorization boundaries, financial integrity, and audit
+  immutability are verified.
+- Architecture and dependency direction are verified.
+- Design system token compliance is verified.
+- Accessibility audit evidence is recorded.
+- Performance benchmarks meet targets.
+- The Product Owner receives an evidence-backed report stating whether MVP
+  Quality is complete and whether Release Sprint R1 may begin.
+
+**Status:** `BLOCKED`
+
+## Release Phase — Deployment Qualification
+
+Release qualification begins only after the Product Owner declares "MVP Quality
+Complete" based on the Sprint 8 completion report. Its environment decisions are
+intentionally not blockers for Phase 2 quality work.
 
 ## 13. Sprint R1 — Release and Deployment Qualification
 
@@ -1091,9 +1462,9 @@ authorization, privacy, and export boundaries.
 
 **Status:** `ON HOLD`
 
-Release Sprint R1 begins only after the Product Owner declares MVP feature
-development complete. Its environment decisions are intentionally not blockers
-for the remaining MVP feature-delivery sprints.
+Release Sprint R1 begins only after the Product Owner declares "MVP Quality
+Complete" based on the Sprint 8 evidence-backed completion report. Its
+environment decisions are intentionally not blockers for Phase 2 quality work.
 
 ### Epic R1.1 — Deployment Baseline and Topology
 
@@ -1108,7 +1479,7 @@ Platform Admin bootstrap procedure.
 **Objective:** Convert the approved one-client/one-server/one-relational-database
 architecture into a concrete production topology and qualification baseline.
 
-**Dependencies:** MVP feature development declared complete; Batch 4.1.1
+**Dependencies:** Product Owner declares "MVP Quality Complete"; Batch 4.1.1
 complete; Product Owner resumes Release Sprint R1.
 
 **Affected modules:** Deployment configuration, environment contract,
@@ -1249,7 +1620,8 @@ tests, production readiness documentation.
 **Objective:** Re-run repository and environment gates, reconcile documentation,
 and issue the final release recommendation.
 
-**Dependencies:** Batches 4.1.1, R1.2.1, R1.2.2, R1.3.1, and R1.3.2 complete.
+**Dependencies:** Batches 4.1.1, 8.5.1, R1.2.1, R1.2.2, R1.3.1, and R1.3.2
+complete.
 
 **Affected modules:** Release evidence, roadmap/handoff/changelog, affected
 operational documentation; application code only for confirmed release defects.
@@ -1357,7 +1729,7 @@ exists.
 | Authentication and authorization | `docs/27-adr-authentication-authorization.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md` |
 | Design implementation | `docs/12-ui-design-system.md`, `docs/14-component-guidelines.md`, `docs/16-accessibility-guidelines.md`, `docs/18-design-tokens.md` |
 | Remaining Landing Page feature | `docs/22-landing-page-strategy.md`, `docs/23-landing-page-blueprint.md`, `docs/24-landing-page-content.md`, `docs/25-landing-page-implementation-plan.md` |
-| Remaining MVP Settings feature | `docs/01-functional-requirements.md`, `docs/03-business-rules.md`, `docs/05-user-flow.md`, `docs/07-database-design.md`, `docs/08-system-architecture.md`, `docs/12-ui-design-system.md`, `docs/18-design-tokens.md`, `docs/19-screen-specifications.md`, `docs/21-mvp-settings-specification.md` |
+| Implemented MVP Settings feature | `docs/21-mvp-settings-specification.md`, `docs/50-settings-ui-ux-review-proposal.md`, `src/settings/`, `src/components/settings/` |
 | Implemented delivery state and known MVP interaction gap | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/34-operator-management-implementation.md`, `docs/35-student-management-implementation.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
 | Production/export gaps | `docs/02-non-functional-requirements.md`, `docs/45-export-production-readiness-review.md` |
 
@@ -1365,20 +1737,26 @@ exists.
 
 At this revision:
 
-- First `READY FOR IMPLEMENTATION` Batch: **Batch 6.1.1 — Theme and Page-Size
-  Preferences**.
-- Number of `READY FOR IMPLEMENTATION` Batches: **1**.
-- Batch 5.1.1 completed the approved core Landing Page narrative and accessible
-  FAQ without beginning product evidence, final actions, integration, or
-  Settings work.
-- Batch 4.2.1 completed the approved validation/error-handling requirement
-  without changing Operator or Student Domain behavior.
-- Sprint 6 completes the approved MVP Settings feature before Sprints 7–8
-  resume the remaining blocked Landing Page work.
-- Settings is approved only within `docs/21-mvp-settings-specification.md`;
-  implemented Transactions, Reports, reconciliation, and audit presentation are
-  not scheduled again.
-- Deployment qualification and release acceptance are isolated in Release Sprint
-  R1 and remain `ON HOLD` until the Product Owner declares MVP feature
-  development complete.
+- Number of `READY FOR IMPLEMENTATION` Batches: **1** — Batch 7.2.1 (Component
+  Visual Consistency).
+- Phase 1 (Functional MVP, Sprints 0–6) is `COMPLETE`. The implemented system
+  includes the full application foundation, authentication, authorization,
+  Operator and Student management, the complete Transaction lifecycle, persisted
+  Balance and immutable audit, dashboards, reports, bounded CSV/Excel/PDF export,
+  the Transaction Workspace, reconciliation, the Financial Audit Timeline, the
+  Audit Detail Drawer, the Landing Page core narrative, and the complete MVP
+  Settings module.
+- Phase 2 (Product Quality) is in progress. Batch 7.1.1 (Design Token Alignment)
+  is `COMPLETE`. The single executable batch is **Batch 7.2.1 (Component Visual
+  Consistency)**. All other Sprint 7 batches remain `BLOCKED` in dependency
+  order. Sprint 8 (Product Quality Assurance) is `BLOCKED` pending Sprint 7
+  completion.
+- The Landing Page visual evidence work (authentic screenshots, brand identity)
+  is folded into Batch 7.3.2 and remains `BLOCKED` by Product Owner decisions on
+  screenshot dataset, viewport, assets, redaction record, and brand mark
+  treatment.
+- Release Phase (Sprint R1) remains `ON HOLD` until the Product Owner declares
+  "MVP Quality Complete" based on the Sprint 8 Batch 8.5.1 completion report.
 - Architecture-changing and unapproved product extensions remain `ON HOLD`.
+- Only the four approved status values (`COMPLETE`, `READY FOR IMPLEMENTATION`,
+  `BLOCKED`, `ON HOLD`) are used.

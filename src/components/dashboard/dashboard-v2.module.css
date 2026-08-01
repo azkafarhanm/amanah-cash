@@ -51,8 +51,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--size-8);
+  height: var(--size-8);
   border-radius: var(--radius-md);
   background: var(--color-background-subtle);
   color: var(--color-text-secondary);
@@ -139,7 +139,7 @@
 }
 
 .chartFilter {
-  min-height: 32px;
+  min-height: var(--size-8);
   padding-inline: var(--space-3);
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   border-radius: var(--shape-control);
@@ -205,7 +205,7 @@
 
 .chartAxisLabel {
   fill: var(--chart-label-color);
-  font-size: 11px;
+  font-size: var(--font-size-12);
   font-family: var(--font-family-sans);
 }
 
@@ -327,8 +327,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--size-8);
+  height: var(--size-8);
   border-radius: var(--radius-md);
   flex: none;
 }
@@ -400,8 +400,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: var(--size-8);
+  height: var(--size-8);
   border-radius: var(--radius-full);
   flex: none;
 }
@@ -512,8 +512,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: var(--size-5);
+  height: var(--size-5);
   flex: none;
   color: var(--color-text-secondary);
 }

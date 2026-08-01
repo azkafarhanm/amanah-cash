@@ -187,7 +187,7 @@
 
 .quickActionCard {
   align-content: start;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color var(--motion-duration-fast) var(--motion-ease-standard), box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .quickActionCard:hover {
@@ -207,7 +207,7 @@
   color: var(--color-action-primary);
   font: var(--type-button);
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background var(--motion-duration-fast) var(--motion-ease-standard), border-color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .quickActionCard a:hover {
@@ -225,7 +225,7 @@
   color: var(--color-action-primary);
   font: var(--type-button);
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background var(--motion-duration-fast) var(--motion-ease-standard), border-color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .dashboardActionLink:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }

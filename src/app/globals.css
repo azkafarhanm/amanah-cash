@@ -202,15 +202,24 @@
   --font-weight-medium: 500;
   --font-weight-semibold: 600;
   --font-weight-bold: 700;
+  --font-size-12: 0.75rem;
   --font-size-14: 0.875rem;
   --font-size-16: 1rem;
   --font-size-18: 1.125rem;
+  --font-size-20: 1.25rem;
   --font-size-24: 1.5rem;
+  --font-size-28: 1.75rem;
   --font-size-32: 2rem;
   --font-size-40: 2.5rem;
   --font-size-48: 3rem;
   --font-size-56: 3.5rem;
+  --line-height-16: 1rem;
   --line-height-20: 1.25rem;
+  --line-height-24: 1.5rem;
+  --line-height-28: 1.75rem;
+  --line-height-32: 2rem;
+  --line-height-40: 2.5rem;
+  --line-height-48: 3rem;
   --line-height-56: 3.5rem;
   --line-height-64: 4rem;
   --line-height-heading-tight: 1.1;
@@ -223,6 +232,7 @@
   --space-0: 0;
   --space-0-5: 0.125rem;
   --space-1: 0.25rem;
+  --space-1-5: 0.375rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
   --space-4: 1rem;
@@ -232,46 +242,80 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
+  --space-20: 5rem;
   --space-24: 6rem;
+  --size-4: 1rem;
+  --size-5: 1.25rem;
+  --size-6: 1.5rem;
+  --size-8: 2rem;
+  --size-10: 2.5rem;
   --size-11: 2.75rem;
   --size-12: 3rem;
   --size-14: 3.5rem;
-  --size-5: 1.25rem;
-  --size-8: 2rem;
+  --size-content-80: 20rem;
   --size-content-136: 34rem;
   --size-content-160: 40rem;
+  --size-content-192: 48rem;
+  --size-content-240: 60rem;
   --size-content-300: 75rem;
   --size-full: 100%;
   --size-viewport-dynamic: 100dvh;
+  --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
   --radius-full: 9999px;
   --border-width-default: 1px;
   --border-width-emphasis: 2px;
   --border-style-default: solid;
   --shadow-none: none;
-  --shadow-subtle: 0 1px 3px rgb(17 24 39 / 5%);
-  --shadow-raised: 0 4px 12px rgb(17 24 39 / 10%);
-  --shadow-large: 0 20px 48px rgb(17 24 39 / 18%);
+  --shadow-xs: 0 1px 2px rgb(17 24 39 / 4%);
+  --shadow-sm: 0 2px 4px rgb(17 24 39 / 6%);
+  --shadow-md: 0 4px 12px rgb(17 24 39 / 8%);
+  --shadow-lg: 0 8px 24px rgb(17 24 39 / 10%);
+  --shadow-xl: 0 16px 48px rgb(17 24 39 / 14%);
+  --shadow-subtle: var(--shadow-xs);
+  --shadow-raised: var(--shadow-md);
+  --shadow-large: var(--shadow-xl);
   --shadow-focus: 0 0 0 3px rgb(37 99 235 / 28%);
   --shadow-focus-light: 0 0 0 3px rgb(49 94 125 / 22%);
   --shadow-focus-dark: 0 0 0 3px rgb(56 189 248 / 28%);
+  --shadow-focus-error: 0 0 0 3px rgb(239 68 68 / 25%);
   --opacity-0: 0;
+  --opacity-40: 0.4;
+  --opacity-60: 0.6;
+  --opacity-80: 0.8;
+  --opacity-96: 0.96;
   --opacity-100: 1;
   --motion-duration-none: 0ms;
+  --motion-duration-instant: 60ms;
   --motion-duration-fast: 140ms;
   --motion-duration-settings: 180ms;
   --motion-duration-panel: 200ms;
+  --motion-duration-deliberate: 280ms;
+  --motion-duration-slow: 350ms;
   --motion-duration-loading: 1400ms;
   --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --motion-ease-out: cubic-bezier(0, 0, 0.2, 1);
   --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --motion-distance-small: var(--space-1);
+  --motion-distance-medium: var(--space-2);
   --motion-distance-large: var(--space-4);
+  --z-base: 0;
   --z-raised: 10;
+  --z-sticky: 20;
   --z-scrim: 20;
+  --z-dropdown: 30;
   --z-sidebar: 30;
   --z-header: 40;
+  --z-popover: 35;
+  --z-tooltip: 40;
   --z-skip-link: 50;
   --z-overlay: 50;
+  --z-toast: 60;
+  --z-loading: 80;
 
   --color-background-canvas: var(--color-calm-25);
   --color-background-secondary: var(--color-calm-50);
@@ -331,6 +375,28 @@
     var(--line-height-body) var(--font-family-sans);
   --type-body-strong: var(--font-weight-semibold) var(--font-size-16) /
     var(--line-height-body) var(--font-family-sans);
+  --type-body-small: var(--font-weight-regular) var(--font-size-14) /
+    var(--line-height-body) var(--font-family-sans);
+  --type-caption: var(--font-weight-medium) var(--font-size-12) /
+    var(--line-height-body) var(--font-family-sans);
+  --type-overline: var(--font-weight-semibold) 0.6875rem /
+    var(--line-height-body) var(--font-family-sans);
+  --type-h1: var(--font-weight-bold) var(--font-size-32) /
+    var(--line-height-heading) var(--font-family-sans);
+  --type-h2: var(--font-weight-semibold) var(--font-size-24) /
+    1.25 var(--font-family-sans);
+  --type-h3: var(--font-weight-semibold) var(--font-size-20) /
+    1.3 var(--font-family-sans);
+  --type-h4: var(--font-weight-semibold) var(--font-size-18) /
+    1.35 var(--font-family-sans);
+  --type-h5: var(--font-weight-semibold) var(--font-size-16) /
+    1.4 var(--font-family-sans);
+  --type-h6: var(--font-weight-semibold) var(--font-size-14) /
+    1.4 var(--font-family-sans);
+  --type-money: var(--font-weight-semibold) var(--font-size-16) /
+    var(--line-height-24) var(--font-family-sans);
+  --type-balance: var(--font-weight-bold) var(--font-size-40) /
+    var(--line-height-heading) var(--font-family-sans);
   --layout-gutter-mobile: var(--space-4);
   --layout-gutter-wide: var(--space-6);
   --layout-content-max: var(--size-content-160);
@@ -346,6 +412,7 @@
   --control-height-default: var(--size-12);
   --shape-control: var(--radius-md);
   --shape-container: var(--radius-lg);
+  --shape-overlay: var(--radius-xl);
   --focus-visible-color: var(--color-border-focus);
   --focus-visible-shadow: var(--shadow-focus-light);
   --context-detail-drawer-background: var(--color-background-surface);
@@ -579,7 +646,15 @@
   --color-skeleton-highlight: var(--color-slate-700);
   --skeleton-shadow: var(--shadow-none);
   --surface-shadow-subtle: var(--shadow-none);
-  --surface-shadow-raised: var(--shadow-subtle);
+  --surface-shadow-raised: var(--shadow-sm);
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 10%);
+  --shadow-sm: 0 2px 8px rgb(0 0 0 / 20%);
+  --shadow-md: 0 4px 16px rgb(0 0 0 / 25%);
+  --shadow-lg: 0 8px 32px rgb(0 0 0 / 30%);
+  --shadow-xl: 0 16px 48px rgb(0 0 0 / 35%);
+  --shadow-subtle: var(--shadow-xs);
+  --shadow-raised: var(--shadow-md);
+  --shadow-large: var(--shadow-xl);
   --color-overlay: rgb(2 6 23 / 64%);
   --focus-visible-shadow: var(--shadow-focus-dark);
 

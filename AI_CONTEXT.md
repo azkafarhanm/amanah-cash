@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-30
-**Current delivery state:** The approved premium Landing Page experience is implemented; Release Sprint R1 remains on hold
+**Last updated:** 2026-07-31
+**Current delivery state:** Phase 1 (Functional MVP, Sprints 0–6) complete; Phase 2 (Product Quality) beginning with Sprint 7 — Design System Polish; Release Phase ON HOLD
 
 ## Project Purpose
 
@@ -45,6 +45,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 4 — Repository Production Preflight: upgraded Auth.js, Next.js, and Prisma to supported advisory-fixing patch releases; added forced production environment validation with redacted summaries; made migration diagnostics operator-safe; added focused regression coverage; and recorded unresolved upstream ExcelJS/Archiver and Next.js PostCSS/Sharp advisory chains in `docs/49-production-preflight.md`.
 - Sprint 4 — Admin Form Validation Recovery: expected Admin Operator and Student create/edit Domain failures now return local React Action state, preserve submitted values, render associated inline errors, focus the first invalid control, and prevent duplicate submission without query-string or persistent-browser form payloads.
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
+- Sprint 6 — MVP Settings complete: per-user theme (Light/Dark/System) with approved semantic dark palette and flash-free bootstrap; per-user default page-size (10/20/50) with explicit URL override; admin-only operational backup via database-consistent SQLite snapshot with sanitized sessions/tokens and privacy-minimized maintenance audit; validated atomic restore with format/version/integrity/schema/referential/Balance checks, pre-restore safety backup, atomic file replacement, and session revocation; Google security handoff with truthful external link; read-only application version from build-time source; sanitized in-app changelog route that excludes unreleased content. No Time theme or delete-confirmation customization exists.
+- Sprint 7 — Epic 7.1 Batch 7.1.1 (Design Token Alignment) complete: aligned all CSS custom properties and component styles with the Design System Foundation (`docs/51`). Added missing primitive tokens (radius, spacing, size, typography, shadow, motion, z-index, opacity), dark-theme shadow overrides, and typography semantic tokens. Eliminated hardcoded transition durations, animation values, blur values, and px dimensions from component CSS. No behavior, business logic, or workflow changes.
 
 
 ## Current Implementation Status
@@ -165,10 +167,11 @@ SQLite relational database and invariant triggers
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
 - CSV, Excel, and PDF export are implemented. Advanced export presentation, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, and distributed infrastructure do not exist.
 - CSV, Excel, and PDF export are synchronous and fully buffered. They have a default 10,000-row cap and optional byte cap, but no deadline/concurrency control or cross-page snapshot and are not qualified to generate 30,000–100,000-row files. Such requests are rejected after the first Reporting page by default. See `docs/45-export-production-readiness-review.md`.
-- Settings is now an approved remaining MVP module governed by
-  `docs/21-mvp-settings-specification.md`; Admin and Operator routes retain
-  explicit placeholders until Sprint 6. The centralized Transaction Workspace
-  and Reporting routes are implemented.
+- Settings is implemented and complete. All five groups (Appearance,
+  Preferences, Data, Security, About) are built, tested, and persisted per
+  provisioned user. Theme supports Light/Dark/System; page-size supports
+  10/20/50; Data provides admin-only backup/restore; Security provides the
+  Google handoff; About provides version and sanitized changelog.
 
 ## Outstanding Work
 
@@ -179,12 +182,20 @@ SQLite relational database and invariant triggers
 
 ## Next Recommended Sprint
 
-Batch 5.1.1 — Core Landing Content and FAQ is complete. Batch 6.1.1 — Theme and
-Page-Size Preferences is the single Batch currently `READY FOR IMPLEMENTATION`.
-The remaining Settings batches follow in dependency order before the blocked
-Landing Page evidence and integration work resumes in Sprints 7–8. Release
-Sprint R1 remains `ON HOLD` until the Product Owner explicitly declares MVP
-feature development complete and resumes deployment qualification.
+Phase 1 (Functional MVP, Sprints 0–6) is complete. Phase 2 (Product Quality) is
+in progress. Batch 7.1.1 (Design Token Alignment) is complete. The single `READY
+FOR IMPLEMENTATION` batch is **Batch 7.2.1 — Component Visual Consistency**, which
+polishes all reusable components for consistent padding, radius, typography,
+elevation, and state treatment using the now-aligned token foundation.
+
+Subsequent Sprint 7 batches follow in dependency order: screen polish (7.3.1),
+landing page visual evidence (7.3.2 — blocked by Product Owner decisions on
+screenshots and brand), motion polish (7.4.1), and responsive polish (7.5.1).
+Sprint 8 (Product Quality Assurance) follows Sprint 7 and produces the MVP
+Quality Completion report (Batch 8.5.1).
+
+The Release Phase (Sprint R1) remains `ON HOLD` until the Product Owner declares
+"MVP Quality Complete" based on the Sprint 8 completion report.
 
 ## Core Business Rules to Preserve
 

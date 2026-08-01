@@ -4,8 +4,8 @@
   z-index: var(--z-header);
   background: var(--landing-nav-background);
   border-block-end: var(--landing-nav-border);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   background: color-mix(in srgb, var(--landing-nav-background) 85%, transparent);
 }
 
@@ -49,8 +49,8 @@
   background: var(--landing-nav-background);
   border-block-end: var(--landing-nav-border);
   padding: var(--space-4) var(--space-6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
   background: color-mix(in srgb, var(--landing-nav-background) 95%, transparent);
 }
 

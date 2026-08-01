@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 7 — Epic 7.1: Batch 7.1.1 — Design Token Alignment
+
+- Added missing primitive tokens from the Design System Foundation (`docs/51`): `--radius-sm`, `--radius-xl`, `--radius-2xl`, `--space-1-5`, `--space-20`, `--size-4`, `--size-6`, `--size-10`, `--size-content-80`, `--size-content-192`, `--size-content-240`, `--font-size-12`, `--font-size-20`, `--font-size-28`, `--line-height-16`, `--line-height-24`, `--line-height-28`, `--line-height-32`, `--line-height-40`, `--line-height-48`, `--line-height-56`, `--line-height-64`.
+- Added shadow scale from docs/51: `--shadow-xs`, `--shadow-sm`, `--shadow-md`, `--shadow-lg`, `--shadow-xl`, `--shadow-focus-error`; existing `--shadow-subtle`/`--shadow-raised`/`--shadow-large` aliased to the new scale for backward compatibility.
+- Added dark-theme shadow overrides using reduced opacity and larger blur radii for elevation-through-color communication.
+- Added motion tokens from docs/51: `--motion-duration-instant` (60ms), `--motion-duration-deliberate` (280ms), `--motion-duration-slow` (350ms), `--motion-ease-in`, `--motion-ease-out`, `--motion-distance-small`, `--motion-distance-medium`.
+- Added z-index scale from docs/51: `--z-base`, `--z-sticky`, `--z-dropdown`, `--z-popover`, `--z-tooltip`, `--z-toast`, `--z-loading`.
+- Added opacity scale from docs/51: `--opacity-40`, `--opacity-60`, `--opacity-80`, `--opacity-96`.
+- Added typography semantic tokens from docs/51: `--type-body-small`, `--type-caption`, `--type-overline`, `--type-h1` through `--type-h6`, `--type-money`, `--type-balance`.
+- Added `--shape-overlay` semantic token for overlay radius.
+- Replaced hardcoded transition durations (`0.15s ease`) in `dashboard.module.css` with `var(--motion-duration-fast) var(--motion-ease-standard)`.
+- Replaced hardcoded animation durations in `auth.module.css` (`500ms`, `600ms`) with `var(--motion-duration-slow)` and `var(--motion-duration-loading)`.
+- Replaced hardcoded animation delays in `hero-section.module.css` (`200ms`, `400ms`) with `var(--motion-duration-panel)` and `calc()`.
+- Replaced hardcoded `blur(12px)` in `landing-header.module.css` with `var(--glass-blur)`.
+- Replaced hardcoded `rgb(49 94 125 / 3%)` decorative values in `hero-section.module.css` and `auth.module.css` with `color-mix(in srgb, var(--color-action-primary) N%, transparent)`.
+- Replaced hardcoded `32px`, `20px`, `11px` in `dashboard-v2.module.css` with `var(--size-8)`, `var(--size-5)`, `var(--font-size-12)`.
+- No business logic, component behavior, navigation, authorization, or workflow changes.
+
 ### Landing Page — Approved Premium Experience
 
 - Implemented the Product Owner-approved Landing Page specification with a premium responsive Hero, authentic product-style visual evidence, guided narrative sections, expanded MVP feature inventory, trust evidence, final CTA, and consistent Header/Footer navigation.

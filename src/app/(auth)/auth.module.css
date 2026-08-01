@@ -16,12 +16,12 @@
   background:
     radial-gradient(
       ellipse 80% 60% at 80% 10%,
-      rgb(49 94 125 / 10%),
+      color-mix(in srgb, var(--color-action-primary) 10%, transparent),
       transparent 50%
     ),
     radial-gradient(
       ellipse 60% 50% at 20% 80%,
-      rgb(37 99 235 / 6%),
+      color-mix(in srgb, var(--color-action-primary) 6%, transparent),
       transparent 45%
     );
   pointer-events: none;
@@ -38,7 +38,7 @@
   background: var(--color-background-surface);
   box-shadow: var(--shadow-large);
   position: relative;
-  animation: card-enter 500ms var(--motion-ease-standard) both;
+  animation: card-enter var(--motion-duration-slow) var(--motion-ease-standard) both;
 }
 
 .cardHeader {
@@ -256,7 +256,7 @@
     var(--color-text-inverse);
   border-top-color: transparent;
   border-radius: var(--radius-full);
-  animation: spin 600ms linear infinite;
+  animation: spin var(--motion-duration-loading) linear infinite;
 }
 
 .errorIcon {
