@@ -31,6 +31,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added `test/motion-polish.test.ts` providing automated test coverage for global reduced motion, tokenized motion usage, and financial value stability.
 - No behavior, API, business logic, authorization, or workflow changes.
 
+### Cross-Panel Visual Depth Polish
+
+- Added gradient depth treatment with `--surface-inset-highlight` to all primary content surfaces across every authenticated panel: transactions (balance cards, metrics, filters, dialog), reports (summary cards, filters, table wrap, export bar), financial assurance (result cards, audit timeline cards), students (table wrap, panel), operators (table wrap).
+- Extracted raw `rgba(255, 255, 255, 0.04)` inset highlight to `--surface-inset-highlight` semantic token in globals.css for light and dark themes.
+- Added hover elevation (`shadow-sm`) and hover border highlight to operator buttons.
+- Added table row hover (`--color-primary-subtle`) to students table (desktop).
+- Transaction dialog now uses gradient depth background and `shadow-lg` elevation.
+- Transaction items now have hover background highlight.
+- Reports export bar upgraded from flat subtle to gradient depth.
+- All changes use tokens; no raw colors in operational component CSS modules.
+- No behavior, API, business logic, authorization, or workflow changes.
+
 ### Premium Visual Overhaul — Color System + Depth + Motion
 
 - Switched light theme accent from ink-blue (`#315E7D`) to teal (`#0D9488`) across all semantic tokens: `--color-action-primary`, `--color-border-focus`, `--color-primary-subtle`.

@@ -7,12 +7,14 @@
 .table { width: var(--size-full); border-collapse: collapse; }
 .table th, .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: left; white-space: nowrap; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
+.table tbody tr:hover { background: var(--color-primary-subtle); }
 .balance { display: grid; gap: var(--space-2); }
 .balance strong { font-variant-numeric: tabular-nums; }
 .balance small { color: var(--color-text-secondary); font: var(--type-supporting); }
 .link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.studentNameCell { display: flex; align-items: center; gap: var(--space-2); }
 .button { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); text-decoration: none; cursor: pointer; }
-.button:hover { background: var(--color-action-primary-hover); }
+.button:hover { background: var(--color-action-primary-hover); box-shadow: var(--shadow-sm); }
 .button:active { background: var(--color-action-primary-active); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .panel { padding: var(--space-6); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-container); background: var(--glass-background, var(--color-background-surface)); backdrop-filter: blur(var(--glass-blur, 16px)); }

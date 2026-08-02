@@ -22,7 +22,12 @@
 }
 
 .resultCard {
+  padding: var(--space-6);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-container);
   border-inline-start-width: var(--border-width-emphasis);
+  background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 96%, var(--color-action-primary)));
+  box-shadow: var(--surface-inset-highlight);
 }
 
 .resultMATCHED {
@@ -182,8 +187,13 @@
 }
 
 .auditTimelineCard {
+  padding: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border-radius: var(--shape-control);
   border-inline-start-width: var(--border-width-emphasis);
   border-inline-start-color: var(--color-action-primary);
+  background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 97%, var(--color-action-primary)));
+  box-shadow: var(--surface-inset-highlight);
 }
 
 .auditTimelineTrigger {

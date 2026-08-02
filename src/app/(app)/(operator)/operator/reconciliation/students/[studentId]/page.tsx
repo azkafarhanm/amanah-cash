@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { FinancialAuditTimeline } from "@/components/financial-assurance/financial-audit-timeline";
 import { ReconciliationResultCard } from "@/components/financial-assurance/reconciliation-result";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
@@ -14,7 +15,7 @@ export default async function StudentReconciliationPage({
   return (
     <ContentWrapper>
       <Link className={styles.backLink} href="/operator/reconciliation">
-        Kembali ke daftar Siswa
+        <ArrowLeft size={16} /> Kembali ke daftar Siswa
       </Link>
       <SectionHeader
         title="Pemeriksaan Keuangan"

@@ -10,6 +10,7 @@ import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { QuickActions } from "@/components/dashboard/quick-actions";
+import { InitialsAvatar } from "@/components/students/presentation";
 import styles from "@/components/dashboard/dashboard-v2.module.css";
 
 export default async function AdminHome() {
@@ -69,6 +70,7 @@ export default async function AdminHome() {
             <div className={styles.adminList}>
               {dashboard.studentDistribution.map((op) => (
                 <div key={op.operatorId} className={styles.adminListItem}>
+                  <InitialsAvatar name={op.operatorName} size={28} />
                   <div className={styles.adminListItemContent}>
                     <div className={styles.adminListItemTitle}>{op.operatorName}</div>
                   </div>
