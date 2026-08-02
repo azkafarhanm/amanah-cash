@@ -1,9 +1,9 @@
 # Amanah Cash — Development Workflow
 
-**Version:** 1.2
+**Version:** 1.3
 **Status:** Approved
 **Owner:** Project Owner
-**Last Updated:** 2026-07-20
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -158,11 +158,33 @@ The summary must describe the reviewed outcome. Reference requirement IDs in the
 
 ## 10. Release
 
-1. Confirm the intended commits are present.
-2. Confirm migrations and deployment steps are documented.
-3. Run release verification against the selected environment.
-4. Confirm PWA, database, and server behavior remain aligned.
-5. Update release notes and changelog version information.
+`package.json.version` is the canonical application version. The About page
+reads this value; neither the application nor the release process derives it
+from `CHANGELOG.md`.
+
+During development, add appropriate notes beneath `## [Unreleased]`. Minor CSS
+polish, refactoring, tests, documentation, and internal cleanup do not require a
+version change and must not be promoted merely because they were committed.
+Only release-worthy, user-facing features, visible UX improvements, important
+bug fixes, and noticeable performance improvements belong in a released
+section of the public Changelog.
+
+Create a release in this order:
+
+1. Confirm the intended commits and deployment steps are documented.
+2. Choose the next semantic version.
+3. Update `package.json.version`; keep `package-lock.json` synchronized.
+4. Move only relevant user-facing entries from `Unreleased` into a dated
+   `## [x.y.z] - YYYY-MM-DD` section, newest first. Leave internal notes under
+   `Unreleased` or remove them when they are no longer useful.
+5. Run `npm run release:validate`. A mismatch between the package version and
+   newest released Changelog section is a blocking failure.
+6. Run tests, lint, typecheck, and the production build.
+7. Complete engineering review and manual QA.
+8. Tag the approved commit as `vX.Y.Z` and deploy the verified artifact.
+
+The public `/changelog` route continues to omit `Unreleased`; it displays only
+dated released sections parsed from the maintained Keep a Changelog document.
 
 Output: a reproducible release with recorded verification.
 

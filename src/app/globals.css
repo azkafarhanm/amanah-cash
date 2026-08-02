@@ -578,8 +578,12 @@
   --button-primary-background-active: var(--color-action-primary-active);
   --button-primary-foreground: var(--color-text-inverse);
   --button-secondary-background: var(--color-background-surface);
+  --button-secondary-background-hover: var(--color-background-subtle);
+  --button-secondary-background-active: var(--color-primary-subtle);
   --button-secondary-foreground: var(--color-text-primary);
   --button-secondary-border: var(--color-border-default);
+  --button-secondary-border-hover: var(--color-border-strong);
+  --button-secondary-border-active: var(--color-action-primary);
   --button-disabled-background: var(--color-disabled-background);
   --button-disabled-foreground: var(--color-disabled-foreground);
   --button-height-default: var(--control-height-default);
@@ -793,4 +797,3 @@ html {
     animation: none;
   }
 }
-

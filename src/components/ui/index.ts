@@ -24,3 +24,4 @@ export { LoadingSkeleton, type LoadingSkeletonProps, type LoadingSkeletonVariant
 export { Pagination, type PaginationProps } from "./pagination";
 export { SectionHeader, type SectionHeaderProps } from "./section-header";
 export { StatusBadge, type StatusBadgeProps, type StatusBadgeTone } from "./status-badge";
+export { BackButton, type BackButtonProps } from "./back-button";

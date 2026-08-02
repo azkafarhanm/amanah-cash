@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { protectRoute } from "@/authorization/routes";
-import { ContentWrapper, EmptyState, SectionHeader } from "@/components/ui";
+import { BackButton, ContentWrapper, EmptyState, SectionHeader } from "@/components/ui";
 import { releasedChangelog } from "@/settings/about";
 import styles from "./changelog.module.css";
 
@@ -14,7 +13,7 @@ export default async function ChangelogPage() {
       <SectionHeader
         title="Perubahan Amanah Cash"
         description="Ringkasan perubahan yang sudah dirilis."
-        action={<Link className={styles.backLink} href={settingsHref}>Kembali ke Pengaturan</Link>}
+        action={<BackButton href={settingsHref}>Kembali ke Pengaturan</BackButton>}
       />
       {releases.length ? (
         <div className={styles.releases}>

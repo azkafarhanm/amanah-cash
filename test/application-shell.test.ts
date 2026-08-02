@@ -39,6 +39,8 @@ test("the shell provides accessible responsive landmarks without business conten
   assert.match(shell, /<footer/);
   assert.match(shell, /aria-expanded=\{navigationOpen\}/);
   assert.match(styles, /@media \(min-width: 48rem\)/);
+  assert.doesNotMatch(shell, /Bell|Notifikasi|notification/i);
+  assert.doesNotMatch(styles, /iconButton/);
   assert.doesNotMatch(shell, /balance|amount|chart|statistic/i);
 });
 

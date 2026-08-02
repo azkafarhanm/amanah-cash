@@ -89,6 +89,18 @@
   border-color: var(--button-secondary-border);
 }
 
+.buttonSecondary:hover:not(:disabled, [aria-busy="true"]) {
+  background: var(--button-secondary-background-hover);
+  border-color: var(--button-secondary-border-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.buttonSecondary:active:not(:disabled, [aria-busy="true"]) {
+  background: var(--button-secondary-background-active);
+  border-color: var(--button-secondary-border-active);
+}
+
 .heading {
   margin: var(--space-0);
   color: var(--color-text-primary);
@@ -179,6 +191,61 @@
 
 .sectionHeaderAction {
   flex: none;
+  display: flex;
+  align-items: center;
+}
+
+.backButton {
+  min-height: var(--control-height-minimum);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-4);
+  border: var(--border-width-default) var(--border-style-default) var(--button-secondary-border, var(--color-border-default));
+  border-radius: var(--radius-full);
+  background: var(--button-secondary-background, var(--color-background-surface));
+  color: var(--color-text-primary);
+  font: var(--type-button);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--surface-inset-highlight);
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.backArrow {
+  color: var(--color-action-primary);
+  flex: none;
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.backButton:hover {
+  background: var(--button-secondary-background-hover, var(--color-background-subtle));
+  border-color: var(--button-secondary-border-hover, var(--color-border-strong));
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.backButton:hover .backArrow {
+  transform: translateX(-4px);
+}
+
+.backButton:active {
+  transform: scale(0.97);
+  background: var(--button-secondary-background-active, var(--color-primary-subtle));
+  border-color: var(--button-secondary-border-active, var(--color-action-primary));
+}
+
+.backButton:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
 }
 
 .featurePlaceholder {
@@ -453,4 +520,3 @@
     transition: none;
   }
 }
-

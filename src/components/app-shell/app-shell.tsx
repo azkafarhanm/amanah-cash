@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { Bell } from "lucide-react";
 import type { Role } from "@/generated/prisma/enums";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Logo, StatusBadge } from "@/components/ui";
@@ -75,9 +74,6 @@ export function AppShell({ role, user, children }: AppShellProps) {
           <Logo />
         </Link>
         <div className={styles.account}>
-          <button className={styles.iconButton} type="button" aria-label="Notifikasi" title="Notifikasi">
-            <Bell size={18} />
-          </button>
           <div className={styles.accountCopy}>
             <span className={styles.accountName}>{displayName}</span>
             <StatusBadge>{roleLabel}</StatusBadge>

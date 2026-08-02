@@ -1,7 +1,5 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { BackButton, ContentWrapper, SectionHeader } from "@/components/ui";
 import { StudentForm } from "@/components/admin-forms/student-form";
 import { StudentDetail } from "@/components/students/student-detail";
 import { studentManagement } from "@/students/service";
@@ -16,5 +14,5 @@ export default async function AdminStudentDetail({ params, searchParams }: { par
     throw error;
   });
   const operators = await service.activeOperators(); const edit = editStudentAction.bind(null, id);
-  return <ContentWrapper><SectionHeader title={student.name} description="Kelola data dan kepemilikan Siswa tanpa fitur keuangan." action={<Link className={styles.link} href="/admin/students"><ArrowLeft size={16} /> Kembali</Link>} />{query.notice ? <p className={styles.message}>{query.notice}</p> : null}<StudentDetail student={student} /><StudentForm action={edit} initialValues={{ name: student.name, operatorId: student.operator.id, status: student.status, notes: student.notes ?? "", ownershipTransferReason: "" }} mode="edit" operators={operators} styles={styles} /></ContentWrapper>;
+  return <ContentWrapper><SectionHeader title={student.name} description="Kelola data dan kepemilikan Siswa tanpa fitur keuangan." action={<BackButton href="/admin/students">Kembali ke Siswa</BackButton>} />{query.notice ? <p className={styles.message}>{query.notice}</p> : null}<StudentDetail student={student} /><StudentForm action={edit} initialValues={{ name: student.name, operatorId: student.operator.id, status: student.status, notes: student.notes ?? "", ownershipTransferReason: "" }} mode="edit" operators={operators} styles={styles} /></ContentWrapper>;
 }

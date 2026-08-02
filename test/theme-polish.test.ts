@@ -39,17 +39,36 @@ test("operational component styles contain no raw light surfaces or shadow color
   assert.doesNotMatch(styles, /var\([^)]*,\s*(?:#|rgba?\(|white|black)/i);
 });
 
-test("authenticated theme is bootstrapped before the application shell", async () => {
-  const [layout, theme, globals] = await Promise.all([
+test("shared secondary buttons expose tokenized enabled interaction states", async () => {
+  const [globals, ui] = await Promise.all([
+    readFile("src/app/globals.css", "utf8"),
+    readFile("src/components/ui/ui.module.css", "utf8")
+  ]);
+
+  assert.match(globals, /--button-secondary-background-hover: var\(--color-background-subtle\)/);
+  assert.match(globals, /--button-secondary-background-active: var\(--color-primary-subtle\)/);
+  assert.match(globals, /--button-secondary-border-hover: var\(--color-border-strong\)/);
+  assert.match(globals, /--button-secondary-border-active: var\(--color-action-primary\)/);
+  assert.match(ui, /\.buttonSecondary:hover:not\(:disabled, \[aria-busy="true"\]\)/);
+  assert.match(ui, /\.buttonSecondary:active:not\(:disabled, \[aria-busy="true"\]\)/);
+  assert.match(ui, /\.button:disabled,[\s\S]*?var\(--button-disabled-foreground\)/);
+  assert.match(ui, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.button,[\s\S]*?transition: none/);
+});
+
+test("theme is bootstrapped in the document head and synchronized around the application shell", async () => {
+  const [rootLayout, authenticatedLayout, theme, globals] = await Promise.all([
+    readFile("src/app/layout.tsx", "utf8"),
     readFile("src/app/(app)/layout.tsx", "utf8"),
     readFile("src/settings/theme.ts", "utf8"),
     readFile("src/app/globals.css", "utf8")
   ]);
-  const bootstrapPosition = layout.indexOf("<ThemeBootstrapScript");
-  const shellPosition = layout.indexOf("<AppShell");
+  const providerPosition = authenticatedLayout.indexOf("<ThemeProvider");
+  const shellPosition = authenticatedLayout.indexOf("<AppShell");
 
-  assert.ok(bootstrapPosition >= 0);
-  assert.ok(shellPosition > bootstrapPosition);
+  assert.match(rootLayout, /<head>[\s\S]*?<script dangerouslySetInnerHTML/);
+  assert.doesNotMatch(authenticatedLayout, /<script|ThemeBootstrapScript/);
+  assert.ok(providerPosition >= 0);
+  assert.ok(shellPosition > providerPosition);
   assert.match(theme, /classList\.add\("theme-changing"\)/);
   assert.match(theme, /classList\.remove\("theme-changing"\)/);
   assert.match(globals, /\.theme-changing \*/);

@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- Added a lightweight release validation command that fails when `package.json.version` does not match the newest released Changelog version.
+
+### Changed
+
+- Defined `package.json.version` as the canonical application version and documented the manual semantic-version release workflow.
+- Production builds now run release validation before compilation.
+
+### Fixed
+
+### Removed
+
+### Authenticated Shell Scope Alignment
+
+- Removed the non-functional notification bell from the authenticated header because notifications are outside the approved MVP and no notification system exists.
+- Preserved the existing account-group alignment, responsive header behavior, keyboard navigation, and accessible logout controls without adding a replacement placeholder.
+- No notification route, service, model, API, business logic, or workflow was introduced.
+
+### Shared Secondary Button Affordance Polish
+
+- Added design-token-backed hover and pressed treatments to the shared secondary `Button`, improving interactive affordance in Light and Dark themes across every consumer.
+- Preserved the existing focus-visible ring, loading/disabled presentation, and reduced-motion transition override.
+- No reconciliation logic, loading state, API, business rule, authorization, or workflow changes.
+
 ### Sprint 8 — Product Quality Assurance
 
 - Conducted a comprehensive quality audit covering Accessibility (Epic 8.1), Performance (Epic 8.2), Cross-Device & Theme QA (Epic 8.3), Visual Review (Epic 8.4), and Final MVP Alignment (Epic 8.5).

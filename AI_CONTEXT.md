@@ -1,6 +1,6 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-07-31
+**Last updated:** 2026-08-02
 **Current delivery state:** Phase 1 (Functional MVP, Sprints 0–6) complete; Phase 2 (Product Quality) beginning with Sprint 7 — Design System Polish; Release Phase ON HOLD
 
 ## Project Purpose
@@ -53,6 +53,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 7 — Epic 7.4 Batch 7.4.1 (Motion Polish) complete: added global prefers-reduced-motion overrides in globals.css covering all elements, aligned hover transitions, focus ring visual treatments, and loading skeletons across component CSS modules using design system tokens (--motion-duration-fast, --motion-ease-standard), verified that financial values never animate or transition, and added test/motion-polish.test.ts for automated regression coverage. No behavior, API, or contract changes.
 - Sprint 7 — Epic 7.5 Batch 7.5.1 (Responsive Polish) complete: added iOS/mobile safe-area inset support (env(safe-area-inset-*)) across App Shell, Context Detail Drawer, and mobile bottom-sheet dialogs; enforced 44px min touch targets across all interactive controls; guaranteed 320px viewport safety with overflow-wrap/word-break/min-width reflow; added test/responsive-polish.test.ts for automated regression coverage. No behavior, API, or contract changes.
 - Sprint 8 — Product Quality Assurance complete: audited Accessibility (8.1), Performance (8.2), Cross-Device & Theme QA (8.3), Visual Review (8.4), and Final MVP Alignment (8.5). Added test/sprint8-quality-assurance.test.ts (228 total tests passing) and issued the official MVP Quality Completion report at docs/52-mvp-quality-completion-report.md. Approved for Release Qualification Phase (Sprint R1).
+- Shared secondary button affordance polish complete: all shared secondary `Button` consumers now receive tokenized hover elevation and border emphasis plus subtle pressed feedback in Light and Dark themes. Existing focus-visible, disabled/loading, and reduced-motion behavior is preserved; reconciliation behavior is unchanged.
+- Authenticated shell scope alignment complete: removed the non-functional notification bell and its obsolete styles because notifications remain outside the approved MVP. Header account alignment, responsive behavior, keyboard navigation, and logout accessibility remain unchanged; no notification subsystem or placeholder was added.
 
 
 ## Current Implementation Status
@@ -81,7 +83,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 228 passed, 0 failed.
+- Automated tests: 232 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **MVP QUALITY COMPLETE — APPROVED FOR RELEASE QUALIFICATION (SPRINT R1)**.
@@ -153,6 +155,7 @@ SQLite relational database and invariant triggers
 - Financial mutations are allowed only for an `ACTIVE` Student owned by the current active Operator. Inactive and archived Students are financially read-only.
 - Every mutation uses a unique command ID and expected revision where applicable; retry cannot apply a Balance delta twice.
 - `AI_CONTEXT.md` is the canonical engineering handoff. Every implementation sprint must also assess and synchronize `CHANGELOG.md`, README, and roadmap status before completion.
+- Release metadata uses `package.json.version` as the canonical application version. `npm run release:validate` blocks a release/build when it differs from the newest dated release in `CHANGELOG.md`; the public Changelog parser excludes `Unreleased`. Internal CSS, refactoring, test, documentation, and cleanup notes remain under `Unreleased` without forcing a version bump, while only release-worthy user-facing notes are promoted during the documented manual SemVer release workflow in `docs/11-development-workflow.md`.
 
 ## Data Model Status
 
