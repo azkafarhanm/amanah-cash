@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 8 — Product Quality Assurance
+
+- Conducted a comprehensive quality audit covering Accessibility (Epic 8.1), Performance (Epic 8.2), Cross-Device & Theme QA (Epic 8.3), Visual Review (Epic 8.4), and Final MVP Alignment (Epic 8.5).
+- Created `test/sprint8-quality-assurance.test.ts` asserting keyboard navigation, screen reader ARIA landmarks, performance animation constraints, PWA manifest validity, flash-free theme bootstrap script, tokenized styling, and domain financial invariants.
+- Executed all automated repository verification gates: 228 passing tests (0 failures), 0 TypeScript errors, 0 ESLint warnings/errors, and clean Next.js production build.
+- Issued the official **MVP Quality Completion Report** in `docs/52-mvp-quality-completion-report.md` declaring MVP Quality Complete and approving the application for Release Qualification Phase (Sprint R1).
+- No behavior, API, business logic, authorization, or workflow changes.
+
 ### Sprint 7 — Epic 7.5: Batch 7.5.1 — Responsive Consistency
 
 - Added iOS and mobile safe-area inset support (`env(safe-area-inset-top)`, `env(safe-area-inset-bottom)`) across App Shell header/sidebar, Context Detail Drawer, and mobile bottom-sheet transaction dialogs.
