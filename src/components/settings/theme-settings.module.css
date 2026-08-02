@@ -2,9 +2,10 @@
   display: grid;
   gap: var(--space-6);
   padding: var(--space-6);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  background: var(--color-background-surface);
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
 }
 
 .header {
@@ -47,28 +48,57 @@
 
 .options {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .option {
-  min-height: var(--control-height-minimum);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-2) var(--space-4);
-  align-items: center;
-  padding: var(--space-4);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
-  border-radius: var(--shape-control);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
+  border-radius: var(--radius-lg);
   background: var(--color-background-surface);
   cursor: pointer;
+  position: relative;
   transition:
-    border-color var(--motion-duration-settings) var(--motion-ease-standard),
-    background-color var(--motion-duration-settings) var(--motion-ease-standard);
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.option:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--surface-shadow-subtle);
 }
 
 .option:has(input:checked) {
   border-color: var(--color-action-primary);
   background: var(--color-primary-subtle);
+  box-shadow: var(--surface-shadow-raised), inset 0 0 0 1px var(--color-action-primary);
+}
+
+.symbolHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.symbolBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-10);
+  height: var(--size-10);
+  border-radius: var(--radius-md);
+  background: var(--color-background-subtle);
+  color: var(--color-action-primary);
+}
+
+.option:has(input:checked) .symbolBadge {
+  background: var(--color-action-primary);
+  color: var(--color-text-inverse);
 }
 
 .option:has(input:focus-visible) {
@@ -79,12 +109,14 @@
 
 .optionCopy {
   display: grid;
-  gap: var(--space-0-5);
+  gap: var(--space-1);
 }
 
 .optionLabel {
   color: var(--color-text-primary);
   font: var(--type-label);
+  font-size: var(--font-size-16);
+  font-weight: var(--font-weight-semibold);
 }
 
 .option input {
@@ -95,7 +127,6 @@
 }
 
 .optionStatus {
-  grid-column: 1 / -1;
   min-height: var(--line-height-20);
   color: var(--color-text-secondary);
   font: var(--type-supporting);

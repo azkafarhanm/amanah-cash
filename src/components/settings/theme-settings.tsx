@@ -9,17 +9,45 @@ import {
 } from "@/settings/theme";
 import styles from "./theme-settings.module.css";
 
+function SunIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </svg>
+  );
+}
+
+function MoonIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+  );
+}
+
+function MonitorIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect width="20" height="14" x="2" y="3" rx="2" />
+      <path d="M12 17v4M8 21h8" />
+    </svg>
+  );
+}
+
 const OPTIONS: ReadonlyArray<{
   value: ThemePreference;
   label: string;
   description: string;
+  icon: () => React.ReactElement;
 }> = [
-  { value: "LIGHT", label: "Light", description: "Selalu gunakan tema terang." },
-  { value: "DARK", label: "Dark", description: "Selalu gunakan tema gelap." },
+  { value: "LIGHT", label: "Light", description: "Selalu gunakan tema terang.", icon: SunIcon },
+  { value: "DARK", label: "Dark", description: "Selalu gunakan tema gelap.", icon: MoonIcon },
   {
     value: "SYSTEM",
     label: "System",
-    description: "Ikuti pengaturan tampilan perangkat."
+    description: "Ikuti pengaturan tampilan perangkat.",
+    icon: MonitorIcon
   },
 ];
 
@@ -89,21 +117,27 @@ export function ThemeSettings({ initialTheme }: { initialTheme: ThemePreference 
         <div className={styles.options}>
           {OPTIONS.map((option) => {
             const id = `${legendId}-${option.value.toLowerCase()}`;
+            const Icon = option.icon;
             return (
               <label className={styles.option} key={option.value} htmlFor={id}>
+                <div className={styles.symbolHeader}>
+                  <span className={styles.symbolBadge}>
+                    <Icon />
+                  </span>
+                  <input
+                    id={id}
+                    type="radio"
+                    name="theme"
+                    value={option.value}
+                    checked={selected === option.value}
+                    aria-describedby={`${id}-status`}
+                    onChange={() => void selectTheme(option.value)}
+                  />
+                </div>
                 <span className={styles.optionCopy}>
                   <span className={styles.optionLabel}>{option.label}</span>
                   <span className={styles.optionDescription}>{option.description}</span>
                 </span>
-                <input
-                  id={id}
-                  type="radio"
-                  name="theme"
-                  value={option.value}
-                  checked={selected === option.value}
-                  aria-describedby={`${id}-status`}
-                  onChange={() => void selectTheme(option.value)}
-                />
                 <span id={`${id}-status`} className={styles.optionStatus}>
                   {saving && selected === option.value ? "Menyimpan…" : ""}
                 </span>

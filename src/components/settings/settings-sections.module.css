@@ -6,9 +6,10 @@
   display: grid;
   gap: var(--space-6);
   padding: var(--space-6);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  background: var(--color-background-surface);
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
 }
 
 .header,
