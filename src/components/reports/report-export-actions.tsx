@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FileSpreadsheet, FileText, FileType } from "lucide-react";
 import styles from "./reports.module.css";
 
 type ExportFormat = {
@@ -122,6 +123,7 @@ export function ReportExportActions({ formats, total }: { formats: ExportFormat[
       {formats.map((format) => {
         const active = preparing && state.format.format === format.format;
         const label = format.format === "xlsx" ? "Excel (.xlsx)" : format.label;
+        const Icon = format.format === "csv" ? FileText : format.format === "xlsx" ? FileSpreadsheet : FileType;
         return <div className={styles.exportChoice} key={format.format}>
           <button
             type="button"
@@ -131,6 +133,7 @@ export function ReportExportActions({ formats, total }: { formats: ExportFormat[
             aria-describedby={`export-${format.format}-description`}
             onClick={() => void startExport(format)}
           >
+            <Icon size={16} />
             {active ? `Menyiapkan ${format.label}…` : `Unduh ${label}`}
           </button>
           <small id={`export-${format.format}-description`}>{formatDescriptions[format.format] ?? "Unduh laporan dalam format ini."}</small>
