@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { Search } from "lucide-react";
 import { EmptyState, Pagination } from "@/components/ui";
 import type { StudentRecord } from "@/students/domain";
 import type { StudentFinancialSummary } from "@/transactions/read-service";
@@ -74,14 +75,17 @@ export function StudentList({
     <form className={styles.toolbar} method="get" onSubmit={(e) => { e.preventDefault(); updateParams(searchValue); }}>
       <label className={styles.field}>
         {searchLabel}
-        <input
-          className={styles.input}
-          name="search"
-          value={searchValue}
-          placeholder={searchPlaceholder}
-          onChange={(e) => handleSearchChange(e.target.value)}
-          autoComplete="off"
-        />
+        <span className={styles.searchInputWrap}>
+          <Search size={16} className={styles.searchIcon} />
+          <input
+            className={styles.searchInput}
+            name="search"
+            value={searchValue}
+            placeholder={searchPlaceholder}
+            onChange={(e) => handleSearchChange(e.target.value)}
+            autoComplete="off"
+          />
+        </span>
       </label>
       {showStatusFilter ? <label className={styles.field}>
         Status
