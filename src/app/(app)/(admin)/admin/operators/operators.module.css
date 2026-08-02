@@ -17,7 +17,7 @@
 .button:hover { background: var(--color-action-primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
 .button:active { background: var(--color-action-primary-active); transform: scale(0.98); }
 .danger { border: var(--border-width-default) var(--border-style-default) var(--color-error-foreground); color: var(--color-error-foreground); background: var(--color-background-surface); }
-.message, .error { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3.5, 0.875rem) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); backdrop-filter: blur(var(--glass-blur, 12px)); font: var(--type-body); }
+.message, .error { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3-5) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); backdrop-filter: blur(var(--glass-blur, 12px)); font: var(--type-body); }
 .message { color: var(--color-success-foreground); background: var(--color-success-background); box-shadow: inset 3px 0 0 var(--color-success-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
 .error { color: var(--color-error-foreground); background: var(--color-error-background); box-shadow: inset 3px 0 0 var(--color-error-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
 .definition { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
@@ -46,4 +46,3 @@
     transition: none;
   }
 }
-

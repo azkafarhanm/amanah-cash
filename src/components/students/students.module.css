@@ -21,7 +21,7 @@
 .button:hover { background: var(--color-action-primary-hover); box-shadow: var(--shadow-sm); }
 .button:active { background: var(--color-action-primary-active); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
-.message, .error, .placeholder { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3.5, 0.875rem) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); backdrop-filter: blur(var(--glass-blur, 12px)); font: var(--type-body); }
+.message, .error, .placeholder { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3-5) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); backdrop-filter: blur(var(--glass-blur, 12px)); font: var(--type-body); }
 .message { color: var(--color-success-foreground); background: var(--color-success-background); box-shadow: inset 3px 0 0 var(--color-success-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
 .error { color: var(--color-error-foreground); background: var(--color-error-background); box-shadow: inset 3px 0 0 var(--color-error-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
 .placeholder { color: var(--color-text-secondary); background: var(--color-background-subtle); box-shadow: inset 3px 0 0 var(--color-action-primary), var(--surface-inset-highlight), var(--shadow-xs); }
@@ -42,5 +42,4 @@
   .table td::before { content: attr(data-label); flex: 0 0 40%; color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
   .balance { justify-items: end; }
 }
-
 

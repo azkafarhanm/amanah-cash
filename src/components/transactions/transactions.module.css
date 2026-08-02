@@ -11,10 +11,10 @@
 .metric strong { font: var(--type-body); }
 .primaryActions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
 .primaryActions button { width: var(--size-full); }
-.success, .error, .warning { margin: var(--space-0); padding: var(--space-4); border-radius: var(--shape-control); }
-.success { color: var(--color-success-foreground); background: var(--color-success-background); }
-.error { color: var(--color-error-foreground); background: var(--color-error-background); }
-.warning { color: var(--color-warning-foreground); background: var(--color-warning-background); }
+.success, .error, .warning { margin: var(--space-0); display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3-5) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); backdrop-filter: blur(var(--glass-blur, 12px)); font: var(--type-body); }
+.success { color: var(--color-success-foreground); background: var(--color-success-background); box-shadow: inset 3px 0 0 var(--color-success-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
+.error { color: var(--color-error-foreground); background: var(--color-error-background); box-shadow: inset 3px 0 0 var(--color-error-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
+.warning { color: var(--color-warning-foreground); background: var(--color-warning-background); box-shadow: inset 3px 0 0 var(--color-warning-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
 .filters { grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)); padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 97%, var(--color-action-primary))); box-shadow: var(--surface-inset-highlight); }
 .field { display: grid; align-content: start; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
 .input, .select, .textarea { width: var(--size-full); min-height: var(--control-height-minimum); padding: var(--space-2) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
