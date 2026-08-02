@@ -6,7 +6,7 @@ import {
   AboutSettings,
   SecuritySettings
 } from "@/components/settings/security-about-settings";
-import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { ContentWrapper, SectionDivider, SectionHeader } from "@/components/ui";
 import { getPrismaClient } from "@/persistence/prisma";
 import { readSettingsPreferences } from "@/settings/service";
 import { APPLICATION_VERSION } from "@/settings/about";
@@ -25,6 +25,7 @@ export default async function OperatorSettingsPage() {
         title="Pengaturan"
         description="Atur tampilan dan preferensi Amanah Cash untuk akun Anda."
       />
+      <SectionDivider />
       <ThemeSettings initialTheme={preferences.theme} />
       <PreferencesSettings
         initialPageSize={preferences.defaultPageSize}

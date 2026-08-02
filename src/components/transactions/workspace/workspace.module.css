@@ -199,8 +199,13 @@
   border-block-end: none;
 }
 
+.tr {
+  transition: background-color var(--motion-duration-fast) var(--motion-ease-standard), box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
 .tr:hover {
   background: var(--color-background-subtle);
+  box-shadow: inset 3px 0 0 var(--color-action-primary);
 }
 
 .studentCell {

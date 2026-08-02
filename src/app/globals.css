@@ -301,6 +301,11 @@
   --radius-xl: 1rem;
   --radius-2xl: 1.25rem;
   --radius-full: 9999px;
+  --shape-parent-container: var(--radius-2xl);
+  --shape-container: var(--radius-xl);
+  --shape-inner-card: 0.875rem;
+  --shape-control: var(--radius-lg);
+  --shape-button-nested: 0.625rem;
   --border-width-default: 1px;
   --border-width-emphasis: 2px;
   --border-style-default: solid;
@@ -313,9 +318,9 @@
   --shadow-subtle: var(--shadow-xs);
   --shadow-raised: var(--shadow-md);
   --shadow-large: var(--shadow-xl);
-  --shadow-focus: 0 0 0 3px rgb(37 99 235 / 28%);
-  --shadow-focus-light: 0 0 0 3px rgb(49 94 125 / 22%);
-  --shadow-focus-dark: 0 0 0 3px rgb(56 189 248 / 28%);
+  --shadow-focus: 0 0 0 3px rgb(13 148 136 / 28%);
+  --shadow-focus-light: 0 0 0 3px rgb(13 148 136 / 22%);
+  --shadow-focus-dark: 0 0 0 3px rgb(45 212 191 / 28%);
   --shadow-focus-error: 0 0 0 3px rgb(239 68 68 / 25%);
   --opacity-0: 0;
   --opacity-40: 0.4;

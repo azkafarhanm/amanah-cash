@@ -8,8 +8,8 @@
 .table th, .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: left; white-space: nowrap; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
 .table td { font: var(--type-body); }
-.table tbody tr { transition: background-color var(--motion-duration-fast) var(--motion-ease-standard); }
-.table tbody tr:hover { background: var(--color-primary-subtle); }
+.table tbody tr { transition: background-color var(--motion-duration-fast) var(--motion-ease-standard), box-shadow var(--motion-duration-fast) var(--motion-ease-standard); }
+.table tbody tr:hover { background: var(--color-primary-subtle); box-shadow: inset 3px 0 0 var(--color-action-primary); }
 .link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; transition: color var(--motion-duration-fast) var(--motion-ease-standard); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-standard), transform var(--motion-duration-fast) var(--motion-ease-standard), box-shadow var(--motion-duration-fast) var(--motion-ease-standard); }
