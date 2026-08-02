@@ -23,11 +23,12 @@
 
 .resultCard {
   padding: var(--space-6);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  border-inline-start-width: var(--border-width-emphasis);
-  background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 96%, var(--color-action-primary)));
-  box-shadow: var(--surface-inset-highlight);
+  border-inline-start-width: 4px;
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  box-shadow: var(--surface-inset-highlight), var(--shadow-sm);
 }
 
 .resultMATCHED {
