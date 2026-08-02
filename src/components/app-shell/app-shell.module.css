@@ -71,7 +71,9 @@
 
 .brand { color: inherit; text-decoration: none; }
 
-.account { margin-inline-start: auto; display: flex; align-items: center; gap: var(--space-4); }
+.account { margin-inline-start: auto; display: flex; align-items: center; gap: var(--space-3); }
+.iconButton { display: inline-flex; align-items: center; justify-content: center; width: var(--control-height-minimum); height: var(--control-height-minimum); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-secondary); cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-standard), color var(--motion-duration-fast) var(--motion-ease-standard); }
+.iconButton:hover { background: var(--color-background-subtle); color: var(--color-text-primary); }
 .accountCopy { display: none; align-items: center; gap: var(--space-3); }
 .accountName { font: var(--type-label); color: var(--color-text-primary); }
 .logoutButton { padding-inline: var(--space-4); }
