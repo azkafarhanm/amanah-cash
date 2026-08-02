@@ -25,3 +25,4 @@ export { Pagination, type PaginationProps } from "./pagination";
 export { SectionHeader, type SectionHeaderProps } from "./section-header";
 export { StatusBadge, type StatusBadgeProps, type StatusBadgeTone } from "./status-badge";
 export { BackButton, type BackButtonProps } from "./back-button";
+export { SectionDivider, type SectionDividerProps } from "./section-divider";

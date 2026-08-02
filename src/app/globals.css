@@ -390,6 +390,7 @@
   --surface-shadow-subtle: var(--shadow-subtle);
   --surface-shadow-raised: var(--shadow-raised);
   --surface-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  --divider-gradient: linear-gradient(90deg, transparent 0%, var(--color-border-default) 50%, transparent 100%);
   --pagination-control-background: var(--color-background-surface);
   --pagination-control-foreground: var(--color-action-primary);
   --pagination-control-border: var(--color-border-default);
@@ -699,6 +700,7 @@
   --surface-shadow-subtle: var(--shadow-none);
   --surface-shadow-raised: var(--shadow-sm);
   --surface-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --divider-gradient: linear-gradient(90deg, transparent 0%, var(--color-border-default) 50%, transparent 100%);
   --shadow-xs: 0 1px 2px rgb(0 0 0 / 10%);
   --shadow-sm: 0 2px 8px rgb(0 0 0 / 20%);
   --shadow-md: 0 4px 16px rgb(0 0 0 / 25%);
