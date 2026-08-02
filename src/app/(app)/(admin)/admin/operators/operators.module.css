@@ -1,29 +1,29 @@
 .toolbar, .form, .detail, .audit { display: grid; gap: var(--space-4); }
 .toolbar { grid-template-columns: minmax(12rem, 1fr) auto auto; align-items: end; }
 .field { display: grid; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
-.input, .select { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: 1px solid var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); }
-.tableWrap { overflow-x: auto; border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
-.table { width: 100%; border-collapse: collapse; }
-.table th, .table td { padding: var(--space-4); border-bottom: 1px solid var(--color-border-default); text-align: left; white-space: nowrap; }
+.input, .select { min-height: var(--control-height-minimum); padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
+.tableWrap { overflow-x: auto; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.table { width: var(--size-full); border-collapse: collapse; }
+.table th, .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: left; white-space: nowrap; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
 .table td { font: var(--type-body); }
 .link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
-.button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; }
-.button { border: 1px solid var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); }
+.button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-standard); }
+.button { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); }
 .button:hover { background: var(--color-action-primary-hover); }
 .button:active { background: var(--color-action-primary-active); }
-.danger { border: 1px solid var(--color-error-foreground); color: var(--color-error-foreground); background: var(--color-background-surface); }
-.panel { padding: var(--space-6); border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.danger { border: var(--border-width-default) var(--border-style-default) var(--color-error-foreground); color: var(--color-error-foreground); background: var(--color-background-surface); }
+.panel { padding: var(--space-6); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
 .message, .error { padding: var(--space-4); border-radius: var(--shape-control); font: var(--type-body); }
 .message { color: var(--color-success-foreground); background: var(--color-success-background); }
 .error { color: var(--color-error-foreground); background: var(--color-error-background); }
 .definition { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
 .definition div { display: grid; gap: var(--space-2); }
 .definition dt { color: var(--color-text-secondary); font: var(--type-label); }
-.definition dd { margin: 0; font: var(--type-body); }
-.auditItem { padding-block: var(--space-2); border-bottom: 1px solid var(--color-border-default); }
-.auditItem p { margin: 0; }
+.definition dd { margin: var(--space-0); font: var(--type-body); }
+.auditItem { padding-block: var(--space-2); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
+.auditItem p { margin: var(--space-0); }
 .input:focus-visible, .select:focus-visible, .button:focus-visible, .danger:focus-visible, .link:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 @media (max-width: 48rem) {
   .toolbar, .definition { grid-template-columns: 1fr; }
@@ -31,8 +31,8 @@
   .table, .table tbody, .table tr, .table td { display: block; width: var(--size-full); }
   .table thead { display: none; }
   .table tbody { display: grid; gap: var(--space-4); }
-  .table tr { padding: var(--space-4); border: 1px solid var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
-  .table td { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-0); border-bottom: 1px solid var(--color-border-default); white-space: normal; text-align: end; overflow-wrap: anywhere; }
-  .table td:last-child { border-bottom: 0; }
+  .table tr { padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+  .table td { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); padding: var(--space-2) var(--space-0); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); white-space: normal; text-align: end; overflow-wrap: anywhere; }
+  .table td:last-child { border-block-end: 0; }
   .table td::before { content: attr(data-label); flex: 0 0 40%; color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
 }

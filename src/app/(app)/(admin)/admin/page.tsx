@@ -6,6 +6,7 @@ import {
   BarChart3,
 } from "lucide-react";
 import { dashboardReadService } from "@/dashboard/read-service";
+import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { QuickActions } from "@/components/dashboard/quick-actions";
@@ -24,15 +25,11 @@ export default async function AdminHome() {
   const insights = generateAdminInsights(dashboard);
 
   return (
-    <div className={styles.dashboardSection} style={{ gap: "var(--space-6)" }}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h1 className={styles.sectionTitle}>Dashboard Administrator</h1>
-          <p className={styles.sectionDescription}>
-            Ringkasan administratif platform tanpa akses ke saldo atau rincian transaksi Siswa.
-          </p>
-        </div>
-      </div>
+    <ContentWrapper>
+      <SectionHeader
+        title="Dashboard Administrator"
+        description="Ringkasan administratif platform tanpa akses ke saldo atau rincian transaksi Siswa."
+      />
 
       <div className={styles.kpiGrid}>
         <KpiCard
@@ -69,31 +66,18 @@ export default async function AdminHome() {
           <h3 className={styles.chartTitle}>Distribusi Siswa per Operator</h3>
           <p className={styles.chartSubtitle}>Jumlah Siswa berdasarkan penanggung jawab</p>
           {dashboard.studentDistribution.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+            <div className={styles.adminList}>
               {dashboard.studentDistribution.map((op) => (
-                <div
-                  key={op.operatorId}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "var(--space-2)",
-                    borderBottom: "1px solid var(--color-border-default)",
-                  }}
-                >
-                  <span style={{ font: "var(--type-body)", color: "var(--color-text-primary)" }}>
-                    {op.operatorName}
-                  </span>
-                  <span style={{ font: "var(--type-label)", fontVariantNumeric: "tabular-nums", color: "var(--color-text-secondary)" }}>
-                    {op.studentCount} siswa
-                  </span>
+                <div key={op.operatorId} className={styles.adminListItem}>
+                  <div className={styles.adminListItemContent}>
+                    <div className={styles.adminListItemTitle}>{op.operatorName}</div>
+                  </div>
+                  <span className={styles.adminListItemTime}>{op.studentCount} siswa</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ padding: "var(--space-4)", textAlign: "center", font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-              Belum ada Operator
-            </p>
+            <p className={styles.attentionEmpty}>Belum ada Operator</p>
           )}
         </div>
 
@@ -101,41 +85,25 @@ export default async function AdminHome() {
           <h3 className={styles.chartTitle}>Aktivitas Terbaru</h3>
           <p className={styles.chartSubtitle}>Perubahan administratif terbaru</p>
           {dashboard.administrativeActivity.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+            <div className={styles.adminList}>
               {dashboard.administrativeActivity.slice(0, 5).map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    display: "flex",
-                    gap: "var(--space-3)",
-                    padding: "var(--space-2)",
-                    borderBottom: "1px solid var(--color-border-default)",
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ font: "var(--type-label)", color: "var(--color-text-primary)" }}>
+                <div key={item.id} className={styles.adminListItem}>
+                  <div className={styles.adminListItemContent}>
+                    <div className={styles.adminListItemTitle}>
                       {item.href ? (
-                        <a href={item.href} style={{ color: "inherit", textDecoration: "none" }}>
-                          {item.title}
-                        </a>
-                      ) : (
-                        item.title
-                      )}
+                        <a href={item.href} style={{ color: "inherit", textDecoration: "none" }}>{item.title}</a>
+                      ) : item.title}
                     </div>
-                    <div style={{ font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-                      {item.description}
-                    </div>
+                    <div className={styles.adminListItemDescription}>{item.description}</div>
                   </div>
-                  <time style={{ font: "var(--type-supporting)", color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>
+                  <time className={styles.adminListItemTime}>
                     {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.occurredAt))}
                   </time>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ padding: "var(--space-4)", textAlign: "center", font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-              Belum ada aktivitas administratif
-            </p>
+            <p className={styles.attentionEmpty}>Belum ada aktivitas administratif</p>
           )}
         </div>
 
@@ -143,41 +111,25 @@ export default async function AdminHome() {
           <h3 className={styles.chartTitle}>Penugasan Terbaru</h3>
           <p className={styles.chartSubtitle}>Siswa yang baru ditugaskan</p>
           {dashboard.latestAssignments.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
+            <div className={styles.adminList}>
               {dashboard.latestAssignments.slice(0, 5).map((item) => (
-                <div
-                  key={item.id}
-                  style={{
-                    display: "flex",
-                    gap: "var(--space-3)",
-                    padding: "var(--space-2)",
-                    borderBottom: "1px solid var(--color-border-default)",
-                  }}
-                >
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ font: "var(--type-label)", color: "var(--color-text-primary)" }}>
+                <div key={item.id} className={styles.adminListItem}>
+                  <div className={styles.adminListItemContent}>
+                    <div className={styles.adminListItemTitle}>
                       {item.href ? (
-                        <a href={item.href} style={{ color: "inherit", textDecoration: "none" }}>
-                          {item.title}
-                        </a>
-                      ) : (
-                        item.title
-                      )}
+                        <a href={item.href} style={{ color: "inherit", textDecoration: "none" }}>{item.title}</a>
+                      ) : item.title}
                     </div>
-                    <div style={{ font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-                      {item.description}
-                    </div>
+                    <div className={styles.adminListItemDescription}>{item.description}</div>
                   </div>
-                  <time style={{ font: "var(--type-supporting)", color: "var(--color-text-tertiary)", whiteSpace: "nowrap" }}>
+                  <time className={styles.adminListItemTime}>
                     {new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.occurredAt))}
                   </time>
                 </div>
               ))}
             </div>
           ) : (
-            <p style={{ padding: "var(--space-4)", textAlign: "center", font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-              Belum ada penugasan
-            </p>
+            <p className={styles.attentionEmpty}>Belum ada penugasan</p>
           )}
         </div>
       </div>
@@ -185,7 +137,7 @@ export default async function AdminHome() {
       {insights.length > 0 && <SmartInsights insights={insights} />}
 
       <QuickActions actions={quickActions} />
-    </div>
+    </ContentWrapper>
   );
 }
 

@@ -47,6 +47,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Canonical handoff, changelog, README, roadmap, and affected documentation synchronized with Sprint 2 v1.1.0.
 - Sprint 6 — MVP Settings complete: per-user theme (Light/Dark/System) with approved semantic dark palette and flash-free bootstrap; per-user default page-size (10/20/50) with explicit URL override; admin-only operational backup via database-consistent SQLite snapshot with sanitized sessions/tokens and privacy-minimized maintenance audit; validated atomic restore with format/version/integrity/schema/referential/Balance checks, pre-restore safety backup, atomic file replacement, and session revocation; Google security handoff with truthful external link; read-only application version from build-time source; sanitized in-app changelog route that excludes unreleased content. No Time theme or delete-confirmation customization exists.
 - Sprint 7 — Epic 7.1 Batch 7.1.1 (Design Token Alignment) complete: aligned all CSS custom properties and component styles with the Design System Foundation (`docs/51`). Added missing primitive tokens (radius, spacing, size, typography, shadow, motion, z-index, opacity), dark-theme shadow overrides, and typography semantic tokens. Eliminated hardcoded transition durations, animation values, blur values, and px dimensions from component CSS. No behavior, business logic, or workflow changes.
+- Sprint 7 — Epic 7.2 Batch 7.2.1 (Component Visual Consistency) complete: replaced all literal `1px solid` borders with token references in students and operators CSS, replaced hardcoded px dimensions with size/control tokens in app-shell and workspace CSS, replaced hardcoded opacity/font-size/letter-spacing with token references, added logical-property border directions, and ensured tabular-numeric alignment for financial values. No behavior, API, business logic, or workflow changes.
+- Sprint 7 — Epic 7.3 Batch 7.3.1 (Authenticated Screen Polish) complete: wrapped both dashboards in ContentWrapper + SectionHeader for consistent width/title hierarchy/section gaps, extracted all inline styles to CSS classes, cleaned up dead duplicate CSS, replaced changelog empty state with shared EmptyState component, and ensured all remaining hardcoded values use tokens. No behavior, API, business logic, or workflow changes.
 
 
 ## Current Implementation Status
@@ -183,16 +185,16 @@ SQLite relational database and invariant triggers
 ## Next Recommended Sprint
 
 Phase 1 (Functional MVP, Sprints 0–6) is complete. Phase 2 (Product Quality) is
-in progress. Batch 7.1.1 (Design Token Alignment) is complete. The single `READY
-FOR IMPLEMENTATION` batch is **Batch 7.2.1 — Component Visual Consistency**, which
-polishes all reusable components for consistent padding, radius, typography,
-elevation, and state treatment using the now-aligned token foundation.
+in progress. Batches 7.1.1, 7.2.1, and 7.3.1 are complete. The single `READY
+FOR IMPLEMENTATION` batch is **Batch 7.4.1 — Motion Polish**, which reviews and
+refines all transitions, hover effects, focus rings, loading indicators,
+success/error feedback, and overlay animations for consistency and
+reduced-motion compliance.
 
-Subsequent Sprint 7 batches follow in dependency order: screen polish (7.3.1),
-landing page visual evidence (7.3.2 — blocked by Product Owner decisions on
-screenshots and brand), motion polish (7.4.1), and responsive polish (7.5.1).
-Sprint 8 (Product Quality Assurance) follows Sprint 7 and produces the MVP
-Quality Completion report (Batch 8.5.1).
+Batch 7.3.2 (Landing Page Visual Evidence) remains `BLOCKED` by Product Owner
+decisions on screenshots and brand. Batch 7.5.1 (Responsive Polish) is `BLOCKED`
+pending 7.3.2. Sprint 8 (Product Quality Assurance) follows Sprint 7 completion
+and produces the MVP Quality Completion report (Batch 8.5.1).
 
 The Release Phase (Sprint R1) remains `ON HOLD` until the Product Owner declares
 "MVP Quality Complete" based on the Sprint 8 completion report.

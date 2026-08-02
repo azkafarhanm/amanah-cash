@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { dashboardReadService } from "@/dashboard/read-service";
 import { rupiah, signedRupiah } from "@/presentation/formatting";
+import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { KpiCard } from "@/components/dashboard/kpi-card";
 import { CashFlowChart } from "@/components/dashboard/cash-flow-chart";
 import { DepositWithdrawalChart } from "@/components/dashboard/deposit-withdrawal-chart";
@@ -58,15 +59,11 @@ export default async function OperatorHome() {
   ];
 
   return (
-    <div className={styles.dashboardSection} style={{ gap: "var(--space-6)" }}>
-      <div className={styles.sectionHeader}>
-        <div>
-          <h1 className={styles.sectionTitle}>Dashboard</h1>
-          <p className={styles.sectionDescription}>
-            Ringkasan keuangan dan aktivitas operasional hari ini.
-          </p>
-        </div>
-      </div>
+    <ContentWrapper>
+      <SectionHeader
+        title="Dashboard"
+        description="Ringkasan keuangan dan aktivitas operasional hari ini."
+      />
 
       <div className={styles.kpiGrid}>
         <KpiCard
@@ -134,16 +131,11 @@ export default async function OperatorHome() {
         <div className={styles.chartContainer}>
           <h3 className={styles.chartTitle}>Arus Kas Bersih</h3>
           <p className={styles.chartSubtitle}>Selisih setoran dan penarikan bulan ini</p>
-          <div style={{ padding: "var(--space-6) 0", textAlign: "center" }}>
-            <div style={{
-              fontSize: "2rem",
-              fontWeight: "var(--font-weight-bold)",
-              color: dashboard.month.netCashFlow.isPositive ? "var(--deposit-color)" : "var(--withdrawal-color)",
-              fontVariantNumeric: "tabular-nums",
-            }}>
+          <div className={styles.netCashFlow}>
+            <div className={`${styles.netCashFlowValue} ${dashboard.month.netCashFlow.isPositive ? styles.netCashFlowValuePositive : styles.netCashFlowValueNegative}`}>
               {signedRupiah(netCashFlow)}
             </div>
-            <p style={{ margin: "var(--space-2) 0 0", font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
+            <p className={styles.netCashFlowLabel}>
               {dashboard.month.netCashFlow.isPositive ? "Positif — setoran lebih besar" : "Negatif — penarikan lebih besar"}
             </p>
           </div>
@@ -153,50 +145,35 @@ export default async function OperatorHome() {
           <h3 className={styles.chartTitle}>Siswa Perlu Perhatian</h3>
           <p className={styles.chartSubtitle}>Siswa dengan kondisi khusus</p>
           {dashboard.attentionStudents.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-              {dashboard.attentionStudents.map((s) => (
-                <a
-                  key={s.id}
-                  href={`/operator/students/${encodeURIComponent(s.id)}`}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "var(--space-3)",
-                    padding: "var(--space-2)",
-                    borderRadius: "var(--radius-md)",
-                    textDecoration: "none",
-                    color: "inherit",
-                    transition: "background 0.15s ease",
-                  }}
-                >
-                  <span style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: 28,
-                    height: 28,
-                    borderRadius: "var(--radius-full)",
-                    background: s.reason === "ZERO_BALANCE" ? "var(--color-warning-background)" : s.reason === "NO_TRANSACTIONS" ? "var(--color-info-background)" : "var(--color-error-background)",
-                    color: s.reason === "ZERO_BALANCE" ? "var(--color-warning-foreground)" : s.reason === "NO_TRANSACTIONS" ? "var(--color-info-foreground)" : "var(--color-error-foreground)",
-                    flex: "none",
-                  }}>
-                    <AlertTriangle size={14} />
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ font: "var(--type-label)", color: "var(--color-text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {s.name}
+            <div className={styles.attentionList}>
+              {dashboard.attentionStudents.map((s) => {
+                const iconClass =
+                  s.reason === "ZERO_BALANCE"
+                    ? styles.attentionIconWarning
+                    : s.reason === "NO_TRANSACTIONS"
+                    ? styles.attentionIconInfo
+                    : styles.attentionIconError;
+                return (
+                  <a
+                    key={s.id}
+                    href={`/operator/students/${encodeURIComponent(s.id)}`}
+                    className={styles.attentionItem}
+                  >
+                    <span className={`${styles.attentionIcon} ${iconClass}`}>
+                      <AlertTriangle size={14} />
+                    </span>
+                    <div className={styles.attentionDetails}>
+                      <div className={styles.attentionName}>{s.name}</div>
+                      <div className={styles.attentionReason}>
+                        {s.reason === "ZERO_BALANCE" ? "Saldo Rp 0" : s.reason === "NO_TRANSACTIONS" ? "Belum ada transaksi" : "Non-aktif bersaldo"}
+                      </div>
                     </div>
-                    <div style={{ font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-                      {s.reason === "ZERO_BALANCE" ? "Saldo Rp 0" : s.reason === "NO_TRANSACTIONS" ? "Belum ada transaksi" : "Non-aktif bersaldo"}
-                    </div>
-                  </div>
-                </a>
-              ))}
+                  </a>
+                );
+              })}
             </div>
           ) : (
-            <p style={{ padding: "var(--space-4)", textAlign: "center", font: "var(--type-supporting)", color: "var(--color-text-secondary)" }}>
-              Semua siswa dalam kondisi baik
-            </p>
+            <p className={styles.attentionEmpty}>Semua siswa dalam kondisi baik</p>
           )}
         </div>
       </div>
@@ -211,7 +188,7 @@ export default async function OperatorHome() {
 
         <QuickActions actions={quickActions} />
       </div>
-    </div>
+    </ContentWrapper>
   );
 }
 

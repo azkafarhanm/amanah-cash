@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { protectRoute } from "@/authorization/routes";
-import { ContentWrapper, SectionHeader } from "@/components/ui";
+import { ContentWrapper, EmptyState, SectionHeader } from "@/components/ui";
 import { releasedChangelog } from "@/settings/about";
 import styles from "./changelog.module.css";
 
@@ -34,7 +34,11 @@ export default async function ChangelogPage() {
           ))}
         </div>
       ) : (
-        <p className={styles.empty}>Belum ada catatan perubahan yang dirilis.</p>
+        <EmptyState
+          kind="generic"
+          title="Belum ada catatan perubahan"
+          description="Belum ada catatan perubahan yang dirilis."
+        />
       )}
     </ContentWrapper>
   );

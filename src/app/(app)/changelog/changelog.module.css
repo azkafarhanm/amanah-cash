@@ -30,9 +30,8 @@
 
 .release h2,
 .release h3,
-.release ul,
-.empty {
-  margin: 0;
+.release ul {
+  margin: var(--space-0);
 }
 
 .release h2 {
@@ -43,8 +42,7 @@
   font: var(--type-label);
 }
 
-.release time,
-.empty {
+.release time {
   color: var(--color-text-secondary);
   font: var(--type-supporting);
 }

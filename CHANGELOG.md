@@ -6,6 +6,43 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 7 — Epic 7.3: Batch 7.3.1 — Authenticated Screen Polish
+
+- Wrapped both Dashboard pages (admin and operator) in `ContentWrapper` for consistent content width (`--app-content-max`) and canonical section gap (`--layout-section-gap`); previously both used a raw `<div>` with inline `gap: var(--space-6)` and no width cap.
+- Replaced hand-rolled dashboard headers with the shared `SectionHeader` component; page titles now render at `--type-screen-title` (24px bold) matching every other authenticated page instead of `--type-section-title` (18px).
+- Extracted all inline-styled elements in the operator dashboard to CSS classes: `.netCashFlow`, `.netCashFlowValue`, `.attentionList`, `.attentionItem`, `.attentionIcon`, `.attentionDetails`, `.attentionName`, `.attentionReason`, `.attentionEmpty`.
+- Extracted repeated inline-styled list patterns in the admin dashboard to reusable CSS classes: `.adminList`, `.adminListItem`, `.adminListItemContent`, `.adminListItemTitle`, `.adminListItemDescription`, `.adminListItemTime`.
+- Updated `.sectionTitle` in `dashboard-v2.module.css` from `--type-section-title` to `--type-screen-title` with `letter-spacing: var(--letter-spacing-tight)` for correct hierarchy.
+- Updated `.dashboardSection` gap from `--space-4` to `--layout-section-gap` for app-wide consistency.
+- Cleaned up dead duplicate CSS: removed `.emptyState*` classes from `dashboard-v2.module.css` that duplicated `ui.module.css` `EmptyState` component styles.
+- Replaced hardcoded skeleton heights (`160px`, `320px`, `80px`, `56px`) with token references (`--space-20`, `--space-24`, `--space-12`, `--size-14`).
+- Replaced hardcoded `1.5s` skeleton animation duration with `var(--motion-duration-loading)` and `ease-in-out` with `var(--motion-ease-standard)`.
+- Replaced hardcoded opacity values in skeleton keyframes with `var(--opacity-100)` and `var(--opacity-60)`.
+- Replaced changelog empty state `<p>` with shared `EmptyState` component for visual consistency.
+- Cleaned up `.empty` CSS from `changelog.module.css`; replaced bare `margin: 0` with `var(--space-0)`.
+- No behavior, API, business logic, authorization, or workflow changes.
+
+### Sprint 7 — Epic 7.2: Batch 7.2.1 — Component Visual Consistency
+
+- Replaced all literal `1px solid` border declarations in `students.module.css` and `operators.module.css` with `var(--border-width-default) var(--border-style-default)` token references (~22 occurrences).
+- Replaced hardcoded `width: 100%` with `var(--size-full)` in students and operators table styles.
+- Replaced bare `margin: 0` with `var(--space-0)` in students and operators definition lists.
+- Replaced `border-bottom` with logical `border-block-end` property in students and operators table styles.
+- Added `color: var(--color-text-primary)` and `font: var(--type-body)` to student and operator input/select controls for consistent text treatment.
+- Added `font-variant-numeric: tabular-nums` to student balance strong elements for financial number alignment.
+- Replaced hardcoded `40px` nav item height in `app-shell.module.css` with `var(--control-height-default)`.
+- Replaced hardcoded `36px` sidebar logout height with `var(--control-height-minimum)`.
+- Replaced hardcoded `20px` nav icon dimensions with `var(--navigation-icon-size)`.
+- Replaced hardcoded `3px` active indicator width with `var(--border-width-emphasis)` and `8px` insets with `var(--space-2)`.
+- Replaced hardcoded `opacity: 0.6` in workspace with `var(--opacity-60)`.
+- Replaced hardcoded `font-size: 1.25rem` in workspace with `var(--font-size-20)`.
+- Replaced hardcoded `min-height: 2.25rem` in workspace with `var(--control-height-minimum)`.
+- Replaced hardcoded `letter-spacing: 0.05em` in transactions timeline badge with `var(--letter-spacing-wide)`.
+- Added `--letter-spacing-wide` primitive token to `globals.css`.
+- Added `transition: background-color` motion token to operators button for hover consistency.
+- All changes are token-driven; no hardcoded hex colors, rgba, or legacy tokens remain in operational component CSS.
+- No behavior, API, business logic, authorization, or workflow changes.
+
 ### Sprint 7 — Epic 7.1: Batch 7.1.1 — Design Token Alignment
 
 - Added missing primitive tokens from the Design System Foundation (`docs/51`): `--radius-sm`, `--radius-xl`, `--radius-2xl`, `--space-1-5`, `--space-20`, `--size-4`, `--size-6`, `--size-10`, `--size-content-80`, `--size-content-192`, `--size-content-240`, `--font-size-12`, `--font-size-20`, `--font-size-28`, `--line-height-16`, `--line-height-24`, `--line-height-28`, `--line-height-32`, `--line-height-40`, `--line-height-48`, `--line-height-56`, `--line-height-64`.

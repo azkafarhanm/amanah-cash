@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  min-height: 40px;
+  min-height: var(--control-height-default);
   padding-inline: var(--space-3);
   border-radius: var(--radius-md);
   color: var(--color-text-secondary);
@@ -130,17 +130,17 @@
 .navItemActive::before {
   content: "";
   position: absolute;
-  inset-inline-start: -3px;
-  inset-block-start: 8px;
-  inset-block-end: 8px;
-  width: 3px;
+  inset-inline-start: calc(var(--space-1) * -1);
+  inset-block-start: var(--space-2);
+  inset-block-end: var(--space-2);
+  width: var(--border-width-emphasis);
   border-radius: var(--radius-full);
   background: var(--color-action-primary);
 }
 
 .navItem svg {
-  width: 20px;
-  height: 20px;
+  width: var(--navigation-icon-size);
+  height: var(--navigation-icon-size);
   flex: none;
 }
 
@@ -187,7 +187,7 @@
 }
 
 .sidebarLogout {
-  min-height: 36px;
+  min-height: var(--control-height-minimum);
   display: flex;
   align-items: center;
   justify-content: center;

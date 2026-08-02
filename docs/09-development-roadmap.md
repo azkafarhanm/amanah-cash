@@ -1136,7 +1136,33 @@ component visual-regression tests.
 - All changes are token-driven; no hardcoded values are introduced.
 - All existing tests pass; no behavior, API, or contract changes.
 
-**Status:** `READY FOR IMPLEMENTATION`
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-07-31):**
+
+- Replaced all literal `1px solid` border declarations with
+  `var(--border-width-default) var(--border-style-default)` in
+  `students.module.css` (~11 occurrences) and `operators.module.css` (~11
+  occurrences).
+- Replaced hardcoded `width: 100%` with `var(--size-full)`, bare `margin: 0`
+  with `var(--space-0)`, and `border-bottom` with logical `border-block-end`
+  in students and operators CSS.
+- Added `color: var(--color-text-primary)` and `font: var(--type-body)` to
+  input/select controls; added `font-variant-numeric: tabular-nums` to balance
+  values.
+- Replaced hardcoded `40px`/`36px`/`20px`/`3px`/`8px` in `app-shell.module.css`
+  with `var(--control-height-default)`/`var(--control-height-minimum)`/
+  `var(--navigation-icon-size)`/`var(--border-width-emphasis)`/`var(--space-2)`.
+- Replaced hardcoded `opacity: 0.6`/`font-size: 1.25rem`/`min-height: 2.25rem`
+  in `workspace.module.css` with `var(--opacity-60)`/`var(--font-size-20)`/
+  `var(--control-height-minimum)`.
+- Replaced hardcoded `letter-spacing: 0.05em` in transactions with
+  `var(--letter-spacing-wide)`; added the token to `globals.css`.
+- No hardcoded hex colors, rgba values, or legacy tokens remain in operational
+  component CSS modules (verified by `test/ui-polish.test.ts` and
+  `test/theme-polish.test.ts`).
+- `npm test` (216 passing), `npm run typecheck`, `npm run lint`, `npm run build`
+  all pass.
 
 ### Epic 7.3 — Screen Polish
 
@@ -1144,10 +1170,7 @@ component visual-regression tests.
 hierarchy, and visual consistency without redesigning workflows or changing
 functionality.
 
-**Status:** `BLOCKED`
-
-**Blocker:** Batch 7.2.1 must complete component polish before screen-level
-composition is reviewed.
+**Status:** `READY FOR IMPLEMENTATION`
 
 #### Batch 7.3.1 — Authenticated Screen Polish
 
@@ -1176,7 +1199,23 @@ mobile.
 - No workflow, route, field, action, or business behavior changes.
 - All existing tests pass.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-07-31):**
+
+- Wrapped both Dashboard pages (admin and operator) in `ContentWrapper` for
+  consistent content width and canonical section gap.
+- Replaced hand-rolled dashboard headers with shared `SectionHeader`; page titles
+  now render at `--type-screen-title` (24px bold) matching every other page.
+- Extracted all inline-styled elements to CSS classes in
+  `dashboard-v2.module.css`: `.netCashFlow*`, `.attentionList*`, `.adminList*`.
+- Updated `.dashboardSection` gap to `--layout-section-gap` and `.sectionTitle`
+  to `--type-screen-title`.
+- Cleaned up dead duplicate `.emptyState*` CSS from `dashboard-v2.module.css`.
+- Replaced hardcoded skeleton heights and animation values with tokens.
+- Replaced changelog empty state with shared `EmptyState` component.
+- `npm test` (216 passing), `npm run typecheck`, `npm run lint`, `npm run build`
+  all pass.
 
 #### Batch 7.3.2 — Landing Page Visual Evidence and Identity
 
@@ -1218,10 +1257,7 @@ redaction record, brand mark treatment, and Documentation destination.
 transition motion so it remains subtle, purposeful, and consistent with the
 approved Motion Guidelines.
 
-**Status:** `BLOCKED`
-
-**Blocker:** Batch 7.2.1 must complete component polish before motion is
-reconciled.
+**Status:** `READY FOR IMPLEMENTATION`
 
 #### Batch 7.4.1 — Motion Polish
 
@@ -1250,7 +1286,7 @@ motion and reduced-motion tests.
   entire application.
 - All existing tests pass; no behavior changes.
 
-**Status:** `BLOCKED`
+**Status:** `READY FOR IMPLEMENTATION`
 
 ### Epic 7.5 — Responsive Polish
 
@@ -1737,20 +1773,16 @@ exists.
 
 At this revision:
 
-- Number of `READY FOR IMPLEMENTATION` Batches: **1** — Batch 7.2.1 (Component
-  Visual Consistency).
-- Phase 1 (Functional MVP, Sprints 0–6) is `COMPLETE`. The implemented system
-  includes the full application foundation, authentication, authorization,
-  Operator and Student management, the complete Transaction lifecycle, persisted
-  Balance and immutable audit, dashboards, reports, bounded CSV/Excel/PDF export,
-  the Transaction Workspace, reconciliation, the Financial Audit Timeline, the
-  Audit Detail Drawer, the Landing Page core narrative, and the complete MVP
-  Settings module.
-- Phase 2 (Product Quality) is in progress. Batch 7.1.1 (Design Token Alignment)
-  is `COMPLETE`. The single executable batch is **Batch 7.2.1 (Component Visual
-  Consistency)**. All other Sprint 7 batches remain `BLOCKED` in dependency
-  order. Sprint 8 (Product Quality Assurance) is `BLOCKED` pending Sprint 7
-  completion.
+- Number of `READY FOR IMPLEMENTATION` Batches: **1** — Batch 7.4.1
+  (Motion Polish).
+- Phase 1 (Functional MVP, Sprints 0–6) is `COMPLETE`.
+- Phase 2 (Product Quality) is in progress. Batches 7.1.1 (Design Token
+  Alignment), 7.2.1 (Component Visual Consistency), and 7.3.1 (Authenticated
+  Screen Polish) are `COMPLETE`. The single executable batch is **Batch 7.4.1
+  (Motion Polish)**. Batch 7.3.2 (Landing Page Visual Evidence) remains
+  `BLOCKED` by Product Owner decisions. Batch 7.5.1 (Responsive Polish) is
+  `BLOCKED` pending 7.3.2. Sprint 8 (Product Quality Assurance) is `BLOCKED`
+  pending Sprint 7 completion.
 - The Landing Page visual evidence work (authentic screenshots, brand identity)
   is folded into Batch 7.3.2 and remains `BLOCKED` by Product Owner decisions on
   screenshot dataset, viewport, assets, redaction record, and brand mark
