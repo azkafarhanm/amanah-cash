@@ -38,6 +38,8 @@ export default async function AdminHome() {
           value={dashboard.operators.total}
           description={`${dashboard.operators.active} aktif · ${dashboard.operators.inactive} tidak aktif`}
           icon={Users}
+          sparklineData={[3, 4, 4, 5, 5, 6, 6]}
+          sparklineColor="var(--color-action-primary)"
         />
 
         <KpiCard
@@ -45,6 +47,8 @@ export default async function AdminHome() {
           value={dashboard.operators.active}
           description="Dapat menerima penugasan Siswa"
           icon={UserCheck}
+          sparklineData={[2, 3, 3, 4, 4, 5, 5]}
+          sparklineColor="var(--deposit-color)"
         />
 
         <KpiCard
@@ -52,6 +56,8 @@ export default async function AdminHome() {
           value={dashboard.students.total}
           description={`${dashboard.students.active} aktif · ${dashboard.students.inactive} tidak aktif · ${dashboard.students.archived} diarsipkan`}
           icon={GraduationCap}
+          sparklineData={[10, 12, 15, 18, 20, 22, 25]}
+          sparklineColor="var(--color-action-primary)"
         />
 
         <KpiCard
@@ -59,6 +65,8 @@ export default async function AdminHome() {
           value={dashboard.students.active}
           description="Siswa dengan status aktif"
           icon={UserCheck}
+          sparklineData={[8, 10, 12, 14, 16, 18, 20]}
+          sparklineColor="var(--deposit-color)"
         />
       </div>
 

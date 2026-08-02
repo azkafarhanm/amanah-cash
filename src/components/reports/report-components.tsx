@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowDownLeft, ArrowUpRight, ArrowRightLeft, Hash, Users, Calendar } from "lucide-react";
 import { EmptyState, LoadingSkeleton, Pagination, StatusBadge } from "@/components/ui";
 import { StudentStatusBadge } from "@/components/students/presentation";
 import { rupiah, transactionSign, transactionTypeLabel } from "@/components/transactions/presentation";
@@ -50,12 +51,12 @@ function FilterContext({ count, filters, students, periodLabel }: { count: numbe
 export function ReportSummary({ result }: { result: OperatorReportResult }) {
   const summary = result.summary;
   return <section className={styles.summary} aria-labelledby="report-summary-title"><h2 id="report-summary-title">Ringkasan laporan</h2><div className={styles.summaryGrid}>
-    <article><span>Pergerakan bersih</span><strong>{signedRupiah(summary.netMovement)}</strong><small>{summary.netMovement === "0" ? "Tidak ada perubahan bersih pada periode ini" : "Setoran dikurangi penarikan dan efek koreksi"}</small></article>
-    <article><span>Total setoran</span><strong>{rupiah(summary.deposits)}</strong><small>{summary.deposits === "0" ? "Belum ada setoran pada periode ini" : "Akumulasi setoran pada periode ini"}</small></article>
-    <article><span>Total penarikan</span><strong>{rupiah(summary.withdrawals)}</strong><small>{summary.withdrawals === "0" ? "Belum ada penarikan pada periode ini" : "Akumulasi penarikan pada periode ini"}</small></article>
-    <article><span>Jumlah transaksi</span><strong>{summary.transactionCount.toLocaleString("id-ID")}</strong><small>{summary.transactionCount === 0 ? "Belum ada transaksi pada periode ini" : "Transaksi aktif dalam hasil laporan"}</small></article>
-    <article><span>Siswa aktif</span><strong>{summary.activeStudents.toLocaleString("id-ID")}</strong><small>{summary.activeStudents === 0 ? "Tidak ada Siswa aktif dalam cakupan" : "Siswa aktif dalam cakupan laporan"}</small></article>
-    <article><span>Periode</span><strong className={styles.periodValue}>{summary.periodLabel}</strong><small>Zona waktu Asia/Jakarta</small></article>
+    <article><span className={styles.summaryIcon}><ArrowRightLeft size={16} /></span><span>Pergerakan bersih</span><strong>{signedRupiah(summary.netMovement)}</strong><small>{summary.netMovement === "0" ? "Tidak ada perubahan bersih pada periode ini" : "Setoran dikurangi penarikan dan efek koreksi"}</small></article>
+    <article><span className={styles.summaryIcon}><ArrowDownLeft size={16} /></span><span>Total setoran</span><strong>{rupiah(summary.deposits)}</strong><small>{summary.deposits === "0" ? "Belum ada setoran pada periode ini" : "Akumulasi setoran pada periode ini"}</small></article>
+    <article><span className={styles.summaryIcon}><ArrowUpRight size={16} /></span><span>Total penarikan</span><strong>{rupiah(summary.withdrawals)}</strong><small>{summary.withdrawals === "0" ? "Belum ada penarikan pada periode ini" : "Akumulasi penarikan pada periode ini"}</small></article>
+    <article><span className={styles.summaryIcon}><Hash size={16} /></span><span>Jumlah transaksi</span><strong>{summary.transactionCount.toLocaleString("id-ID")}</strong><small>{summary.transactionCount === 0 ? "Belum ada transaksi pada periode ini" : "Transaksi aktif dalam hasil laporan"}</small></article>
+    <article><span className={styles.summaryIcon}><Users size={16} /></span><span>Siswa aktif</span><strong>{summary.activeStudents.toLocaleString("id-ID")}</strong><small>{summary.activeStudents === 0 ? "Tidak ada Siswa aktif dalam cakupan" : "Siswa aktif dalam cakupan laporan"}</small></article>
+    <article><span className={styles.summaryIcon}><Calendar size={16} /></span><span>Periode</span><strong className={styles.periodValue}>{summary.periodLabel}</strong><small>Zona waktu Asia/Jakarta</small></article>
   </div></section>;
 }
 

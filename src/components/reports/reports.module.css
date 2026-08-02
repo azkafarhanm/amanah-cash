@@ -102,6 +102,7 @@
 .summaryGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-4); }
 .summaryGrid article { min-width: 0; display: grid; align-content: start; gap: var(--space-2); padding: var(--space-5); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 96%, var(--color-action-primary))); box-shadow: var(--surface-inset-highlight); }
 .summaryGrid span { color: var(--color-text-secondary); font: var(--type-body); }
+.summaryIcon { display: inline-flex; align-items: center; justify-content: center; width: var(--size-6); height: var(--size-6); border-radius: var(--radius-md); background: var(--color-primary-subtle); color: var(--color-action-primary); flex: none; margin-block-end: var(--space-2); }
 .summaryGrid strong { overflow-wrap: anywhere; color: var(--color-text-primary); font: var(--type-screen-title); font-variant-numeric: tabular-nums; }
 .summaryGrid small { color: var(--color-text-secondary); font: var(--type-supporting); }
 .summaryGrid .periodValue { font: var(--type-section-title); }
