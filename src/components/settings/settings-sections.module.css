@@ -19,6 +19,24 @@
   gap: var(--space-2);
 }
 
+.headerTitleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.sectionSymbol {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-10);
+  height: var(--size-10);
+  border-radius: var(--radius-md);
+  background: var(--color-primary-subtle);
+  color: var(--color-action-primary);
+  flex: none;
+}
+
 .header h2,
 .header p,
 .row h3,

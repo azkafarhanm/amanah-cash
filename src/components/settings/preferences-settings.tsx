@@ -8,6 +8,22 @@ import {
 } from "@/settings/preferences";
 import styles from "./theme-settings.module.css";
 
+function SlidersIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="4" x2="4" y1="21" y2="14" />
+      <line x1="4" x2="4" y1="10" y2="3" />
+      <line x1="12" x2="12" y1="21" y2="12" />
+      <line x1="12" x2="12" y1="8" y2="3" />
+      <line x1="20" x2="20" y1="21" y2="16" />
+      <line x1="20" x2="20" y1="12" y2="3" />
+      <line x1="2" x2="6" y1="14" y2="14" />
+      <line x1="10" x2="14" y1="8" y2="8" />
+      <line x1="18" x2="22" y1="16" y2="16" />
+    </svg>
+  );
+}
+
 export function PreferencesSettings({
   initialPageSize
 }: {
@@ -56,8 +72,15 @@ export function PreferencesSettings({
   return (
     <section className={styles.section} aria-labelledby={headingId}>
       <header className={styles.header}>
-        <h2 id={headingId}>Preferensi</h2>
-        <p>Atur perilaku default untuk pekerjaan sehari-hari.</p>
+        <div className={styles.headerTitleRow}>
+          <span className={styles.sectionSymbol}>
+            <SlidersIcon />
+          </span>
+          <div>
+            <h2 id={headingId}>Preferensi</h2>
+            <p>Atur perilaku default untuk pekerjaan sehari-hari.</p>
+          </div>
+        </div>
       </header>
 
       <div className={styles.preferenceRow}>
