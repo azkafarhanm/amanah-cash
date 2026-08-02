@@ -175,7 +175,7 @@
   .table tr { padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
   .table tbody tr:nth-child(even) { background: var(--color-background-surface); }
   .table tbody tr:focus-within { background: var(--color-primary-subtle); }
-  .table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-0); text-align: end; }
+  .table td { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); gap: var(--space-3); padding: var(--space-2) var(--space-0); text-align: end; min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
   .table td::before { content: attr(data-label); color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
   .table td > * { justify-self: end; }
 }

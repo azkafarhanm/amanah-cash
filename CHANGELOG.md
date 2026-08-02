@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 7 — Epic 7.5: Batch 7.5.1 — Responsive Consistency
+
+- Added iOS and mobile safe-area inset support (`env(safe-area-inset-top)`, `env(safe-area-inset-bottom)`) across App Shell header/sidebar, Context Detail Drawer, and mobile bottom-sheet transaction dialogs.
+- Enforced 44px minimum touch targets across interactive buttons, form inputs, select controls, links, segmented type pills, period selectors, and drawer close triggers.
+- Guaranteed 320px viewport safety with `overflow-wrap: anywhere`, `word-break: break-word`, `min-width: 0`, and responsive single-column reflow for tables, mobile card lists, filter toolbars, and dashboard KPI grids.
+- Added `test/responsive-polish.test.ts` providing automated test coverage for safe area insets, touch target dimensions, breakpoint rules, and overflow safety.
+- No behavior, API, business logic, authorization, or workflow changes.
+
 ### Sprint 7 — Epic 7.4: Batch 7.4.1 — Motion Polish
 
 - Added global `@media (prefers-reduced-motion: reduce)` overrides in `src/app/globals.css` covering `*, *::before, *::after` (`animation-duration: 0.01ms !important`, `transition-duration: 0.01ms !important`, `scroll-behavior: auto !important`).

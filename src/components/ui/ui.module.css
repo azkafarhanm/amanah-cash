@@ -179,6 +179,12 @@
   padding: var(--space-8);
 }
 
+@media (max-width: 48rem) {
+  .featurePlaceholder {
+    padding: var(--space-4);
+  }
+}
+
 .featurePlaceholderIntro {
   display: flex;
   flex-wrap: wrap;

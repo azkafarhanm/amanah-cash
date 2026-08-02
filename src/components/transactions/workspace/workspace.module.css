@@ -314,6 +314,42 @@
   .metricsBanner {
     grid-template-columns: 1fr;
   }
+
+  .filterToolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filterControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .typeSegmentedGroup {
+    width: var(--size-full);
+    justify-content: space-between;
+    overflow-x: auto;
+  }
+
+  .pillButton {
+    flex: 1;
+    min-height: var(--control-height-minimum);
+  }
+
+  .periodSelectGroup,
+  .periodSelect {
+    width: var(--size-full);
+  }
+
+  .paginationContainer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .loadMoreButton {
+    width: var(--size-full);
+  }
 }
 
 /* Batch 3 Additions */

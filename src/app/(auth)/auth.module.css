@@ -41,6 +41,12 @@
   animation: card-enter var(--motion-duration-slow) var(--motion-ease-standard) both;
 }
 
+@media (max-width: 30rem) {
+  .card {
+    padding: var(--space-4);
+  }
+}
+
 .cardHeader {
   display: grid;
   gap: var(--space-3);

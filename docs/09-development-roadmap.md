@@ -1302,10 +1302,7 @@ motion and reduced-motion tests.
 **Objective:** Verify and polish responsive behavior across desktop, tablet, and
 mobile for consistent touch spacing, responsive hierarchy, and layout stability.
 
-**Status:** `BLOCKED`
-
-**Blocker:** Batch 7.3.1 must complete screen polish before responsive behavior
-is verified.
+**Status:** `COMPLETE`
 
 #### Batch 7.5.1 — Responsive Consistency
 
@@ -1329,7 +1326,15 @@ reflow, sidebar behavior, and layout stability.
 - Layout shift is minimized during loading and data updates.
 - All existing tests pass; no behavior changes.
 
-**Status:** `BLOCKED`
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-08-02):**
+
+- Added iOS/mobile safe area inset support (`env(safe-area-inset-top)`, `env(safe-area-inset-bottom)`) across App Shell header/sidebar, Context Detail Drawer, and mobile bottom-sheet transaction dialogs.
+- Enforced 44px minimum touch targets across interactive buttons, inputs, select fields, links, segmented pills, and drawer triggers.
+- Guaranteed 320px viewport safety with `overflow-wrap: anywhere`, `word-break: break-word`, `min-width: 0`, and responsive single-column reflow for tables, card lists, filter toolbars, and dashboard KPI grids.
+- Added `test/responsive-polish.test.ts` providing automated regression coverage for safe area insets, touch target dimensions, breakpoint rules, and overflow safety.
+- `npm test` (223 passing), `npm run typecheck`, `npm run lint`, and `npm run build` all pass cleanly.
 
 ## 12. Sprint 8 — Product Quality Assurance
 

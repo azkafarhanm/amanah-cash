@@ -55,6 +55,17 @@
 .dialogActions { justify-content: flex-end; padding-block-start: var(--space-2); }
 .correctionFields { display: grid; gap: var(--space-4); padding: var(--space-4); border-radius: var(--shape-control); background: var(--color-warning-background); }
 @media (max-width: 48rem) {
+  .dialog {
+    width: var(--size-full);
+    max-width: var(--size-full);
+    margin-block: auto 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    max-height: max(85vh, calc(100dvh - env(safe-area-inset-top)));
+  }
+  .dialogForm { padding-block-end: max(var(--space-6), env(safe-area-inset-bottom)); }
   .overviewGrid, .filters, .transactionMeta { grid-template-columns: 1fr; }
   .primaryActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .primaryActions > :last-child { grid-column: 1 / -1; }
