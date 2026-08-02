@@ -7,7 +7,7 @@
 .table th, .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: left; white-space: nowrap; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
 .table td { font: var(--type-body); }
-.link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; transition: color var(--motion-duration-fast) var(--motion-ease-standard); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
 .button, .danger { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border-radius: var(--shape-control); font: var(--type-button); text-decoration: none; cursor: pointer; transition: background-color var(--motion-duration-fast) var(--motion-ease-standard); }
 .button { border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); color: var(--color-text-inverse); background: var(--color-action-primary); }
@@ -36,3 +36,12 @@
   .table td:last-child { border-block-end: 0; }
   .table td::before { content: attr(data-label); flex: 0 0 40%; color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .danger,
+  .link {
+    transition: none;
+  }
+}
+

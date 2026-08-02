@@ -37,3 +37,5 @@
   .table td::before { content: attr(data-label); flex: 0 0 40%; color: var(--color-text-secondary); font: var(--type-label); text-align: start; }
   .balance { justify-items: end; }
 }
+
+

@@ -493,3 +493,13 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-14);
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .pillButton,
+  .tr,
+  .loadMoreButton,
+  .pickerOption {
+    transition: none;
+  }
+}
+

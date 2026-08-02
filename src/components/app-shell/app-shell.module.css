@@ -250,3 +250,14 @@
   .main { padding: var(--app-content-padding); }
   .accountCopy { display: flex; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar,
+  .navItem,
+  .sidebarLogout,
+  .menuButton,
+  .logoutButton {
+    transition: none;
+  }
+}
+

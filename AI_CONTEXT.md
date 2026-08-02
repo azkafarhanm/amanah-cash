@@ -49,6 +49,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 7 — Epic 7.1 Batch 7.1.1 (Design Token Alignment) complete: aligned all CSS custom properties and component styles with the Design System Foundation (`docs/51`). Added missing primitive tokens (radius, spacing, size, typography, shadow, motion, z-index, opacity), dark-theme shadow overrides, and typography semantic tokens. Eliminated hardcoded transition durations, animation values, blur values, and px dimensions from component CSS. No behavior, business logic, or workflow changes.
 - Sprint 7 — Epic 7.2 Batch 7.2.1 (Component Visual Consistency) complete: replaced all literal `1px solid` borders with token references in students and operators CSS, replaced hardcoded px dimensions with size/control tokens in app-shell and workspace CSS, replaced hardcoded opacity/font-size/letter-spacing with token references, added logical-property border directions, and ensured tabular-numeric alignment for financial values. No behavior, API, business logic, or workflow changes.
 - Sprint 7 — Epic 7.3 Batch 7.3.1 (Authenticated Screen Polish) complete: wrapped both dashboards in ContentWrapper + SectionHeader for consistent width/title hierarchy/section gaps, extracted all inline styles to CSS classes, cleaned up dead duplicate CSS, replaced changelog empty state with shared EmptyState component, and ensured all remaining hardcoded values use tokens. No behavior, API, business logic, or workflow changes.
+- Sprint 7 — Epic 7.4 Batch 7.4.1 (Motion Polish) complete: added global prefers-reduced-motion overrides in globals.css covering all elements, aligned hover transitions, focus ring visual treatments, and loading skeletons across component CSS modules using design system tokens (--motion-duration-fast, --motion-ease-standard), verified that financial values never animate or transition, and added test/motion-polish.test.ts for automated regression coverage. No behavior, API, or contract changes.
 
 
 ## Current Implementation Status
@@ -77,7 +78,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 208 passed, 0 failed.
+- Automated tests: 219 passed, 0 failed.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **READY WITH MINOR LIMITATIONS**. Deployment-environment, live Google OAuth registration, physical-device/PWA, and production-volume qualification remain Milestone 9 gates.
@@ -185,11 +186,7 @@ SQLite relational database and invariant triggers
 ## Next Recommended Sprint
 
 Phase 1 (Functional MVP, Sprints 0–6) is complete. Phase 2 (Product Quality) is
-in progress. Batches 7.1.1, 7.2.1, and 7.3.1 are complete. The single `READY
-FOR IMPLEMENTATION` batch is **Batch 7.4.1 — Motion Polish**, which reviews and
-refines all transitions, hover effects, focus rings, loading indicators,
-success/error feedback, and overlay animations for consistency and
-reduced-motion compliance.
+in progress. Batches 7.1.1, 7.2.1, 7.3.1, and 7.4.1 are complete.
 
 Batch 7.3.2 (Landing Page Visual Evidence) remains `BLOCKED` by Product Owner
 decisions on screenshots and brand. Batch 7.5.1 (Responsive Polish) is `BLOCKED`

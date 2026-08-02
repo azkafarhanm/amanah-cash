@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 7 — Epic 7.4: Batch 7.4.1 — Motion Polish
+
+- Added global `@media (prefers-reduced-motion: reduce)` overrides in `src/app/globals.css` covering `*, *::before, *::after` (`animation-duration: 0.01ms !important`, `transition-duration: 0.01ms !important`, `scroll-behavior: auto !important`).
+- Aligned hover transitions, focus ring visual treatments, and loading skeleton states across component CSS modules with design system motion tokens (`--motion-duration-fast`, `--motion-ease-standard`).
+- Verified that financial values (`.balance`, `.amount`, `.money`) never animate, count, interpolate, or transition.
+- Preserved zero-animation/transition contract in financial assurance and reconciliation components as required by domain specifications.
+- Added `test/motion-polish.test.ts` providing automated test coverage for global reduced motion, tokenized motion usage, and financial value stability.
+- No behavior, API, business logic, authorization, or workflow changes.
+
 ### Sprint 7 — Epic 7.3: Batch 7.3.1 — Authenticated Screen Polish
 
 - Wrapped both Dashboard pages (admin and operator) in `ContentWrapper` for consistent content width (`--app-content-max`) and canonical section gap (`--layout-section-gap`); previously both used a raw `<div>` with inline `gap: var(--space-6)` and no width cap.

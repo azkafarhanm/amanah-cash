@@ -1286,7 +1286,16 @@ motion and reduced-motion tests.
   entire application.
 - All existing tests pass; no behavior changes.
 
-**Status:** `READY FOR IMPLEMENTATION`
+**Status:** `COMPLETE`
+
+**Completion evidence (2026-08-02):**
+
+- Added global `prefers-reduced-motion: reduce` overrides in `src/app/globals.css` covering `*, *::before, *::after` (`animation-duration: 0.01ms !important`, `transition-duration: 0.01ms !important`, `scroll-behavior: auto !important`).
+- Aligned hover transitions, focus ring visual treatments, and loading skeleton states across component CSS modules with design system motion tokens (`--motion-duration-fast`, `--motion-ease-standard`).
+- Verified that financial values (`.balance`, `.amount`, `.money`) never animate, count, interpolate, or transition.
+- Added `test/motion-polish.test.ts` providing automated test coverage for global reduced motion, tokenized motion usage, and financial value stability.
+- `npm test` (219 passing), `npm run typecheck`, `npm run lint`, and `npm run build` all pass cleanly.
+
 
 ### Epic 7.5 — Responsive Polish
 
@@ -1773,16 +1782,15 @@ exists.
 
 At this revision:
 
-- Number of `READY FOR IMPLEMENTATION` Batches: **1** — Batch 7.4.1
-  (Motion Polish).
+- Number of `READY FOR IMPLEMENTATION` Batches: **0**.
 - Phase 1 (Functional MVP, Sprints 0–6) is `COMPLETE`.
 - Phase 2 (Product Quality) is in progress. Batches 7.1.1 (Design Token
-  Alignment), 7.2.1 (Component Visual Consistency), and 7.3.1 (Authenticated
-  Screen Polish) are `COMPLETE`. The single executable batch is **Batch 7.4.1
-  (Motion Polish)**. Batch 7.3.2 (Landing Page Visual Evidence) remains
-  `BLOCKED` by Product Owner decisions. Batch 7.5.1 (Responsive Polish) is
-  `BLOCKED` pending 7.3.2. Sprint 8 (Product Quality Assurance) is `BLOCKED`
-  pending Sprint 7 completion.
+  Alignment), 7.2.1 (Component Visual Consistency), 7.3.1 (Authenticated
+  Screen Polish), and 7.4.1 (Motion Polish) are `COMPLETE`. Batch 7.3.2
+  (Landing Page Visual Evidence) remains `BLOCKED` by Product Owner decisions.
+  Batch 7.5.1 (Responsive Polish) is `BLOCKED` pending 7.3.2. Sprint 8 (Product
+  Quality Assurance) is `BLOCKED` pending Sprint 7 completion.
+
 - The Landing Page visual evidence work (authentic screenshots, brand identity)
   is folded into Batch 7.3.2 and remains `BLOCKED` by Product Owner decisions on
   screenshot dataset, viewport, assets, redaction record, and brand mark

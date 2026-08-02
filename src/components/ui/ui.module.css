@@ -400,6 +400,10 @@
 .paginationControls a {
   background: var(--pagination-control-background);
   color: var(--pagination-control-foreground);
+  transition:
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .paginationControls a:hover {
@@ -428,3 +432,11 @@
 @keyframes skeleton-loading {
   to { background-position: calc(var(--skeleton-background-size) * var(--direction-reverse)) 0; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .paginationControls a {
+    transition: none;
+  }
+}
+
