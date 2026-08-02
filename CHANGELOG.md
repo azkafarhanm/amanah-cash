@@ -31,6 +31,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Added `test/motion-polish.test.ts` providing automated test coverage for global reduced motion, tokenized motion usage, and financial value stability.
 - No behavior, API, business logic, authorization, or workflow changes.
 
+### Premium Visual Overhaul — Color System + Depth + Motion
+
+- Switched light theme accent from ink-blue (`#315E7D`) to teal (`#0D9488`) across all semantic tokens: `--color-action-primary`, `--color-border-focus`, `--color-primary-subtle`.
+- Switched dark theme from slate/sky to navy/teal: canvas `navy-950 (#0A0F1E)`, surfaces `navy-900/800`, borders `navy-600`, accent `teal-400 (#2DD4BF)`, text `navy-50/300/400`.
+- Added navy primitive palette (12 values: `#0A0F1E` → `#ECEEF3`) as dark theme foundation.
+- Added purple primitive palette (10 values: `#F5F3FF` → `#4C1D95`) for correction semantic tokens.
+- Updated teal primitives to match docs/51 exactly: `teal-500 #14B8A6`, `teal-600 #0D9488`, added `teal-100/200/300/400/900`.
+- Added dark theme glass override: `rgba(15,22,41,0.75)` background, `rgba(255,255,255,0.08)` border, dark-optimized shadow with inset highlight.
+- Added surface depth to chart containers and insight cards: subtle gradient backgrounds with teal tint, inset top highlight, hover elevation.
+- Added inset well shadow to bar chart tracks for tactile depth.
+- Fixed KPI card hover shadow from hardcoded `rgba(0,0,0,0.08)` to `var(--shadow-md)`.
+- Fixed KPI value font-size from hardcoded `2rem` to `var(--font-size-32)` with proper line-height token.
+- Fixed chart legend dot size from hardcoded `8px` to `var(--space-2)`.
+- Fixed bar track height from hardcoded `24px` to `var(--size-6)`.
+- Added button micro-interactions: hover lift (`translateY(-1px)` + `shadow-sm`), active press (`scale(0.98)`).
+- Updated `theme-polish.test.ts` assertions for teal/navy values.
+- No business logic, API, authorization, or workflow changes.
+
 ### Sprint 7 — Epic 7.3: Batch 7.3.1 — Authenticated Screen Polish
 
 - Wrapped both Dashboard pages (admin and operator) in `ContentWrapper` for consistent content width (`--app-content-max`) and canonical section gap (`--layout-section-gap`); previously both used a raw `<div>` with inline `gap: var(--space-6)` and no width cap.

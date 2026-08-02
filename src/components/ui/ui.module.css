@@ -45,7 +45,9 @@
   font: var(--type-button);
   cursor: pointer;
   transition: background-color var(--motion-duration-fast)
-    var(--motion-ease-standard);
+    var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .button:focus-visible {
@@ -53,6 +55,10 @@
     var(--focus-visible-color);
   outline-offset: var(--space-0-5);
   box-shadow: var(--focus-visible-shadow);
+}
+
+.button:active:not(:disabled, [aria-busy="true"]) {
+  transform: scale(0.98);
 }
 
 .button:disabled,
@@ -69,6 +75,8 @@
 
 .buttonPrimary:hover:not(:disabled, [aria-busy="true"]) {
   background: var(--button-primary-background-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
 }
 
 .buttonPrimary:active:not(:disabled, [aria-busy="true"]) {

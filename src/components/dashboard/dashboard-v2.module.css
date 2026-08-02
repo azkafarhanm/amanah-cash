@@ -26,7 +26,7 @@
 
 .kpiCard:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 .kpiCardGlass {
@@ -98,9 +98,9 @@
 }
 
 .kpiValue {
-  font-size: 2rem;
+  font-size: var(--font-size-32);
   font-weight: var(--font-weight-bold);
-  line-height: 1.2;
+  line-height: var(--line-height-heading);
   letter-spacing: -0.01em;
   color: var(--color-text-primary);
   font-variant-numeric: tabular-nums;
@@ -126,7 +126,13 @@
   padding: var(--chart-padding);
   border-radius: var(--chart-radius);
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
-  background: var(--color-background-surface);
+  background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 96%, var(--color-action-primary)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.chartContainer:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
 }
 
 .chartHeader {
@@ -198,8 +204,8 @@
 }
 
 .chartLegendDot {
-  width: 8px;
-  height: 8px;
+  width: var(--space-2);
+  height: var(--space-2);
   border-radius: var(--radius-full);
   flex: none;
 }
@@ -288,10 +294,11 @@
 
 .barTrack {
   flex: 1;
-  height: 24px;
+  height: var(--size-6);
   background: var(--color-background-subtle);
   border-radius: var(--radius-sm);
   overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
 .barFill {
@@ -321,9 +328,15 @@
   padding: var(--insight-card-padding);
   border-radius: var(--insight-card-radius);
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
-  background: var(--color-background-surface);
+  background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 97%, var(--color-action-primary)));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
   position: relative;
   overflow: hidden;
+  transition: box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.insightCard:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--shadow-sm);
 }
 
 .insightAccent {

@@ -18,8 +18,8 @@ test("skeletons use independently mapped semantic theme tokens", async () => {
   const darkTheme = globals.match(/:root\[data-theme="dark"\] \{[\s\S]*?\n\}/)?.[0] ?? "";
   assert.match(globals, /--color-skeleton-base: var\(--color-neutral-100\)/);
   assert.match(globals, /--color-skeleton-highlight: var\(--color-neutral-200\)/);
-  assert.match(darkTheme, /--color-skeleton-base: var\(--color-slate-800\)/);
-  assert.match(darkTheme, /--color-skeleton-highlight: var\(--color-slate-700\)/);
+  assert.match(darkTheme, /--color-skeleton-base: var\(--color-navy-900\)/);
+  assert.match(darkTheme, /--color-skeleton-highlight: var\(--color-navy-800\)/);
 });
 
 test("operational component styles contain no raw light surfaces or shadow colors", async () => {
@@ -55,16 +55,16 @@ test("authenticated theme is bootstrapped before the application shell", async (
   assert.match(globals, /\.theme-changing \*/);
 });
 
-test("Light interactions use calm ink-blue mappings without changing Dark foundations", async () => {
+test("Light interactions use teal accent with navy dark theme foundation", async () => {
   const globals = await readFile("src/app/globals.css", "utf8");
   const darkTheme = globals.match(/:root\[data-theme="dark"\] \{[\s\S]*?\n\}/)?.[0] ?? "";
 
-  assert.match(globals, /--color-action-primary: var\(--color-ink-blue-700\)/);
-  assert.match(globals, /--color-action-primary-hover: var\(--color-ink-blue-800\)/);
-  assert.match(globals, /--color-action-primary-active: var\(--color-ink-blue-900\)/);
+  assert.match(globals, /--color-action-primary: var\(--color-teal-600\)/);
+  assert.match(globals, /--color-action-primary-hover: var\(--color-teal-700\)/);
+  assert.match(globals, /--color-action-primary-active: var\(--color-teal-800\)/);
   assert.match(globals, /--color-background-subtle: var\(--color-calm-50\)/);
   assert.match(globals, /--color-text-inverse: var\(--color-neutral-0\)/);
   assert.match(globals, /--focus-visible-shadow: var\(--shadow-focus-light\)/);
-  assert.match(darkTheme, /--color-action-primary: var\(--color-sky-400\)/);
-  assert.match(darkTheme, /--color-background-canvas: var\(--color-slate-900\)/);
+  assert.match(darkTheme, /--color-action-primary: var\(--color-teal-400\)/);
+  assert.match(darkTheme, /--color-background-canvas: var\(--color-navy-950\)/);
 });
