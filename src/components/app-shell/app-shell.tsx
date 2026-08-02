@@ -24,7 +24,7 @@ function UserAvatar({ name, size = 36 }: { name: string; size?: number }) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   const hue = Math.abs(hash % 160) + 160;
-  const bg = `hsl(${hue}, 35%, 45%)`;
+  const bg = `linear-gradient(135deg, hsl(${hue}, 55%, 45%), hsl(${hue + 25}, 60%, 35%))`;
 
   return (
     <span

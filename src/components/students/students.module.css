@@ -3,7 +3,7 @@
 .field { display: grid; gap: var(--space-2); color: var(--color-text-primary); font: var(--type-label); }
 .input, .select, .textarea { min-height: var(--control-height-minimum); padding: var(--space-2) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); background: var(--color-background-surface); color: var(--color-text-primary); font: var(--type-body); }
 .textarea { min-height: 7rem; resize: vertical; }
-.tableWrap { overflow-x: auto; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.tableWrap { overflow-x: auto; border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-container); background: var(--glass-background, var(--color-background-surface)); backdrop-filter: blur(var(--glass-blur, 16px)); }
 .table { width: var(--size-full); border-collapse: collapse; }
 .table th, .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: left; white-space: nowrap; }
 .table th { color: var(--color-text-secondary); font: var(--type-label); }
@@ -15,7 +15,7 @@
 .button:hover { background: var(--color-action-primary-hover); }
 .button:active { background: var(--color-action-primary-active); }
 .actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); }
-.panel { padding: var(--space-6); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); }
+.panel { padding: var(--space-6); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-container); background: var(--glass-background, var(--color-background-surface)); backdrop-filter: blur(var(--glass-blur, 16px)); }
 .message, .error, .placeholder { padding: var(--space-4); border-radius: var(--shape-control); }
 .message { color: var(--color-success-foreground); background: var(--color-success-background); }
 .error { color: var(--color-error-foreground); background: var(--color-error-background); }

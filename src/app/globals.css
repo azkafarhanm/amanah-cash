@@ -347,6 +347,8 @@
   --color-deposit-background: var(--color-emerald-50);
   --color-withdrawal-foreground: var(--color-blue-700);
   --color-withdrawal-background: var(--color-blue-50);
+  --color-correction-foreground: var(--color-purple-700);
+  --color-correction-background: var(--color-purple-50);
   --color-primary-subtle: var(--color-calm-50);
   --color-skeleton-base: var(--color-neutral-100);
   --color-skeleton-highlight: var(--color-neutral-200);
@@ -362,6 +364,13 @@
   --pagination-control-disabled-foreground: var(--color-disabled-foreground);
   --pagination-control-disabled-border: var(--color-border-default);
   --color-overlay: rgb(3 7 18 / 48%);
+
+  /* Light theme glass tokens */
+  --glass-background: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(17, 24, 39, 0.08);
+  --glass-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.80) 0%, rgba(255, 255, 255, 0.00) 100%);
+  --glass-blur: 20px;
+  --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   --type-screen-title: var(--font-weight-bold) var(--font-size-24) /
     var(--line-height-heading) var(--font-family-sans);
   --type-section-title: var(--font-weight-semibold) var(--font-size-18) /

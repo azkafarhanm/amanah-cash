@@ -5,13 +5,28 @@
   gap: var(--kpi-card-gap);
   padding: var(--kpi-card-padding);
   border-radius: var(--kpi-card-radius);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
-  background: var(--color-background-surface);
-  transition: box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+              box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.kpiCard::after {
+  content: "";
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-action-primary), transparent);
+  opacity: 0.75;
 }
 
 .kpiCard:hover {
-  box-shadow: var(--surface-shadow-subtle);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
 }
 
 .kpiCardGlass {

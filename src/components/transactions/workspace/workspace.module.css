@@ -14,9 +14,15 @@
   flex-direction: column;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-6);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  background: var(--color-background-surface);
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
 }
 
 .metricLabel {
@@ -54,9 +60,10 @@
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-4);
-  border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  background: var(--color-background-surface);
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 16px));
 }
 
 .filterGroup {

@@ -33,10 +33,11 @@
   gap: var(--space-6);
   padding: var(--space-8);
   border: var(--border-width-default) var(--border-style-default)
-    var(--color-border-default);
+    var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
-  background: var(--color-background-surface);
-  box-shadow: var(--shadow-large);
+  background: var(--glass-background, var(--color-background-surface));
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
   position: relative;
   animation: card-enter var(--motion-duration-slow) var(--motion-ease-standard) both;
 }
