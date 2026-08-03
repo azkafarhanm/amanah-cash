@@ -150,7 +150,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-block-end: var(--space-2);
 }
 
 .sectionHeaderCopy {

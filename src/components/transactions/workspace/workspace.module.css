@@ -336,6 +336,10 @@
     align-items: stretch;
   }
 
+  .filterGroup {
+    flex: 0 1 auto;
+  }
+
   .filterControls {
     flex-direction: column;
     align-items: stretch;
@@ -554,4 +558,3 @@
     transition: none;
   }
 }
-

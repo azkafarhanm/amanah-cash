@@ -2,6 +2,23 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
+test("ContentWrapper exclusively owns spacing between page sections", async () => {
+  const styles = await readFile("src/components/ui/ui.module.css", "utf8");
+  const contentWrapper = styles.match(/\.contentWrapper\s*\{([^}]*)\}/)?.[1] ?? "";
+  const sectionHeader = styles.match(/\.sectionHeader\s*\{([^}]*)\}/)?.[1] ?? "";
+
+  assert.match(contentWrapper, /gap:\s*var\(--layout-section-gap\)/);
+  assert.doesNotMatch(sectionHeader, /margin(?:-block(?:-end)?)?\s*:/);
+});
+
+test("shared UI styles use parser-safe fractional spacing token names", async () => {
+  const styles = await readFile("src/components/ui/toast.module.css", "utf8");
+
+  assert.doesNotMatch(styles, /--space-\d+\.\d+/);
+  assert.match(styles, /--space-3-5/);
+  assert.match(styles, /--space-1-5/);
+});
+
 test("shared pagination distinguishes single, enabled, current, and disabled states", async () => {
   const [component, styles, globals] = await Promise.all([
     readFile("src/components/ui/pagination.tsx", "utf8"),

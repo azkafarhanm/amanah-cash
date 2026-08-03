@@ -77,3 +77,11 @@ test("tables and cards enforce overflow-wrap and min-width safety for narrow 320
     );
   }
 });
+
+test("transaction filter search does not retain its desktop width basis as mobile height", async () => {
+  const css = await readFile("src/components/transactions/workspace/workspace.module.css", "utf8");
+  const mobileRules = css.slice(css.indexOf("@media (max-width: 48rem)"));
+
+  assert.match(mobileRules, /\.filterToolbar\s*\{[^}]*flex-direction:\s*column/);
+  assert.match(mobileRules, /\.filterGroup\s*\{[^}]*flex:\s*0 1 auto/);
+});

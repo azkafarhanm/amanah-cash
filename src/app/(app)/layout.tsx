@@ -5,6 +5,7 @@ import { AppLoading } from "@/components/app-shell/app-loading";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { SessionProvider } from "@/components/app-shell/session-provider";
 import { ThemeProvider } from "@/components/settings/theme-provider";
+import { ToastProvider } from "@/components/ui";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import { getPrismaClient } from "@/persistence/prisma";
 import { readThemePreference } from "@/settings/service";
@@ -24,10 +25,13 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
   return (
     <SessionProvider session={session}>
       <ThemeProvider preference={theme}>
-        <AppShell role={authorizationContext.role} user={session?.user ?? {}}>
-          <Suspense fallback={<AppLoading />}>{children}</Suspense>
-        </AppShell>
+        <ToastProvider>
+          <AppShell role={authorizationContext.role} user={session?.user ?? {}}>
+            <Suspense fallback={<AppLoading />}>{children}</Suspense>
+          </AppShell>
+        </ToastProvider>
       </ThemeProvider>
     </SessionProvider>
   );
 }
+

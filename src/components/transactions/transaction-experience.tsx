@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, Toast, useToast } from "@/components/ui";
 import type { StudentStatus } from "@/students/domain";
 import type { TransactionHistoryQuery, TransactionHistoryResult } from "@/transactions/read-service";
 import { StudentTimeline } from "./student-timeline";
@@ -15,6 +15,7 @@ export function TransactionExperience({ studentId, studentStatus, result, query 
   studentId: string; studentStatus: StudentStatus; result: TransactionHistoryResult; query: TransactionHistoryQuery;
 }) {
   const router = useRouter();
+  const toast = useToast();
   const [notice, setNotice] = useState("");
 
   const [prevQuery, setPrevQuery] = useState(query);
@@ -42,7 +43,11 @@ export function TransactionExperience({ studentId, studentStatus, result, query 
 
   const readOnly = studentStatus !== "ACTIVE";
   const basePath = `/operator/students/${encodeURIComponent(studentId)}`;
-  const success = (message: string) => { setNotice(message); router.refresh(); };
+  const success = (message: string) => {
+    setNotice(message);
+    toast.success(message);
+    router.refresh();
+  };
 
   function applyFilters(overrides?: {
     search?: string;
@@ -99,8 +104,10 @@ export function TransactionExperience({ studentId, studentStatus, result, query 
 
   return <section className={styles.experience} aria-labelledby="financial-overview-title">
     <div className={styles.sectionHeading}><div><h2 id="financial-overview-title">Ringkasan keuangan</h2><p>Saldo yang telah dikomit dan aktivitas finansial Siswa.</p></div></div>
-    {notice ? <p className={styles.success} role="status" aria-live="polite">{notice}</p> : null}
-    {readOnly ? <p className={styles.warning} role="status">Siswa tidak aktif atau telah diarsipkan. Riwayat tetap tersedia, tetapi perubahan finansial dinonaktifkan.</p> : null}
+    {notice ? <Toast tone="success" title={notice} variant="banner" duration={6000} onClose={() => setNotice("")} aria-live="polite" /> : null}
+    {readOnly ? <Toast tone="warning" title="Siswa tidak aktif atau telah diarsipkan" description="Riwayat tetap tersedia, tetapi perubahan finansial dinonaktifkan." variant="banner" duration={0} /> : null}
+
+
     <div className={styles.overviewGrid}>
       <article className={styles.balanceCard}><span>Saldo saat ini</span><strong>{rupiah(result.balance)}</strong><small>{result.transactionCount === 0 ? "Belum ada transaksi tercatat" : "Saldo tersimpan dari transaksi yang telah dikomit"}</small></article>
       <article className={styles.metric}><span>Terakhir diperbarui</span><strong>{transactionDate(result.lastUpdated)}</strong></article>

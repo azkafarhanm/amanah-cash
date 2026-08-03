@@ -117,7 +117,8 @@ test("TransactionWorkspaceView renders top action button and inline mutation mod
   assert.match(viewSrc, /onEdit=/);
   assert.match(viewSrc, /onDelete=/);
   assert.match(viewSrc, /onRestore=/);
-  assert.match(viewSrc, /toastBanner/);
+  assert.match(viewSrc, /Toast/);
+
   assert.match(viewSrc, /TransactionDialog/);
 });
 

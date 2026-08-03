@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { WorkspaceTransactionItem, WorkspaceTransactionResult, WorkspaceTransactionSummary } from "@/transactions/read-service";
-import { Button, ErrorState } from "@/components/ui";
+import { Button, ErrorState, Toast, useToast } from "@/components/ui";
 import { TransactionDialog, type DialogKind } from "@/components/transactions/transaction-dialog";
 import { WorkspaceMetricsBanner } from "./workspace-metrics-banner";
 import { WorkspaceFilterToolbar, type FilterValues } from "./workspace-filter-toolbar";
@@ -22,6 +22,7 @@ function TransactionWorkspaceController() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const toast = useToast();
 
   const currentSearch = searchParams.get("search") || "";
   const currentType = searchParams.get("type") || "";
@@ -162,6 +163,7 @@ function TransactionWorkspaceController() {
 
   function handleMutationSuccess(msg: string) {
     setToastMessage(msg);
+    toast.success(msg, "Perubahan telah tersimpan dan riwayat transaksi diperbarui.");
     fetchWorkspace(currentSearch, currentType, currentPeriod);
   }
 
@@ -174,18 +176,16 @@ function TransactionWorkspaceController() {
   return (
     <div className={styles.workspaceContainer}>
       {toastMessage && (
-        <div className={styles.toastBanner} role="status" aria-live="polite">
-          <span>{toastMessage}</span>
-          <button
-            type="button"
-            className={styles.toastClose}
-            onClick={() => setToastMessage(null)}
-            aria-label="Tutup notifikasi"
-          >
-            ×
-          </button>
-        </div>
+        <Toast
+          tone="success"
+          title={toastMessage}
+          description="Riwayat dan saldo transaksi telah berhasil diperbarui."
+          variant="banner"
+          duration={6000}
+          onClose={() => setToastMessage(null)}
+        />
       )}
+
 
       <div className={styles.workspaceHeaderRow}>
         <WorkspaceMetricsBanner summary={summary} />
