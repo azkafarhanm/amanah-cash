@@ -57,7 +57,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "009_theme_preference_strict.sql" },
     { version: "010_settings_preferences.sql" },
     { version: "011_settings_final_contract.sql" },
-    { version: "012_maintenance_audit.sql" }
+    { version: "012_maintenance_audit.sql" },
+    { version: "013_student_profile_photo_foundation.sql" }
   ]);
   first.close();
 
@@ -75,7 +76,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "009_theme_preference_strict.sql" },
     { version: "010_settings_preferences.sql" },
     { version: "011_settings_final_contract.sql" },
-    { version: "012_maintenance_audit.sql" }
+    { version: "012_maintenance_audit.sql" },
+    { version: "013_student_profile_photo_foundation.sql" }
   ]);
   second.close();
 });
@@ -212,6 +214,63 @@ test("Maintenance audit migration mirror matches the executable migration", () =
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260730020000_maintenance_audit/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/012_maintenance_audit.sql"), "utf8")
+  );
+});
+
+test("Student profile photo foundation migration preserves existing Students", () => {
+  const directory = makeTemporaryDirectory("student-profile-photo-foundation");
+  const databasePath = join(directory, "amanah-cash.sqlite");
+  const stagedMigrations = join(directory, "staged-migrations");
+  mkdirSync(stagedMigrations);
+  for (const filename of [
+    "001_initial_schema.sql",
+    "002_auth_identity_and_ownership.sql",
+    "003_operator_management.sql",
+    "004_student_management.sql",
+    "005_transaction_engine.sql",
+    "006_transaction_ui_notes.sql",
+    "007_operator_self_provisioning_audit.sql",
+    "008_theme_preference.sql",
+    "009_theme_preference_strict.sql",
+    "010_settings_preferences.sql",
+    "011_settings_final_contract.sql",
+    "012_maintenance_audit.sql"
+  ]) {
+    writeFileSync(join(stagedMigrations, filename), readFileSync(resolve(root, "migrations", filename), "utf8"));
+  }
+  const before = openDatabase({ databasePath, migrationsPath: stagedMigrations });
+  before.connection
+    .prepare("INSERT INTO users (id, name, email, role, is_active) VALUES ('operator', 'Operator', 'operator@example.com', 'OPERATOR', 1)")
+    .run();
+  before.connection
+    .prepare("INSERT INTO students (id, name, operator_id) VALUES ('student', 'Alya', 'operator')")
+    .run();
+  before.close();
+
+  const migrated = openDatabase({ databasePath, migrationsPath: resolve(root, "migrations") });
+  assert.deepEqual(
+    { ...migrated.connection.prepare("SELECT id, name, operator_id, balance, financial_version, photo_object_key, photo_updated_at FROM students WHERE id = 'student'").get() },
+    {
+      id: "student",
+      name: "Alya",
+      operator_id: "operator",
+      balance: 0,
+      financial_version: 0,
+      photo_object_key: null,
+      photo_updated_at: null
+    }
+  );
+  assert.throws(
+    () => migrated.connection.prepare("UPDATE students SET photo_object_key = 'profile-photos/students/key/64.webp' WHERE id = 'student'").run(),
+    /CHECK constraint failed/
+  );
+  migrated.close();
+});
+
+test("Student profile photo foundation Prisma migration mirrors the executable migration", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260803010000_student_profile_photo_foundation/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/013_student_profile_photo_foundation.sql"), "utf8")
   );
 });
 

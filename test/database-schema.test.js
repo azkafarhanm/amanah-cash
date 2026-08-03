@@ -89,7 +89,7 @@ test("schema contains only the approved strict persistence tables and columns", 
     { name: "created_at", type: "TEXT", notnull: 1, pk: 0 },
     { name: "updated_at", type: "TEXT", notnull: 1, pk: 0 }
   ]);
-  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at", "balance", "financial_version"]);
+  assert.deepEqual(columns.students.map(({ name }) => name), ["id", "name", "created_at", "operator_id", "notes", "status", "updated_at", "balance", "financial_version", "photo_object_key", "photo_updated_at"]);
   assert.deepEqual(columns.transactions.map(({ name }) => name), ["id", "student_id", "type", "amount", "correction_direction", "reason", "occurred_at", "created_at", "created_by", "updated_at", "updated_by", "revision", "deleted_at", "deleted_by", "notes"]);
   assert.deepEqual(columns.financial_audit_events.map(({ name }) => name), ["id", "command_id", "command_payload_hash", "event_type", "actor_id", "actor_role", "student_id", "transaction_id", "transaction_revision", "reason", "before_snapshot", "after_snapshot", "balance_before", "balance_after", "balance_delta", "old_operator_id", "new_operator_id", "occurred_at", "schema_version", "correlation_id"]);
   assert.deepEqual(columns.operator_audit.map(({ name }) => name), ["id", "operator_id", "actor_id", "action", "summary", "created_at"]);

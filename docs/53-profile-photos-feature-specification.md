@@ -1,6 +1,6 @@
 # Amanah Cash — Profile Photos Feature Design Specification
 
-**Status:** Approved — Phase 1 complete; Phases 2–5 pending Product Owner and Engineering gates  
+**Status:** Approved — Phases 1 and 2.1 complete; Phase 2.2 and Phases 3–5 pending Product Owner and Engineering gates  
 **Date:** 2026-08-03  
 **Feature:** Profile Photos (MVP Evolution)  
 **Scope:** Architecture and feature design only; no implementation, migration, or database change is authorized by this document
@@ -508,9 +508,18 @@ not previously display avatars, so its read model and UI were left unchanged.
 No Student, upload, storage, schema, API, authentication, authorization, or
 backup scope was introduced.
 
-### Phase 2 — Student photo core — Pending
+### Phase 2 — Student photo core — In progress
 
-- Introduce the approved nullable Student fields through a separately reviewed migration.
+#### Phase 2.1 — Student Photo Foundation — Complete
+
+- Added nullable `Student.photoObjectKey` and `Student.photoUpdatedAt` fields through migration `013_student_profile_photo_foundation.sql`.
+- Enforced the invariant that the key and update timestamp are either both null or both populated.
+- Added provider-neutral media storage, image-processor, media-service, metadata, validation, and immutable-key contracts under `src/media/`.
+- Kept the Student-photo UI flag disabled and left all Student read models and presentation unchanged.
+- Added no upload endpoint, image processor implementation, Vercel Blob adapter, delete/restore behavior, dashboard integration, Financial Assurance integration, or backup integration.
+
+#### Phase 2.2 — Student Upload Workflow — Pending
+
 - Add private Blob integration, upload/normalize/delivery/remove flows, rate limits, and orphan cleanup.
 - Add Student photos to list, detail, picker/search, transaction context, and Financial Assurance header.
 - Verify ownership transfer immediately changes media-read/manage authorization.

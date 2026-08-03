@@ -67,25 +67,25 @@ model User {
 }
 
 model SettingsPreference {
-  userId             String          @id @map("user_id")
-  theme              ThemePreference @default(SYSTEM)
-  defaultPageSize    Int             @default(20) @map("default_page_size")
-  createdAt          DateTime        @default(now()) @map("created_at")
-  updatedAt          DateTime        @updatedAt @map("updated_at")
-  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  userId          String          @id @map("user_id")
+  theme           ThemePreference @default(SYSTEM)
+  defaultPageSize Int             @default(20) @map("default_page_size")
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  user            User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("settings_preferences")
 }
 
 model MaintenanceAuditEvent {
-  id                  String   @id
-  actorId             String?  @map("actor_id")
-  operation           String
-  outcome             String
-  artifactCreatedAt   DateTime? @map("artifact_created_at")
-  applicationVersion  String?  @map("application_version")
-  schemaVersion       String?  @map("schema_version")
-  occurredAt          DateTime @default(now()) @map("occurred_at")
+  id                 String    @id
+  actorId            String?   @map("actor_id")
+  operation          String
+  outcome            String
+  artifactCreatedAt  DateTime? @map("artifact_created_at")
+  applicationVersion String?   @map("application_version")
+  schemaVersion      String?   @map("schema_version")
+  occurredAt         DateTime  @default(now()) @map("occurred_at")
 
   @@index([occurredAt(sort: Desc)], map: "ix_maintenance_audit_occurred")
   @@map("maintenance_audit_events")
@@ -146,6 +146,8 @@ model Student {
   financialAuditEvents FinancialAuditEvent[]
   balance              BigInt                @default(0)
   financialVersion     Int                   @default(0) @map("financial_version")
+  photoObjectKey       String?               @map("photo_object_key")
+  photoUpdatedAt       DateTime?             @map("photo_updated_at")
 
   @@index([operatorId], map: "ix_students_operator")
   @@map("students")

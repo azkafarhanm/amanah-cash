@@ -59,7 +59,7 @@ test("backup round-trip validates, removes reusable sessions, and restores atomi
     const inspected = await inspectBackupArtifact(artifact.bytes);
     assert.equal(inspected.format, "amanah-cash-backup");
     assert.equal(inspected.applicationVersion, "0.1.0");
-    assert.equal(inspected.schemaVersion, "012_maintenance_audit.sql");
+    assert.equal(inspected.schemaVersion, "013_student_profile_photo_foundation.sql");
 
     const changed = new Database(databasePath);
     changed.prepare("UPDATE settings_preferences SET default_page_size = 10").run();

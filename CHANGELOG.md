@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Added a lightweight release validation command that fails when `package.json.version` does not match the newest released Changelog version.
 - Added Profile Photos Phase 1 with a shared, accessible Avatar component and existing Auth.js `User.image` display in the authenticated header, sidebar account section, and read-only Settings account section. Missing or failed photos retain the existing deterministic initials fallback; no upload, Student-photo, storage, schema, API, authentication, authorization, or backup behavior was added.
+- Added Profile Photos Phase 2.1 foundation: nullable Student media-reference fields with an integrity constraint, provider-neutral media storage/processing/service contracts, approved image validation limits, normalized rendition metadata, immutable random object-key generation, and an explicitly disabled Student-photo UI flag. No upload endpoint, Blob adapter, Student photo rendering, deletion, restore, dashboard, or backup integration is enabled.
 
 ### Changed
 

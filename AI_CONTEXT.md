@@ -69,6 +69,17 @@ was intentionally left unchanged. Student photos, uploads, media APIs, object
 storage, dashboard photos, schema changes, and backup changes remain pending
 future phases under `docs/53-profile-photos-feature-specification.md` and ADR-005.
 
+Profile Photos Phase 2.1 is also complete as an internal-only foundation.
+Migration `013_student_profile_photo_foundation.sql` adds nullable
+`Student.photoObjectKey`/`Student.photoUpdatedAt` persistence with a database
+constraint requiring both values to be null or both populated. `src/media/`
+owns provider-neutral storage, image-processor, media-service, metadata,
+validation, and immutable-key contracts. The Student-photo UI flag remains
+disabled and no application read model, page, route, Vercel Blob adapter,
+upload/delete workflow, dashboard, Financial Assurance, or backup behavior
+consumes the new fields. Phase 2.2 requires separate Engineering Review and
+Manual QA approval.
+
 The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace, Student Financial History timeline, Global Currency Standardization, debounced live search, and polished filter/cursor UX.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
@@ -93,7 +104,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 240 passed, 0 failed, including Profile Photos Phase 1 coverage.
+- Automated tests: 246 passed, 0 failed, including Profile Photos Phase 1 and Phase 2.1 foundation coverage.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **MVP QUALITY COMPLETE — APPROVED FOR RELEASE QUALIFICATION (SPRINT R1)**.
@@ -134,6 +145,7 @@ SQLite relational database and invariant triggers
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
 - `src/components/app-shell/` remains the only authenticated application chrome.
 - `src/components/ui/` remains the shared design-system primitive layer.
+- `src/media/` owns the internal Profile Photo media contracts, validation limits, normalized metadata, and provider-neutral storage/processing boundaries; it has no route or UI consumer in Phase 2.1.
 - `src/components/ui/context-detail-drawer.tsx` is the single platform Context Detail Drawer primitive. Feature consumers provide read-only content and do not own drawer geometry, modality, motion, or scrolling.
 - The implemented financial model uses Student persisted Balance/version, Student-owned Transactions, and immutable FinancialAuditEvents. Identity, account lifecycle, and authentication/session data remain separate from financial data.
 
