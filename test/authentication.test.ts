@@ -245,6 +245,43 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
     const adapter = productionLikeOptions.adapter!;
     assert.equal((await adapter.getUserByEmail!("operator@example.com"))?.id, "operator-1");
 
+    const signIn = productionLikeOptions.callbacks!.signIn as unknown as (input: {
+      account: { provider: string; providerAccountId: string };
+      profile: { email: string; email_verified: boolean; picture: string };
+    }) => Promise<boolean>;
+    const googleAccount = { provider: "google", providerAccountId: "google-operator-1" };
+    assert.equal(await signIn({
+      account: googleAccount,
+      profile: {
+        email: "operator@example.com",
+        email_verified: true,
+        picture: "https://profiles.example/first.jpg"
+      }
+    }), true);
+    assert.equal(
+      (await prisma.user.findUnique({ where: { id: "operator-1" }, select: { image: true } }))?.image,
+      "https://profiles.example/first.jpg"
+    );
+
+    await adapter.linkAccount!({
+      userId: "operator-1",
+      type: "oauth",
+      provider: "google",
+      providerAccountId: googleAccount.providerAccountId
+    });
+    assert.equal(await signIn({
+      account: googleAccount,
+      profile: {
+        email: "operator@example.com",
+        email_verified: true,
+        picture: "https://profiles.example/replacement.jpg"
+      }
+    }), true);
+    assert.equal(
+      (await prisma.user.findUnique({ where: { id: "operator-1" }, select: { image: true } }))?.image,
+      "https://profiles.example/first.jpg"
+    );
+
     await adapter.createSession!({
       sessionToken: "real-session",
       userId: "operator-1",

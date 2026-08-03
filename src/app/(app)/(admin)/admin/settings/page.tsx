@@ -1,5 +1,7 @@
 import { protectRoute } from "@/authorization/routes";
+import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
+import { AccountSettings } from "@/components/settings/account-settings";
 import { ThemeSettings } from "@/components/settings/theme-settings";
 import { PreferencesSettings } from "@/components/settings/preferences-settings";
 import { DataSettings } from "@/components/settings/data-settings";
@@ -14,7 +16,10 @@ import { APPLICATION_VERSION } from "@/settings/about";
 import styles from "@/components/settings/settings-sections.module.css";
 
 export default async function AdminSettingsPage() {
-  const user = await protectRoute("admin");
+  const [user, session] = await Promise.all([
+    protectRoute("admin"),
+    auth()
+  ]);
   const preferences = await readSettingsPreferences(
     getPrismaClient(loadAuthenticationEnvironment()),
     user.id
@@ -27,6 +32,7 @@ export default async function AdminSettingsPage() {
         description="Atur tampilan dan preferensi Amanah Cash untuk akun Anda."
       />
       <SectionDivider />
+      <AccountSettings user={session?.user ?? {}} />
       <ThemeSettings initialTheme={preferences.theme} />
       <PreferencesSettings
         initialPageSize={preferences.defaultPageSize}

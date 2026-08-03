@@ -1,4 +1,5 @@
 export { Button, type ButtonProps } from "./button";
+export { Avatar, type AvatarProps, type AvatarSize } from "./avatar";
 export { Card, type CardProps } from "./card";
 export { Container, type ContainerProps } from "./container";
 export { Heading, type HeadingProps } from "./heading";
@@ -28,4 +29,3 @@ export { BackButton, type BackButtonProps } from "./back-button";
 export { SectionDivider, type SectionDividerProps } from "./section-divider";
 export { Toast, type ToastProps, type ToastTone } from "./toast";
 export { ToastProvider, useToast } from "./toast-provider";
-

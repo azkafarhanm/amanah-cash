@@ -33,6 +33,7 @@
 
 .header,
 .row > div,
+.accountIdentity > div,
 .restoreActions {
   display: grid;
   gap: var(--space-2);
@@ -85,6 +86,31 @@
   align-items: start;
   padding-block-start: var(--space-5);
   border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+}
+
+.accountIdentity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+  padding-block-start: var(--space-5);
+  border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+}
+
+.accountIdentity h3,
+.accountIdentity p {
+  margin: 0;
+}
+
+.accountIdentity h3 {
+  color: var(--color-text-primary);
+  font: var(--type-label);
+}
+
+.accountIdentity p {
+  overflow-wrap: anywhere;
+  color: var(--color-text-secondary);
+  font: var(--type-supporting);
 }
 
 .row h3 {

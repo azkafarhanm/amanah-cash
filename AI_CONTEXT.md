@@ -59,6 +59,16 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 
 ## Current Implementation Status
 
+Profile Photos Phase 1 is complete. The shared `src/components/ui/avatar.tsx`
+primitive supports XS, SM, MD, and LG account-avatar sizes, renders existing
+Auth.js `User.image` metadata when present, and preserves deterministic initials
+or `?` fallback without layout shift. It is used only in the authenticated
+header, sidebar account section, and the Admin/Operator Settings account section.
+The Admin Operator list did not previously display avatars, so its read contract
+was intentionally left unchanged. Student photos, uploads, media APIs, object
+storage, dashboard photos, schema changes, and backup changes remain pending
+future phases under `docs/53-profile-photos-feature-specification.md` and ADR-005.
+
 The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace, Student Financial History timeline, Global Currency Standardization, debounced live search, and polished filter/cursor UX.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
@@ -83,7 +93,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 232 passed, 0 failed.
+- Automated tests: 240 passed, 0 failed, including Profile Photos Phase 1 coverage.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **MVP QUALITY COMPLETE — APPROVED FOR RELEASE QUALIFICATION (SPRINT R1)**.
@@ -260,6 +270,8 @@ Next Phase: **Sprint R1 — Release and Deployment Qualification**.
 | `docs/46-excel-export-foundation.md` | ExcelJS adapter, workbook presentation, registry integration, guard rails, tests, and deferred presentation work |
 | `docs/47-pdf-export-foundation.md` | PDFKit adapter, pagination, document-derived layout, registry integration, guard rails, tests, and deferred presentation work |
 | `docs/48-landing-page-design-content-specification.md` | Proposed approval-gated Landing Page positioning, information architecture, final copy, visual direction, motion, accessibility, and claim governance |
+| `docs/53-profile-photos-feature-specification.md` | Approved phased Profile Photos design; Phase 1 User-image integration is complete and later phases remain pending |
+| `docs/adr/ADR-005-profile-photo-architecture.md` | Accepted Profile Photo storage, reference, authorization, fallback, placement, and backup architecture |
 
 ## Sprint Completion Rule
 

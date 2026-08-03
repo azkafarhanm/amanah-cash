@@ -171,17 +171,6 @@
   border-radius: var(--radius-md);
 }
 
-.avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-full);
-  color: white;
-  font-size: 0.75rem;
-  font-weight: var(--font-weight-semibold);
-  flex: none;
-}
-
 .userMeta {
   display: flex;
   flex-direction: column;

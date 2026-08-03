@@ -118,9 +118,10 @@ export function buildAuthOptions(
             return false;
           }
         }
+        const googleProfile = isVerifiedGoogleProfile(profile) ? profile : undefined;
         const decision = await evaluateGoogleAdmission({
           provider: account?.provider,
-          profile: isVerifiedGoogleProfile(profile) ? profile : undefined,
+          profile: googleProfile,
           users: {
             async findByNormalizedEmail(email) {
               return prisma.user.findFirst({
@@ -143,7 +144,24 @@ export function buildAuthOptions(
         });
         const bindingValid = isGoogleAccountBindingValid(decision.user.id, linkedAccount?.userId ?? null);
         if (bindingValid) {
-          await prisma.user.update({ where: { id: decision.user.id }, data: { lastLoginAt: new Date() } });
+          const lastLoginAt = new Date();
+          if (googleProfile?.picture) {
+            await prisma.$transaction([
+              prisma.user.updateMany({
+                where: { id: decision.user.id, image: null },
+                data: { image: googleProfile.picture }
+              }),
+              prisma.user.update({
+                where: { id: decision.user.id },
+                data: { lastLoginAt }
+              })
+            ]);
+          } else {
+            await prisma.user.update({
+              where: { id: decision.user.id },
+              data: { lastLoginAt }
+            });
+          }
         }
         return bindingValid;
       },

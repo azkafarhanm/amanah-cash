@@ -5,41 +5,14 @@ import { usePathname } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import type { Role } from "@/generated/prisma/enums";
 import { LogoutButton } from "@/components/auth/logout-button";
-import { Logo, StatusBadge } from "@/components/ui";
+import { Avatar, Logo, StatusBadge } from "@/components/ui";
 import { navigationForRole } from "./navigation";
 import { NavigationIcon } from "./navigation-icon";
 import styles from "./app-shell.module.css";
 
-function UserAvatar({ name, size = 36 }: { name: string; size?: number }) {
-  const initials = name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0])
-    .join("")
-    .toUpperCase() || "?";
-
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const hue = Math.abs(hash % 160) + 160;
-  const bg = `linear-gradient(135deg, hsl(${hue}, 55%, 45%), hsl(${hue + 25}, 60%, 35%))`;
-
-  return (
-    <span
-      className={styles.avatar}
-      style={{ width: size, height: size, background: bg }}
-      aria-hidden="true"
-    >
-      {initials}
-    </span>
-  );
-}
-
 export type AppShellProps = {
   role: Role;
-  user: { name?: string | null; email?: string | null };
+  user: { name?: string | null; email?: string | null; image?: string | null };
   children: ReactNode;
 };
 
@@ -74,6 +47,7 @@ export function AppShell({ role, user, children }: AppShellProps) {
           <Logo />
         </Link>
         <div className={styles.account}>
+          <Avatar name={displayName} photo={user.image} size="md" loading="eager" />
           <div className={styles.accountCopy}>
             <span className={styles.accountName}>{displayName}</span>
             <StatusBadge>{roleLabel}</StatusBadge>
@@ -106,7 +80,7 @@ export function AppShell({ role, user, children }: AppShellProps) {
 
         <div className={styles.sidebarFooter}>
           <div className={styles.userInfo}>
-            <UserAvatar name={displayName} />
+            <Avatar name={displayName} photo={user.image} size="md" />
             <div className={styles.userMeta}>
               <span className={styles.userName}>{displayName}</span>
               <StatusBadge>{roleLabel}</StatusBadge>
