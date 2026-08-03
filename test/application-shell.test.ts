@@ -19,6 +19,29 @@ test("route groups separate public, auth, authenticated, admin, and Operator lay
   assert.match(operator, /protectRoute\("operator"\)/);
 });
 
+test("authenticated pages translate expected authorization failures through route-safe guards", () => {
+  const roleProtectedPages = [
+    "src/app/(app)/(operator)/operator/page.tsx",
+    "src/app/(app)/(operator)/operator/students/page.tsx",
+    "src/app/(app)/(operator)/operator/reports/page.tsx",
+    "src/app/(app)/(operator)/operator/reconciliation/page.tsx",
+    "src/app/(app)/(admin)/admin/reports/page.tsx"
+  ].map(readSource).join("\n");
+  const ownershipProtectedPages = [
+    "src/app/(app)/(operator)/operator/students/[id]/page.tsx",
+    "src/app/(app)/(operator)/operator/reports/students/[id]/page.tsx"
+  ].map(readSource).join("\n");
+  const routeGuards = readSource("src/authorization/routes.ts");
+
+  assert.doesNotMatch(roleProtectedPages, /currentOperator\(|requirePlatformAdmin\(/);
+  assert.match(roleProtectedPages, /protectRoute\("operator"\)/);
+  assert.match(roleProtectedPages, /protectRoute\("admin"\)/);
+  assert.doesNotMatch(ownershipProtectedPages, /requireOwnership\(/);
+  assert.match(ownershipProtectedPages, /protectOwnership\(/);
+  assert.match(routeGuards, /UnauthenticatedError\) redirect\("\/login"\)/);
+  assert.match(routeGuards, /OwnershipNotFoundError\) notFound\(\)/);
+});
+
 test("navigation exposes only the modules designated for each role", () => {
   const admin = navigationForRole("PLATFORM_ADMIN");
   const operator = navigationForRole("OPERATOR");

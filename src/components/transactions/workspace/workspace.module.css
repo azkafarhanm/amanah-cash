@@ -166,7 +166,7 @@
 
 .tableWrapper {
   width: var(--size-full);
-  overflow-x: auto;
+  overflow: visible;
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   border-radius: var(--shape-container);
   background: var(--color-background-surface);
@@ -180,13 +180,21 @@
 }
 
 .th {
-  padding: var(--space-4);
-  border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
-  background: var(--color-background-subtle);
-  color: var(--color-text-secondary);
-  font: var(--type-label);
+  position: sticky;
+  top: var(--app-header-height);
+  z-index: var(--z-raised);
+  background-clip: padding-box;
+  padding: var(--table-header-padding-block) var(--table-header-padding-inline);
+  border-block-end: var(--table-header-border);
+  background: var(--table-header-background);
+  color: var(--table-header-foreground);
+  font: var(--table-header-font);
   white-space: nowrap;
+  box-shadow: var(--shadow-xs);
 }
+
+.th:first-child { border-start-start-radius: var(--table-header-radius); }
+.th:last-child { border-start-end-radius: var(--table-header-radius); }
 
 .td {
   padding: var(--space-4);

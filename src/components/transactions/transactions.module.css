@@ -66,6 +66,16 @@
     border-top-right-radius: var(--radius-xl);
     max-height: max(85vh, calc(100dvh - env(safe-area-inset-top)));
   }
+  .dialog::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: var(--space-2) auto var(--space-0);
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    opacity: 0.7;
+  }
   .dialogForm { padding-block-end: max(var(--space-6), env(safe-area-inset-bottom)); }
   .overviewGrid, .filters, .transactionMeta { grid-template-columns: 1fr; }
   .primaryActions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -77,7 +87,7 @@
 
 .timelineGroup { display: grid; gap: var(--space-4); margin-block-start: var(--space-4); }
 .timelineGroupHeader { display: flex; align-items: center; gap: var(--space-3); padding-block-end: var(--space-2); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); }
-.timelineGroupBadge { font: var(--type-label); font-weight: var(--font-weight-bold); color: var(--color-text-primary); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide); background: var(--color-background-subtle); padding: var(--space-1) var(--space-3); border-radius: var(--shape-control); }
+.timelineGroupBadge { font: var(--type-label); font-weight: var(--font-weight-bold); color: var(--color-text-primary); text-transform: uppercase; letter-spacing: var(--letter-spacing-wide); background: var(--color-background-subtle); padding: var(--space-1) var(--space-3); border-radius: var(--shape-control); box-shadow: var(--surface-inset-highlight); }
 .timelineItem { display: grid; gap: var(--space-3); padding: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-surface); transition: border-color var(--motion-duration-fast) var(--motion-ease-standard); }
 .timelineItem:hover { border-color: var(--color-action-primary); }
 .balanceAfterText { font: var(--type-label); color: var(--color-text-secondary); }

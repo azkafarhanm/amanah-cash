@@ -12,7 +12,7 @@ test("Financial Assurance entry reuses protected Operator data and shared page p
   const operatorLayout = source("src/app/(app)/(operator)/operator/layout.tsx");
 
   assert.match(operatorLayout, /protectRoute\("operator"\)/);
-  assert.match(page, /currentOperator\(\)/);
+  assert.match(page, /protectRoute\("operator"\)/);
   assert.match(page, /studentManagement\(\)\.list/);
   assert.match(page, /<ContentWrapper>/);
   assert.match(page, /<SectionHeader/);

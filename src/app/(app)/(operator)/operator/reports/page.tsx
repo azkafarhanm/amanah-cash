@@ -1,4 +1,4 @@
-import { currentOperator } from "@/authorization";
+import { protectRoute } from "@/authorization/routes";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { OperatorReportExport, OperatorReportFilterContext, OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
 import { reportReadService } from "@/reports/read-service";
@@ -6,7 +6,7 @@ import type { ReportQuery } from "@/reports/types";
 import { readCurrentDefaultPageSize } from "@/settings/service";
 
 export default async function ReportsPage({ searchParams }: { searchParams: Promise<ReportQuery> }) {
-  const [operator, query] = await Promise.all([currentOperator(), searchParams]);
+  const [operator, query] = await Promise.all([protectRoute("operator"), searchParams]);
   const pageSize = await readCurrentDefaultPageSize(operator.id);
   const report = await reportReadService().operator(operator.id, query, pageSize);
   return <ContentWrapper>

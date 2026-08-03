@@ -9,6 +9,7 @@ import type { AdminReportResult, NormalizedReportFilters, OperatorReportResult, 
 import { adminReportExportHref, adminReportHref, operatorReportExportHref, reportDate, reportHref } from "./presentation";
 import { ReportFilterForm } from "./report-filter-form";
 import { ReportExportActions } from "./report-export-actions";
+import { ReportSortLink } from "./report-sort-link";
 import styles from "./reports.module.css";
 
 function ReportEmptyIcon({ kind }: { kind: "students" | "search" | "filter" | "records" }) {
@@ -63,7 +64,7 @@ export function ReportSummary({ result }: { result: OperatorReportResult }) {
 function sortLink(basePath: string, filters: NormalizedReportFilters, sort: NormalizedReportFilters["sort"], label: string) {
   const active = filters.sort === sort;
   const direction = active && filters.direction === "desc" ? "asc" : "desc";
-  return <Link aria-label={`Urutkan ${label} ${direction === "asc" ? "menaik" : "menurun"}`} href={reportHref(basePath, filters, { sort, direction, page: "1" })} scroll={false}>{label}{active ? filters.direction === "asc" ? " ↑" : " ↓" : ""}</Link>;
+  return <ReportSortLink ariaLabel={`Urutkan ${label} ${direction === "asc" ? "menaik" : "menurun"}`} href={reportHref(basePath, filters, { sort, direction, page: "1" })}>{label}{active ? filters.direction === "asc" ? " ↑" : " ↓" : ""}</ReportSortLink>;
 }
 
 export function OperatorReportTable({ result, basePath, detailBasePath, lockedStudentId }: { result: OperatorReportResult; basePath: string; detailBasePath: string; lockedStudentId?: string }) {

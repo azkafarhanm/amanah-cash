@@ -1,7 +1,7 @@
-import { forbidden, redirect } from "next/navigation";
+import { forbidden, notFound, redirect } from "next/navigation";
 import type { AuthorizationService, AuthorizationUser } from "@/authorization/core";
 import { authorization } from "@/authorization";
-import { UnauthenticatedError, UnauthorizedError } from "@/authorization/errors";
+import { OwnershipNotFoundError, UnauthenticatedError, UnauthorizedError } from "@/authorization/errors";
 
 export type ProtectedRoute = "authenticated" | "admin" | "operator";
 
@@ -24,6 +24,17 @@ export async function protectRoute(route: ProtectedRoute): Promise<Authorization
   } catch (error) {
     if (error instanceof UnauthenticatedError) redirect("/login");
     if (error instanceof UnauthorizedError) forbidden();
+    throw error;
+  }
+}
+
+export async function protectOwnership(studentId: string): Promise<AuthorizationUser & { role: "OPERATOR" }> {
+  try {
+    return await authorization().requireOwnership(studentId);
+  } catch (error) {
+    if (error instanceof UnauthenticatedError) redirect("/login");
+    if (error instanceof UnauthorizedError) forbidden();
+    if (error instanceof OwnershipNotFoundError) notFound();
     throw error;
   }
 }

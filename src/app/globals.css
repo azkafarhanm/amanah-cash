@@ -613,6 +613,15 @@
   --app-content-max: 75rem;
   --app-content-padding: var(--space-6);
   --navigation-icon-size: 1.25rem;
+  --table-header-background: var(--color-background-subtle);
+  --table-header-foreground: var(--color-text-secondary);
+  --table-header-font: var(--font-weight-medium) var(--font-size-14) /
+    var(--line-height-body) var(--font-family-sans);
+  --table-header-padding-block: var(--space-3);
+  --table-header-padding-inline: var(--space-4);
+  --table-header-radius: var(--shape-container);
+  --table-header-border: var(--border-width-default)
+    var(--border-style-default) var(--color-border-default);
   --empty-state-min-height: 16rem;
   --status-badge-height: 1.5rem;
   --skeleton-line-height: 1rem;

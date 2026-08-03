@@ -1,4 +1,4 @@
-import { requirePlatformAdmin } from "@/authorization";
+import { protectRoute } from "@/authorization/routes";
 import { AdminReportExport, AdminReportFilterContext, AdminReportFilters, AdminReportTable } from "@/components/reports/report-components";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { reportReadService } from "@/reports/read-service";
@@ -6,7 +6,7 @@ import type { AdminReportQuery } from "@/reports/types";
 import { readCurrentDefaultPageSize } from "@/settings/service";
 
 export default async function AdminReportsPage({ searchParams }: { searchParams: Promise<AdminReportQuery> }) {
-  const [admin, query] = await Promise.all([requirePlatformAdmin(), searchParams]);
+  const [admin, query] = await Promise.all([protectRoute("admin"), searchParams]);
   const pageSize = await readCurrentDefaultPageSize(admin.id);
   const report = await reportReadService().admin(query, pageSize);
   return <ContentWrapper>

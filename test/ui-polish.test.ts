@@ -19,6 +19,31 @@ test("shared UI styles use parser-safe fractional spacing token names", async ()
   assert.match(styles, /--space-1-5/);
 });
 
+test("authenticated tables share the semantic table-header contract", async () => {
+  const [globals, ...tables] = await Promise.all([
+    readFile("src/app/globals.css", "utf8"),
+    readFile("src/components/reports/reports.module.css", "utf8"),
+    readFile("src/components/students/students.module.css", "utf8"),
+    readFile("src/components/transactions/workspace/workspace.module.css", "utf8"),
+    readFile("src/app/(app)/(admin)/admin/operators/operators.module.css", "utf8")
+  ]);
+
+  assert.match(globals, /--table-header-background:\s*var\(--color-background-subtle\)/);
+  assert.match(globals, /--table-header-foreground:\s*var\(--color-text-secondary\)/);
+  assert.match(globals, /--table-header-font:\s*var\(--font-weight-medium\)/);
+  assert.match(globals, /--table-header-padding-block:\s*var\(--space-3\)/);
+  assert.match(globals, /--table-header-padding-inline:\s*var\(--space-4\)/);
+
+  for (const styles of tables) {
+    assert.match(styles, /background:\s*var\(--table-header-background\)/);
+    assert.match(styles, /color:\s*var\(--table-header-foreground\)/);
+    assert.match(styles, /font:\s*var\(--table-header-font\)/);
+    assert.match(styles, /border-block-end:\s*var\(--table-header-border\)/);
+    assert.match(styles, /border-start-start-radius:\s*var\(--table-header-radius\)/);
+    assert.match(styles, /border-start-end-radius:\s*var\(--table-header-radius\)/);
+  }
+});
+
 test("shared pagination distinguishes single, enabled, current, and disabled states", async () => {
   const [component, styles, globals] = await Promise.all([
     readFile("src/components/ui/pagination.tsx", "utf8"),

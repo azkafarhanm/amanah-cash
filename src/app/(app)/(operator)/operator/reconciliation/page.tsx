@@ -1,4 +1,4 @@
-import { currentOperator } from "@/authorization";
+import { protectRoute } from "@/authorization/routes";
 import { StudentList } from "@/components/students/student-list";
 import { ContentWrapper, SectionHeader } from "@/components/ui";
 import { studentManagement } from "@/students/service";
@@ -9,7 +9,7 @@ export default async function FinancialAssurancePage({
 }: {
   searchParams: Promise<{ search?: string; page?: string; pageSize?: string }>;
 }) {
-  const [query, operator] = await Promise.all([searchParams, currentOperator()]);
+  const [query, operator] = await Promise.all([searchParams, protectRoute("operator")]);
   const defaultPageSize = await readCurrentDefaultPageSize(operator.id);
   const result = await studentManagement().list(
     { kind: "operator", operatorId: operator.id },

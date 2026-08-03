@@ -1,4 +1,4 @@
-import { currentOperator } from "@/authorization";
+import { protectRoute } from "@/authorization/routes";
 import {
   Wallet,
   ArrowDownLeft,
@@ -22,7 +22,7 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import styles from "@/components/dashboard/dashboard-v2.module.css";
 
 export default async function OperatorHome() {
-  const operator = await currentOperator();
+  const operator = await protectRoute("operator");
   const dashboard = await dashboardReadService().operator(operator.id);
 
   const recentActivities = dashboard.recentTransactions.map((t) => ({

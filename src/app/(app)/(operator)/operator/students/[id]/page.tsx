@@ -1,12 +1,12 @@
 import { BackButton, ContentWrapper, SectionHeader } from "@/components/ui";
 import { StudentDetail } from "@/components/students/student-detail";
-import { requireOwnership } from "@/authorization";
+import { protectOwnership } from "@/authorization/routes";
 import { studentManagement } from "@/students/service";
 import { TransactionExperience } from "@/components/transactions/transaction-experience";
 import { transactionReadService, type TransactionHistoryQuery } from "@/transactions/read-service";
 
 export default async function OperatorStudentDetail({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<TransactionHistoryQuery> }) {
-  const [{ id }, query] = await Promise.all([params, searchParams]); const operator = await requireOwnership(id);
+  const [{ id }, query] = await Promise.all([params, searchParams]); const operator = await protectOwnership(id);
   const [student, transactions] = await Promise.all([
     studentManagement().detail(id, { kind: "operator", operatorId: operator.id }),
     transactionReadService().history(id, operator.id, query)

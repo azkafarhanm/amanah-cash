@@ -134,7 +134,6 @@ test("Dashboard presentation is reusable, read-only, responsive, and accessible"
   assert.match(readService, /take: ACTIVITY_LIMIT/);
   assert.doesNotMatch(readService, /\.create\(|\.update\(|\.delete\(|transactionEngine/);
   assert.doesNotMatch(adminPage, /balance|Transaction|financialAuditEvent|FeaturePlaceholder/i);
-  assert.match(operatorPage, /currentOperator\(\)/);
+  assert.match(operatorPage, /protectRoute\("operator"\)/);
   assert.doesNotMatch(operatorPage, /transactionEngine|\.create\(|\.edit\(|\.remove\(|\.restore\(/);
 });
-

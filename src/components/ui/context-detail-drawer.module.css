@@ -163,6 +163,17 @@
     width: var(--context-detail-drawer-width-mobile);
   }
 
+  .surface::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: var(--space-2) auto var(--space-0);
+    border-radius: var(--radius-full);
+    background: var(--color-border-strong);
+    opacity: 0.7;
+  }
+
   .header,
   .content,
   .footer {

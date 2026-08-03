@@ -1,4 +1,4 @@
-import { requireOwnership } from "@/authorization";
+import { protectOwnership } from "@/authorization/routes";
 import { BackButton, ContentWrapper, SectionHeader } from "@/components/ui";
 import { OperatorReportExport, OperatorReportFilterContext, OperatorReportTable, ReportFilters, ReportSummary } from "@/components/reports/report-components";
 import { reportReadService } from "@/reports/read-service";
@@ -6,7 +6,7 @@ import type { ReportQuery } from "@/reports/types";
 
 export default async function StudentReportPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<ReportQuery> }) {
   const [{ id }, query] = await Promise.all([params, searchParams]);
-  const operator = await requireOwnership(id);
+  const operator = await protectOwnership(id);
   const report = await reportReadService().operator(operator.id, { ...query, studentId: id });
   const student = report.students.find((item) => item.id === id);
   return <ContentWrapper>

@@ -168,6 +168,7 @@
 }
 
 .auditTimelineList {
+  position: relative;
   display: grid;
   gap: var(--space-3);
   margin: var(--space-0);
@@ -176,8 +177,21 @@
 }
 
 .auditTimelineItem {
+  position: relative;
   min-width: 0;
   border-radius: var(--shape-control);
+}
+
+.auditTimelineItem:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  bottom: calc(var(--space-3) * -1);
+  width: 2px;
+  height: var(--space-3);
+  background: linear-gradient(180deg, var(--color-action-primary), var(--color-border-default));
+  pointer-events: none;
+  z-index: 1;
 }
 
 .auditTimelineItem:focus-visible {

@@ -107,11 +107,13 @@
 .summaryGrid small { color: var(--color-text-secondary); font: var(--type-supporting); }
 .summaryGrid .periodValue { font: var(--type-section-title); }
 
-.tableWrap { overflow: hidden; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 98%, var(--color-action-primary))); box-shadow: var(--surface-inset-highlight); }
+.tableWrap { overflow: visible; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: linear-gradient(180deg, var(--color-background-surface), color-mix(in srgb, var(--color-background-surface) 98%, var(--color-action-primary))); box-shadow: var(--surface-inset-highlight); }
 .table { width: var(--size-full); border-collapse: collapse; }
 .table th,
 .table td { padding: var(--space-4); border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default); text-align: start; vertical-align: top; }
-.table th { color: var(--color-text-secondary); font: var(--type-label); white-space: nowrap; }
+.table th { position: sticky; top: var(--app-header-height); z-index: var(--z-raised); background-clip: padding-box; padding: var(--table-header-padding-block) var(--table-header-padding-inline); border-block-end: var(--table-header-border); background: var(--table-header-background); color: var(--table-header-foreground); font: var(--table-header-font); white-space: nowrap; box-shadow: var(--shadow-xs); }
+.table thead th:first-child { border-start-start-radius: var(--table-header-radius); }
+.table thead th:last-child { border-start-end-radius: var(--table-header-radius); }
 .table tbody tr { transition: background-color var(--motion-duration-fast) var(--motion-ease-standard); }
 .table tbody tr:nth-child(even) { background: var(--color-background-subtle); }
 .table tbody tr:focus-within { background: var(--color-primary-subtle); }
@@ -196,4 +198,3 @@
     transition: none;
   }
 }
-
