@@ -12,9 +12,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Prom
   return <ContentWrapper>
     <SectionHeader title="Laporan Keuangan" description="Riwayat keuangan hanya untuk Siswa yang saat ini ditugaskan kepada Anda." />
     <ReportFilters filters={report.filters} students={report.students} basePath="/operator/reports" />
+    <OperatorReportExport result={report} />
     <OperatorReportFilterContext result={report} />
     <ReportSummary result={report} />
     <OperatorReportTable result={report} basePath="/operator/reports" detailBasePath="/operator/reports/students" />
-    <OperatorReportExport result={report} />
   </ContentWrapper>;
 }

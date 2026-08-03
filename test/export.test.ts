@@ -595,6 +595,9 @@ test("export interaction is local, deterministic, duplicate-safe, and accessibly
   assert.match(interaction, /role="group" aria-label="Pilih format laporan" aria-busy=\{preparing\}/);
   assert.match(interaction, /role="status" aria-live="polite"/);
   assert.match(interaction, /role="alert"/);
+  assert.match(interaction, /useToast/);
+  assert.match(interaction, /toast\.success/);
+  assert.match(interaction, /toast\.error/);
   assert.match(interaction, /File \{state\.format\.label\} siap\. Unduhan dimulai\./);
   assert.match(interaction, /Tidak ada data yang dapat diunduh untuk filter saat ini\./);
   assert.match(interaction, /Coba lagi/);
@@ -604,7 +607,9 @@ test("export interaction is local, deterministic, duplicate-safe, and accessibly
   assert.match(styles, /grid-template-columns: minmax\(0, 1fr\)/);
 
   for (const page of [operatorPage, studentPage]) {
-    assert.ok(page.indexOf("<OperatorReportTable") < page.indexOf("<OperatorReportExport"));
+    assert.ok(page.indexOf("<ReportFilters") < page.indexOf("<OperatorReportExport"));
+    assert.ok(page.indexOf("<OperatorReportExport") < page.indexOf("<OperatorReportFilterContext"));
+    assert.ok(page.indexOf("<OperatorReportExport") < page.indexOf("<OperatorReportTable"));
   }
   assert.ok(adminPage.indexOf("<AdminReportTable") < adminPage.indexOf("<AdminReportExport"));
 });

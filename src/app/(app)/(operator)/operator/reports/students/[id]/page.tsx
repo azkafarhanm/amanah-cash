@@ -12,9 +12,9 @@ export default async function StudentReportPage({ params, searchParams }: { para
   return <ContentWrapper>
     <SectionHeader title={`Riwayat Laporan ${student?.name ?? "Siswa"}`} description="Timeline transaksi aktif, revisi, dan bukti saldo tersimpan untuk Siswa ini." action={<BackButton href="/operator/reports">Kembali ke Laporan</BackButton>} />
     <ReportFilters filters={report.filters} students={report.students} basePath={`/operator/reports/students/${encodeURIComponent(id)}`} lockedStudentId={id} />
+    <OperatorReportExport result={report} />
     <OperatorReportFilterContext result={report} />
     <ReportSummary result={report} />
     <OperatorReportTable result={report} basePath={`/operator/reports/students/${encodeURIComponent(id)}`} detailBasePath="/operator/reports/students" lockedStudentId={id} />
-    <OperatorReportExport result={report} />
   </ContentWrapper>;
 }

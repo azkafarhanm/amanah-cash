@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import { signOut } from "next-auth/react";
+import { useToast } from "@/components/ui";
 import styles from "./settings-sections.module.css";
 
 type BackupMetadata = {
@@ -21,6 +22,7 @@ function DatabaseIcon() {
 }
 
 export function DataSettings() {
+  const toast = useToast();
   const fileInput = useRef<HTMLInputElement>(null);
   const [artifact, setArtifact] = useState<File>();
   const [metadata, setMetadata] = useState<BackupMetadata>();
@@ -47,10 +49,14 @@ export function DataSettings() {
       anchor.click();
       URL.revokeObjectURL(url);
       setStatus("idle");
-      setMessage("Backup siap. Unduhan dimulai.");
+      const msg = "Backup siap. Unduhan dimulai.";
+      setMessage(msg);
+      toast.success(msg);
     } catch {
       setStatus("error");
-      setMessage("Backup belum dapat dibuat. Coba lagi.");
+      const msg = "Backup belum dapat dibuat. Coba lagi.";
+      setMessage(msg);
+      toast.error(msg);
     }
   }
 

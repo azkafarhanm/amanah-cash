@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { FileSpreadsheet, FileText, FileType } from "lucide-react";
+import { useToast } from "@/components/ui";
 import styles from "./reports.module.css";
 
 type ExportFormat = {
@@ -49,6 +50,7 @@ async function failureMessage(response: Response) {
 }
 
 export function ReportExportActions({ formats, total }: { formats: ExportFormat[]; total: number }) {
+  const toast = useToast();
   const [state, setState] = useState<ExportState>({ status: "idle" });
   const mounted = useRef(true);
   const inFlight = useRef(false);
@@ -81,6 +83,7 @@ export function ReportExportActions({ formats, total }: { formats: ExportFormat[
         const message = await failureMessage(response);
         if (mounted.current && attempt === latestAttempt.current) {
           setState({ status: "failed", attempt, format, message });
+          toast.error(message);
         }
         return;
       }
@@ -100,12 +103,17 @@ export function ReportExportActions({ formats, total }: { formats: ExportFormat[
         downloadUrls.current.delete(url);
       }, 1_000);
       setState({ status: "started", attempt, format });
+      toast.success(
+        `File ${format.label} siap. Unduhan dimulai.`,
+        "Periksa daftar unduhan browser jika file tidak terlihat."
+      );
     } catch {
       if (mounted.current && attempt === latestAttempt.current) {
         const message = navigator.onLine
           ? "Laporan tidak dapat disiapkan saat ini. Coba lagi."
           : "Laporan belum dapat disiapkan karena koneksi terputus. Periksa koneksi, lalu coba lagi.";
         setState({ status: "failed", attempt, format, message });
+        toast.error(message);
       }
     } finally {
       if (attempt === latestAttempt.current) inFlight.current = false;
