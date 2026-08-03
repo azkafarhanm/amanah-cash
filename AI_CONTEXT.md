@@ -1,6 +1,6 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-08-02
+**Last updated:** 2026-08-03
 **Current delivery state:** Phase 1 (Functional MVP, Sprints 0–6) complete; Phase 2 (Product Quality) beginning with Sprint 7 — Design System Polish; Release Phase ON HOLD
 
 ## Project Purpose
@@ -80,6 +80,22 @@ upload/delete workflow, dashboard, Financial Assurance, or backup behavior
 consumes the new fields. Phase 2.2 requires separate Engineering Review and
 Manual QA approval.
 
+Profile Photos Phase 2.2 is complete. The assigned Operator's Student Detail is
+the only surface with photo controls. Its client workflow requires an explicit
+1:1 crop confirmation, creates a compressed local WebP preview, and uploads the
+original plus normalized crop coordinates. The authenticated owner-only upload
+route repeats authoritative MIME/content, size, decoded dimension/pixel, static
+image, and crop validation; Sharp applies orientation, strips metadata, and
+creates 64/96/128/512 WebP renditions. `ProfilePhotoMediaService` writes every
+object through `MediaStorage`; `VercelBlobStorage` is the provider adapter.
+SQLite receives only the immutable object-family key and update timestamp after
+all objects succeed, using an ownership/current-reference precondition. A new
+upload never deletes the old family. Failed persistence leaves the Student row
+unchanged and attempts immediate rollback of only the newly written family.
+Broad Student avatar integration remains disabled pending Phase 2.3; there is
+still no media read route, delete-photo workflow, cleanup job, dashboard or
+Financial Assurance photo, or backup integration.
+
 The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace, Student Financial History timeline, Global Currency Standardization, debounced live search, and polished filter/cursor UX.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
@@ -104,7 +120,7 @@ Latest verification:
 - TypeScript: passed.
 - ESLint: passed.
 - Production build: passed.
-- Automated tests: 246 passed, 0 failed, including Profile Photos Phase 1 and Phase 2.1 foundation coverage.
+- Automated tests: Profile Photos Phase 2.2 focused coverage passes, including upload success, validation rejection, replacement, persistence rollback, and storage-boundary usage. Full-suite verification is required at each release gate.
 - Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
 - Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
 - Release recommendation: **MVP QUALITY COMPLETE — APPROVED FOR RELEASE QUALIFICATION (SPRINT R1)**.
@@ -145,7 +161,7 @@ SQLite relational database and invariant triggers
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
 - `src/components/app-shell/` remains the only authenticated application chrome.
 - `src/components/ui/` remains the shared design-system primitive layer.
-- `src/media/` owns the internal Profile Photo media contracts, validation limits, normalized metadata, and provider-neutral storage/processing boundaries; it has no route or UI consumer in Phase 2.1.
+- `src/media/` owns Profile Photo validation, Sharp processing, immutable key generation, the provider-neutral storage/service boundaries, the Vercel Blob adapter, and conflict-safe Student reference orchestration. Only the Phase 2.2 owner upload route and Student Detail upload control consume it; media delivery and broad avatar reads remain disabled.
 - `src/components/ui/context-detail-drawer.tsx` is the single platform Context Detail Drawer primitive. Feature consumers provide read-only content and do not own drawer geometry, modality, motion, or scrolling.
 - The implemented financial model uses Student persisted Balance/version, Student-owned Transactions, and immutable FinancialAuditEvents. Identity, account lifecycle, and authentication/session data remain separate from financial data.
 

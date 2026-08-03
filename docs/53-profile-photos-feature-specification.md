@@ -1,6 +1,6 @@
 # Amanah Cash — Profile Photos Feature Design Specification
 
-**Status:** Approved — Phases 1 and 2.1 complete; Phase 2.2 and Phases 3–5 pending Product Owner and Engineering gates  
+**Status:** Approved — Phases 1, 2.1, and 2.2 complete; Phase 2.3 and Phases 3–5 pending Product Owner and Engineering gates  
 **Date:** 2026-08-03  
 **Feature:** Profile Photos (MVP Evolution)  
 **Scope:** Architecture and feature design only; no implementation, migration, or database change is authorized by this document
@@ -518,9 +518,17 @@ backup scope was introduced.
 - Kept the Student-photo UI flag disabled and left all Student read models and presentation unchanged.
 - Added no upload endpoint, image processor implementation, Vercel Blob adapter, delete/restore behavior, dashboard integration, Financial Assurance integration, or backup integration.
 
-#### Phase 2.2 — Student Upload Workflow — Pending
+#### Phase 2.2 — Student Upload Workflow — Complete
 
-- Add private Blob integration, upload/normalize/delivery/remove flows, rate limits, and orphan cleanup.
+- Added the assigned-Operator Student Detail upload control with explicit 1:1 crop confirmation, keyboard sliders, compressed local WebP preview, cancellation, and recoverable status/error feedback.
+- Added an authenticated owner-only upload route; no public or private media delivery route was added.
+- Added authoritative Sharp decode/validation, orientation, crop, metadata stripping, sRGB WebP normalization, and the approved 64px, 96px, 128px, and 512px immutable renditions.
+- Added the private Vercel Blob provider adapter behind `MediaStorage`; persistence stores only `photoObjectKey` and `photoUpdatedAt` after every rendition succeeds.
+- Replacement retains the old family. Conflict or persistence failure preserves the Student reference and attempts immediate rollback only for the newly written objects.
+- Added no delete-photo behavior, old-object lifecycle cleanup, media read route, dashboard photo, Financial Assurance photo, or backup integration.
+
+#### Phase 2.3 — Student UI Integration — Pending
+
 - Add Student photos to list, detail, picker/search, transaction context, and Financial Assurance header.
 - Verify ownership transfer immediately changes media-read/manage authorization.
 

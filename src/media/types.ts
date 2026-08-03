@@ -13,6 +13,13 @@ export type ProfilePhotoRenditionWidth = typeof PROFILE_PHOTO_RENDITION_WIDTHS[n
 export type ProfilePhotoSource = Readonly<{
   bytes: Uint8Array;
   declaredMimeType: string;
+  crop: ProfilePhotoCrop;
+}>;
+
+export type ProfilePhotoCrop = Readonly<{
+  left: number;
+  top: number;
+  size: number;
 }>;
 
 export type DecodedImageMetadata = Readonly<{

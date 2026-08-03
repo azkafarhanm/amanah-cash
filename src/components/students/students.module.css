@@ -32,8 +32,20 @@
 .definition dt { color: var(--color-text-secondary); font: var(--type-label); }
 .definition dd { margin: var(--space-0); }
 .input:focus-visible, .select:focus-visible, .textarea:focus-visible, .button:focus-visible, .link:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
+.photoUpload { display: grid; gap: var(--space-4); }
+.supporting { color: var(--color-text-secondary); font: var(--type-supporting); }
+.cropWorkspace { display: grid; grid-template-columns: minmax(0, var(--size-content-80)) minmax(0, 1fr); gap: var(--space-4); align-items: start; }
+.cropFrame { position: relative; aspect-ratio: 1; overflow: hidden; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-container); background: var(--color-background-subtle); }
+.cropFrame::after { content: ""; position: absolute; inset: 0; border: var(--border-width-emphasis) var(--border-style-default) var(--color-action-primary); pointer-events: none; }
+.cropImage { width: var(--size-full); height: var(--size-full); object-fit: cover; transform-origin: center; }
+.cropControls { display: grid; gap: var(--space-3); }
+.secondaryButton { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); color: var(--color-text-primary); background: var(--color-background-surface); font: var(--type-button); cursor: pointer; }
+.secondaryButton:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
+.button:disabled, .secondaryButton:disabled { cursor: not-allowed; opacity: var(--opacity-60); }
+.previewRow { display: flex; align-items: center; gap: var(--space-4); }
+.photoPreview { flex: 0 0 auto; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: 50%; object-fit: cover; }
 @media (max-width: 48rem) {
-  .toolbar, .definition { grid-template-columns: 1fr; }
+  .toolbar, .definition, .cropWorkspace { grid-template-columns: 1fr; }
   .tableWrap { overflow: visible; border: 0; background: transparent; }
   .table, .table tbody, .table tr, .table td { display: block; width: var(--size-full); }
   .table thead { display: none; }

@@ -18,7 +18,9 @@ export type ProfilePhotoValidationCode =
   | "INVALID_DIMENSIONS"
   | "DIMENSIONS_TOO_LARGE"
   | "PIXEL_COUNT_TOO_LARGE"
-  | "ANIMATED_IMAGE";
+  | "ANIMATED_IMAGE"
+  | "INVALID_IMAGE"
+  | "INVALID_CROP";
 
 export class ProfilePhotoValidationError extends Error {
   constructor(public readonly code: ProfilePhotoValidationCode) {

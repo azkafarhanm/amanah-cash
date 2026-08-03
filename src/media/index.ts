@@ -4,3 +4,6 @@ export * from "./service";
 export * from "./storage";
 export * from "./types";
 export * from "./validation";
+export * from "./processor";
+export * from "./vercel-blob-storage";
+export * from "./student-photo";
