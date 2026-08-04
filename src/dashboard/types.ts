@@ -19,7 +19,7 @@ export type DashboardActivityItem = {
 export type AdminDashboardResult = {
   operators: { total: number; active: number; inactive: number };
   students: { total: number; active: number; inactive: number; archived: number };
-  studentDistribution: Array<{ operatorId: string; operatorName: string; studentCount: number }>;
+  studentDistribution: Array<{ operatorId: string; operatorName: string; studentCount: number; operatorImage?: string | null }>;
   administrativeActivity: DashboardActivityItem[];
   ownershipChanges: DashboardActivityItem[];
   latestAssignments: DashboardActivityItem[];

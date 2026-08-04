@@ -66,7 +66,7 @@ export function dashboardReadService(
           prisma.student.groupBy({ by: ["status"], orderBy: { status: "asc" }, _count: true }),
           prisma.user.findMany({
             where: { role: "OPERATOR", deletedAt: null },
-            select: { id: true, name: true, _count: { select: { students: true } } },
+            select: { id: true, name: true, image: true, _count: { select: { students: true } } },
             orderBy: [{ name: "asc" }, { id: "asc" }]
           }),
           prisma.operatorAudit.findMany({
@@ -127,6 +127,7 @@ export function dashboardReadService(
         studentDistribution: distribution.map((operator) => ({
           operatorId: operator.id,
           operatorName: operator.name,
+          operatorImage: operator.image,
           studentCount: operator._count.students
         })),
         administrativeActivity: audits.map((audit) => {

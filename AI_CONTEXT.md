@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-08-03
-**Current delivery state:** Phase 1 (Functional MVP, Sprints 0–6) complete; Phase 2 (Product Quality) beginning with Sprint 7 — Design System Polish; Release Phase ON HOLD
+**Last updated:** 2026-08-04
+**Current delivery state:** Phases 1–3 of Profile Photos complete; Sprint 7–8 product quality complete; Release Phase ON HOLD
 
 ## Project Purpose
 
@@ -55,6 +55,8 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Sprint 8 — Product Quality Assurance complete: audited Accessibility (8.1), Performance (8.2), Cross-Device & Theme QA (8.3), Visual Review (8.4), and Final MVP Alignment (8.5). Added test/sprint8-quality-assurance.test.ts (228 total tests passing) and issued the official MVP Quality Completion report at docs/52-mvp-quality-completion-report.md. Approved for Release Qualification Phase (Sprint R1).
 - Shared secondary button affordance polish complete: all shared secondary `Button` consumers now receive tokenized hover elevation and border emphasis plus subtle pressed feedback in Light and Dark themes. Existing focus-visible, disabled/loading, and reduced-motion behavior is preserved; reconciliation behavior is unchanged.
 - Authenticated shell scope alignment complete: removed the non-functional notification bell and its obsolete styles because notifications remain outside the approved MVP. Header account alignment, responsive behavior, keyboard navigation, and logout accessibility remain unchanged; no notification subsystem or placeholder was added.
+- Profile Photos Phase 2.3 complete: StudentAvatar renders in Student list, Student detail header, workspace student picker, dashboard recent students, operator dashboard attention students, dashboard recent activity, and admin dashboard latest assignments. All surfaces use the shared StudentAvatar component with authorized same-origin photo delivery. Ownership transfer immediately changes media authorization.
+- Profile Photos Phase 3 complete: Student avatars verified in all approved dashboard surfaces (Recent Activity, attention students, latest assignments, recent students). Operator avatars with Google-sourced User.image added to admin dashboard student-distribution list using shared Avatar component at sm size. No photos in KPI cards, Quick Actions, Smart Insights, or aggregate statistics. Avatar rendering hierarchy redesigned with neutral container and dedicated fallback layer — eliminates background-color flash. No changes to upload pipeline, storage, authorization, schema, business logic, reports, exports, or backup.
 
 
 ## Current Implementation Status

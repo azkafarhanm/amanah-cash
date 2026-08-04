@@ -1,6 +1,6 @@
 # Amanah Cash — Profile Photos Feature Design Specification
 
-**Status:** Approved — Phases 1, 2.1, and 2.2 complete; Phase 2.3 and Phases 3–5 pending Product Owner and Engineering gates  
+**Status:** Approved — Phases 1, 2.1, 2.2, 2.3, and 3 complete; Phases 4–5 pending Product Owner and Engineering gates
 **Date:** 2026-08-03  
 **Feature:** Profile Photos (MVP Evolution)  
 **Scope:** Architecture and feature design only; no implementation, migration, or database change is authorized by this document
@@ -508,7 +508,7 @@ not previously display avatars, so its read model and UI were left unchanged.
 No Student, upload, storage, schema, API, authentication, authorization, or
 backup scope was introduced.
 
-### Phase 2 — Student photo core — In progress
+### Phase 2 — Student photo core — Complete
 
 #### Phase 2.1 — Student Photo Foundation — Complete
 
@@ -527,17 +527,41 @@ backup scope was introduced.
 - Replacement retains the old family. Conflict or persistence failure preserves the Student reference and attempts immediate rollback only for the newly written objects.
 - Added no delete-photo behavior, old-object lifecycle cleanup, media read route, dashboard photo, Financial Assurance photo, or backup integration.
 
-#### Phase 2.3 — Student UI Integration — Pending
+#### Phase 2.3 — Student UI Integration — Complete
 
 - Add Student photos to list, detail, picker/search, transaction context, and Financial Assurance header.
 - Verify ownership transfer immediately changes media-read/manage authorization.
 
-### Phase 3 — dashboard integration — Pending
+Phase 2.3 implementation note (2026-08-04): StudentAvatar renders in the
+Student list (`size="list"`), Student detail header (`size="detail"`), workspace
+student picker (`size="picker"`), dashboard recent students (`size="dashboard"`),
+operator dashboard attention students (`size="compact"`), dashboard recent
+activity (`size="compact"`), and admin dashboard latest assignments
+(`size="dashboard"`). All surfaces use the shared `StudentAvatar` component with
+authorized same-origin photo delivery. Photo metadata flows through existing
+read-model projections without additional per-row queries. Ownership transfer
+immediately changes media authorization because the photo route enforces the
+same owner/admin policy as all other Student resources.
+
+### Phase 3 — dashboard integration — Complete
 
 - Add XS Student avatars to Recent Activity.
 - Add SM Operator avatars to approved Admin dashboard identity lists.
 - Measure request volume, cache hit rate, failures, layout shift, and dashboard responsiveness.
 - Do not expand photos to aggregate cards, generic insights, or quick actions.
+
+Phase 3 implementation note (2026-08-04): Student avatars appear in operator
+dashboard Recent Activity (`compact`), operator dashboard attention students
+(`compact`), admin dashboard latest assignments (`dashboard`), and operator
+dashboard recent students (`dashboard`). Operator avatars with Google-sourced
+`User.image` appear in the admin dashboard student-distribution list using the
+shared `Avatar` component at `sm` size. No Student or Operator photos appear in
+KPI cards, Quick Actions, Smart Insights, or aggregate statistics. The dashboard
+read service uses batch `Promise.all` queries — no N+1 photo reads. Avatar
+components have fixed dimensions and reserve space — no layout shift during
+image load. The shared `Avatar` component renders a neutral container with a
+dedicated fallback layer beneath the image, eliminating background-color flash
+during scroll or image lifecycle transitions.
 
 ### Phase 4 — portable backup and restore — Pending
 

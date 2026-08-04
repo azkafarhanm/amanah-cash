@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Profile Photos — Phase 3 Dashboard Integration Complete
+
+- Added Operator avatars with Google-sourced `User.image` to admin dashboard student-distribution list using the shared `Avatar` component at `sm` size (replaces `InitialsAvatar`).
+- Added `operatorImage` field to the admin dashboard read-service distribution projection — single batch query, no N+1.
+- Verified Student avatars are present in all approved dashboard surfaces: operator Recent Activity, operator attention students, admin latest assignments, operator recent students.
+- Verified no Student or Operator photos appear in excluded surfaces: KPI cards, Quick Actions, Smart Insights, aggregate statistics.
+- Avatar rendering hierarchy redesigned: neutral container with dedicated fallback layer — eliminates background-color flash during scroll or image lifecycle transitions.
+- Synchronized `docs/53-profile-photos-feature-specification.md` Phase 2.3 and Phase 3 status to Complete.
+- No changes to upload pipeline, Blob storage, StudentAvatar API, shared Avatar API, authorization, schema, migrations, business logic, Financial Assurance, reports, exports, backup, or restore.
+
 ### Added
 
 - Added a lightweight release validation command that fails when `package.json.version` does not match the newest released Changelog version.
