@@ -10,6 +10,8 @@ export type StudentRecord = {
   balance?: string;
   createdAt: Date;
   updatedAt: Date;
+  photoObjectKey: string | null;
+  photoUpdatedAt: Date | null;
   operator: { id: string; name: string; email: string };
 };
 

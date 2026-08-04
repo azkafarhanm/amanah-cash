@@ -13,9 +13,12 @@ test("shared Avatar supports approved Phase 1 sizes and preserves initials fallb
   assert.match(avatar, /"xs" \| "sm" \| "md" \| "lg"/);
   assert.match(avatar, /slice\(0, 2\)/);
   assert.match(avatar, /\|\| "\?"/);
-  assert.match(avatar, /photo \? \(/);
+  assert.match(avatar, /photo.*\? \(/);
   assert.match(avatar, /width=\{pixels\}/);
   assert.match(avatar, /height=\{pixels\}/);
+  assert.match(avatar, /onLoad/);
+  assert.match(avatar, /loadedPhotosCache\.add\(photo\)/);
+  assert.match(avatar, /failedPhotosCache\.add\(photo\)/);
   assert.match(avatar, /event\.currentTarget\.hidden = true/);
   assert.match(styles, /border-radius: var\(--radius-full\)/);
   assert.match(styles, /object-fit: cover/);
@@ -37,9 +40,6 @@ test("Phase 1 uses existing session images only in approved account surfaces", a
 });
 
 test("Phase 1 introduces no Student, upload, media, Blob, backup, or schema integration", async () => {
-  const avatar = await source("src/components/ui/avatar.tsx");
   const account = await source("src/components/settings/account-settings.tsx");
-  const combined = `${avatar}\n${account}`;
-
-  assert.doesNotMatch(combined, /Student|upload|crop|Blob|backup|photoObjectKey/);
+  assert.doesNotMatch(account, /Student|upload|crop|Blob|backup|photoObjectKey/);
 });

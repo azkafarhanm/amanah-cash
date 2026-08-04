@@ -1,0 +1,5 @@
+.studentAvatar {
+  box-sizing: border-box;
+  border: var(--border-width-emphasis) var(--border-style-default) var(--color-border-default);
+  box-shadow: var(--shadow-xs);
+}

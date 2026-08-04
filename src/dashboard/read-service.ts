@@ -82,7 +82,7 @@ export function dashboardReadService(
               oldOperatorId: true,
               newOperatorId: true,
               occurredAt: true,
-              student: { select: { id: true, name: true } }
+              student: { select: { id: true, name: true, photoObjectKey: true, photoUpdatedAt: true } }
             },
             orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
             take: ACTIVITY_LIMIT
@@ -92,6 +92,8 @@ export function dashboardReadService(
               id: true,
               name: true,
               createdAt: true,
+              photoObjectKey: true,
+              photoUpdatedAt: true,
               operator: { select: { name: true } }
             },
             orderBy: [{ createdAt: "desc" }, { id: "desc" }],
@@ -147,7 +149,10 @@ export function dashboardReadService(
           title: transfer.student.name,
           description: `${operatorById.get(transfer.oldOperatorId ?? "")?.name ?? "Operator sebelumnya"} → ${operatorById.get(transfer.newOperatorId ?? "")?.name ?? "Operator baru"}. ${transfer.reason ?? "Alasan tidak tersedia."}`,
           occurredAt: transfer.occurredAt.toISOString(),
-          href: `/admin/students/${encodeURIComponent(transfer.student.id)}`
+          href: `/admin/students/${encodeURIComponent(transfer.student.id)}`,
+          studentId: transfer.student.id,
+          studentPhotoObjectKey: transfer.student.photoObjectKey,
+          studentPhotoUpdatedAt: transfer.student.photoUpdatedAt?.toISOString() ?? null
         })),
         latestAssignments: assignments.map((student) => ({
           id: student.id,
@@ -155,7 +160,10 @@ export function dashboardReadService(
           title: student.name,
           description: `Ditugaskan kepada ${student.operator.name}.`,
           occurredAt: student.createdAt.toISOString(),
-          href: `/admin/students/${encodeURIComponent(student.id)}`
+          href: `/admin/students/${encodeURIComponent(student.id)}`,
+          studentId: student.id,
+          studentPhotoObjectKey: student.photoObjectKey,
+          studentPhotoUpdatedAt: student.photoUpdatedAt?.toISOString() ?? null
         }))
       };
     },
@@ -221,19 +229,19 @@ export function dashboardReadService(
         }),
         prisma.student.findMany({
           where: { operatorId, status: "ACTIVE", balance: 0 },
-          select: { id: true, name: true, balance: true, updatedAt: true },
+          select: { id: true, name: true, balance: true, updatedAt: true, photoObjectKey: true, photoUpdatedAt: true },
           orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
           take: 5
         }),
         prisma.student.findMany({
           where: { operatorId, status: "ACTIVE", transactions: { none: {} } },
-          select: { id: true, name: true, balance: true, updatedAt: true },
+          select: { id: true, name: true, balance: true, updatedAt: true, photoObjectKey: true, photoUpdatedAt: true },
           orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
           take: 5
         }),
         prisma.student.findMany({
           where: { operatorId, status: { in: ["INACTIVE", "ARCHIVED"] }, balance: { gt: 0 } },
-          select: { id: true, name: true, balance: true, updatedAt: true },
+          select: { id: true, name: true, balance: true, updatedAt: true, photoObjectKey: true, photoUpdatedAt: true },
           orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
           take: 5
         }),
@@ -246,7 +254,7 @@ export function dashboardReadService(
             correctionDirection: true,
             deletedAt: true,
             occurredAt: true,
-            student: { select: { id: true, name: true } }
+            student: { select: { id: true, name: true, photoObjectKey: true, photoUpdatedAt: true } }
           },
           orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
           take: ACTIVITY_LIMIT
@@ -259,7 +267,7 @@ export function dashboardReadService(
             correctionDirection: true,
             reason: true,
             occurredAt: true,
-            student: { select: { id: true, name: true } }
+            student: { select: { id: true, name: true, photoObjectKey: true, photoUpdatedAt: true } }
           },
           orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
           take: ACTIVITY_LIMIT
@@ -270,14 +278,14 @@ export function dashboardReadService(
             id: true,
             amount: true,
             occurredAt: true,
-            student: { select: { id: true, name: true } }
+            student: { select: { id: true, name: true, photoObjectKey: true, photoUpdatedAt: true } }
           },
           orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
           take: ACTIVITY_LIMIT
         }),
         prisma.student.findMany({
           where: { operatorId },
-          select: { id: true, name: true, status: true, updatedAt: true },
+          select: { id: true, name: true, status: true, updatedAt: true, photoObjectKey: true, photoUpdatedAt: true },
           orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
           take: ACTIVITY_LIMIT
         })
@@ -304,6 +312,8 @@ export function dashboardReadService(
         reason: "ZERO_BALANCE" | "NO_TRANSACTIONS" | "INACTIVE_WITH_BALANCE";
         balance: string;
         updatedAt: string;
+        photoObjectKey: string | null;
+        photoUpdatedAt: string | null;
       }>();
 
       for (const s of inactiveWithBalanceStudents) {
@@ -313,7 +323,9 @@ export function dashboardReadService(
             name: s.name,
             reason: "INACTIVE_WITH_BALANCE",
             balance: s.balance.toString(),
-            updatedAt: s.updatedAt.toISOString()
+            updatedAt: s.updatedAt.toISOString(),
+            photoObjectKey: s.photoObjectKey,
+            photoUpdatedAt: s.photoUpdatedAt?.toISOString() ?? null
           });
         }
       }
@@ -324,7 +336,9 @@ export function dashboardReadService(
             name: s.name,
             reason: "NO_TRANSACTIONS",
             balance: s.balance.toString(),
-            updatedAt: s.updatedAt.toISOString()
+            updatedAt: s.updatedAt.toISOString(),
+            photoObjectKey: s.photoObjectKey,
+            photoUpdatedAt: s.photoUpdatedAt?.toISOString() ?? null
           });
         }
       }
@@ -335,7 +349,9 @@ export function dashboardReadService(
             name: s.name,
             reason: "ZERO_BALANCE",
             balance: s.balance.toString(),
-            updatedAt: s.updatedAt.toISOString()
+            updatedAt: s.updatedAt.toISOString(),
+            photoObjectKey: s.photoObjectKey,
+            photoUpdatedAt: s.photoUpdatedAt?.toISOString() ?? null
           });
         }
       }
@@ -384,7 +400,9 @@ export function dashboardReadService(
           amount: transaction.amount.toString(),
           correctionDirection: transaction.correctionDirection,
           deleted: Boolean(transaction.deletedAt),
-          occurredAt: transaction.occurredAt.toISOString()
+          occurredAt: transaction.occurredAt.toISOString(),
+          studentPhotoObjectKey: transaction.student.photoObjectKey,
+          studentPhotoUpdatedAt: transaction.student.photoUpdatedAt?.toISOString() ?? null
         })),
         recentCorrections: recentCorrections.map((transaction) => ({
           id: transaction.id,
@@ -406,10 +424,11 @@ export function dashboardReadService(
           id: student.id,
           name: student.name,
           status: student.status,
-          updatedAt: student.updatedAt.toISOString()
+          updatedAt: student.updatedAt.toISOString(),
+          photoObjectKey: student.photoObjectKey,
+          photoUpdatedAt: student.photoUpdatedAt?.toISOString() ?? null
         }))
       };
     }
   };
 }
-

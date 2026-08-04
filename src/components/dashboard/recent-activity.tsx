@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ArrowDownLeft, ArrowUpRight, Pencil } from "lucide-react";
 import { rupiah } from "@/presentation/formatting";
+import { StudentAvatar } from "@/components/students/student-avatar";
 import styles from "./dashboard-v2.module.css";
 
 type ActivityItem = {
@@ -11,6 +11,9 @@ type ActivityItem = {
   occurredAt: string;
   href?: string;
   deleted?: boolean;
+  studentId: string;
+  studentPhotoObjectKey?: string | null;
+  studentPhotoUpdatedAt?: string | null;
 };
 
 type RecentActivityProps = {
@@ -59,26 +62,12 @@ export function RecentActivity({
       <h3 className={styles.chartTitle}>{title}</h3>
       <div className={styles.activityTimeline}>
         {displayItems.map((item) => {
-          const iconClass =
-            item.type === "DEPOSIT"
-              ? styles.activityIconDeposit
-              : item.type === "WITHDRAWAL"
-              ? styles.activityIconWithdrawal
-              : styles.activityIconCorrection;
-
           const amountClass =
             item.type === "DEPOSIT"
               ? styles.activityAmountDeposit
               : item.type === "WITHDRAWAL"
               ? styles.activityAmountWithdrawal
               : styles.activityAmountCorrection;
-
-          const Icon =
-            item.type === "DEPOSIT"
-              ? ArrowDownLeft
-              : item.type === "WITHDRAWAL"
-              ? ArrowUpRight
-              : Pencil;
 
           const typeLabel =
             item.type === "DEPOSIT"
@@ -89,9 +78,7 @@ export function RecentActivity({
 
           const content = (
             <>
-              <span className={`${styles.activityIcon} ${iconClass}`}>
-                <Icon size={16} aria-hidden="true" />
-              </span>
+              <StudentAvatar studentId={item.studentId} name={item.studentName} photoObjectKey={item.studentPhotoObjectKey} photoUpdatedAt={item.studentPhotoUpdatedAt} scope="operator" size="compact" />
               <div className={styles.activityDetails}>
                 <span className={styles.activityTitle}>{item.studentName}</span>
                 <p className={styles.activityDescription}>

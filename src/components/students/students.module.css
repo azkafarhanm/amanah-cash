@@ -19,6 +19,8 @@
 .balance small { color: var(--color-text-secondary); font: var(--type-supporting); }
 .link { color: var(--color-action-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
 .studentNameCell { display: flex; align-items: center; gap: var(--space-2); }
+.studentDetailHeader { display: flex; align-items: center; gap: var(--space-4); min-width: 0; }
+.studentDetailHeaderCopy { flex: 1; min-width: 0; }
 .button { min-height: var(--control-height-minimum); display: inline-flex; align-items: center; justify-content: center; padding-inline: var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--color-action-primary); border-radius: var(--shape-control); color: var(--color-text-inverse); background: var(--color-action-primary); font: var(--type-button); text-decoration: none; cursor: pointer; }
 .button:hover { background: var(--color-action-primary-hover); box-shadow: var(--shadow-sm); }
 .button:active { background: var(--color-action-primary-active); }
@@ -45,6 +47,7 @@
 .previewRow { display: flex; align-items: center; gap: var(--space-4); }
 .photoPreview { flex: 0 0 auto; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: 50%; object-fit: cover; }
 @media (max-width: 48rem) {
+  .studentDetailHeader { align-items: flex-start; }
   .toolbar, .definition, .cropWorkspace { grid-template-columns: 1fr; }
   .tableWrap { overflow: visible; border: 0; background: transparent; }
   .table, .table tbody, .table tr, .table td { display: block; width: var(--size-full); }

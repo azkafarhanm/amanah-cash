@@ -7,7 +7,6 @@ import {
   ArrowRightLeft,
   Download,
   UserPlus,
-  AlertTriangle,
 } from "lucide-react";
 import { dashboardReadService } from "@/dashboard/read-service";
 import { rupiah, signedRupiah } from "@/presentation/formatting";
@@ -18,6 +17,8 @@ import { DepositWithdrawalChart } from "@/components/dashboard/deposit-withdrawa
 import { ExpenseCategories } from "@/components/dashboard/expense-categories";
 import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { RecentActivity } from "@/components/dashboard/recent-activity";
+import { RecentStudents } from "@/components/dashboard/recent-students";
+import { StudentAvatar } from "@/components/students/student-avatar";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import styles from "@/components/dashboard/dashboard-v2.module.css";
 
@@ -33,6 +34,9 @@ export default async function OperatorHome() {
     occurredAt: t.occurredAt,
     href: `/operator/students/${encodeURIComponent(t.studentId)}`,
     deleted: t.deleted,
+    studentId: t.studentId,
+    studentPhotoObjectKey: t.studentPhotoObjectKey,
+    studentPhotoUpdatedAt: t.studentPhotoUpdatedAt,
   }));
 
   const netCashFlow = dashboard.month.netCashFlow.isPositive
@@ -147,21 +151,13 @@ export default async function OperatorHome() {
           {dashboard.attentionStudents.length > 0 ? (
             <div className={styles.attentionList}>
               {dashboard.attentionStudents.map((s) => {
-                const iconClass =
-                  s.reason === "ZERO_BALANCE"
-                    ? styles.attentionIconWarning
-                    : s.reason === "NO_TRANSACTIONS"
-                    ? styles.attentionIconInfo
-                    : styles.attentionIconError;
                 return (
                   <a
                     key={s.id}
                     href={`/operator/students/${encodeURIComponent(s.id)}`}
                     className={styles.attentionItem}
                   >
-                    <span className={`${styles.attentionIcon} ${iconClass}`}>
-                      <AlertTriangle size={14} />
-                    </span>
+                    <StudentAvatar studentId={s.id} name={s.name} photoObjectKey={s.photoObjectKey} photoUpdatedAt={s.photoUpdatedAt} scope="operator" size="compact" />
                     <div className={styles.attentionDetails}>
                       <div className={styles.attentionName}>{s.name}</div>
                       <div className={styles.attentionReason}>
@@ -181,13 +177,14 @@ export default async function OperatorHome() {
       {insights.length > 0 && <SmartInsights insights={insights} />}
 
       <div className={styles.bottomGrid}>
+        <RecentStudents students={dashboard.recentlyUpdatedStudents} />
         <RecentActivity
           items={recentActivities}
           title="Aktivitas Terbaru"
         />
-
-        <QuickActions actions={quickActions} />
       </div>
+
+      <QuickActions actions={quickActions} />
     </ContentWrapper>
   );
 }

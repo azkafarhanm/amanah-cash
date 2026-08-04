@@ -3,12 +3,15 @@
 import { useEffect, useRef, useState, useId, type KeyboardEvent } from "react";
 import { rupiah } from "../presentation";
 import styles from "./workspace.module.css";
+import { StudentAvatar } from "@/components/students/student-avatar";
 
 export type StudentOption = {
   id: string;
   name: string;
   notes: string | null;
   balance?: string;
+  photoObjectKey?: string | null;
+  photoUpdatedAt?: string | null;
 };
 
 export function WorkspaceStudentPicker({
@@ -217,14 +220,17 @@ export function WorkspaceStudentPicker({
                   onClick={() => handleSelectStudent(student)}
                   onMouseEnter={() => setActiveIndex(idx)}
                 >
-                  <div className={styles.pickerPrimary}>
-                    <span className={styles.studentName}>{student.name}</span>
-                    <span className={styles.studentBalance}>
-                      Saldo {rupiah(student.balance ?? "0")}
-                    </span>
-                  </div>
-                  <div className={styles.pickerSecondary}>
-                    {student.notes ? student.notes : "Tanpa catatan"}
+                  <StudentAvatar studentId={student.id} name={student.name} photoObjectKey={student.photoObjectKey} photoUpdatedAt={student.photoUpdatedAt} scope="operator" size="picker" />
+                  <div className={styles.pickerOptionContent}>
+                    <div className={styles.pickerPrimary}>
+                      <span className={styles.studentName}>{student.name}</span>
+                      <span className={styles.studentBalance}>
+                        Saldo {rupiah(student.balance ?? "0")}
+                      </span>
+                    </div>
+                    <div className={styles.pickerSecondary}>
+                      {student.notes ? student.notes : "Tanpa catatan"}
+                    </div>
                   </div>
                 </li>
               );

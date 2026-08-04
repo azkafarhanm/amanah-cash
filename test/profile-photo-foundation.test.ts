@@ -9,8 +9,8 @@ import {
   validateProfilePhotoEnvelope
 } from "../src/media/validation";
 
-test("Profile Photo Phase 2.1 remains internal and UI-disabled", () => {
-  assert.equal(STUDENT_PROFILE_PHOTO_UI_ENABLED, false);
+test("Profile Photo foundation exposes the approved Phase 2.3 Student UI flag", () => {
+  assert.equal(STUDENT_PROFILE_PHOTO_UI_ENABLED, true);
 });
 
 test("profile photo envelope validation accepts only approved formats and size", () => {

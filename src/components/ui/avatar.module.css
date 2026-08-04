@@ -11,6 +11,16 @@
   line-height: 1;
 }
 
+.fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+}
+
 .xs {
   width: var(--size-6);
   height: var(--size-6);
@@ -35,9 +45,26 @@
   font-size: var(--font-size-14);
 }
 
+.studentList {
+  width: var(--size-14);
+  height: var(--size-14);
+  font-size: var(--font-size-16);
+}
+
+.studentDashboard {
+  width: var(--space-16);
+  height: var(--space-16);
+  font-size: var(--font-size-18);
+}
+
+.studentDetail {
+  width: calc(var(--size-14) + var(--space-4));
+  height: calc(var(--size-14) + var(--space-4));
+  font-size: var(--font-size-20);
+}
+
 .initials {
   position: relative;
-  z-index: 0;
 }
 
 .photo {

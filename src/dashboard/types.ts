@@ -11,6 +11,9 @@ export type DashboardActivityItem = {
   description: string;
   occurredAt: string;
   href?: string;
+  studentId?: string;
+  studentPhotoObjectKey?: string | null;
+  studentPhotoUpdatedAt?: string | null;
 };
 
 export type AdminDashboardResult = {
@@ -40,6 +43,8 @@ export type OperatorDashboardResult = {
     reason: "ZERO_BALANCE" | "NO_TRANSACTIONS" | "INACTIVE_WITH_BALANCE";
     balance: string;
     updatedAt: string;
+    photoObjectKey: string | null;
+    photoUpdatedAt: string | null;
   }>;
   recentTransactions: Array<{
     id: string;
@@ -50,6 +55,8 @@ export type OperatorDashboardResult = {
     correctionDirection: "INCREASE" | "DECREASE" | null;
     deleted: boolean;
     occurredAt: string;
+    studentPhotoObjectKey: string | null;
+    studentPhotoUpdatedAt: string | null;
   }>;
   recentCorrections: Array<{
     id: string;
@@ -72,6 +79,7 @@ export type OperatorDashboardResult = {
     name: string;
     status: "ACTIVE" | "INACTIVE" | "ARCHIVED";
     updatedAt: string;
+    photoObjectKey: string | null;
+    photoUpdatedAt: string | null;
   }>;
 };
-

@@ -7,7 +7,7 @@ export function StudentStatusBadge({ status }: { status: StudentStatus }) {
 }
 export const studentDate = (value: Date) => new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(value);
 
-function nameInitials(name: string): string {
+export function studentInitials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return "?";
   if (parts.length === 1) return parts[0][0].toUpperCase();
@@ -22,9 +22,12 @@ function nameHue(name: string): number {
   return Math.abs(hash % 160) + 160;
 }
 
+export function studentAvatarBackground(name: string): string {
+  return `hsl(${nameHue(name)}, 30%, 48%)`;
+}
+
 export function InitialsAvatar({ name, size = 32 }: { name: string; size?: number }) {
-  const initials = nameInitials(name);
-  const hue = nameHue(name);
+  const initials = studentInitials(name);
   return (
     <span
       aria-hidden="true"
@@ -35,7 +38,7 @@ export function InitialsAvatar({ name, size = 32 }: { name: string; size?: numbe
         width: size,
         height: size,
         borderRadius: "var(--radius-full)",
-        background: `hsl(${hue}, 30%, 48%)`,
+        background: studentAvatarBackground(name),
         color: "white",
         fontSize: size <= 28 ? "var(--font-size-12)" : "var(--font-size-14)",
         fontWeight: "var(--font-weight-semibold)",

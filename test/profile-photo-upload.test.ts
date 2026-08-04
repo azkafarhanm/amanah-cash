@@ -113,7 +113,7 @@ test("failed persistence leaves the Student reference unchanged and rolls back n
   assert.equal(storage.deleted[0]?.length, 4);
 });
 
-test("Student photo upload controls exist only in Student Detail and broad avatar integration stays disabled", async () => {
+test("Student photo upload controls remain in Student Detail while Phase 2.3 avatar integration is enabled", async () => {
   const fs = await import("node:fs/promises");
   const [detail, upload, feature] = await Promise.all([
     fs.readFile("src/components/students/student-detail.tsx", "utf8"),
@@ -123,7 +123,7 @@ test("Student photo upload controls exist only in Student Detail and broad avata
   assert.match(detail, /StudentPhotoUpload/);
   assert.match(upload, /cropFor/);
   assert.match(upload, /Simpan foto/);
-  assert.match(feature, /STUDENT_PROFILE_PHOTO_UI_ENABLED = false/);
+  assert.match(feature, /STUDENT_PROFILE_PHOTO_UI_ENABLED = true/);
   assert.match(feature, /STUDENT_PROFILE_PHOTO_UPLOAD_ENABLED = true/);
 });
 

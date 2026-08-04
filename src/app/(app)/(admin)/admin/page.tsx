@@ -11,6 +11,7 @@ import { KpiCard } from "@/components/dashboard/kpi-card";
 import { SmartInsights } from "@/components/dashboard/smart-insights";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { InitialsAvatar } from "@/components/students/presentation";
+import { StudentAvatar } from "@/components/students/student-avatar";
 import styles from "@/components/dashboard/dashboard-v2.module.css";
 
 export default async function AdminHome() {
@@ -124,6 +125,7 @@ export default async function AdminHome() {
             <div className={styles.adminList}>
               {dashboard.latestAssignments.slice(0, 5).map((item) => (
                 <div key={item.id} className={styles.adminListItem}>
+                  {item.studentId ? <StudentAvatar studentId={item.studentId} name={item.title} photoObjectKey={item.studentPhotoObjectKey} photoUpdatedAt={item.studentPhotoUpdatedAt} scope="admin" size="dashboard" /> : null}
                   <div className={styles.adminListItemContent}>
                     <div className={styles.adminListItemTitle}>
                       {item.href ? (

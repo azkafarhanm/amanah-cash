@@ -7,11 +7,13 @@ import { createStudentManagement, StudentManagementError, type StudentRecord, ty
 
 const select = {
   id: true, name: true, notes: true, status: true, balance: true, createdAt: true, updatedAt: true,
+  photoObjectKey: true, photoUpdatedAt: true,
   operator: { select: { id: true, name: true, email: true } }
 } as const;
 
 function formatStudent(row: {
   id: string; name: string; notes: string | null; status: StudentStatus; balance: bigint; createdAt: Date; updatedAt: Date;
+  photoObjectKey: string | null; photoUpdatedAt: Date | null;
   operator: { id: string; name: string; email: string };
 }): StudentRecord {
   return {
@@ -22,6 +24,8 @@ function formatStudent(row: {
     balance: row.balance.toString(),
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+    photoObjectKey: row.photoObjectKey,
+    photoUpdatedAt: row.photoUpdatedAt,
     operator: row.operator
   };
 }

@@ -26,12 +26,12 @@ const operators = [
 function fixture(seed: Array<Partial<StudentRecord> & { operatorId?: string }> = []) {
   const students: StudentRecord[] = seed.map((item, index) => {
     const owner = operators.find((operator) => operator.id === (item.operatorId ?? "operator-1"))!;
-    return { id: item.id ?? `student-${index + 1}`, name: item.name ?? `Siswa ${index + 1}`, notes: item.notes ?? null, status: item.status ?? "ACTIVE", createdAt: item.createdAt ?? new Date("2026-07-20"), updatedAt: item.updatedAt ?? new Date("2026-07-20"), operator: { id: owner.id, name: owner.name, email: owner.email } };
+    return { id: item.id ?? `student-${index + 1}`, name: item.name ?? `Siswa ${index + 1}`, notes: item.notes ?? null, status: item.status ?? "ACTIVE", createdAt: item.createdAt ?? new Date("2026-07-20"), updatedAt: item.updatedAt ?? new Date("2026-07-20"), photoObjectKey: item.photoObjectKey ?? null, photoUpdatedAt: item.photoUpdatedAt ?? null, operator: { id: owner.id, name: owner.name, email: owner.email } };
   });
   const repository: StudentRepository = {
     async activeOperator(id) { const found = operators.find((item) => item.id === id && item.active); return found ? { id: found.id, name: found.name, email: found.email } : null; },
     async activeOperators() { return operators.filter((item) => item.active).map(({ id, name, email }) => ({ id, name, email })); },
-    async create(data) { const owner = operators.find((item) => item.id === data.operatorId)!; const student = { id: data.id, name: data.name, notes: data.notes, status: data.status, createdAt: new Date(), updatedAt: new Date(), operator: { id: owner.id, name: owner.name, email: owner.email } }; students.push(student); return student; },
+    async create(data) { const owner = operators.find((item) => item.id === data.operatorId)!; const student = { id: data.id, name: data.name, notes: data.notes, status: data.status, createdAt: new Date(), updatedAt: new Date(), photoObjectKey: null, photoUpdatedAt: null, operator: { id: owner.id, name: owner.name, email: owner.email } }; students.push(student); return student; },
     async update(id, data) { const student = students.find((item) => item.id === id)!; const owner = operators.find((item) => item.id === data.operatorId)!; Object.assign(student, { ...data, operator: { id: owner.id, name: owner.name, email: owner.email }, updatedAt: new Date() }); return student; },
     async find(id, operatorId) { return students.find((item) => item.id === id && (!operatorId || item.operator.id === operatorId)) ?? null; },
     async list({ search, status, operatorId, skip, take }) { const filtered = students.filter((item) => (!operatorId || item.operator.id === operatorId) && (!status || item.status === status) && (!search || item.name.toLowerCase().includes(search.toLowerCase()) || item.operator.name.toLowerCase().includes(search.toLowerCase()))); return { items: filtered.slice(skip, skip + take), total: filtered.length }; }
