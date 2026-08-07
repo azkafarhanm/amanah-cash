@@ -104,6 +104,71 @@
   overflow: hidden;
 }
 
+/* Top-right "Back to Landing Page" action link */
+.backLink {
+  position: absolute;
+  top: clamp(var(--space-3), 2dvh, var(--space-5));
+  right: clamp(var(--space-3), 2dvw, var(--space-6));
+  z-index: var(--z-skip-link, 50);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--control-height-minimum, 40px);
+  padding-inline: var(--space-3-5, 0.875rem);
+  padding-block: var(--space-2);
+  border: var(--border-width-default) solid var(--auth-card-border, var(--color-border-default));
+  border-radius: var(--radius-full);
+  background: var(--auth-card-background, var(--color-background-surface));
+  color: var(--auth-brand-name-color, var(--color-text-primary));
+  font: var(--type-button);
+  font-size: var(--font-size-14);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  transition:
+    color var(--motion-duration-fast) var(--motion-ease-standard),
+    background-color var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.backArrow {
+  color: var(--color-action-primary);
+  flex: none;
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.backLink:hover {
+  color: var(--color-action-primary);
+  border-color: var(--color-action-primary);
+  background: var(--color-background-elevated);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.backLink:hover .backArrow {
+  transform: translateX(-3px);
+}
+
+.backLink:active {
+  transform: scale(0.97);
+}
+
+.backLink:focus-visible {
+  outline: var(--border-width-emphasis) solid var(--color-action-primary);
+  outline-offset: 2px;
+  box-shadow: var(--shadow-focus);
+}
+
+@media (max-width: 30rem) {
+  .backLink {
+    padding-inline: var(--space-3);
+    font-size: var(--font-size-12);
+  }
+}
+
 /* ---- Room dimming veil ---- */
 
 .roomDim {
