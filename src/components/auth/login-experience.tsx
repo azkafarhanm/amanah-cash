@@ -8,16 +8,19 @@ import styles from "./login-experience.module.css";
 /**
  * Choreography phases — the room "waking up":
  *
- * 0. dark          — room is dark, lamp visible but unlit
- * 1. igniting      — bulb flash + warm ignition (auto-triggered after 800ms)
+ * 0. dark          — sleeping state: room is dim, lamp visible but unlit,
+ *                    card hidden (opacity 0, pointer-events none, aria-hidden),
+ *                    brand dimmed to 30% opacity.
+ * 1. igniting      — bulb flash + warm ignition (triggered by lamp pull)
  * 2. spotlight     — spotlight expands downward, brand identity is revealed
  * 3. frame-tracing — thin line traces clockwise around the card (one pass, then stops)
  * 4. surface       — card materialises
  * 5. content       — card contents stagger in
  * 6. ambient       — lamp recedes, card is the visual destination
  *
- * The lamp auto-illuminates on page load. Users can still toggle it via the
- * pull-cord, but the interaction gate is removed.
+ * The lamp does NOT auto-illuminate. The sleeping state persists until the
+ * user pulls the lamp cord. This makes the lamp the narrative anchor —
+ * the user must discover and interact with it to wake the room.
  */
 type RevealPhase =
   | "dark"
@@ -62,7 +65,6 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameDims, setFrameDims] = useState({ w: 416, h: 480, r: 16 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const autoIlluminateRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const phaseRef = useRef<RevealPhase>(phase);
   useEffect(() => {
@@ -125,19 +127,20 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
     [revealForward, teardownReverse]
   );
 
-  /* Auto-illuminate: after a brief 800ms pause the lamp triggers automatically.
-     This preserves the pull-cord for curious users, but removes the interaction
-     gate that previously blocked access to the login form. */
-  useEffect(() => {
-    autoIlluminateRef.current = setTimeout(() => {
-      if (phaseRef.current === "dark") {
-        revealForward();
-      }
-    }, 800);
-    return () => {
-      if (autoIlluminateRef.current) clearTimeout(autoIlluminateRef.current);
-    };
-  }, [revealForward]);
+  /* Auto-illuminate: DISABLED for Batch 1.
+     The lamp does NOT auto-ignite. The sleeping state persists until the
+     user pulls the lamp cord. This makes the lamp the narrative anchor.
+     Auto-illuminate will be reintroduced for returning users in a future batch. */
+  // useEffect(() => {
+  //   autoIlluminateRef.current = setTimeout(() => {
+  //     if (phaseRef.current === "dark") {
+  //       revealForward();
+  //     }
+  //   }, 800);
+  //   return () => {
+  //     if (autoIlluminateRef.current) clearTimeout(autoIlluminateRef.current);
+  //   };
+  // }, [revealForward]);
 
   useEffect(() => {
     if (phase !== "content") return;
@@ -222,12 +225,18 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
         </div>
       </div>
 
-      {/* Login card — born from the light, the visual destination */}
+      {/* Login card — born from the light, the visual destination.
+          In the sleeping state (phase === "dark"), the card is in the DOM but
+          invisible and non-interactive. aria-hidden removes it from the
+          accessibility tree. pointer-events:none prevents accidental clicks.
+          This avoids layout shift when the card is later revealed. */}
       <div
         ref={frameRef}
         className={[styles.cardFrame, isFrameTraced ? styles.cardFrameRevealed : ""].filter(Boolean).join(" ")}
+        aria-hidden={phase === "dark"}
+        style={phase === "dark" ? { pointerEvents: "none" } : undefined}
       >
-        <svg className={styles.borderTrace} viewBox={`0 0 ${frameDims.w} ${frameDims.h}`} preserveAspectRatio="none" aria-hidden="true">
+        <svg className={styles.borderTrace} viewBox={`0 0 ${frameDims.w} ${frameDims.h}`} preserveAspectRatio="none" overflow="visible" aria-hidden="true">
           {/* Light traces from top-centre clockwise once, then becomes a quiet border. */}
           <path
             d={borderPath}

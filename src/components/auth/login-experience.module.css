@@ -11,20 +11,20 @@
   --auth-canvas-top: #f5f3ef;
   --auth-canvas-bottom: #eae8e4;
   --auth-veil-rgb: 15 23 42;
-  --auth-veil-strength: 0.18;
-  --auth-ambient-warm: rgba(255, 251, 235, 0.05);
-  --auth-ambient-teal: rgba(45, 212, 191, 0.02);
-  --auth-spotlight-core: rgba(255, 252, 242, 0.09);
-  --auth-spotlight-warm: rgba(254, 243, 199, 0.04);
-  --auth-spotlight-edge: rgba(45, 212, 191, 0.02);
-  --auth-brand-shadow: rgba(254, 240, 200, 0.1);
+  --auth-veil-strength: 0.30;
+  --auth-ambient-warm: rgba(255, 251, 235, 0.12);
+  --auth-ambient-teal: rgba(45, 212, 191, 0.05);
+  --auth-spotlight-core: rgba(255, 252, 242, 0.16);
+  --auth-spotlight-warm: rgba(254, 243, 199, 0.08);
+  --auth-spotlight-edge: rgba(45, 212, 191, 0.05);
+  --auth-brand-shadow: rgba(254, 240, 200, 0.18);
   --auth-card-background: var(--color-background-surface);
   --auth-card-border: color-mix(in srgb, #71858a 24%, transparent);
-  --auth-card-shadow: 0 24px 48px -16px rgba(15, 23, 42, 0.18),
-    0 6px 16px -10px rgba(15, 23, 42, 0.12),
+  --auth-card-shadow: 0 24px 48px -16px rgba(15, 23, 42, 0.24),
+    0 6px 16px -10px rgba(15, 23, 42, 0.16),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
   --auth-border-trace: #c8b98e;
-  --auth-border-trace-filter: none;
+  --auth-border-trace-filter: drop-shadow(0 0 2px rgba(200, 185, 142, 0.25));
 
   /* Brand text colours — light mode */
   --auth-brand-name-color: #0B2535;
@@ -244,9 +244,9 @@
   flex-direction: row;
   align-items: center;
   gap: var(--space-3);
-  opacity: 0;
+  opacity: 0.3;
   transform: translateY(8px) scale(0.96);
-  filter: brightness(0.3) blur(3px);
+  filter: brightness(0.5) blur(1px);
   transition:
     opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
     transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
@@ -329,17 +329,17 @@
 
 .borderTrace {
   position: absolute;
-  inset: 1px;
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 2;
   filter: var(--auth-border-trace-filter);
 }
 
 .borderTracePath {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
   transition: stroke-dashoffset 1200ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
