@@ -1,0 +1,427 @@
+/* ============================================================
+   Login Experience — The room waking up.
+   Vertical reading axis: Lamp → Mark → Brand → Tagline → Card.
+   The lamp illuminates and recedes. The card is the destination.
+   ============================================================ */
+
+/* ---- Theme tokens ---- */
+
+.viewport {
+  /* Light mode: editorial, airy, quiet */
+  --auth-canvas-top: #f5f3ef;
+  --auth-canvas-bottom: #eae8e4;
+  --auth-veil-rgb: 15 23 42;
+  --auth-veil-strength: 0.18;
+  --auth-ambient-warm: rgba(255, 251, 235, 0.05);
+  --auth-ambient-teal: rgba(45, 212, 191, 0.02);
+  --auth-spotlight-core: rgba(255, 252, 242, 0.09);
+  --auth-spotlight-warm: rgba(254, 243, 199, 0.04);
+  --auth-spotlight-edge: rgba(45, 212, 191, 0.02);
+  --auth-brand-shadow: rgba(254, 240, 200, 0.1);
+  --auth-card-background: var(--color-background-surface);
+  --auth-card-border: color-mix(in srgb, #71858a 24%, transparent);
+  --auth-card-shadow: 0 24px 48px -16px rgba(15, 23, 42, 0.18),
+    0 6px 16px -10px rgba(15, 23, 42, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  --auth-border-trace: #c8b98e;
+  --auth-border-trace-filter: none;
+
+  /* Brand text colours — light mode */
+  --auth-brand-name-color: #1a2c30;
+  --auth-brand-tagline-color: #5a7178;
+
+  /*
+    PROTECTED LOGO ZONE — the hanging lamp must never overlap the brand
+    at any viewport. These tokens are derived from the lamp geometry.
+  */
+  --auth-lamp-rod-height: 40px;
+  --auth-lamp-shade-height: 136px;
+  --auth-pull-cord-drop: 34px;
+  --auth-logo-gap-min: 24px;
+  --auth-logo-to-card-gap: clamp(1.75rem, 3.5dvh, 2.75rem);
+  --auth-logo-zone-top: calc(
+    var(--auth-lamp-rod-height)
+    + var(--auth-lamp-shade-height)
+    + var(--auth-pull-cord-drop)
+    + var(--auth-logo-gap-min)
+  );
+}
+
+:global(:root[data-theme="dark"]) .viewport {
+  /* Dark mode: cinematic, deep, calm */
+  --auth-canvas-top: #0a0e18;
+  --auth-canvas-bottom: #060a12;
+  --auth-veil-rgb: 3 6 16;
+  --auth-veil-strength: 0.88;
+  --auth-ambient-warm: rgba(255, 242, 208, 0.12);
+  --auth-ambient-teal: rgba(45, 212, 191, 0.06);
+  --auth-spotlight-core: rgba(255, 249, 232, 0.16);
+  --auth-spotlight-warm: rgba(254, 220, 156, 0.08);
+  --auth-spotlight-edge: rgba(45, 212, 191, 0.07);
+  --auth-brand-shadow: rgba(255, 242, 208, 0.14);
+  --auth-card-background: color-mix(in srgb, #111c28 96%, transparent);
+  --auth-card-border: rgba(160, 213, 208, 0.2);
+  --auth-card-shadow: 0 30px 56px -22px rgba(0, 0, 0, 0.65),
+    0 8px 20px -14px rgba(45, 212, 191, 0.08);
+  --auth-border-trace: #6fcfc2;
+  --auth-border-trace-filter: drop-shadow(0 0 3px rgba(104, 232, 215, 0.1));
+
+  /* Brand text colours — dark mode */
+  --auth-brand-name-color: #F0F7F7;
+  --auth-brand-tagline-color: #94B3B8;
+}
+
+/* ---- Viewport (strict vertical: lamp → brand → card) ---- */
+
+/* Lamp scaler wrapper: scales the lamp + cone as one unit on small viewports. */
+.lampScaler {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
+  transform-origin: top center;
+}
+
+.viewport {
+  height: 100svh;
+  height: 100dvh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Push content below the lamp, then let items flow naturally downward.
+     This creates the vertical reading axis: brand → card. */
+  justify-content: flex-start;
+  gap: var(--auth-logo-to-card-gap, var(--space-2));
+  padding-top: var(--auth-logo-zone-top);
+  padding-bottom: clamp(var(--space-4), 2.5dvh, var(--space-6));
+  padding-inline: var(--space-6);
+  background: linear-gradient(180deg, var(--auth-canvas-top) 0%, var(--auth-canvas-bottom) 100%);
+  color: var(--color-text-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Room dimming veil ---- */
+
+.roomDim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: rgb(var(--auth-veil-rgb) / var(--auth-veil-strength));
+  transition: opacity 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 1;
+}
+
+.roomDimLit {
+  opacity: 0;
+}
+
+/* ---- Ambient viewport illumination ---- */
+
+.ambientLight {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1400ms cubic-bezier(0.16, 1, 0.3, 1);
+  background:
+    radial-gradient(ellipse 50% 36% at 50% 18%, var(--auth-ambient-warm) 0%, transparent 65%),
+    radial-gradient(ellipse 60% 44% at 50% 34%, var(--auth-ambient-teal) 0%, transparent 60%);
+}
+
+.ambientLightOn {
+  opacity: 1;
+}
+
+/* ---- Spotlight zone (brand identity: mark → name → tagline) ---- */
+
+.spotlightZone {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6) var(--space-2);
+}
+
+.spotlightZone::before {
+  content: "";
+  position: absolute;
+  inset: -24px -64px;
+  background: radial-gradient(
+    ellipse 42% 70% at 50% 42%,
+    var(--auth-spotlight-core) 0%,
+    var(--auth-spotlight-warm) 30%,
+    var(--auth-spotlight-edge) 55%,
+    transparent 74%
+  );
+  opacity: 0;
+  transition: opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.spotlightZoneOn::before {
+  opacity: 1;
+}
+
+/* ---- Brand stage (horizontal lockup: mark beside wordmark + tagline, revealed by light) ---- */
+
+.brandStage {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--space-3);
+  opacity: 0;
+  transform: translateY(8px) scale(0.96);
+  filter: brightness(0.3) blur(3px);
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+}
+
+.brandStageVisible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: brightness(1.02) blur(0) drop-shadow(0 4px 14px var(--auth-brand-shadow));
+}
+
+/* Brand mark (small icon/monogram) */
+.brandMark {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandMark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Brand name — large, clear, confident */
+.brandName {
+  margin: 0;
+  color: var(--auth-brand-name-color);
+  font: var(--font-weight-bold) var(--font-size-28) / var(--line-height-heading) var(--font-family-sans);
+  letter-spacing: var(--letter-spacing-tight);
+  text-align: left;
+  text-wrap: balance;
+}
+
+.brandAccent {
+  color: #00A896;
+}
+
+:global(:root[data-theme="dark"]) .brandAccent {
+  color: #00C4B4;
+}
+
+/* Tagline — quiet, secondary, editorial */
+.brandTagline {
+  margin: 0;
+  color: var(--auth-brand-tagline-color);
+  font: var(--font-weight-medium) var(--font-size-14) / var(--line-height-body) var(--font-family-sans);
+  letter-spacing: var(--letter-spacing-wide);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+/* ---- Card frame (border traced by light, one pass) ---- */
+
+.cardFrame {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 26rem);
+  border-radius: 24px;
+  padding: 1.5px;
+  opacity: 0;
+  transition: opacity 500ms ease 600ms;
+}
+
+.cardFrameRevealed {
+  opacity: 1;
+  transition: opacity 500ms ease 0ms;
+}
+
+.borderTrace {
+  position: absolute;
+  inset: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  pointer-events: none;
+  z-index: 2;
+  filter: var(--auth-border-trace-filter);
+}
+
+.borderTracePath {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  transition: stroke-dashoffset 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.borderTraceDrawn {
+  stroke-dashoffset: 0;
+}
+
+/* ---- Card surface ---- */
+
+.cardSurface {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: grid;
+  gap: var(--space-5);
+  padding: clamp(1.75rem, 3.5dvh, var(--space-8));
+  border-radius: 22px;
+  border: 1px solid var(--auth-card-border);
+  background: var(--auth-card-background);
+  box-shadow: var(--auth-card-shadow);
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cardSurfaceVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Responsive breakpoints ---- */
+
+/* Short viewports: scale the pendant and reserved zone together. */
+@media (max-height: 760px) {
+  .viewport {
+    --auth-lamp-rod-height: 32px;
+    --auth-lamp-shade-height: 116px;
+    --auth-pull-cord-drop: 30px;
+    --auth-logo-gap-min: 20px;
+    --auth-logo-to-card-gap: 24px;
+  }
+  .lampScaler {
+    transform: scale(0.9);
+  }
+  .brandName {
+    font-size: var(--font-size-24);
+  }
+}
+
+@media (max-height: 720px) {
+  .viewport {
+    --auth-lamp-rod-height: 28px;
+    --auth-lamp-shade-height: 104px;
+    --auth-pull-cord-drop: 30px;
+    --auth-logo-gap-min: 20px;
+    --auth-logo-to-card-gap: 20px;
+  }
+  .lampScaler {
+    transform: scale(0.82);
+  }
+  .brandMark {
+    width: 44px;
+    height: 44px;
+  }
+  .brandName {
+    font-size: var(--font-size-20);
+  }
+}
+
+@media (max-width: 30rem) {
+  .viewport {
+    --auth-lamp-rod-height: 40px;
+    --auth-pull-cord-drop: 34px;
+    --auth-logo-gap-min: 24px;
+    --auth-logo-to-card-gap: 28px;
+  }
+  .lampScaler {
+    transform: scale(0.88);
+  }
+  .cardSurface {
+    padding: var(--space-6);
+    border-radius: 20px;
+  }
+  .brandMark {
+    width: 48px;
+    height: 48px;
+  }
+  .brandName {
+    font-size: var(--font-size-24);
+  }
+}
+
+/* ---- Staggered content ---- */
+
+.staggerItem {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 340ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 340ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.staggerItemVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---- Reduced motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .roomDim {
+    transition: opacity 200ms ease;
+  }
+  .ambientLight {
+    transition: opacity 200ms ease;
+  }
+  .borderTracePath {
+    transition: none;
+  }
+  .cardSurface {
+    transition: opacity 200ms ease;
+    transform: none;
+  }
+  .staggerItem {
+    transition: none;
+    transform: none;
+  }
+  .brandStage {
+    transition: opacity 200ms ease;
+    filter: none;
+    transform: none;
+  }
+  .spotlightZone::before {
+    transition: opacity 200ms ease;
+  }
+}
+
+/* ---- Forced colors (high-contrast mode) ---- */
+@media (forced-colors: active) {
+  .cardSurface {
+    background: Canvas;
+    border: 1px solid ButtonText;
+    box-shadow: none;
+  }
+  .borderTrace {
+    filter: none;
+  }
+}

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 
 import { GoogleIcon } from "./google-icon";
+import { authAudio } from "@/lib/auth-audio";
+import { triggerHapticSuccess } from "@/lib/haptics";
 import styles from "@/app/(auth)/auth.module.css";
 
 export function LoginButton({
@@ -17,6 +19,8 @@ export function LoginButton({
 
   const handleClick = () => {
     setLoading(true);
+    triggerHapticSuccess();
+    authAudio.play("loginSuccess");
     void signIn(provider, {
       callbackUrl: "/app",
       ...(email ? { email } : {}),
