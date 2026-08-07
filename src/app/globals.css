@@ -370,6 +370,7 @@
   --color-brand-frame: #0B2535;
   --color-brand-diamond: #00A896;
   --color-brand-accent: #00A896;
+  --color-brand-tagline: #5A6E78;
 
   --color-background-canvas: var(--color-calm-25);
   --color-background-secondary: var(--color-calm-50);
@@ -693,6 +694,7 @@
   --color-brand-frame: #F0F7F7;
   --color-brand-diamond: #00C4B4;
   --color-brand-accent: #00C4B4;
+  --color-brand-tagline: #94A3B8;
 
   --color-background-canvas: var(--color-navy-950);
   --color-background-secondary: var(--color-navy-900);
