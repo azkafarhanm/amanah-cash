@@ -12,6 +12,7 @@
   --auth-canvas-bottom: #eae8e4;
   --auth-veil-rgb: 15 23 42;
   --auth-veil-strength: 0.30;
+  --auth-veil-lit-opacity: 1;
   --auth-ambient-warm: rgba(255, 251, 235, 0.12);
   --auth-ambient-teal: rgba(45, 212, 191, 0.05);
   --auth-spotlight-core: rgba(255, 252, 242, 0.16);
@@ -53,6 +54,7 @@
   --auth-canvas-bottom: #060a12;
   --auth-veil-rgb: 3 6 16;
   --auth-veil-strength: 0.88;
+  --auth-veil-lit-opacity: 0;
   --auth-ambient-warm: rgba(255, 242, 208, 0.12);
   --auth-ambient-teal: rgba(45, 212, 191, 0.06);
   --auth-spotlight-core: rgba(255, 249, 232, 0.16);
@@ -182,7 +184,7 @@
 }
 
 .roomDimLit {
-  opacity: 0;
+  opacity: var(--auth-veil-lit-opacity, 0);
 }
 
 /* ---- Ambient viewport illumination ---- */
