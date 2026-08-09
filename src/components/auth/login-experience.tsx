@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { HangingLamp, type LampPhase } from "./hanging-lamp";
+import { LandingThemeToggle } from "@/components/landing/landing-theme-toggle";
 import styles from "./login-experience.module.css";
 
 /**
@@ -177,18 +178,36 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
   }, []);
 
   useEffect(() => {
-    if (frameRef.current) {
-      const rect = frameRef.current.getBoundingClientRect();
-      const computedRadius = parseFloat(
-        getComputedStyle(frameRef.current).borderRadius || "16"
-      );
-      setFrameDims({
-        w: Math.round(rect.width),
-        h: Math.round(rect.height),
-        r: Number.isFinite(computedRadius) ? computedRadius : 16,
+    const updateDims = () => {
+      if (frameRef.current) {
+        const rect = frameRef.current.getBoundingClientRect();
+        const computedRadius = parseFloat(
+          getComputedStyle(frameRef.current).borderRadius || "16"
+        );
+        setFrameDims({
+          w: Math.round(rect.width),
+          h: Math.round(rect.height),
+          r: Number.isFinite(computedRadius) ? computedRadius : 16,
+        });
+      }
+    };
+
+    updateDims();
+
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && frameRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateDims();
       });
+      resizeObserver.observe(frameRef.current);
     }
-    return clearTimers;
+
+    window.addEventListener("resize", updateDims);
+    return () => {
+      window.removeEventListener("resize", updateDims);
+      resizeObserver?.disconnect();
+      clearTimers();
+    };
   }, [clearTimers]);
 
   /** Forward — the room wakes up. */
@@ -322,7 +341,11 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
 
   return (
     <div className={styles.viewport}>
-      {/* Top-right action: Back to Landing Page */}
+      {/* Top floating controls: Theme toggle (top-left) & Back to Landing (top-right) */}
+      <div className={styles.themeToggleWrapper}>
+        <LandingThemeToggle />
+      </div>
+
       <Link href="/" className={styles.backLink} aria-label="Kembali ke Landing Page">
         <svg
           width="16"
@@ -339,7 +362,8 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
           <line x1="19" y1="12" x2="5" y2="12" />
           <polyline points="12 19 5 12 12 5" />
         </svg>
-        <span>Kembali ke Landing Page</span>
+        <span className={styles.backTextFull}>Kembali ke Landing Page</span>
+        <span className={styles.backTextShort}>Kembali</span>
       </Link>
 
       <div className={[styles.roomDim, isLit ? styles.roomDimLit : ""].filter(Boolean).join(" ")} />

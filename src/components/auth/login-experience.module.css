@@ -13,12 +13,12 @@
   --auth-veil-rgb: 15 23 42;
   --auth-veil-strength: 0.30;
   --auth-veil-lit-opacity: 1;
-  --auth-ambient-warm: rgba(255, 251, 235, 0.12);
-  --auth-ambient-teal: rgba(45, 212, 191, 0.05);
-  --auth-spotlight-core: rgba(255, 252, 242, 0.16);
-  --auth-spotlight-warm: rgba(254, 243, 199, 0.08);
-  --auth-spotlight-edge: rgba(45, 212, 191, 0.05);
-  --auth-brand-shadow: rgba(254, 240, 200, 0.18);
+  --auth-ambient-warm: rgba(255, 251, 235, 0.055);
+  --auth-ambient-teal: rgba(45, 212, 191, 0.03);
+  --auth-spotlight-core: rgba(255, 252, 242, 0.065);
+  --auth-spotlight-warm: rgba(254, 243, 199, 0.032);
+  --auth-spotlight-edge: rgba(45, 212, 191, 0.025);
+  --auth-brand-shadow: rgba(15, 23, 42, 0.06);
   --auth-card-background: var(--color-background-surface);
   --auth-card-border: color-mix(in srgb, #71858a 24%, transparent);
   --auth-card-shadow: 0 24px 48px -16px rgba(15, 23, 42, 0.24),
@@ -127,7 +127,7 @@
   justify-content: flex-start;
   gap: var(--auth-logo-to-card-gap, var(--space-2));
   padding-top: var(--auth-logo-zone-top);
-  padding-bottom: clamp(var(--space-4), 2.5dvh, var(--space-6));
+  padding-bottom: clamp(var(--space-3), 2dvh, var(--space-5));
   padding-inline: var(--space-6);
   background: linear-gradient(180deg, var(--auth-canvas-top) 0%, var(--auth-canvas-bottom) 100%);
   color: var(--color-text-primary);
@@ -135,7 +135,14 @@
   overflow: hidden;
 }
 
-/* Top-right "Back to Landing Page" action link */
+/* Top floating controls: Theme toggle (top-left) & Back link (top-right) */
+.themeToggleWrapper {
+  position: absolute;
+  top: clamp(var(--space-3), 2dvh, var(--space-5));
+  left: clamp(var(--space-3), 2dvw, var(--space-6));
+  z-index: var(--z-skip-link, 50);
+}
+
 .backLink {
   position: absolute;
   top: clamp(var(--space-3), 2dvh, var(--space-5));
@@ -163,6 +170,14 @@
     border-color var(--motion-duration-fast) var(--motion-ease-standard),
     transform var(--motion-duration-fast) var(--motion-ease-standard),
     box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.backTextShort {
+  display: none;
+}
+
+.backTextFull {
+  display: inline;
 }
 
 .backArrow {
@@ -434,14 +449,14 @@
 
 /* ---- Responsive breakpoints ---- */
 
-/* Short viewports: scale the pendant and reserved zone together. */
+/* Short viewports: scale the pendant and reserved zone together progressively. */
 @media (max-height: 760px) {
   .viewport {
     --auth-lamp-rod-height: 32px;
     --auth-lamp-shade-height: 116px;
     --auth-pull-cord-drop: 30px;
-    --auth-logo-gap-min: 20px;
-    --auth-logo-to-card-gap: 24px;
+    --auth-logo-gap-min: 18px;
+    --auth-logo-to-card-gap: 20px;
     --auth-lamp-fixture-scale: 0.9;
   }
   .brandName {
@@ -449,42 +464,118 @@
   }
 }
 
-@media (max-height: 720px) {
+@media (max-height: 680px) {
   .viewport {
-    --auth-lamp-rod-height: 28px;
+    --auth-lamp-rod-height: 22px;
     --auth-lamp-shade-height: 104px;
-    --auth-pull-cord-drop: 30px;
-    --auth-logo-gap-min: 20px;
-    --auth-logo-to-card-gap: 20px;
-    --auth-lamp-fixture-scale: 0.82;
+    --auth-pull-cord-drop: 24px;
+    --auth-logo-gap-min: 14px;
+    --auth-logo-to-card-gap: 14px;
+    --auth-lamp-fixture-scale: 0.80;
+  }
+  .spotlightZone {
+    padding: var(--space-1-5, 0.375rem) var(--space-4) var(--space-1);
+    gap: var(--space-1-5, 0.375rem);
   }
   .brandMark {
-    width: 44px;
-    height: 44px;
+    width: 40px;
+    height: 40px;
   }
   .brandName {
     font-size: var(--font-size-20);
   }
-}
-
-@media (max-width: 30rem) {
-  .viewport {
-    --auth-lamp-rod-height: 40px;
-    --auth-pull-cord-drop: 34px;
-    --auth-logo-gap-min: 24px;
-    --auth-logo-to-card-gap: 28px;
-    --auth-lamp-fixture-scale: 0.88;
+  .brandTagline {
+    font-size: var(--font-size-12);
   }
   .cardSurface {
-    padding: var(--space-6);
-    border-radius: 20px;
+    padding: clamp(1rem, 2dvh, 1.25rem);
+    gap: var(--space-3);
+  }
+}
+
+@media (max-height: 560px) {
+  .viewport {
+    --auth-lamp-rod-height: 16px;
+    --auth-lamp-shade-height: 92px;
+    --auth-pull-cord-drop: 20px;
+    --auth-logo-gap-min: 10px;
+    --auth-logo-to-card-gap: 10px;
+    --auth-lamp-fixture-scale: 0.72;
+  }
+  .spotlightZone {
+    padding: var(--space-1) var(--space-3) 0;
+    gap: var(--space-1);
   }
   .brandMark {
-    width: 48px;
-    height: 48px;
+    width: 34px;
+    height: 34px;
   }
   .brandName {
-    font-size: var(--font-size-24);
+    font-size: var(--font-size-18);
+  }
+  .cardSurface {
+    padding: 0.75rem var(--space-3);
+    gap: var(--space-2-5, 0.625rem);
+    border-radius: 16px;
+  }
+}
+
+/* Mobile width adjustments: tuned for 100% fit without vertical scroll */
+@media (max-width: 30rem) {
+  .viewport {
+    padding-inline: var(--space-4);
+    --auth-lamp-rod-height: 28px;
+    --auth-lamp-shade-height: 116px;
+    --auth-pull-cord-drop: 28px;
+    --auth-logo-gap-min: 16px;
+    --auth-logo-to-card-gap: clamp(0.75rem, 2dvh, 1.125rem);
+    --auth-lamp-fixture-scale: 0.85;
+  }
+  .themeToggleWrapper {
+    top: clamp(var(--space-3), 2dvh, var(--space-4));
+    left: clamp(var(--space-3), 2dvw, var(--space-4));
+  }
+  .backLink {
+    top: clamp(var(--space-3), 2dvh, var(--space-4));
+    right: clamp(var(--space-3), 2dvw, var(--space-4));
+    padding-inline: var(--space-3);
+    font-size: var(--font-size-13);
+  }
+  .backTextShort {
+    display: inline;
+  }
+  .backTextFull {
+    display: none;
+  }
+  .spotlightZone {
+    padding: var(--space-2) var(--space-4) var(--space-1);
+    gap: var(--space-2);
+  }
+  .brandMark {
+    width: 42px;
+    height: 42px;
+  }
+  .brandName {
+    font-size: var(--font-size-22, 1.375rem);
+  }
+  .brandTagline {
+    font-size: var(--font-size-13, 0.8125rem);
+  }
+  .cardFrame {
+    width: 100%;
+    max-width: 24.5rem;
+  }
+  .cardSurface {
+    padding: clamp(1rem, 2.5dvh, 1.25rem);
+    gap: var(--space-3-5, 0.875rem);
+    border-radius: 20px;
+  }
+}
+
+/* Ultra-short landscape fallback only */
+@media (max-height: 440px) {
+  .viewport {
+    overflow-y: auto;
   }
 }
 
