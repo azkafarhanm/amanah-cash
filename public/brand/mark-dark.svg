@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="192" height="192" role="img" aria-label="Amanah Cash Icon 192">
-  <!-- Primary A-Frame (Dark Navy) -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Amanah Cash Mark (Dark Mode)">
+  <!-- Primary A-Frame (Soft Off-White #F0F7F7) -->
   <path
-    fill="#0B2535"
+    fill="#F0F7F7"
     d="M 256 36
        C 264 36 270 41 276 52
        L 471 442
@@ -22,9 +22,9 @@
        C 293 278 328 290 356 312
        L 256 168 Z"
   />
-  <!-- Accent Diamond (Teal) -->
+  <!-- Accent Diamond (Warm Mint Teal #00C4B4) -->
   <path
-    fill="#00A896"
+    fill="#00C4B4"
     d="M 256 324
        C 259 324 262 326 265 329
        L 325 389

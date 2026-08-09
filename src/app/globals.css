@@ -358,6 +358,20 @@
   --z-toast: 60;
   --z-loading: 80;
 
+  /* Official Brand Specification Tokens */
+  --brand-primary: #0F766E;
+  --brand-primary-hover: #0D9488;
+  --brand-secondary: #065F46;
+  --brand-accent: #2DD4BF;
+  --brand-dark-canvas: #0B0F19;
+  --brand-dark-surface: #111827;
+  --brand-dark-border: #334155;
+
+  --color-brand-frame: #0B2535;
+  --color-brand-diamond: #00A896;
+  --color-brand-accent: #00A896;
+  --color-brand-tagline: #5A6E78;
+
   --color-background-canvas: var(--color-calm-25);
   --color-background-secondary: var(--color-calm-50);
   --color-background-surface: var(--color-neutral-0);
@@ -677,6 +691,11 @@
 }
 
 :root[data-theme="dark"] {
+  --color-brand-frame: #F0F7F7;
+  --color-brand-diamond: #00C4B4;
+  --color-brand-accent: #00C4B4;
+  --color-brand-tagline: #94A3B8;
+
   --color-background-canvas: var(--color-navy-950);
   --color-background-secondary: var(--color-navy-900);
   --color-background-surface: var(--color-navy-900);

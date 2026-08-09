@@ -29,6 +29,11 @@ export const metadata: Metadata = {
     description:
       "Satu aplikasi untuk mencatat setoran dan penarikan, memantau saldo, meninjau laporan, dan menjaga riwayat keuangan siswa tetap dapat ditelusuri.",
   },
+  icons: {
+    icon: "/brand/icon.svg",
+    apple: "/icons/icon-192.svg"
+  },
+  manifest: "/manifest.webmanifest"
 };
 
 export default function RootLayout({

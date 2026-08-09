@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 
 import { GoogleIcon } from "./google-icon";
+import { authAudio } from "@/lib/auth-audio";
+import { triggerHapticSuccess } from "@/lib/haptics";
 import styles from "@/app/(auth)/auth.module.css";
 
 export function LoginButton({
@@ -15,12 +17,32 @@ export function LoginButton({
 }) {
   const [loading, setLoading] = useState(false);
 
-  const handleClick = () => {
+  useEffect(() => {
+    const handlePageShow = () => {
+      setLoading(false);
+    };
+
+    window.addEventListener("pageshow", handlePageShow);
+    return () => {
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, []);
+
+  const handleClick = async () => {
     setLoading(true);
-    void signIn(provider, {
-      callbackUrl: "/app",
-      ...(email ? { email } : {}),
-    });
+    triggerHapticSuccess();
+    authAudio.play("loginSuccess");
+    try {
+      const response = await signIn(provider, {
+        callbackUrl: "/app",
+        ...(email ? { email } : {}),
+      });
+      if (response?.error) {
+        setLoading(false);
+      }
+    } catch {
+      setLoading(false);
+    }
   };
 
   if (provider === "google") {

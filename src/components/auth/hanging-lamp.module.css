@@ -1,0 +1,372 @@
+/* ============================================================
+   Hanging Lamp — Authentication Hero
+   The single controller of the entire login experience.
+   ~40% larger than v1; cord emerges from inside the housing;
+   focused physical cone (warm core → soft falloff → teal edge).
+   ============================================================ */
+
+/* ---- Container ---- */
+
+.lampContainer {
+  --auth-lamp-core: radial-gradient(circle, rgba(255, 251, 235, 0.45) 0%, rgba(254, 240, 200, 0.12) 45%, transparent 72%);
+  --auth-lamp-bloom: radial-gradient(circle, rgba(255, 251, 235, 0.13) 0%, rgba(254, 240, 200, 0.065) 26%, transparent 62%);
+  --auth-lamp-cone: linear-gradient(180deg, rgba(255, 251, 235, 0.18) 0%, rgba(253, 244, 214, 0.10) 14%, rgba(240, 253, 250, 0.07) 40%, rgba(45, 212, 191, 0.03) 70%, transparent 100%);
+  --auth-lamp-wash: radial-gradient(circle at 50% 10%, rgba(255, 251, 235, 0.075) 0%, rgba(254, 240, 200, 0.04) 16%, rgba(45, 212, 191, 0.025) 38%, transparent 68%);
+  --auth-bulb-shadow: 0 0 16px 5px rgba(255, 251, 235, 0.60), 0 0 38px 12px rgba(254, 240, 200, 0.22), 0 0 76px 24px rgba(45, 212, 191, 0.09);
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+  transition: opacity 1200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:global(:root[data-theme="dark"]) .lampContainer {
+  --auth-lamp-core: radial-gradient(circle, rgba(255, 251, 235, 0.82) 0%, rgba(254, 240, 200, 0.28) 45%, transparent 72%);
+  --auth-lamp-bloom: radial-gradient(circle, rgba(255, 251, 235, 0.34) 0%, rgba(254, 240, 200, 0.18) 26%, transparent 62%);
+  --auth-lamp-cone: linear-gradient(180deg, rgba(255, 251, 235, 0.3) 0%, rgba(253, 244, 214, 0.21) 14%, rgba(219, 255, 248, 0.14) 40%, rgba(45, 212, 191, 0.085) 70%, transparent 100%);
+  --auth-lamp-wash: radial-gradient(circle at 50% 10%, rgba(255, 251, 235, 0.15) 0%, rgba(254, 240, 200, 0.09) 16%, rgba(45, 212, 191, 0.075) 38%, transparent 68%);
+  --auth-bulb-shadow: 0 0 24px 9px rgba(255, 251, 235, 0.95), 0 0 60px 24px rgba(254, 240, 200, 0.58), 0 0 124px 48px rgba(45, 212, 191, 0.28);
+}
+
+/* ---- Fixture Scaler (scales only physical fixture on short viewports) ---- */
+
+.fixtureScaler {
+  transform-origin: top center;
+  transform: scale(var(--auth-lamp-fixture-scale, 1));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- Fixture (swings after cord release) ---- */
+
+.lampFixture {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: top center;
+  pointer-events: none;
+}
+
+/* Weighted, damped sway — a multi-kilogram pendant on a stiff rod does not
+   bounce. Slow inertial settle, no overshoot, amplitude ≤0.8°. */
+.lampSwinging {
+  animation: lamp-sway 1100ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes lamp-sway {
+  0% { transform: rotate(0deg); }
+  18% { transform: rotate(0.7deg); }
+  42% { transform: rotate(-0.4deg); }
+  68% { transform: rotate(0.18deg); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ---- Ceiling mount ---- */
+
+.ceilingMount {
+  width: 142px;
+  height: 19px;
+  background: linear-gradient(180deg, #1E293B, #334155);
+  border-radius: 0 0 11px 11px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.55);
+}
+
+/* ---- Metal rod (lamp hangs from this, not a thin cord) ---- */
+
+.lampRod {
+  width: 4.5px;
+  background: linear-gradient(180deg, #475569 0%, #94A3B8 60%, #64748B 100%);
+  border-radius: 2px;
+  transform-origin: top center;
+  will-change: height;
+  transition: height 80ms linear;
+  box-shadow: 1px 0 1px rgba(0, 0, 0, 0.3);
+}
+
+/* ---- Shade (architectural truncated-cone pendant, wider at the bottom) ----
+   Matte dark metal exterior; warm light spilling from the open bottom mouth.
+   Heavy, grounded silhouette — not a toy bell. */
+
+.lampShade {
+  width: 236px;
+  height: 136px;
+  position: relative;
+  /* Frustum profile: narrower top (~85px) → wider bottom (220px). */
+  clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+  background:
+    /* warm aperture glow at the open bottom mouth (light source is inside) */
+    radial-gradient(120% 80% at 50% 118%, rgba(255, 251, 235, 0.55) 0%, rgba(254, 200, 120, 0.18) 30%, transparent 52%),
+    /* matte metal body, lit from upper-left */
+    linear-gradient(92deg, #0B1220 0%, #1B2738 34%, #283648 50%, #182334 70%, #0B1220 100%);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.7));
+}
+
+.lampShadeOn {
+  opacity: 1;
+}
+
+.lampShadeSheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(148, 163, 184, 0.16) 44%,
+    rgba(226, 232, 240, 0.1) 50%,
+    transparent 64%
+  );
+  pointer-events: none;
+}
+
+/* Bottom rim — a thin darker metal lip at the shade's wide mouth. */
+.lampShadeLip {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 236px;
+  height: 9px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0) 0%, #050810 60%, #020409 100%);
+  pointer-events: none;
+}
+
+/* ---- Bulb (bright, layered glow) ---- */
+
+/* Bulb sits inside the shade's open mouth — the visible light source. */
+.lampBulb {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #1F2937;
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: background-color 700ms ease, box-shadow 800ms ease;
+}
+
+/* Glow kept physically believable (R7): warm-white dominant, teal only a faint
+   accent at the edge. No neon bloom. */
+.lampBulbOn {
+  background: #FFF7E6;
+  box-shadow: var(--auth-bulb-shadow);
+  animation: bulb-flicker-settle 560ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes bulb-flicker-settle {
+  0% { background: #FEF3C7; box-shadow: 0 0 8px 2px rgba(254, 243, 199, 0.4); }
+  16% { background: #FDE68A; box-shadow: 0 0 4px 1px rgba(253, 230, 138, 0.2); }
+  40% {
+    background: #FFF7E6;
+    box-shadow:
+      0 0 30px 12px rgba(255, 251, 235, 0.95),
+      0 0 68px 28px rgba(254, 240, 200, 0.6),
+      0 0 130px 52px rgba(45, 212, 191, 0.28);
+  }
+  100% {
+    background: #FFF7E6;
+    box-shadow:
+      0 0 22px 8px rgba(255, 251, 235, 0.92),
+      0 0 54px 20px rgba(254, 240, 200, 0.5),
+      0 0 110px 44px rgba(45, 212, 191, 0.22);
+  }
+}
+
+/* ---- Pull cord (emerges from INSIDE the housing, centered) ---- */
+
+.pullCordGroup {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  pointer-events: auto;
+  will-change: transform;
+  z-index: 5;
+}
+
+.pullCordGroup:active {
+  cursor: grabbing;
+}
+
+/* Damped spring-back — heavy pendant returns to rest without bouncing. */
+.pullCordSpringing {
+  transition: transform 540ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+  Cord sits BEHIND the shade at top (exits the housing center) and drops to
+  the knob in front. Negative margin pulls the string up into the shade so it
+  reads as "coming from inside" rather than hanging below the lip.
+*/
+/* Cord string: thin brushed-metal line dropping from the shade mouth to the knob. */
+.pullString {
+  width: 2px;
+  background: linear-gradient(180deg, rgba(148, 163, 184, 0.2) 0%, rgba(148, 163, 184, 0.7) 12%, #94A3B8 100%);
+  will-change: height;
+}
+
+.pullKnob {
+  width: 18px;
+  height: 26px;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #F1F5F9, #CBD5E1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transition: background 200ms ease, box-shadow 200ms ease;
+}
+
+.pullCordGroup:hover .pullKnob {
+  background: linear-gradient(180deg, #F8FAFC, #E2E8F0);
+  box-shadow: 0 0 10px rgba(254, 240, 200, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.pullCordGroup:focus-visible {
+  outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color);
+  outline-offset: var(--space-0-5);
+  box-shadow: var(--focus-visible-shadow);
+}
+
+/* ---- Ignition flash ---- */
+
+.ignitionFlash {
+  position: absolute;
+  bottom: -48px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  width: 340px;
+  height: 340px;
+  border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255, 251, 235, 0.85) 0%,
+    rgba(254, 240, 200, 0.6) 22%,
+    rgba(45, 212, 191, 0.32) 46%,
+    rgba(15, 118, 110, 0.12) 64%,
+    transparent 82%);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.ignitionFlashActive {
+  animation: flash-burst 460ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes flash-burst {
+  0% { transform: translateX(-50%) scale(0.1); opacity: 1; }
+  35% { transform: translateX(-50%) scale(1); opacity: 0.9; }
+  100% { transform: translateX(-50%) scale(1.5); opacity: 0; }
+}
+
+/* ---- Volumetric light cone — the card lives INSIDE this light (R2) ---- */
+/*
+  The base extends well beyond the card's left/right edges with feathered
+  falloff, so the card reads as immersed in light rather than center-spotlit.
+  Warm-white dominant, teal only a faint edge accent; glow bounded (R7).
+*/
+
+.lightCone {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  opacity: 0;
+  will-change: opacity;
+  transition: opacity 1000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Layer 1: tight warm-white core at the bulb aperture. */
+.lightCore {
+  position: absolute;
+  left: 50%;
+  top: -28px;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--auth-lamp-core);
+  filter: blur(6px);
+}
+
+/* Layer 2: soft warm bloom around the source. */
+.lightBloom {
+  position: absolute;
+  left: 50%;
+  top: -70px;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  background: var(--auth-lamp-bloom);
+  filter: blur(14px);
+}
+
+/*
+  Layer 3: the volumetric beam — wraps the card. Card is ~416px; the broad base
+  extends well beyond both edges with feathered
+  falloff and the card visually belongs inside the light. Bloom unchanged (only
+  the physical cone footprint grows). Feathered edges via a horizontal mask.
+*/
+.lightConeInner {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1040px;
+  height: 780px;
+  background: var(--auth-lamp-cone);
+  -webkit-mask: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  mask: linear-gradient(90deg, transparent 0%, #000 12%, #000 88%, transparent 100%);
+  filter: blur(12px);
+}
+
+/* Layer 4: ambient wash matching the wider cone, so the card reads as enveloped.
+   Warm-white dominant, faint teal at the perimeter. */
+.lightConeOuter {
+  position: absolute;
+  left: 50%;
+  top: -90px;
+  transform: translateX(-50%);
+  width: 1160px;
+  height: 820px;
+  border-radius: 50%;
+  background: var(--auth-lamp-wash);
+}
+
+.lightConeActive {
+  opacity: 1;
+}
+
+/* ---- Reduced motion ---- */
+
+@media (prefers-reduced-motion: reduce) {
+  .lampBulb {
+    transition: background-color 200ms ease, box-shadow 200ms ease;
+    animation: none;
+  }
+  .lampShadeOn {
+    animation: none;
+  }
+  .lampSwinging {
+    animation: none;
+  }
+  .pullCordSpringing {
+    transition: none;
+  }
+  .lightCone {
+    transition: opacity 200ms ease;
+  }
+  .ignitionFlashActive {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ---- Lamp quiet state — the lamp remains fully illuminated after ignition.
+   The brand and card draw focus through their own entrance animations.
+   The light source (bulb, glow, cone) never dims. ---- */

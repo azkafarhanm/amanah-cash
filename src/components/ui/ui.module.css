@@ -131,9 +131,35 @@
 }
 
 .logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   color: var(--color-text-primary);
   font: var(--type-section-title);
   letter-spacing: var(--letter-spacing-tight);
+}
+
+.logoMarkSvg {
+  flex: none;
+}
+
+.logoFrame {
+  fill: var(--color-brand-frame);
+  transition: fill var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.logoDiamond {
+  fill: var(--color-brand-diamond);
+  transition: fill var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.logoText {
+  color: var(--color-text-primary);
+}
+
+.logoAccent {
+  color: var(--color-brand-accent);
+  transition: color var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .contentWrapper {
