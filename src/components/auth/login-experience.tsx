@@ -408,25 +408,47 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
               <path ref={maskTealRef} fill="none" stroke="white" strokeWidth={28} strokeLinecap="round" />
             </mask>
           </defs>
+          {/* Warm LED Strip: Outer Neon Tube (3.5px) + Inner Hot Core (1.5px) */}
           <path
             d={borderPath}
             fill="none"
-            stroke="rgba(255, 251, 235, 0.85)"
-            strokeWidth={3}
+            stroke="var(--auth-plm-warm-bloom)"
+            strokeWidth={3.5}
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             mask="url(#plm-mask-warm)"
-            className={[styles.perimeterLightPath, styles.perimeterGlowWarm, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
+            className={[styles.perimeterLightPath, styles.perimeterGlowWarmBloom, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
           />
           <path
             d={borderPath}
             fill="none"
-            stroke="rgba(45, 212, 191, 0.75)"
-            strokeWidth={3}
+            stroke="var(--auth-plm-warm-core)"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            mask="url(#plm-mask-warm)"
+            className={[styles.perimeterLightPath, styles.perimeterGlowWarmCore, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
+          />
+          {/* Teal LED Strip: Outer Neon Tube (3.5px) + Inner Hot Core (1.5px) */}
+          <path
+            d={borderPath}
+            fill="none"
+            stroke="var(--auth-plm-teal-bloom)"
+            strokeWidth={3.5}
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
             mask="url(#plm-mask-teal)"
-            className={[styles.perimeterLightPath, styles.perimeterGlowTeal, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
+            className={[styles.perimeterLightPath, styles.perimeterGlowTealBloom, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
+          />
+          <path
+            d={borderPath}
+            fill="none"
+            stroke="var(--auth-plm-teal-core)"
+            strokeWidth={1.5}
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+            mask="url(#plm-mask-teal)"
+            className={[styles.perimeterLightPath, styles.perimeterGlowTealCore, isSurfaceVisible ? styles.perimeterLightPathOn : ""].filter(Boolean).join(" ")}
           />
         </svg>
 

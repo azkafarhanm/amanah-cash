@@ -27,6 +27,20 @@
   --auth-border-trace: #c8b98e;
   --auth-border-trace-filter: drop-shadow(0 0 2px rgba(200, 185, 142, 0.25));
 
+  /* Perimeter traveling LED strip tokens — Light mode */
+  --auth-plm-warm-core: #ffffff;
+  --auth-plm-warm-bloom: #f59e0b;
+  --auth-plm-warm-glow:
+    drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 0 5px rgba(245, 158, 11, 0.85))
+    drop-shadow(0 0 9px rgba(217, 119, 6, 0.35));
+  --auth-plm-teal-core: #ffffff;
+  --auth-plm-teal-bloom: #0d9488;
+  --auth-plm-teal-glow:
+    drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.95))
+    drop-shadow(0 0 5px rgba(13, 148, 136, 0.85))
+    drop-shadow(0 0 9px rgba(15, 118, 110, 0.35));
+
   /* Brand text colours — light mode */
   --auth-brand-name-color: #0B2535;
   --auth-brand-tagline-color: #5A6E78;
@@ -68,6 +82,20 @@
     0 8px 20px -14px rgba(45, 212, 191, 0.08);
   --auth-border-trace: #6fcfc2;
   --auth-border-trace-filter: drop-shadow(0 0 3px rgba(104, 232, 215, 0.1));
+
+  /* Perimeter traveling LED strip tokens — Dark mode */
+  --auth-plm-warm-core: #fffbeb;
+  --auth-plm-warm-bloom: #fbbf24;
+  --auth-plm-warm-glow:
+    drop-shadow(0 0 1.5px rgba(255, 251, 235, 0.95))
+    drop-shadow(0 0 6px rgba(251, 191, 36, 0.80))
+    drop-shadow(0 0 10px rgba(245, 158, 11, 0.30));
+  --auth-plm-teal-core: #f0fdfa;
+  --auth-plm-teal-bloom: #2dd4bf;
+  --auth-plm-teal-glow:
+    drop-shadow(0 0 1.5px rgba(240, 253, 250, 0.95))
+    drop-shadow(0 0 6px rgba(45, 212, 191, 0.80))
+    drop-shadow(0 0 10px rgba(20, 184, 166, 0.30));
 
   /* Brand text colours — dark mode */
   --auth-brand-name-color: #F0F7F7;
@@ -361,12 +389,22 @@
   opacity: 1;
 }
 
-.perimeterGlowWarm {
-  filter: drop-shadow(0 0 4px rgba(255, 251, 235, 0.5)) drop-shadow(0 0 10px rgba(254, 240, 200, 0.25));
+.perimeterGlowWarmBloom {
+  filter: var(--auth-plm-warm-glow);
+  opacity: 0.9;
 }
 
-.perimeterGlowTeal {
-  filter: drop-shadow(0 0 4px rgba(45, 212, 191, 0.45)) drop-shadow(0 0 10px rgba(45, 212, 191, 0.2));
+.perimeterGlowWarmCore {
+  filter: drop-shadow(0 0 1.5px var(--auth-plm-warm-core));
+}
+
+.perimeterGlowTealBloom {
+  filter: var(--auth-plm-teal-glow);
+  opacity: 0.9;
+}
+
+.perimeterGlowTealCore {
+  filter: drop-shadow(0 0 1.5px var(--auth-plm-teal-core));
 }
 
 /* ---- Card surface ---- */
@@ -480,8 +518,10 @@
   .perimeterLightPath {
     opacity: 0;
   }
-  .perimeterGlowWarm,
-  .perimeterGlowTeal {
+  .perimeterGlowWarmBloom,
+  .perimeterGlowWarmCore,
+  .perimeterGlowTealBloom,
+  .perimeterGlowTealCore {
     filter: none;
   }
   .cardSurface {
