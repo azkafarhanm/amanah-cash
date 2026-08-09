@@ -40,6 +40,7 @@
   --auth-pull-cord-drop: 34px;
   --auth-logo-gap-min: 24px;
   --auth-logo-to-card-gap: clamp(1.75rem, 3.5dvh, 2.75rem);
+  --auth-lamp-fixture-scale: 1;
   --auth-logo-zone-top: calc(
     var(--auth-lamp-rod-height)
     + var(--auth-lamp-shade-height)
@@ -349,6 +350,25 @@
   stroke-dashoffset: 0;
 }
 
+/* ---- Perimeter traveling lights (SVG Mask + Arc-Length RAF) ---- */
+
+.perimeterLightPath {
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.perimeterLightPathOn {
+  opacity: 1;
+}
+
+.perimeterGlowWarm {
+  filter: drop-shadow(0 0 4px rgba(255, 251, 235, 0.5)) drop-shadow(0 0 10px rgba(254, 240, 200, 0.25));
+}
+
+.perimeterGlowTeal {
+  filter: drop-shadow(0 0 4px rgba(45, 212, 191, 0.45)) drop-shadow(0 0 10px rgba(45, 212, 191, 0.2));
+}
+
 /* ---- Card surface ---- */
 
 .cardSurface {
@@ -384,9 +404,7 @@
     --auth-pull-cord-drop: 30px;
     --auth-logo-gap-min: 20px;
     --auth-logo-to-card-gap: 24px;
-  }
-  .lampScaler {
-    transform: scale(0.9);
+    --auth-lamp-fixture-scale: 0.9;
   }
   .brandName {
     font-size: var(--font-size-24);
@@ -400,9 +418,7 @@
     --auth-pull-cord-drop: 30px;
     --auth-logo-gap-min: 20px;
     --auth-logo-to-card-gap: 20px;
-  }
-  .lampScaler {
-    transform: scale(0.82);
+    --auth-lamp-fixture-scale: 0.82;
   }
   .brandMark {
     width: 44px;
@@ -419,9 +435,7 @@
     --auth-pull-cord-drop: 34px;
     --auth-logo-gap-min: 24px;
     --auth-logo-to-card-gap: 28px;
-  }
-  .lampScaler {
-    transform: scale(0.88);
+    --auth-lamp-fixture-scale: 0.88;
   }
   .cardSurface {
     padding: var(--space-6);
@@ -462,6 +476,13 @@
   }
   .borderTracePath {
     transition: none;
+  }
+  .perimeterLightPath {
+    opacity: 0;
+  }
+  .perimeterGlowWarm,
+  .perimeterGlowTeal {
+    filter: none;
   }
   .cardSurface {
     transition: opacity 200ms ease;

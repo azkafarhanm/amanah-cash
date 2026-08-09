@@ -100,48 +100,50 @@ export function HangingLamp({ onPhaseChange, quiet }: HangingLampProps) {
   return (
     <div className={[styles.lampContainer, quiet ? styles.lampQuiet : ""].filter(Boolean).join(" ")}>
       {/* Lamp fixture — swings slightly after cord release */}
-      <div key={swingKey} className={[styles.lampFixture, isSpringing ? styles.lampSwinging : ""].filter(Boolean).join(" ")}>
-        <div className={styles.ceilingMount} />
-        {/* Metal rod from ceiling — the lamp hangs from this, not a thin cord */}
-        <div className={styles.lampRod} style={{ height: `${ROD_BASE_HEIGHT + cordStretch}px` }} />
+      <div className={styles.fixtureScaler}>
+        <div key={swingKey} className={[styles.lampFixture, isSpringing ? styles.lampSwinging : ""].filter(Boolean).join(" ")}>
+          <div className={styles.ceilingMount} />
+          {/* Metal rod from ceiling — the lamp hangs from this, not a thin cord */}
+          <div className={styles.lampRod} style={{ height: `${ROD_BASE_HEIGHT + cordStretch}px` }} />
 
-        <div className={[styles.lampShade, isOn ? styles.lampShadeOn : ""].filter(Boolean).join(" ")}>
-          <div className={styles.lampShadeSheen} />
-          <div className={styles.lampShadeLip} />
-          <div className={[styles.lampBulb, isOn ? styles.lampBulbOn : ""].filter(Boolean).join(" ")} />
-          <div className={[styles.ignitionFlash, isFlashing ? styles.ignitionFlashActive : ""].filter(Boolean).join(" ")} />
-        </div>
+          <div className={[styles.lampShade, isOn ? styles.lampShadeOn : ""].filter(Boolean).join(" ")}>
+            <div className={styles.lampShadeSheen} />
+            <div className={styles.lampShadeLip} />
+            <div className={[styles.lampBulb, isOn ? styles.lampBulbOn : ""].filter(Boolean).join(" ")} />
+            <div className={[styles.ignitionFlash, isFlashing ? styles.ignitionFlashActive : ""].filter(Boolean).join(" ")} />
+          </div>
 
-        {/*
-          Pull cord — emerges from INSIDE the shade's open bottom mouth,
-          centered (through the bulb area), then drops to the knob. The string's
-          top is occluded by the shade lip so it reads as coming THROUGH the
-          lamp, not hanging beside or in front of it.
-        */}
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label={isOn ? "Tarik untuk mematikan lampu" : "Tarik untuk menyalakan lampu"}
-          aria-pressed={isOn}
-          className={[styles.pullCordGroup, isSpringing ? styles.pullCordSpringing : ""].filter(Boolean).join(" ")}
-          style={{
-            top: `${ROD_BASE_HEIGHT + 88}px`,
-            transform: `translateX(-50%) translateY(${pullOffset}px)`,
-          }}
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              toggle();
-            }
-          }}
-        >
-          {/* Cord exits through the shade center, then drops to the knob */}
-          <div className={styles.pullString} style={{ height: `${PULL_CORD_BASE_LENGTH + pullOffset * 0.25}px` }} />
-          <div className={styles.pullKnob} />
+          {/*
+            Pull cord — emerges from INSIDE the shade's open bottom mouth,
+            centered (through the bulb area), then drops to the knob. The string's
+            top is occluded by the shade lip so it reads as coming THROUGH the
+            lamp, not hanging beside or in front of it.
+          */}
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label={isOn ? "Tarik untuk mematikan lampu" : "Tarik untuk menyalakan lampu"}
+            aria-pressed={isOn}
+            className={[styles.pullCordGroup, isSpringing ? styles.pullCordSpringing : ""].filter(Boolean).join(" ")}
+            style={{
+              top: `${ROD_BASE_HEIGHT + 88}px`,
+              transform: `translateX(-50%) translateY(${pullOffset}px)`,
+            }}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                toggle();
+              }
+            }}
+          >
+            {/* Cord exits through the shade center, then drops to the knob */}
+            <div className={styles.pullString} style={{ height: `${PULL_CORD_BASE_LENGTH + pullOffset * 0.25}px` }} />
+            <div className={styles.pullKnob} />
+          </div>
         </div>
       </div>
 
