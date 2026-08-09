@@ -10,7 +10,12 @@ import { Reveal } from "./reveal";
 export function WorkflowSection() {
   return (
     <Reveal>
-    <Section id="cara-kerja" spacing="landing" surface="surface">
+    <Section
+      className={styles.workflowSection}
+      id="cara-kerja"
+      spacing="landing"
+      surface="surface"
+    >
       <PageContainer className={styles.sectionContent}>
         <LandingSectionHeading
           eyebrow="Alur yang terarah"

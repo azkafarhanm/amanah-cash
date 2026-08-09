@@ -10,21 +10,32 @@
   inset: var(--space-0);
   background: var(--landing-hero-decoration);
   pointer-events: none;
+  z-index: 0;
 }
 
 .backdropGrid {
   position: absolute;
   inset: var(--space-0);
   background-image:
-    linear-gradient(color-mix(in srgb, var(--color-action-primary) 3%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--color-action-primary) 3%, transparent) 1px, transparent 1px);
+    linear-gradient(color-mix(in srgb, var(--color-action-primary) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-action-primary) 4%, transparent) 1px, transparent 1px);
   background-size: 4rem 4rem;
-  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black, transparent);
+  mask-image: radial-gradient(ellipse 75% 65% at 50% 50%, black 15%, transparent 75%);
   pointer-events: none;
+  z-index: 2;
+  animation: grid-breathe 9s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite alternate;
+}
+
+@media (max-width: 48rem) {
+  .backdropGrid {
+    background-size: 3rem 3rem;
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 50%, black 20%, transparent 80%);
+  }
 }
 
 .layout {
   position: relative;
+  z-index: 4;
   display: grid;
   align-items: center;
   gap: var(--landing-hero-gap);
@@ -497,12 +508,31 @@
   animation-delay: calc(var(--motion-duration-panel) * 2);
 }
 
+@keyframes grid-breathe {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0.60;
+    transform: scale(1.01);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .content,
   .previewStage,
   .trustNote,
-  .previewBarDot {
+  .previewBarDot,
+  .backdropGrid {
     animation: none;
+  }
+
+  .backdropGrid {
+    opacity: 0.6;
   }
 
   .primaryAction,

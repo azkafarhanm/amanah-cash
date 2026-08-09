@@ -9,7 +9,12 @@ import { Reveal } from "./reveal";
 export function SecurityTrustSection() {
   return (
     <Reveal>
-    <Section id="keamanan" spacing="landing" surface="subtle">
+    <Section
+      className={styles.securitySection}
+      id="keamanan"
+      spacing="landing"
+      surface="subtle"
+    >
       <PageContainer
         className={`${styles.sectionContent} desktop:grid-cols-2`}
       >

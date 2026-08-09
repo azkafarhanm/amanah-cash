@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { PageContainer } from "@/components/ui";
+import { SoftAurora } from "./soft-aurora";
 
 import styles from "./hero-section.module.css";
 
@@ -126,6 +127,7 @@ export function HeroSection() {
       className={`${styles.section} tablet:py-[var(--landing-section-padding-tablet)] desktop:py-[var(--landing-section-padding-desktop)]`}
     >
       <div aria-hidden="true" className={styles.backdrop} />
+      <SoftAurora />
       <div aria-hidden="true" className={styles.backdropGrid} />
       <PageContainer className={`${styles.layout} desktop:grid-cols-2`}>
         <div className={styles.content}>

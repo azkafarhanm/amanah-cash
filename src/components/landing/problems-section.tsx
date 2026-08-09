@@ -9,7 +9,7 @@ import { Reveal } from "./reveal";
 export function ProblemsSection() {
   return (
     <Reveal>
-    <Section spacing="landing" surface="subtle">
+    <Section className={styles.problemsSection} spacing="landing" surface="subtle">
       <PageContainer
         className={`${styles.sectionContent} desktop:grid-cols-2`}
       >

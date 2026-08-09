@@ -9,7 +9,12 @@ import { Reveal } from "./reveal";
 export function FeaturesSection() {
   return (
     <Reveal>
-    <Section id="fitur" spacing="landing" surface="canvas">
+    <Section
+      className={styles.featuresSection}
+      id="fitur"
+      spacing="landing"
+      surface="canvas"
+    >
       <PageContainer className={styles.sectionContent}>
         <LandingSectionHeading
           eyebrow="Kemampuan yang tersedia"

@@ -11,7 +11,7 @@ import { Reveal } from "./reveal";
 export function SolutionSection() {
   return (
     <Reveal>
-    <Section spacing="landing" surface="canvas">
+    <Section className={styles.solutionSection} spacing="landing" surface="canvas">
       <PageContainer className={styles.sectionContent}>
         <LandingSectionHeading
           eyebrow="Solusi yang praktis"

@@ -1,4 +1,103 @@
+.problemsSection,
+.solutionSection,
+.workflowSection,
+.featuresSection,
+.securitySection,
+.faqSection {
+  position: relative;
+  overflow: hidden;
+}
+
+.problemsSection::before,
+.solutionSection::before,
+.workflowSection::before,
+.featuresSection::before,
+.securitySection::before,
+.faqSection::before {
+  content: "";
+  position: absolute;
+  inset: -12%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.problemsSection::before {
+  background: radial-gradient(
+      ellipse 65% 55% at 85% 25%,
+      color-mix(in srgb, var(--color-action-primary) 10%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 15% 75%,
+      color-mix(in srgb, var(--color-ink-blue-700) 8%, transparent),
+      transparent 60%
+    );
+  animation: ambient-glow-drift 12s ease-in-out infinite alternate;
+}
+
+.solutionSection::before {
+  background: radial-gradient(
+      ellipse 70% 55% at 20% 25%,
+      color-mix(in srgb, var(--color-action-primary) 12%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse 55% 45% at 80% 75%,
+      color-mix(in srgb, var(--color-sky-400) 8%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 40% 35% at 50% 50%,
+      rgba(245, 158, 11, 0.05),
+      transparent 60%
+    );
+  animation: gradient-shimmer-drift 10s ease-in-out infinite alternate;
+}
+
+.workflowSection::before {
+  background: radial-gradient(
+      ellipse 65% 50% at 50% 50%,
+      color-mix(in srgb, var(--color-action-primary) 8%, transparent),
+      transparent 70%
+    );
+  animation: ambient-glow-drift 14s ease-in-out infinite alternate;
+}
+
+.featuresSection::before {
+  background: radial-gradient(
+      ellipse 55% 45% at 90% 15%,
+      color-mix(in srgb, var(--color-action-primary) 10%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse 50% 40% at 10% 85%,
+      color-mix(in srgb, var(--color-ink-blue-700) 7%, transparent),
+      transparent 60%
+    );
+  animation: gradient-shimmer-drift 13s ease-in-out infinite alternate;
+}
+
+.securitySection::before {
+  background: radial-gradient(
+      ellipse 60% 50% at 50% 60%,
+      color-mix(in srgb, var(--color-action-primary) 7%, transparent),
+      transparent 70%
+    );
+  animation: ambient-glow-drift 16s ease-in-out infinite alternate;
+}
+
+.faqSection::before {
+  background: radial-gradient(
+      ellipse 60% 40% at 50% 50%,
+      color-mix(in srgb, var(--color-action-primary) 4%, transparent),
+      transparent 75%
+    );
+  opacity: 0.5;
+}
+
 .sectionContent {
+  position: relative;
+  z-index: 1;
   display: grid;
   gap: var(--landing-section-gap);
 }
@@ -363,19 +462,113 @@
 .finalCta::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -15%;
   background:
     radial-gradient(
-      ellipse 50% 60% at 80% 20%,
-      rgb(255 255 255 / 10%),
+      ellipse 55% 65% at 80% 25%,
+      rgba(255, 255, 255, 0.18),
       transparent 60%
     ),
     radial-gradient(
-      ellipse 40% 40% at 20% 80%,
-      rgb(255 255 255 / 5%),
-      transparent 50%
+      ellipse 50% 50% at 20% 75%,
+      color-mix(in srgb, var(--color-action-primary) 28%, transparent),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse 45% 45% at 50% 50%,
+      rgba(245, 158, 11, 0.14),
+      transparent 65%
     );
   pointer-events: none;
+  animation: cta-radiant-pulse 8s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-glow-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate3d(2.5%, -2%, 0) scale(1.06);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(-2%, 1.5%, 0) scale(0.98);
+    opacity: 0.70;
+  }
+}
+
+@keyframes gradient-shimmer-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: 0.60;
+  }
+  50% {
+    transform: translate3d(-2.5%, 1.5%, 0) rotate(1.5deg) scale(1.05);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(2%, -1.5%, 0) rotate(-1deg);
+    opacity: 0.65;
+  }
+}
+
+@keyframes cta-radiant-pulse {
+  0% {
+    opacity: 0.70;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1.0;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 0.75;
+    transform: scale(0.99);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item,
+  .workflowItem,
+  .solutionAction,
+  .workflowAction,
+  .faqButton,
+  .faqIndicator,
+  .faqAnswer,
+  .reveal,
+  .primaryAction,
+  .secondaryAction,
+  .itemIcon,
+  .workflowItem::before {
+    transition: none;
+  }
+
+  .problemsSection::before,
+  .solutionSection::before,
+  .workflowSection::before,
+  .featuresSection::before,
+  .securitySection::before,
+  .finalCta::before {
+    animation: none;
+  }
+
+  .reveal {
+    opacity: var(--opacity-100);
+    transform: none;
+  }
+
+  .reveal[data-revealed="true"] .item,
+  .reveal[data-revealed="true"] .workflowItem {
+    animation: none;
+    opacity: var(--opacity-100);
+    transform: none;
+  }
+
+  .item::before {
+    opacity: 0;
+    transition: none;
+  }
 }
 
 .finalCtaCopy {

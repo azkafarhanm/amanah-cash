@@ -9,7 +9,12 @@ import { Reveal } from "./reveal";
 export function FAQSection() {
   return (
     <Reveal>
-    <Section id="tanya-jawab" spacing="landing" surface="canvas">
+    <Section
+      className={styles.faqSection}
+      id="tanya-jawab"
+      spacing="landing"
+      surface="canvas"
+    >
       <PageContainer
         className={`${styles.sectionContent} ${styles.faqContent}`}
       >
