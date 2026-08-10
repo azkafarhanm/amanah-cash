@@ -151,10 +151,10 @@ export function HeroSection() {
               Mulai menggunakan
               <ArrowRight aria-hidden="true" />
             </Link>
-            <Link className={styles.secondaryAction} href="#cara-kerja">
+            <a className={styles.secondaryAction} href="#cara-kerja">
               Lihat cara kerja
               <ArrowDown aria-hidden="true" />
-            </Link>
+            </a>
           </div>
         </div>
         <HeroPreview />

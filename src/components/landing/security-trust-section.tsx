@@ -8,24 +8,25 @@ import { Reveal } from "./reveal";
 
 export function SecurityTrustSection() {
   return (
-    <Reveal>
     <Section
       className={styles.securitySection}
       id="keamanan"
       spacing="landing"
       surface="subtle"
     >
-      <PageContainer
-        className={`${styles.sectionContent} desktop:grid-cols-2`}
-      >
-        <LandingSectionHeading
-          eyebrow="Keamanan dan kepercayaan"
-          title="Kepercayaan dibangun dari kontrol yang dapat dijelaskan"
-          description="Batas akses dan pencatatan yang jelas membantu aktivitas penting tetap dapat diperiksa dan data operasional dipulihkan dengan terkendali."
-        />
-        <IconTextList items={trustPrinciples} />
-      </PageContainer>
+      <Reveal>
+        <PageContainer className={styles.sectionContent}>
+          <LandingSectionHeading
+            eyebrow="Keamanan dan kepercayaan"
+            title="Kepercayaan dibangun dari kontrol yang dapat dijelaskan"
+            description="Batas akses dan pencatatan yang jelas membantu aktivitas penting tetap dapat diperiksa dan data operasional dipulihkan dengan terkendali."
+          />
+          <IconTextList
+            className={styles.gridFiveBalanced}
+            items={trustPrinciples}
+          />
+        </PageContainer>
+      </Reveal>
     </Section>
-    </Reveal>
   );
 }

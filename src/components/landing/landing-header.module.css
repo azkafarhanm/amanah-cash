@@ -4,9 +4,7 @@
   z-index: var(--z-header);
   background: var(--landing-nav-background);
   border-block-end: var(--landing-nav-border);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  background: color-mix(in srgb, var(--landing-nav-background) 85%, transparent);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%), 0 1px 2px -1px rgb(0 0 0 / 5%);
 }
 
 .content {
@@ -49,9 +47,7 @@
   background: var(--landing-nav-background);
   border-block-end: var(--landing-nav-border);
   padding: var(--space-4) var(--space-6);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  background: color-mix(in srgb, var(--landing-nav-background) 95%, transparent);
+  box-shadow: var(--shadow-raised);
 }
 
 .navigationOpen a {

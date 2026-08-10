@@ -1,5 +1,3 @@
-import Link from "next/link";
-
 import { PageContainer } from "@/components/ui";
 
 import styles from "./landing-footer.module.css";
@@ -20,10 +18,10 @@ export function LandingFooter() {
           </p>
         </div>
         <nav aria-label="Navigasi footer" className={styles.navigation}>
-          <Link href="#cara-kerja">Cara kerja</Link>
-          <Link href="#fitur">Fitur</Link>
-          <Link href="#keamanan">Keamanan</Link>
-          <Link href="#tanya-jawab">Tanya jawab</Link>
+          <a href="#cara-kerja">Cara kerja</a>
+          <a href="#fitur">Fitur</a>
+          <a href="#keamanan">Keamanan</a>
+          <a href="#tanya-jawab">Tanya jawab</a>
         </nav>
         <p className={styles.copyright}>© {currentYear} Amanah Cash.</p>
       </PageContainer>

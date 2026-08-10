@@ -9,8 +9,45 @@ import { Logo, PageContainer } from "@/components/ui";
 import styles from "./landing-header.module.css";
 import { LandingThemeToggle } from "./landing-theme-toggle";
 
+function getStaticSectionTop(element: HTMLElement): number {
+  let top = 0;
+  const parent = element.parentElement;
+  if (!parent) return element.offsetTop;
+
+  for (let i = 0; i < parent.children.length; i++) {
+    const child = parent.children[i] as HTMLElement;
+    if (child === element) {
+      break;
+    }
+    top += child.offsetHeight;
+  }
+  return top;
+}
+
 export function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    targetId: string,
+  ) => {
+    setMenuOpen(false);
+    const target = document.getElementById(targetId);
+    if (target) {
+      e.preventDefault();
+      if (typeof window !== "undefined") {
+        if (window.location.hash !== `#${targetId}`) {
+          window.history.pushState(null, "", `#${targetId}`);
+        }
+        const targetTop = getStaticSectionTop(target);
+        const navHeight = 56;
+        window.scrollTo({
+          top: Math.max(0, targetTop - navHeight),
+          behavior: "smooth",
+        });
+      }
+    }
+  };
 
   return (
     <header className={styles.header}>
@@ -26,18 +63,27 @@ export function LandingHeader() {
           aria-label="Navigasi utama"
           className={`${styles.navigation} ${menuOpen ? styles.navigationOpen : ""} desktop:flex`}
         >
-          <Link href="#cara-kerja" onClick={() => setMenuOpen(false)}>
+          <a
+            href="#cara-kerja"
+            onClick={(e) => handleNavClick(e, "cara-kerja")}
+          >
             Cara kerja
-          </Link>
-          <Link href="#fitur" onClick={() => setMenuOpen(false)}>
+          </a>
+          <a href="#fitur" onClick={(e) => handleNavClick(e, "fitur")}>
             Fitur
-          </Link>
-          <Link href="#keamanan" onClick={() => setMenuOpen(false)}>
+          </a>
+          <a
+            href="#keamanan"
+            onClick={(e) => handleNavClick(e, "keamanan")}
+          >
             Keamanan
-          </Link>
-          <Link href="#tanya-jawab" onClick={() => setMenuOpen(false)}>
+          </a>
+          <a
+            href="#tanya-jawab"
+            onClick={(e) => handleNavClick(e, "tanya-jawab")}
+          >
             Tanya jawab
-          </Link>
+          </a>
           <div className={styles.navigationTheme}>
             <LandingThemeToggle />
           </div>

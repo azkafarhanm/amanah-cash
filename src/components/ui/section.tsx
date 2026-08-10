@@ -25,8 +25,6 @@ export function Section({
         styles.section,
         surfaceClasses[surface],
         spacing === "landing" && styles.sectionLanding,
-        spacing === "landing" &&
-          "tablet:py-[var(--landing-section-padding-tablet)] desktop:py-[var(--landing-section-padding-desktop)]",
         className,
       ]
         .filter(Boolean)

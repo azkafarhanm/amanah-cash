@@ -10,16 +10,18 @@ interface IconTextItem {
 export function IconTextList({
   items,
   className,
+  itemClassName,
 }: {
   items: readonly IconTextItem[];
   className?: string;
+  itemClassName?: string;
 }) {
   return (
     <ul
       className={[styles.itemList, className].filter(Boolean).join(" ")}
     >
       {items.map((item) => (
-        <li className={styles.item} key={item.title}>
+        <li className={itemClassName || styles.item} key={item.title}>
           <LandingIcon name={item.icon} />
           <h3>{item.title}</h3>
           <p>{item.description}</p>

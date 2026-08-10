@@ -8,25 +8,26 @@ import { Reveal } from "./reveal";
 
 export function FeaturesSection() {
   return (
-    <Reveal>
     <Section
       className={styles.featuresSection}
       id="fitur"
       spacing="landing"
       surface="canvas"
     >
-      <PageContainer className={styles.sectionContent}>
-        <LandingSectionHeading
-          eyebrow="Kemampuan yang tersedia"
-          title="Fitur untuk pekerjaan harian yang nyata"
-          description="Setiap fitur mendukung pencatatan, peninjauan, pengendalian akses, atau keberlanjutan operasional."
-        />
-        <IconTextList
-          className="tablet:grid-cols-2 desktop:grid-cols-3"
-          items={features}
-        />
-      </PageContainer>
+      <Reveal>
+        <PageContainer className={styles.sectionContent}>
+          <LandingSectionHeading
+            eyebrow="Kemampuan yang tersedia"
+            title="Fitur untuk pekerjaan harian yang nyata"
+            description="Setiap fitur mendukung pencatatan, peninjauan, pengendalian akses, atau keberlanjutan operasional."
+          />
+          <IconTextList
+            className={styles.featuresList}
+            itemClassName={styles.featureItem}
+            items={features}
+          />
+        </PageContainer>
+      </Reveal>
     </Section>
-    </Reveal>
   );
 }

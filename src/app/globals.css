@@ -514,12 +514,12 @@
   --landing-surface-subtle: var(--color-background-subtle);
   --landing-content-max: var(--size-content-300);
   --landing-copy-max: var(--size-content-160);
-  --landing-section-padding-mobile: var(--space-12);
-  --landing-section-padding-tablet: var(--space-16);
-  --landing-section-padding-desktop: var(--space-24);
-  --landing-content-gap: var(--space-4);
-  --landing-section-gap: var(--space-8);
-  --landing-grid-gap: var(--space-6);
+  --landing-section-padding-mobile: var(--space-8);
+  --landing-section-padding-tablet: var(--space-10);
+  --landing-section-padding-desktop: var(--space-12);
+  --landing-content-gap: var(--space-3);
+  --landing-section-gap: var(--space-6);
+  --landing-grid-gap: var(--space-5);
   --landing-hero-title-mobile: var(--font-weight-bold) var(--font-size-40) /
     var(--line-height-heading-tight) var(--font-family-sans);
   --landing-hero-title-tablet: var(--font-weight-bold) var(--font-size-48) /
@@ -614,7 +614,7 @@
   --landing-card-background: var(--landing-surface);
   --landing-card-border: var(--color-border-default);
   --landing-card-radius: var(--shape-container);
-  --landing-card-padding: var(--space-6);
+  --landing-card-padding: var(--space-5);
   --landing-footer-border: var(--border-width-default)
     var(--border-style-default) var(--color-border-default);
   --landing-faq-divider: var(--border-width-default)

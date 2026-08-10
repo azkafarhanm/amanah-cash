@@ -1,137 +1,213 @@
+/* ==========================================================================
+   Section-Level Scroll Stack / Large Physical Surfaces Architecture
+   ========================================================================== */
+
 .problemsSection,
 .solutionSection,
 .workflowSection,
 .featuresSection,
 .securitySection,
-.faqSection {
+.faqSection,
+.finalCtaSection {
   position: relative;
-  overflow: hidden;
+  scroll-margin-top: calc(var(--landing-nav-height) + var(--space-1));
+  border-start-start-radius: 2.25rem;
+  border-start-end-radius: 2.25rem;
+  border-block-start: var(--border-width-default) solid var(--color-border-default);
+  box-shadow: 0 -22px 55px -5px rgb(17 24 39 / 7%), 0 -4px 14px -2px rgb(17 24 39 / 4%);
 }
 
-.problemsSection::before,
-.solutionSection::before,
-.workflowSection::before,
-.featuresSection::before,
-.securitySection::before,
-.faqSection::before {
-  content: "";
-  position: absolute;
-  inset: -12%;
-  pointer-events: none;
-  z-index: 0;
+:global([data-theme="dark"]) .problemsSection,
+:global([data-theme="dark"]) .solutionSection,
+:global([data-theme="dark"]) .workflowSection,
+:global([data-theme="dark"]) .featuresSection,
+:global([data-theme="dark"]) .securitySection,
+:global([data-theme="dark"]) .faqSection,
+:global([data-theme="dark"]) .finalCtaSection {
+  box-shadow: 0 -24px 60px -5px rgb(0 0 0 / 55%), 0 -4px 16px -2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 6%);
 }
 
-.problemsSection::before {
-  background: radial-gradient(
-      ellipse 65% 55% at 85% 25%,
-      color-mix(in srgb, var(--color-action-primary) 10%, transparent),
-      transparent 65%
-    ),
-    radial-gradient(
-      ellipse 55% 45% at 15% 75%,
-      color-mix(in srgb, var(--color-ink-blue-700) 8%, transparent),
-      transparent 60%
-    );
-  animation: ambient-glow-drift 12s ease-in-out infinite alternate;
+/* Stacking Order Hierarchy */
+.problemsSection {
+  z-index: 1;
 }
 
-.solutionSection::before {
-  background: radial-gradient(
-      ellipse 70% 55% at 20% 25%,
-      color-mix(in srgb, var(--color-action-primary) 12%, transparent),
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 55% 45% at 80% 75%,
-      color-mix(in srgb, var(--color-sky-400) 8%, transparent),
-      transparent 65%
-    ),
-    radial-gradient(
-      ellipse 40% 35% at 50% 50%,
-      rgba(245, 158, 11, 0.05),
-      transparent 60%
-    );
-  animation: gradient-shimmer-drift 10s ease-in-out infinite alternate;
+.solutionSection {
+  z-index: 2;
 }
 
-.workflowSection::before {
-  background: radial-gradient(
-      ellipse 65% 50% at 50% 50%,
-      color-mix(in srgb, var(--color-action-primary) 8%, transparent),
-      transparent 70%
-    );
-  animation: ambient-glow-drift 14s ease-in-out infinite alternate;
+.workflowSection {
+  z-index: 3;
 }
 
-.featuresSection::before {
-  background: radial-gradient(
-      ellipse 55% 45% at 90% 15%,
-      color-mix(in srgb, var(--color-action-primary) 10%, transparent),
-      transparent 65%
-    ),
-    radial-gradient(
-      ellipse 50% 40% at 10% 85%,
-      color-mix(in srgb, var(--color-ink-blue-700) 7%, transparent),
-      transparent 60%
-    );
-  animation: gradient-shimmer-drift 13s ease-in-out infinite alternate;
+.featuresSection {
+  z-index: 4;
 }
 
-.securitySection::before {
-  background: radial-gradient(
-      ellipse 60% 50% at 50% 60%,
-      color-mix(in srgb, var(--color-action-primary) 7%, transparent),
-      transparent 70%
-    );
-  animation: ambient-glow-drift 16s ease-in-out infinite alternate;
+.securitySection {
+  z-index: 5;
 }
 
-.faqSection::before {
-  background: radial-gradient(
-      ellipse 60% 40% at 50% 50%,
-      color-mix(in srgb, var(--color-action-primary) 4%, transparent),
-      transparent 75%
-    );
-  opacity: 0.5;
+.faqSection {
+  z-index: 6;
 }
+
+.finalCtaSection {
+  z-index: 7;
+}
+
+/* ==========================================================================
+   Section-Level Sticky Sheet Takeover (Desktop with Adequate Viewport Height)
+   ========================================================================== */
+
+@media (min-width: 64rem) and (min-height: 38rem) {
+  .problemsSection,
+  .solutionSection,
+  .workflowSection,
+  .featuresSection,
+  .securitySection {
+    position: sticky;
+    top: var(--landing-nav-height);
+    min-height: calc(100svh + 12rem);
+    padding-block: var(--space-8) var(--space-10);
+  }
+
+  .faqSection,
+  .finalCtaSection {
+    position: relative;
+    min-height: auto;
+    padding-block: var(--space-10) var(--space-12);
+  }
+}
+
+/* ==========================================================================
+   Normal Flow Fallback: Mobile (<48rem), Tablet (<64rem), Short Viewports (<38rem)
+   ========================================================================== */
+
+@media (max-width: 63.99rem), (max-height: 37.99rem) {
+  .problemsSection,
+  .solutionSection,
+  .workflowSection,
+  .featuresSection,
+  .securitySection,
+  .faqSection,
+  .finalCtaSection {
+    position: relative !important;
+    top: auto !important;
+    min-height: auto !important;
+    padding-block: var(--space-8);
+  }
+
+  .solutionSection,
+  .workflowSection,
+  .featuresSection,
+  .securitySection,
+  .faqSection,
+  .finalCtaSection {
+    margin-block-start: -1.5rem;
+  }
+
+  .problemsSection {
+    margin-block-start: 0;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .problemsSection,
+  .solutionSection,
+  .workflowSection,
+  .featuresSection,
+  .securitySection,
+  .faqSection,
+  .finalCtaSection {
+    border-start-start-radius: 1.5rem;
+    border-start-end-radius: 1.5rem;
+    box-shadow: 0 -10px 24px rgb(17 24 39 / 4%), 0 -2px 6px rgb(17 24 39 / 2%);
+    padding-block: var(--space-6);
+  }
+
+  .solutionSection,
+  .workflowSection,
+  .featuresSection,
+  .securitySection,
+  .faqSection,
+  .finalCtaSection {
+    margin-block-start: -1.25rem;
+  }
+}
+
+/* ==========================================================================
+   Section Content Layout & Calibrated Vertical Rhythm
+   ========================================================================== */
 
 .sectionContent {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: var(--landing-section-gap);
+  gap: var(--space-6); /* 24px breathing room between section intro & card grid */
+}
+
+@media (min-width: 64rem) {
+  .sectionContent {
+    gap: var(--space-6); /* 24px breathing room on desktop */
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .sectionContent {
+    gap: var(--space-5); /* 20px breathing room on mobile */
+  }
 }
 
 .sectionHeading {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   max-width: var(--landing-copy-max);
-  gap: var(--landing-content-gap);
 }
 
 .eyebrow {
   width: fit-content;
+  margin: var(--space-0);
+  margin-block-end: var(--space-2); /* 8px from eyebrow to heading */
   color: var(--color-action-primary) !important;
   font: var(--type-label) !important;
   letter-spacing: var(--letter-spacing-normal);
 }
 
-.sectionHeading h2,
-.sectionHeading p,
-.item h3,
-.item p,
-.workflowItem h3,
-.workflowItem p {
+.sectionHeading h2 {
   margin: var(--space-0);
+  margin-block-end: var(--space-3); /* 12px from heading to description */
 }
 
-.sectionHeading p,
-.item p,
-.workflowItem p {
+.sectionHeading p {
+  margin: var(--space-0);
   color: var(--color-text-secondary);
   font: var(--type-body);
+  line-height: var(--line-height-body);
+}
+
+@media (min-width: 64rem) {
+  .eyebrow {
+    margin-block-end: var(--space-2); /* 8px on desktop */
+  }
+
+  .sectionHeading h2 {
+    margin-block-end: var(--space-3); /* 12px on desktop */
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .eyebrow {
+    margin-block-end: var(--space-1-5, 0.375rem); /* 6px on mobile */
+  }
+
+  .sectionHeading h2 {
+    margin-block-end: var(--space-2-5, 0.625rem); /* 10px on mobile */
+  }
 }
 
 .itemList,
+.featuresList,
 .workflowList {
   margin: var(--space-0);
   padding: var(--space-0);
@@ -140,49 +216,111 @@
 
 .itemList {
   display: grid;
-  gap: var(--landing-grid-gap);
+  gap: var(--space-5);
+  row-gap: var(--space-5);
+  column-gap: var(--space-5);
 }
+
+@media (min-width: 64rem) {
+  .itemList {
+    gap: var(--space-3-5, 0.875rem); /* 14px row and column gap on desktop */
+    row-gap: var(--space-3-5, 0.875rem);
+    column-gap: var(--space-3-5, 0.875rem);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .itemList {
+    gap: var(--space-4); /* 16px row gap on mobile */
+    row-gap: var(--space-4);
+  }
+}
+
+/* ==========================================================================
+   Balanced 5-Item Grid Layout (3 top, 2 bottom centered on Desktop)
+   ========================================================================== */
+
+.gridFiveBalanced {
+  display: grid;
+  gap: var(--space-4);
+  row-gap: var(--space-4);
+  column-gap: var(--space-4);
+  grid-template-columns: 1fr;
+  margin: var(--space-0);
+  padding: var(--space-0);
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .gridFiveBalanced {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gridFiveBalanced > li:nth-child(5) {
+    grid-column: 1 / -1;
+    max-width: 50%;
+    margin-inline: auto;
+    width: 100%;
+  }
+}
+
+@media (min-width: 64rem) {
+  .gridFiveBalanced {
+    grid-template-columns: repeat(6, 1fr);
+    gap: var(--space-3-5, 0.875rem); /* 14px row & col gap on desktop */
+    row-gap: var(--space-3-5, 0.875rem);
+    column-gap: var(--space-3-5, 0.875rem);
+  }
+  .gridFiveBalanced > li:nth-child(1),
+  .gridFiveBalanced > li:nth-child(2),
+  .gridFiveBalanced > li:nth-child(3) {
+    grid-column: span 2;
+  }
+  .gridFiveBalanced > li:nth-child(4) {
+    grid-column: 2 / span 2;
+  }
+  .gridFiveBalanced > li:nth-child(5) {
+    grid-column: 4 / span 2;
+    max-width: none;
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .gridFiveBalanced {
+    gap: var(--space-4); /* 16px row gap on mobile */
+    row-gap: var(--space-4);
+  }
+}
+
+/* ==========================================================================
+   Internal Content Cards (Problems, Solution, Security)
+   ========================================================================== */
 
 .item {
   position: relative;
-  display: grid;
-  align-content: start;
-  gap: var(--space-3);
-  padding: var(--landing-card-padding);
-  background: var(--landing-card-background);
-  border: var(--border-width-default) var(--border-style-default)
-    var(--landing-card-border);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
+  background: var(--color-background-surface);
+  border: var(--border-width-default) solid var(--color-border-default);
   border-radius: var(--landing-card-radius);
   box-shadow: var(--shadow-subtle);
   transition:
-    transform var(--motion-duration-panel) var(--motion-ease-standard),
-    border-color var(--motion-duration-panel) var(--motion-ease-standard),
-    box-shadow var(--motion-duration-panel) var(--motion-ease-standard);
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
-.item::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--landing-card-radius);
-  padding: var(--border-width-default);
-  background: var(--landing-card-gradient-border);
-  mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--motion-duration-panel) var(--motion-ease-standard);
+@media (min-width: 64rem) {
+  .item {
+    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right on desktop */
+  }
 }
 
 .item:hover {
-  transform: translateY(var(--landing-interaction-lift));
-  box-shadow: var(--landing-card-hover-shadow);
-}
-
-.item:hover::before {
-  opacity: 1;
+  transform: translateY(calc(var(--space-0-5) * -1));
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-raised);
 }
 
 .itemIcon {
@@ -195,13 +333,39 @@
   transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
+.item .itemIcon {
+  margin-block-end: var(--space-2-5, 0.625rem); /* 10px from icon to title */
+}
+
 .item:hover .itemIcon {
   transform: scale(1.05);
 }
 
-.item h3,
-.workflowItem h3 {
+.item h3 {
+  margin: var(--space-0);
+  margin-block-end: var(--space-1-5, 0.375rem); /* 6px from title to description */
   font: var(--type-section-title);
+}
+
+.item p {
+  margin: var(--space-0);
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+  line-height: var(--line-height-body);
+}
+
+@media (max-width: 47.99rem) {
+  .item {
+    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+  }
+
+  .item .itemIcon {
+    margin-block-end: var(--space-2-5, 0.625rem);
+  }
+
+  .item h3 {
+    margin-block-end: var(--space-1-5, 0.375rem);
+  }
 }
 
 .solutionAction,
@@ -211,8 +375,11 @@
   min-height: var(--control-height-minimum);
   align-items: center;
   gap: var(--space-2);
+  margin-block-start: var(--space-4); /* 16px breathing room from cards */
   color: var(--color-action-primary);
   font: var(--type-button);
+  text-decoration: none;
+  cursor: pointer;
   transition:
     color var(--motion-duration-fast) var(--motion-ease-standard),
     transform var(--motion-duration-fast) var(--motion-ease-standard);
@@ -232,27 +399,159 @@
   box-shadow: var(--focus-visible-shadow);
 }
 
+/* ==========================================================================
+   Features List & Compact Cards
+   ========================================================================== */
+
+.featuresList {
+  display: grid;
+  gap: var(--space-4);
+  row-gap: var(--space-4);
+  column-gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) {
+  .featuresList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .featuresList {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-3-5, 0.875rem);
+    row-gap: var(--space-3-5, 0.875rem);
+    column-gap: var(--space-3-5, 0.875rem);
+  }
+}
+
+@media (min-width: 80rem) {
+  .featuresList {
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-3-5, 0.875rem);
+    row-gap: var(--space-3-5, 0.875rem);
+    column-gap: var(--space-3-5, 0.875rem);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .featuresList {
+    gap: var(--space-4);
+    row-gap: var(--space-4);
+  }
+}
+
+.featureItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
+  background: var(--color-background-surface);
+  border: var(--border-width-default) solid var(--color-border-default);
+  border-radius: var(--landing-card-radius);
+  box-shadow: var(--shadow-subtle);
+  transition:
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+@media (min-width: 80rem) {
+  .featureItem {
+    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .featureItem {
+    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+  }
+}
+
+.featureItem:hover {
+  transform: translateY(calc(var(--space-0-5) * -1));
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-raised);
+}
+
+.featureItem .itemIcon {
+  margin-block-end: var(--space-2-5, 0.625rem); /* 10px from icon to title */
+}
+
+.featureItem:hover .itemIcon {
+  transform: scale(1.05);
+}
+
+.featureItem h3 {
+  margin: var(--space-0);
+  margin-block-end: var(--space-1-5, 0.375rem); /* 6px from title to description */
+  font: var(--type-section-title);
+}
+
+.featureItem p {
+  margin: var(--space-0);
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+  line-height: var(--line-height-body);
+}
+
+@media (max-width: 47.99rem) {
+  .featureItem {
+    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+  }
+}
+
+/* ==========================================================================
+   Workflow List (Benchmark Horizontal Rhythm)
+   ========================================================================== */
+
 .workflowList {
   display: grid;
-  gap: var(--landing-grid-gap);
+  gap: var(--space-4);
+  row-gap: var(--space-4);
+  column-gap: var(--space-4);
   counter-reset: workflow;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48rem) {
+  .workflowList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .workflowList {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3-5, 0.875rem);
+    row-gap: var(--space-3-5, 0.875rem);
+    column-gap: var(--space-3-5, 0.875rem);
+  }
+}
+
+@media (max-width: 47.99rem) {
+  .workflowList {
+    gap: var(--space-4);
+    row-gap: var(--space-4);
+  }
 }
 
 .workflowItem {
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: var(--space-3);
-  padding: var(--landing-card-padding);
-  background: var(--landing-card-background);
-  border: var(--border-width-default) var(--border-style-default)
-    var(--landing-card-border);
+  gap: var(--space-3-5, 0.875rem); /* 14px between counter badge & copy */
+  padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
+  background: var(--color-background-surface);
+  border: var(--border-width-default) solid var(--color-border-default);
   border-radius: var(--landing-card-radius);
   counter-increment: workflow;
   box-shadow: var(--shadow-subtle);
   transition:
-    transform var(--motion-duration-panel) var(--motion-ease-standard),
-    box-shadow var(--motion-duration-panel) var(--motion-ease-standard);
+    transform var(--motion-duration-fast) var(--motion-ease-standard),
+    border-color var(--motion-duration-fast) var(--motion-ease-standard),
+    box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
 }
 
 .workflowItem::before {
@@ -269,8 +568,9 @@
 }
 
 .workflowItem:hover {
-  transform: translateY(var(--landing-interaction-lift));
-  box-shadow: var(--landing-card-hover-shadow);
+  transform: translateY(calc(var(--space-0-5) * -1));
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-raised);
 }
 
 .workflowItem:hover::before {
@@ -278,19 +578,33 @@
 }
 
 .workflowCopy {
-  display: grid;
-  gap: var(--space-2);
+  display: flex;
+  flex-direction: column;
 }
 
-.workflowConnector {
-  position: absolute;
-  inset-block-start: 100%;
-  inset-inline-start: calc(var(--size-8) / 2);
-  width: var(--border-width-default);
-  height: var(--landing-grid-gap);
-  background: var(--landing-connector-color);
-  transform: translateX(calc(var(--border-width-default) / -2));
+.workflowCopy h3 {
+  margin: var(--space-0);
+  margin-block-end: var(--space-1-5, 0.375rem); /* 6px between title and description */
+  font: var(--type-section-title);
 }
+
+.workflowCopy p {
+  margin: var(--space-0);
+  color: var(--color-text-secondary);
+  font: var(--type-body);
+  line-height: var(--line-height-body);
+}
+
+@media (max-width: 47.99rem) {
+  .workflowItem {
+    padding: var(--space-4); /* 16px on mobile */
+    gap: var(--space-3); /* 12px on mobile */
+  }
+}
+
+/* ==========================================================================
+   FAQ Accordion (100% Natural Flow)
+   ========================================================================== */
 
 .faqContent {
   width: var(--size-full);
@@ -321,7 +635,7 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--space-3);
-  padding-block: var(--space-5);
+  padding-block: var(--space-4);
   border: var(--space-0);
   color: var(--color-text-primary);
   background: var(--color-transparent);
@@ -376,8 +690,12 @@
 
 .faqAnswerInner p {
   margin: var(--space-0);
-  padding-block-end: var(--space-5);
+  padding-block-end: var(--space-4);
 }
+
+/* ==========================================================================
+   Reveal Mechanism (Content Inside Section)
+   ========================================================================== */
 
 .reveal {
   opacity: var(--opacity-100);
@@ -397,42 +715,50 @@
 }
 
 .reveal[data-revealed="true"] .item,
+.reveal[data-revealed="true"] .featureItem,
 .reveal[data-revealed="true"] .workflowItem {
   animation: card-enter var(--landing-reveal-duration)
     var(--motion-ease-standard) both;
 }
 
 .reveal[data-revealed="true"] .item:nth-child(1),
+.reveal[data-revealed="true"] .featureItem:nth-child(1),
 .reveal[data-revealed="true"] .workflowItem:nth-child(1) {
   animation-delay: calc(var(--landing-stagger-base) * 0);
 }
 
 .reveal[data-revealed="true"] .item:nth-child(2),
+.reveal[data-revealed="true"] .featureItem:nth-child(2),
 .reveal[data-revealed="true"] .workflowItem:nth-child(2) {
   animation-delay: calc(var(--landing-stagger-base) * 1);
 }
 
 .reveal[data-revealed="true"] .item:nth-child(3),
+.reveal[data-revealed="true"] .featureItem:nth-child(3),
 .reveal[data-revealed="true"] .workflowItem:nth-child(3) {
   animation-delay: calc(var(--landing-stagger-base) * 2);
 }
 
 .reveal[data-revealed="true"] .item:nth-child(4),
+.reveal[data-revealed="true"] .featureItem:nth-child(4),
 .reveal[data-revealed="true"] .workflowItem:nth-child(4) {
   animation-delay: calc(var(--landing-stagger-base) * 3);
 }
 
 .reveal[data-revealed="true"] .item:nth-child(5),
+.reveal[data-revealed="true"] .featureItem:nth-child(5),
 .reveal[data-revealed="true"] .workflowItem:nth-child(5) {
   animation-delay: calc(var(--landing-stagger-base) * 4);
 }
 
 .reveal[data-revealed="true"] .item:nth-child(6),
+.reveal[data-revealed="true"] .featureItem:nth-child(6),
 .reveal[data-revealed="true"] .workflowItem:nth-child(6) {
   animation-delay: calc(var(--landing-stagger-base) * 5);
 }
 
-.reveal[data-revealed="true"] .item:nth-child(n+7) {
+.reveal[data-revealed="true"] .item:nth-child(n+7),
+.reveal[data-revealed="true"] .featureItem:nth-child(n+7) {
   animation-delay: var(--landing-stagger-max);
 }
 
@@ -446,6 +772,10 @@
     transform: translateY(var(--space-0));
   }
 }
+
+/* ==========================================================================
+   Final CTA — Luminous Elevated Closing Beacon
+   ========================================================================== */
 
 .finalCta {
   display: grid;
@@ -462,113 +792,19 @@
 .finalCta::before {
   content: "";
   position: absolute;
-  inset: -15%;
+  inset: 0;
   background:
     radial-gradient(
-      ellipse 55% 65% at 80% 25%,
-      rgba(255, 255, 255, 0.18),
-      transparent 60%
-    ),
-    radial-gradient(
-      ellipse 50% 50% at 20% 75%,
-      color-mix(in srgb, var(--color-action-primary) 28%, transparent),
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse 45% 45% at 50% 50%,
-      rgba(245, 158, 11, 0.14),
+      ellipse 60% 70% at 85% 20%,
+      rgb(255 255 255 / 12%),
       transparent 65%
+    ),
+    radial-gradient(
+      ellipse 50% 50% at 15% 80%,
+      color-mix(in srgb, var(--color-action-primary) 18%, transparent),
+      transparent 60%
     );
   pointer-events: none;
-  animation: cta-radiant-pulse 8s ease-in-out infinite alternate;
-}
-
-@keyframes ambient-glow-drift {
-  0% {
-    transform: translate3d(0, 0, 0) scale(1);
-    opacity: 0.65;
-  }
-  50% {
-    transform: translate3d(2.5%, -2%, 0) scale(1.06);
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate3d(-2%, 1.5%, 0) scale(0.98);
-    opacity: 0.70;
-  }
-}
-
-@keyframes gradient-shimmer-drift {
-  0% {
-    transform: translate3d(0, 0, 0) rotate(0deg);
-    opacity: 0.60;
-  }
-  50% {
-    transform: translate3d(-2.5%, 1.5%, 0) rotate(1.5deg) scale(1.05);
-    opacity: 0.95;
-  }
-  100% {
-    transform: translate3d(2%, -1.5%, 0) rotate(-1deg);
-    opacity: 0.65;
-  }
-}
-
-@keyframes cta-radiant-pulse {
-  0% {
-    opacity: 0.70;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1.0;
-    transform: scale(1.04);
-  }
-  100% {
-    opacity: 0.75;
-    transform: scale(0.99);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .item,
-  .workflowItem,
-  .solutionAction,
-  .workflowAction,
-  .faqButton,
-  .faqIndicator,
-  .faqAnswer,
-  .reveal,
-  .primaryAction,
-  .secondaryAction,
-  .itemIcon,
-  .workflowItem::before {
-    transition: none;
-  }
-
-  .problemsSection::before,
-  .solutionSection::before,
-  .workflowSection::before,
-  .featuresSection::before,
-  .securitySection::before,
-  .finalCta::before {
-    animation: none;
-  }
-
-  .reveal {
-    opacity: var(--opacity-100);
-    transform: none;
-  }
-
-  .reveal[data-revealed="true"] .item,
-  .reveal[data-revealed="true"] .workflowItem {
-    animation: none;
-    opacity: var(--opacity-100);
-    transform: none;
-  }
-
-  .item::before {
-    opacity: 0;
-    transition: none;
-  }
 }
 
 .finalCtaCopy {
@@ -615,6 +851,8 @@
     var(--landing-final-cta-foreground);
   border-radius: var(--landing-cta-radius);
   font: var(--type-button);
+  text-decoration: none;
+  cursor: pointer;
   transition:
     transform var(--motion-duration-fast) var(--motion-ease-standard),
     box-shadow var(--motion-duration-fast) var(--motion-ease-standard);
@@ -648,8 +886,13 @@
   height: var(--size-5);
 }
 
+/* ==========================================================================
+   Reduced Motion Accessibility
+   ========================================================================== */
+
 @media (prefers-reduced-motion: reduce) {
   .item,
+  .featureItem,
   .workflowItem,
   .solutionAction,
   .workflowAction,
@@ -661,23 +904,19 @@
   .secondaryAction,
   .itemIcon,
   .workflowItem::before {
-    transition: none;
+    transition: none !important;
   }
 
   .reveal {
-    opacity: var(--opacity-100);
-    transform: none;
+    opacity: var(--opacity-100) !important;
+    transform: none !important;
   }
 
   .reveal[data-revealed="true"] .item,
+  .reveal[data-revealed="true"] .featureItem,
   .reveal[data-revealed="true"] .workflowItem {
-    animation: none;
-    opacity: var(--opacity-100);
-    transform: none;
-  }
-
-  .item::before {
-    opacity: 0;
-    transition: none;
+    animation: none !important;
+    opacity: var(--opacity-100) !important;
+    transform: none !important;
   }
 }

@@ -8,8 +8,8 @@ import { Reveal } from "./reveal";
 
 export function FinalCTASection() {
   return (
-    <Reveal>
-      <Section spacing="landing" surface="subtle">
+    <Section className={styles.finalCtaSection} spacing="landing" surface="subtle">
+      <Reveal>
         <PageContainer>
           <div className={styles.finalCta}>
             <div className={styles.finalCtaCopy}>
@@ -25,13 +25,13 @@ export function FinalCTASection() {
                 Mulai menggunakan
                 <ArrowRight aria-hidden="true" />
               </Link>
-              <Link className={styles.secondaryAction} href="#cara-kerja">
+              <a className={styles.secondaryAction} href="#cara-kerja">
                 Kembali ke cara kerja
-              </Link>
+              </a>
             </div>
           </div>
         </PageContainer>
-      </Section>
-    </Reveal>
+      </Reveal>
+    </Section>
   );
 }
