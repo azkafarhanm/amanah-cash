@@ -15,7 +15,7 @@
 .faqSection,
 .finalCtaSection {
   position: relative;
-  scroll-margin-top: calc(var(--landing-nav-height) + var(--space-1));
+  scroll-margin-top: calc(var(--landing-nav-height) + env(safe-area-inset-top, 0px) + var(--space-1));
   border-start-start-radius: 2.25rem;
   border-start-end-radius: 2.25rem;
   border-block-start: var(--border-width-default) solid var(--color-border-default);

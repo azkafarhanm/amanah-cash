@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Menu, X } from "lucide-react";
 
@@ -24,6 +24,30 @@ function getStaticSectionTop(element: HTMLElement): number {
   return top;
 }
 
+export function scrollToLandingAnchor(targetId: string, e?: React.MouseEvent | MouseEvent) {
+  const target = document.getElementById(targetId);
+  if (!target) return;
+
+  if (e) {
+    e.preventDefault();
+  }
+
+  if (typeof window !== "undefined") {
+    if (window.location.hash !== `#${targetId}`) {
+      window.history.pushState(null, "", `#${targetId}`);
+    }
+    const header = document.querySelector("header");
+    const navHeight = header ? header.getBoundingClientRect().height : 56;
+    const targetTop = getStaticSectionTop(target);
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop - navHeight),
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
+  }
+}
+
 export function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -32,22 +56,27 @@ export function LandingHeader() {
     targetId: string,
   ) => {
     setMenuOpen(false);
-    const target = document.getElementById(targetId);
-    if (target) {
-      e.preventDefault();
-      if (typeof window !== "undefined") {
-        if (window.location.hash !== `#${targetId}`) {
-          window.history.pushState(null, "", `#${targetId}`);
-        }
-        const targetTop = getStaticSectionTop(target);
-        const navHeight = 56;
-        window.scrollTo({
-          top: Math.max(0, targetTop - navHeight),
-          behavior: "smooth",
-        });
-      }
-    }
+    scrollToLandingAnchor(targetId, e);
   };
+
+  useEffect(() => {
+    // Intercept in-page landing anchor links (Hero CTA, Solution CTA, Workflow CTA, Final CTA, Footer)
+    const handleDocumentClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement)?.closest('a[href^="#"]');
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href || href === "#" || href === "#main-content") return;
+      const targetId = href.slice(1);
+      const sectionElement = document.getElementById(targetId);
+      if (sectionElement && sectionElement.closest("main")) {
+        setMenuOpen(false);
+        scrollToLandingAnchor(targetId, e);
+      }
+    };
+
+    document.addEventListener("click", handleDocumentClick);
+    return () => document.removeEventListener("click", handleDocumentClick);
+  }, []);
 
   return (
     <header className={styles.header}>

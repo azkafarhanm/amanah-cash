@@ -74,27 +74,26 @@ const FRAGMENT_SHADER = /* glsl */ `
     // Organic subtle mouse displacement and localized undulation
     vec2 mouseDelta = uv - uMouse;
     float mouseDist = length(mouseDelta);
-    float mouseFalloff = exp(-mouseDist * 2.8); // Smooth organic exponential falloff
-    float mouseRipple = sin(mouseDist * 8.0 - t * 2.2) * 0.5 + 0.5;
+    float mouseFalloff = exp(-mouseDist * 3.0); // Smooth organic exponential falloff
+    float mouseRipple = sin(mouseDist * 8.5 - t * 2.0) * 0.5 + 0.5;
     vec2 mouseOffset = (uMouse - vec2(0.5)) * uMouseInfluence * uEnableMouse;
 
     // Dynamic UV warping with responsive gravitational lens
-    vec2 localWarp = (mouseDelta * mouseFalloff * 0.75 + vec2(0.0, mouseRipple * mouseFalloff * 0.12)) * uMouseInfluence * uEnableMouse;
-    vec2 warpedUv = uv + mouseOffset * 0.65 + localWarp;
+    vec2 warpedUv = uv + (mouseOffset * 0.65 + mouseDelta * mouseFalloff * uMouseInfluence * 0.95) * uEnableMouse;
 
     // Multi-octave wave coordinates
     float n1 = snoise(vec2(warpedUv.x * uNoiseFrequency + t * 0.15, warpedUv.y * uNoiseFrequency * 0.5 + t * 0.1));
     float n2 = snoise(vec2(warpedUv.x * uNoiseFrequency * 1.4 - t * 0.12, warpedUv.y * uNoiseFrequency * 0.8 + t * 0.18 + n1 * uNoiseAmplitude));
 
-    // Primary undulating aurora ribbon with dynamic curvature
+    // Primary undulating aurora ribbon with dynamic curvature and magnetic deflection
     float bandCenter = uBandHeight + sin(warpedUv.x * 3.14159 * 0.75 + t * 0.22) * 0.12 
-                       + n2 * 0.14 + (mouseOffset.y * 0.35 + mouseRipple * mouseFalloff * 0.08) * uEnableMouse;
-    float dist = abs(warpedUv.y - bandCenter);
+                       + n2 * 0.14 + (mouseOffset.y * 0.45 - mouseDelta.y * mouseFalloff * 0.35 + mouseRipple * mouseFalloff * 0.08) * uEnableMouse;
+    float dist = abs(uv.y - bandCenter);
     float band = smoothstep(uBandSpread, 0.0, dist);
 
     // Soft atmospheric background wash with tactile cursor glow
-    float wash = smoothstep(0.75, 0.0, abs(warpedUv.y - 0.48)) * 0.30;
-    float cursorGlow = mouseFalloff * 0.35 * uEnableMouse;
+    float wash = smoothstep(0.75, 0.0, abs(uv.y - 0.48)) * 0.30;
+    float cursorGlow = mouseFalloff * 0.28 * uEnableMouse;
     float intensity = clamp(band * 1.1 + wash * 0.5 + n1 * 0.12 + cursorGlow, 0.0, 1.0);
 
     // Smooth Amanah Cash color stop mixing
@@ -203,7 +202,7 @@ export function SoftAurora() {
       // Calibrated mouse interaction coordinates & smooth lerp targets
       const targetMouse: [number, number] = [0.5, 0.5];
       const currentMouse: [number, number] = [0.5, 0.5];
-      const mouseInfluence = 0.42;
+      const mouseInfluence = 0.38;
       const enableMouse = isMobile ? 0.0 : 1.0;
 
       const program = new Program(gl, {
@@ -251,11 +250,8 @@ export function SoftAurora() {
         const rect = container.getBoundingClientRect();
         if (rect.width <= 0 || rect.height <= 0) return;
 
-        // Expanded interaction zone with soft proximity margin
-        const marginX = rect.width * 0.15;
-        const marginY = rect.height * 0.25;
-        const insideX = e.clientX >= rect.left - marginX && e.clientX <= rect.right + marginX;
-        const insideY = e.clientY >= rect.top - marginY && e.clientY <= rect.bottom + marginY;
+        const insideX = e.clientX >= rect.left && e.clientX <= rect.right;
+        const insideY = e.clientY >= rect.top && e.clientY <= rect.bottom;
 
         if (insideX && insideY) {
           const rawX = (e.clientX - rect.left) / rect.width;
@@ -263,7 +259,7 @@ export function SoftAurora() {
           targetMouse[0] = Math.max(0.0, Math.min(1.0, rawX));
           targetMouse[1] = Math.max(0.0, Math.min(1.0, rawY));
         } else {
-          // Gracefully decay back to center rest position when cursor leaves the proximity bounds
+          // Gracefully decay back to center rest position when cursor leaves the Hero bounds
           targetMouse[0] = 0.5;
           targetMouse[1] = 0.5;
         }
@@ -347,7 +343,7 @@ export function SoftAurora() {
 
         // Smoothly damp mouse coordinates toward target with fluid responsiveness
         if (!isMobile) {
-          const mouseLerp = Math.min(delta * 8.5, 0.32);
+          const mouseLerp = Math.min(delta * 6.5, 0.24);
           currentMouse[0] += (targetMouse[0] - currentMouse[0]) * mouseLerp;
           currentMouse[1] += (targetMouse[1] - currentMouse[1]) * mouseLerp;
           program.uniforms.uMouse.value = currentMouse;

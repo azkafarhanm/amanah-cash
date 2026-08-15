@@ -154,6 +154,14 @@
   background: var(--color-primary-subtle);
 }
 
+.identity:focus:not(:focus-visible),
+.navigation a:focus:not(:focus-visible),
+.headerAction:focus:not(:focus-visible),
+.menuToggle:focus:not(:focus-visible) {
+  outline: none;
+  box-shadow: none;
+}
+
 .identity:focus-visible,
 .navigation a:focus-visible,
 .headerAction:focus-visible,
