@@ -53,3 +53,35 @@ test("metadata reflects the approved positioning without publication assumptions
   assert.match(layout, /Amanah Cash — Kelola Keuangan Siswa dengan Lebih Jelas/);
   assert.doesNotMatch(layout, /metadataBase|canonical|images|keywords|structuredData/);
 });
+
+test("physical sheet takeover preserves Desktop Golden Reference and calibrated cross-viewport runways", () => {
+  const contentStyles = readSource("src/components/landing/landing-content.module.css");
+
+  // Desktop Golden Reference IMMUTABILITY
+  assert.match(
+    contentStyles,
+    /@media\s*\(min-width:\s*64rem\)\s*and\s*\(min-height:\s*38rem\)\s*\{\s*\.problemsSection,\s*\.solutionSection,\s*\.workflowSection,\s*\.featuresSection,\s*\.securitySection\s*\{\s*position:\s*sticky;\s*top:\s*var\(--landing-nav-height\);\s*min-height:\s*calc\(100svh \+ 12rem\);/
+  );
+
+  // Tablet Runway Calibration (>= 42rem)
+  assert.match(
+    contentStyles,
+    /@media\s*\(min-width:\s*48rem\)\s*and\s*\(max-width:\s*63\.99rem\)\s*and\s*\(min-height:\s*42rem\)\s*\{\s*\.problemsSection,\s*\.solutionSection,\s*\.workflowSection,\s*\.featuresSection,\s*\.featuresContinuationSection,\s*\.securitySection\s*\{\s*position:\s*sticky;\s*top:\s*calc\(var\(--landing-nav-height\)\s*\+\s*env\(safe-area-inset-top,\s*0px\)\);\s*min-height:\s*calc\(100svh \+ 8rem\);/
+  );
+
+  // Mobile Continuous Sticky Stack (>= 36rem / 576px) with generous 12rem runway
+  assert.match(
+    contentStyles,
+    /@media\s*\(max-width:\s*47\.99rem\)\s*and\s*\(min-height:\s*36rem\)\s*\{\s*\.problemsSection,\s*\.problemsContinuationSection,\s*\.solutionSection,\s*\.solutionContinuationSection,\s*\.workflowSection,\s*\.workflowContinuationSection,\s*\.featuresSection,\s*\.featuresContinuationSection,\s*\.securitySection,\s*\.securityContinuationSection\s*\{\s*position:\s*sticky;\s*top:\s*calc\(var\(--landing-nav-height\)\s*\+\s*env\(safe-area-inset-top,\s*0px\)\);\s*min-height:\s*calc\(100svh \+ 12rem\);/
+  );
+
+  // Short Viewport Fallback (< 36rem Mobile / < 42rem Tablet / < 38rem Desktop)
+  assert.match(
+    contentStyles,
+    /@media\s*\(max-width:\s*47\.99rem\)\s*and\s*\(max-height:\s*35\.99rem\),\s*\(min-width:\s*48rem\)\s*and\s*\(max-width:\s*63\.99rem\)\s*and\s*\(max-height:\s*41\.99rem\),\s*\(min-width:\s*64rem\)\s*and\s*\(max-height:\s*37\.99rem\)\s*\{/
+  );
+  assert.match(contentStyles, /position:\s*relative\s*!important;/);
+  assert.match(contentStyles, /margin-block-start:\s*-1\.25rem;/);
+});
+
+

@@ -156,9 +156,16 @@
 .previewStage {
   position: relative;
   min-width: var(--space-0);
+  max-width: 100%;
   padding: var(--landing-preview-stage-padding);
   animation: preview-enter var(--landing-preview-motion-duration)
     var(--motion-ease-standard) both;
+}
+
+@media (max-width: 47.99rem) {
+  .previewStage {
+    padding: var(--space-2, 0.5rem) var(--space-1, 0.25rem);
+  }
 }
 
 .previewGlow {
@@ -298,6 +305,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+  min-width: 0;
   padding: var(--space-3);
   background: var(--landing-surface-subtle);
   border: var(--border-width-default) var(--border-style-default)
@@ -308,16 +316,53 @@
 .metricCard > div {
   display: grid;
   gap: var(--space-0-5);
+  min-width: 0;
 }
 
 .metricCard small {
   color: var(--color-text-tertiary);
   font: var(--type-caption);
+  overflow-wrap: break-word;
 }
 
 .metricCard strong {
   font: var(--type-label);
   color: var(--color-text-primary);
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 47.99rem) {
+  .previewBody {
+    padding: var(--space-3, 0.75rem);
+    gap: var(--space-3, 0.75rem);
+  }
+
+  .previewMetrics {
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .metricCard {
+    padding: var(--space-2, 0.5rem);
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .metricIcon {
+    width: var(--size-6, 1.5rem);
+    height: var(--size-6, 1.5rem);
+  }
+
+  .metricIcon svg {
+    width: var(--space-3, 0.75rem);
+    height: var(--space-3, 0.75rem);
+  }
+
+  .metricCard strong {
+    font-size: var(--font-size-13, 0.8125rem);
+  }
+
+  .metricCard small {
+    font-size: var(--font-size-11, 0.6875rem);
+  }
 }
 
 .metricIcon {
@@ -454,6 +499,14 @@
   box-shadow: var(--surface-shadow-raised);
   animation: gentle-float var(--landing-float-duration)
     var(--motion-ease-standard) infinite alternate;
+}
+
+@media (max-width: 47.99rem) {
+  .trustNote {
+    margin: var(--space-3, 0.75rem) auto var(--space-0);
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 .trustNote > span {

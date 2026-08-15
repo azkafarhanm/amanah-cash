@@ -3,10 +3,15 @@
    ========================================================================== */
 
 .problemsSection,
+.problemsContinuationSection,
 .solutionSection,
+.solutionContinuationSection,
 .workflowSection,
+.workflowContinuationSection,
 .featuresSection,
+.featuresContinuationSection,
 .securitySection,
+.securityContinuationSection,
 .faqSection,
 .finalCtaSection {
   position: relative;
@@ -18,10 +23,15 @@
 }
 
 :global([data-theme="dark"]) .problemsSection,
+:global([data-theme="dark"]) .problemsContinuationSection,
 :global([data-theme="dark"]) .solutionSection,
+:global([data-theme="dark"]) .solutionContinuationSection,
 :global([data-theme="dark"]) .workflowSection,
+:global([data-theme="dark"]) .workflowContinuationSection,
 :global([data-theme="dark"]) .featuresSection,
+:global([data-theme="dark"]) .featuresContinuationSection,
 :global([data-theme="dark"]) .securitySection,
+:global([data-theme="dark"]) .securityContinuationSection,
 :global([data-theme="dark"]) .faqSection,
 :global([data-theme="dark"]) .finalCtaSection {
   box-shadow: 0 -24px 60px -5px rgb(0 0 0 / 55%), 0 -4px 16px -2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 6%);
@@ -32,32 +42,53 @@
   z-index: 1;
 }
 
-.solutionSection {
+.problemsContinuationSection {
   z-index: 2;
 }
 
-.workflowSection {
+.solutionSection {
   z-index: 3;
 }
 
-.featuresSection {
+.solutionContinuationSection {
   z-index: 4;
 }
 
-.securitySection {
+.workflowSection {
   z-index: 5;
 }
 
-.faqSection {
+.workflowContinuationSection {
   z-index: 6;
 }
 
-.finalCtaSection {
+.featuresSection {
   z-index: 7;
+}
+
+.featuresContinuationSection {
+  z-index: 8;
+}
+
+.securitySection {
+  z-index: 9;
+}
+
+.securityContinuationSection {
+  z-index: 10;
+}
+
+.faqSection {
+  z-index: 11;
+}
+
+.finalCtaSection {
+  z-index: 12;
 }
 
 /* ==========================================================================
    Section-Level Sticky Sheet Takeover (Desktop with Adequate Viewport Height)
+   Desktop Golden Reference (1366×768) Baseline — 100% IMMUTABLE
    ========================================================================== */
 
 @media (min-width: 64rem) and (min-height: 38rem) {
@@ -81,58 +112,126 @@
 }
 
 /* ==========================================================================
-   Normal Flow Fallback: Mobile (<48rem), Tablet (<64rem), Short Viewports (<38rem)
+   Section-Level Sticky Sheet Takeover (Tablet with Adequate Height >= 42rem / 672px)
    ========================================================================== */
 
-@media (max-width: 63.99rem), (max-height: 37.99rem) {
+@media (min-width: 48rem) and (max-width: 63.99rem) and (min-height: 42rem) {
   .problemsSection,
   .solutionSection,
   .workflowSection,
   .featuresSection,
+  .featuresContinuationSection,
+  .securitySection {
+    position: sticky;
+    top: calc(var(--landing-nav-height) + env(safe-area-inset-top, 0px));
+    min-height: calc(100svh + 8rem);
+    padding-block: var(--space-6) var(--space-8);
+    border-start-start-radius: 1.75rem;
+    border-start-end-radius: 1.75rem;
+    box-shadow: 0 -14px 32px rgb(17 24 39 / 6%), 0 -3px 8px rgb(17 24 39 / 3%);
+    border-top: var(--border-width-default) solid var(--color-border-default);
+  }
+
+  .faqSection,
+  .finalCtaSection {
+    position: relative;
+    min-height: auto;
+    padding-block: var(--space-8) max(var(--space-10), env(safe-area-inset-bottom, 0px));
+    border-start-start-radius: 1.75rem;
+    border-start-end-radius: 1.75rem;
+    box-shadow: 0 -14px 32px rgb(17 24 39 / 6%), 0 -3px 8px rgb(17 24 39 / 3%);
+    border-top: var(--border-width-default) solid var(--color-border-default);
+  }
+}
+
+/* ==========================================================================
+   Section-Level Sticky Sheet Takeover (Mobile Continuous Stack Height >= 36rem / 576px)
+   Preserves Continuous Physical Sheet Takeover (Problems A -> Problems B ->
+   Solution A -> Solution B -> Workflow A -> Workflow B -> Features A ->
+   Features B -> Security A -> Security B) including on iPhone SE (667px)
+   with generous 12rem runway.
+   ========================================================================== */
+
+@media (max-width: 47.99rem) and (min-height: 36rem) {
+  .problemsSection,
+  .problemsContinuationSection,
+  .solutionSection,
+  .solutionContinuationSection,
+  .workflowSection,
+  .workflowContinuationSection,
+  .featuresSection,
+  .featuresContinuationSection,
   .securitySection,
+  .securityContinuationSection {
+    position: sticky;
+    top: calc(var(--landing-nav-height) + env(safe-area-inset-top, 0px));
+    min-height: calc(100svh + 12rem);
+    padding-block: var(--space-4) var(--space-6);
+    border-start-start-radius: 1.5rem;
+    border-start-end-radius: 1.5rem;
+    box-shadow: 0 -10px 24px rgb(17 24 39 / 5%), 0 -2px 6px rgb(17 24 39 / 3%);
+    border-top: var(--border-width-default) solid var(--color-border-default);
+  }
+
+  .faqSection,
+  .finalCtaSection {
+    position: relative;
+    min-height: auto;
+    padding-block: var(--space-8) max(var(--space-10), env(safe-area-inset-bottom, 0px));
+    border-start-start-radius: 1.5rem;
+    border-start-end-radius: 1.5rem;
+    box-shadow: 0 -10px 24px rgb(17 24 39 / 5%), 0 -2px 6px rgb(17 24 39 / 3%);
+    border-top: var(--border-width-default) solid var(--color-border-default);
+  }
+}
+
+/* ==========================================================================
+   Short Viewport Fallback: Height < 36rem (Mobile) / < 42rem (Tablet) / < 38rem (Desktop)
+   Guarantees 100% reading comfort and zero clipping via Natural Physical Cascade
+   on ultra-short viewports (< 576px).
+   ========================================================================== */
+
+@media (max-width: 47.99rem) and (max-height: 35.99rem),
+  (min-width: 48rem) and (max-width: 63.99rem) and (max-height: 41.99rem),
+  (min-width: 64rem) and (max-height: 37.99rem) {
+  .problemsSection,
+  .problemsContinuationSection,
+  .solutionSection,
+  .solutionContinuationSection,
+  .workflowSection,
+  .workflowContinuationSection,
+  .featuresSection,
+  .featuresContinuationSection,
+  .securitySection,
+  .securityContinuationSection,
   .faqSection,
   .finalCtaSection {
     position: relative !important;
     top: auto !important;
     min-height: auto !important;
-    padding-block: var(--space-8);
+    padding-block: var(--space-6);
+    border-start-start-radius: 1.5rem;
+    border-start-end-radius: 1.5rem;
+    box-shadow: 0 -10px 24px rgb(17 24 39 / 4%), 0 -2px 6px rgb(17 24 39 / 2%);
+    border-top: var(--border-width-default) solid var(--color-border-default);
   }
 
+  .problemsContinuationSection,
   .solutionSection,
+  .solutionContinuationSection,
   .workflowSection,
+  .workflowContinuationSection,
   .featuresSection,
+  .featuresContinuationSection,
   .securitySection,
+  .securityContinuationSection,
   .faqSection,
   .finalCtaSection {
-    margin-block-start: -1.5rem;
+    margin-block-start: -1.25rem;
   }
 
   .problemsSection {
     margin-block-start: 0;
-  }
-}
-
-@media (max-width: 47.99rem) {
-  .problemsSection,
-  .solutionSection,
-  .workflowSection,
-  .featuresSection,
-  .securitySection,
-  .faqSection,
-  .finalCtaSection {
-    border-start-start-radius: 1.5rem;
-    border-start-end-radius: 1.5rem;
-    box-shadow: 0 -10px 24px rgb(17 24 39 / 4%), 0 -2px 6px rgb(17 24 39 / 2%);
-    padding-block: var(--space-6);
-  }
-
-  .solutionSection,
-  .workflowSection,
-  .featuresSection,
-  .securitySection,
-  .faqSection,
-  .finalCtaSection {
-    margin-block-start: -1.25rem;
   }
 }
 
@@ -155,7 +254,7 @@
 
 @media (max-width: 47.99rem) {
   .sectionContent {
-    gap: var(--space-5); /* 20px breathing room on mobile */
+    gap: var(--space-4, 1rem); /* 16px calibrated breathing room on mobile */
   }
 }
 
@@ -177,6 +276,7 @@
 .sectionHeading h2 {
   margin: var(--space-0);
   margin-block-end: var(--space-3); /* 12px from heading to description */
+  overflow-wrap: break-word;
 }
 
 .sectionHeading p {
@@ -184,6 +284,7 @@
   color: var(--color-text-secondary);
   font: var(--type-body);
   line-height: var(--line-height-body);
+  overflow-wrap: break-word;
 }
 
 @media (min-width: 64rem) {
@@ -202,7 +303,14 @@
   }
 
   .sectionHeading h2 {
-    margin-block-end: var(--space-2-5, 0.625rem); /* 10px on mobile */
+    font-size: var(--font-size-20, 1.25rem);
+    line-height: 1.25;
+    margin-block-end: var(--space-2, 0.5rem); /* 8px on mobile */
+  }
+
+  .sectionHeading p {
+    font-size: var(--font-size-13, 0.8125rem);
+    line-height: 1.4;
   }
 }
 
@@ -231,8 +339,8 @@
 
 @media (max-width: 47.99rem) {
   .itemList {
-    gap: var(--space-4); /* 16px row gap on mobile */
-    row-gap: var(--space-4);
+    gap: var(--space-2-5, 0.625rem); /* 10px row gap on mobile */
+    row-gap: var(--space-2-5, 0.625rem);
   }
 }
 
@@ -253,20 +361,8 @@
 
 @media (min-width: 48rem) {
   .gridFiveBalanced {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .gridFiveBalanced > li:nth-child(5) {
-    grid-column: 1 / -1;
-    max-width: 50%;
-    margin-inline: auto;
-    width: 100%;
-  }
-}
-
-@media (min-width: 64rem) {
-  .gridFiveBalanced {
     grid-template-columns: repeat(6, 1fr);
-    gap: var(--space-3-5, 0.875rem); /* 14px row & col gap on desktop */
+    gap: var(--space-3-5, 0.875rem);
     row-gap: var(--space-3-5, 0.875rem);
     column-gap: var(--space-3-5, 0.875rem);
   }
@@ -287,8 +383,18 @@
 
 @media (max-width: 47.99rem) {
   .gridFiveBalanced {
-    gap: var(--space-4); /* 16px row gap on mobile */
-    row-gap: var(--space-4);
+    gap: var(--space-2-5, 0.625rem); /* 10px row and col gap on mobile */
+    row-gap: var(--space-2-5, 0.625rem);
+    column-gap: var(--space-2-5, 0.625rem);
+  }
+}
+
+@media (min-width: 22.5rem) and (max-width: 47.99rem) {
+  .gridFiveBalanced {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .gridFiveBalanced > li:nth-child(5) {
+    grid-column: 1 / -1;
   }
 }
 
@@ -300,6 +406,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
   background: var(--color-background-surface);
   border: var(--border-width-default) solid var(--color-border-default);
@@ -345,6 +452,7 @@
   margin: var(--space-0);
   margin-block-end: var(--space-1-5, 0.375rem); /* 6px from title to description */
   font: var(--type-section-title);
+  overflow-wrap: break-word;
 }
 
 .item p {
@@ -352,19 +460,30 @@
   color: var(--color-text-secondary);
   font: var(--type-body);
   line-height: var(--line-height-body);
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 47.99rem) {
   .item {
-    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+    padding: var(--space-2-5, 0.625rem) var(--space-3, 0.75rem); /* 10px top/bottom, 12px left/right */
   }
 
   .item .itemIcon {
-    margin-block-end: var(--space-2-5, 0.625rem);
+    width: var(--size-6, 1.5rem); /* 24px icon box */
+    height: var(--size-6, 1.5rem);
+    padding: var(--space-1, 0.25rem);
+    margin-block-end: var(--space-1-5, 0.375rem);
   }
 
   .item h3 {
-    margin-block-end: var(--space-1-5, 0.375rem);
+    font-size: var(--font-size-14, 0.875rem); /* 14px readable card title */
+    line-height: 1.25;
+    margin-block-end: var(--space-1, 0.25rem);
+  }
+
+  .item p {
+    font-size: var(--font-size-13, 0.8125rem); /* 13px readable card description */
+    line-height: 1.42;
   }
 }
 
@@ -399,6 +518,15 @@
   box-shadow: var(--focus-visible-shadow);
 }
 
+@media (max-width: 47.99rem) {
+  .solutionAction,
+  .workflowAction {
+    margin-block-start: var(--space-3, 0.75rem); /* 12px breathing room */
+    font-size: var(--font-size-14, 0.875rem);
+    min-height: 2.25rem;
+  }
+}
+
 /* ==========================================================================
    Features List & Compact Cards
    ========================================================================== */
@@ -409,6 +537,141 @@
   row-gap: var(--space-4);
   column-gap: var(--space-4);
   grid-template-columns: 1fr;
+}
+
+/* Problems Panels Responsive Visibility */
+.problemsContinuationSection {
+  display: block;
+}
+
+.problemsDesktopOnly {
+  display: none;
+}
+
+.problemsMobileOnly {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .problemsContinuationSection {
+    display: none !important;
+  }
+
+  .problemsDesktopOnly {
+    display: block !important;
+  }
+
+  .problemsMobileOnly {
+    display: none !important;
+  }
+}
+
+/* Solution Panels Responsive Visibility */
+.solutionContinuationSection {
+  display: block;
+}
+
+.solutionDesktopOnly {
+  display: none;
+}
+
+.solutionMobileOnly {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .solutionContinuationSection {
+    display: none !important;
+  }
+
+  .solutionDesktopOnly {
+    display: block !important;
+  }
+
+  .solutionMobileOnly {
+    display: none !important;
+  }
+}
+
+/* Workflow Panels Responsive Visibility */
+.workflowContinuationSection {
+  display: block;
+}
+
+.workflowDesktopOnly {
+  display: none;
+}
+
+.workflowMobileOnly {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .workflowContinuationSection {
+    display: none !important;
+  }
+
+  .workflowDesktopOnly {
+    display: block !important;
+  }
+
+  .workflowMobileOnly {
+    display: none !important;
+  }
+}
+
+/* Security Panels Responsive Visibility */
+.securityContinuationSection {
+  display: block;
+}
+
+.securityDesktopOnly {
+  display: none;
+}
+
+.securityMobileOnly {
+  display: block;
+}
+
+@media (min-width: 48rem) {
+  .securityContinuationSection {
+    display: none !important;
+  }
+
+  .securityDesktopOnly {
+    display: block !important;
+  }
+
+  .securityMobileOnly {
+    display: none !important;
+  }
+}
+
+/* Responsive Feature Visibility (Split on Mobile & Tablet < 64rem, Unified on Desktop >= 64rem) */
+.featuresContinuationSection {
+  display: block;
+}
+
+.featuresDesktopOnly {
+  display: none;
+}
+
+.featuresMobileOnly {
+  display: block;
+}
+
+@media (min-width: 64rem) {
+  .featuresContinuationSection {
+    display: none !important;
+  }
+
+  .featuresDesktopOnly {
+    display: block !important;
+  }
+
+  .featuresMobileOnly {
+    display: none !important;
+  }
 }
 
 @media (min-width: 48rem) {
@@ -437,8 +700,18 @@
 
 @media (max-width: 47.99rem) {
   .featuresList {
-    gap: var(--space-4);
-    row-gap: var(--space-4);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-1-5, 0.375rem); /* 6px row and column gap */
+    row-gap: var(--space-1-5, 0.375rem);
+    column-gap: var(--space-1-5, 0.375rem);
+  }
+}
+
+@media (max-width: 22.49rem) {
+  .featuresList {
+    grid-template-columns: 1fr;
+    gap: var(--space-2, 0.5rem);
+    row-gap: var(--space-2, 0.5rem);
   }
 }
 
@@ -446,6 +719,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  min-width: 0;
   padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
   background: var(--color-background-surface);
   border: var(--border-width-default) solid var(--color-border-default);
@@ -458,12 +732,6 @@
 }
 
 @media (min-width: 80rem) {
-  .featureItem {
-    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
-  }
-}
-
-@media (max-width: 47.99rem) {
   .featureItem {
     padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
   }
@@ -487,6 +755,7 @@
   margin: var(--space-0);
   margin-block-end: var(--space-1-5, 0.375rem); /* 6px from title to description */
   font: var(--type-section-title);
+  overflow-wrap: break-word;
 }
 
 .featureItem p {
@@ -494,11 +763,30 @@
   color: var(--color-text-secondary);
   font: var(--type-body);
   line-height: var(--line-height-body);
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 47.99rem) {
   .featureItem {
-    padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem);
+    padding: var(--space-1-5, 0.375rem) var(--space-2, 0.5rem); /* 6px top/bottom, 8px left/right */
+  }
+
+  .featureItem .itemIcon {
+    width: var(--size-5, 1.25rem); /* 20px icon box */
+    height: var(--size-5, 1.25rem);
+    padding: 2px;
+    margin-block-end: var(--space-0-5, 0.125rem); /* 2px */
+  }
+
+  .featureItem h3 {
+    font-size: var(--font-size-14, 0.875rem); /* 14px readable card title */
+    line-height: 1.2;
+    margin-block-end: var(--space-0-5, 0.125rem);
+  }
+
+  .featureItem p {
+    font-size: var(--font-size-13, 0.8125rem); /* 13px readable card description */
+    line-height: 1.35;
   }
 }
 
@@ -517,12 +805,6 @@
 
 @media (min-width: 48rem) {
   .workflowList {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 64rem) {
-  .workflowList {
     grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3-5, 0.875rem);
     row-gap: var(--space-3-5, 0.875rem);
@@ -532,15 +814,27 @@
 
 @media (max-width: 47.99rem) {
   .workflowList {
-    gap: var(--space-4);
-    row-gap: var(--space-4);
+    gap: var(--space-2-5, 0.625rem); /* 10px row and col gap */
+    row-gap: var(--space-2-5, 0.625rem);
+    column-gap: var(--space-2-5, 0.625rem);
   }
+}
+
+@media (min-width: 22.5rem) and (max-width: 47.99rem) {
+  .workflowList {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.workflowContinuationList {
+  counter-reset: workflow 4;
 }
 
 .workflowItem {
   position: relative;
   display: grid;
   grid-template-columns: auto 1fr;
+  min-width: 0;
   gap: var(--space-3-5, 0.875rem); /* 14px between counter badge & copy */
   padding: var(--space-3-5, 0.875rem) var(--space-4, 1rem); /* 14px top/bottom, 16px left/right */
   background: var(--color-background-surface);
@@ -580,12 +874,14 @@
 .workflowCopy {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .workflowCopy h3 {
   margin: var(--space-0);
   margin-block-end: var(--space-1-5, 0.375rem); /* 6px between title and description */
   font: var(--type-section-title);
+  overflow-wrap: break-word;
 }
 
 .workflowCopy p {
@@ -593,12 +889,30 @@
   color: var(--color-text-secondary);
   font: var(--type-body);
   line-height: var(--line-height-body);
+  overflow-wrap: break-word;
 }
 
 @media (max-width: 47.99rem) {
   .workflowItem {
-    padding: var(--space-4); /* 16px on mobile */
-    gap: var(--space-3); /* 12px on mobile */
+    padding: var(--space-2-5, 0.625rem) var(--space-3, 0.75rem); /* 10px × 12px */
+    gap: var(--space-2, 0.5rem);
+  }
+
+  .workflowItem::before {
+    width: var(--size-6, 1.5rem); /* 24px badge */
+    height: var(--size-6, 1.5rem);
+    font-size: var(--font-size-12, 0.75rem);
+  }
+
+  .workflowCopy h3 {
+    font-size: var(--font-size-14, 0.875rem); /* 14px readable step title */
+    line-height: 1.25;
+    margin-block-end: var(--space-1, 0.25rem);
+  }
+
+  .workflowCopy p {
+    font-size: var(--font-size-13, 0.8125rem); /* 13px readable step description */
+    line-height: 1.42;
   }
 }
 
