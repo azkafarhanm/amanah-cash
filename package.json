@@ -29,6 +29,7 @@
   "dependencies": {
     "@next-auth/prisma-adapter": "1.0.7",
     "@prisma/adapter-better-sqlite3": "7.9.1",
+    "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "7.9.1",
     "better-sqlite3": "12.11.1",
     "exceljs": "4.4.0",
@@ -38,6 +39,7 @@
     "next-auth": "4.24.15",
     "ogl": "^1.0.11",
     "pdfkit": "0.19.1",
+    "pg": "^8.23.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "sharp": "0.34.5"

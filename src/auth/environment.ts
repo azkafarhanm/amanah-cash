@@ -59,8 +59,11 @@ export function loadAuthenticationEnvironment(
     ? required(environment, "DEV_SEED_OPERATOR_EMAIL").toLocaleLowerCase("en-US")
     : null;
 
-  if (!databaseUrl.startsWith("file:")) {
-    throw new AuthenticationConfigurationError("DATABASE_URL must use the approved SQLite file: URL");
+  const isPostgresUrl = databaseUrl.startsWith("postgres://") || databaseUrl.startsWith("postgresql://");
+  const isSqliteUrl = databaseUrl.startsWith("file:");
+
+  if (!isSqliteUrl && !isPostgresUrl) {
+    throw new AuthenticationConfigurationError("DATABASE_URL must use an approved SQLite file: URL or PostgreSQL URL");
   }
   if (nextAuthSecret.length < 32) {
     throw new AuthenticationConfigurationError("NEXTAUTH_SECRET must contain at least 32 characters");

@@ -19,7 +19,11 @@ try {
   console.log("Environment is valid.");
   console.log(`  authentication: ${environment.developmentAuth ? "local development" : "Google OAuth"}`);
   console.log(`  application URL: ${environment.nextAuthUrl}`);
-  console.log("  database: configured SQLite file (server-only location redacted)");
+  const isPostgres = process.env.DATABASE_URL?.startsWith("postgres");
+  const dbLabel = isPostgres
+    ? "configured PostgreSQL database (server-only location redacted)"
+    : "configured SQLite file (server-only location redacted)";
+  console.log(`  database: ${dbLabel}`);
   console.log(`  export maximum rows: ${exportLimits.maxRows}`);
   console.log(`  export maximum bytes: ${exportLimits.maxBytes ?? "disabled"}`);
 } catch (error) {

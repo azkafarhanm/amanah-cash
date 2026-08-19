@@ -23,11 +23,18 @@ export function loadProductionPreflight(
 }
 
 export function formatProductionPreflight(preflight: ProductionPreflight): readonly string[] {
+  const isPostgres =
+    preflight.authentication.databaseUrl.startsWith("postgres://") ||
+    preflight.authentication.databaseUrl.startsWith("postgresql://");
+  const dbLabel = isPostgres
+    ? "configured PostgreSQL database (server-only location redacted)"
+    : "configured SQLite file (server-only location redacted)";
+
   return [
     "Production environment is valid.",
     "  authentication: Google OAuth with database sessions",
     `  application origin: ${preflight.authentication.nextAuthUrl}`,
-    "  database: configured SQLite file (server-only location redacted)",
+    `  database: ${dbLabel}`,
     `  export maximum rows: ${preflight.exportLimits.maxRows}`,
     `  export maximum bytes: ${preflight.exportLimits.maxBytes ?? "disabled"}`
   ];

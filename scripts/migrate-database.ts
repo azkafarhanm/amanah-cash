@@ -8,6 +8,15 @@ const projectRoot = resolve(import.meta.dirname, "..");
 
 try {
   const environment = loadAuthenticationEnvironment();
+  const isPostgres =
+    environment.databaseUrl.startsWith("postgres://") ||
+    environment.databaseUrl.startsWith("postgresql://");
+
+  if (isPostgres) {
+    console.log("Database migrations for PostgreSQL are managed via Prisma CLI (prisma migrate deploy).");
+    process.exit(0);
+  }
+
   const databasePathValue = environment.databaseUrl.slice("file:".length);
 
   if (!databasePathValue || databasePathValue.includes("?") || databasePathValue.includes("#")) {

@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 import Database from "better-sqlite3";
 import { disconnectPrismaClient } from "@/persistence/prisma";
 
+import { getPrismaClient } from "@/persistence/prisma";
+import { loadAuthenticationEnvironment } from "@/auth/environment";
+
 const FORMAT = "amanah-cash-backup";
 const FORMAT_VERSION = 1;
 const MAX_ARTIFACT_BYTES = 100 * 1024 * 1024;
@@ -24,6 +27,10 @@ export type BackupMetadata = Omit<BackupEnvelope, "payload">;
 
 type MaintenanceOperation = "BACKUP" | "RESTORE";
 type MaintenanceOutcome = "SUCCESS" | "FAILURE";
+
+function isPostgresUrl(databaseUrl: string): boolean {
+  return databaseUrl.startsWith("postgres://") || databaseUrl.startsWith("postgresql://");
+}
 
 function databasePath(databaseUrl: string): string {
   const value = databaseUrl.slice("file:".length);
@@ -49,6 +56,27 @@ export function recordMaintenanceEvent(
     metadata?: BackupMetadata;
   }
 ): void {
+  if (isPostgresUrl(databaseUrl)) {
+    const prisma = getPrismaClient(loadAuthenticationEnvironment());
+    void prisma.maintenanceAuditEvent
+      .create({
+        data: {
+          id: crypto.randomUUID(),
+          actorId: input.actorId ?? null,
+          operation: input.operation,
+          outcome: input.outcome,
+          artifactCreatedAt: input.metadata?.createdAt
+            ? new Date(input.metadata.createdAt)
+            : null,
+          applicationVersion: input.metadata?.applicationVersion ?? null,
+          schemaVersion: input.metadata?.schemaVersion ?? null,
+          occurredAt: new Date()
+        }
+      })
+      .catch(() => {});
+    return;
+  }
+
   const database = new Database(databasePath(databaseUrl));
   try {
     database.prepare(`
@@ -80,6 +108,9 @@ function schemaVersion(database: Database.Database): string {
 }
 
 export function currentSchemaVersion(databaseUrl: string): string {
+  if (isPostgresUrl(databaseUrl)) {
+    return "postgresql-schema";
+  }
   const database = new Database(databasePath(databaseUrl), {
     readonly: true,
     fileMustExist: true
@@ -211,6 +242,9 @@ export async function createBackupArtifact(
   databaseUrl: string,
   applicationVersion: string
 ): Promise<{ bytes: Buffer; metadata: BackupMetadata }> {
+  if (isPostgresUrl(databaseUrl)) {
+    throw new Error("CLOUD_BACKUP_UNAVAILABLE");
+  }
   const sourcePath = databasePath(databaseUrl);
   const temporaryDirectory = await mkdtemp(resolve(dirname(sourcePath), ".amanah-backup-"));
   const snapshotPath = resolve(temporaryDirectory, "snapshot.sqlite");
@@ -262,6 +296,9 @@ export async function restoreBackupArtifact(
   bytes: Buffer,
   actorId?: string
 ): Promise<BackupMetadata> {
+  if (isPostgresUrl(databaseUrl)) {
+    throw new Error("CLOUD_RESTORE_UNAVAILABLE");
+  }
   const { envelope, payload } = parseEnvelope(bytes);
   const targetPath = databasePath(databaseUrl);
   const temporaryDirectory = await mkdtemp(resolve(dirname(targetPath), ".amanah-restore-"));
