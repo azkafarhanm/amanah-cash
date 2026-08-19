@@ -1,8 +1,13 @@
+import dns from "node:dns";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
 import { PrismaClient } from "@/generated/prisma/client";
 import type { AuthenticationEnvironment } from "@/auth/environment";
+
+if (typeof dns?.setDefaultResultOrder === "function") {
+  dns.setDefaultResultOrder("ipv4first");
+}
 
 const { Pool } = pg;
 
