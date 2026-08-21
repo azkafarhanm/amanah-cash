@@ -2,7 +2,7 @@ import styles from "./dashboard-v2.module.css";
 
 export function DashboardSkeletonV2() {
   return (
-    <div aria-busy="true" aria-label="Memuat dashboard">
+    <div aria-busy="true" aria-label="Memuat dashboard" className="routeTransitionSkeleton">
       <div className={styles.kpiGrid}>
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className={`${styles.kpiCard} ${styles.skeleton} ${styles.skeletonKpi}`} />

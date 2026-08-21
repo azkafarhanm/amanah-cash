@@ -819,6 +819,32 @@ html {
   background: var(--color-background-canvas);
 }
 
+@keyframes routeTransitionSkeletonReveal {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/*
+ * Route-transition skeletons stay invisible for the first 120ms so instant
+ * navigations do not flash a loading state; only navigations slower than the
+ * reveal window show the skeleton. (Pola TahfidzFlow: delayed-skeleton-reveal)
+ */
+.routeTransitionSkeleton {
+  opacity: 0;
+  animation: routeTransitionSkeletonReveal 120ms ease-out 120ms forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .routeTransitionSkeleton {
+    animation-delay: 0ms;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

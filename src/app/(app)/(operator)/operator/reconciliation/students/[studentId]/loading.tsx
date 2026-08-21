@@ -2,7 +2,7 @@ import { ContentWrapper, LoadingSkeleton } from "@/components/ui";
 
 export default function StudentReconciliationLoading() {
   return (
-    <ContentWrapper aria-busy="true">
+    <ContentWrapper aria-busy="true" className="routeTransitionSkeleton">
       <LoadingSkeleton variant="cards" lines={6} />
     </ContentWrapper>
   );
