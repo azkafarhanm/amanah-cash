@@ -18,14 +18,14 @@ const options = [
 ];
 
 function readStoredTheme(): ThemePreference {
-  if (typeof window === "undefined") return "SYSTEM";
+  if (typeof window === "undefined") return "DARK";
   try {
     const stored = window.localStorage.getItem("amanah-cash-theme");
     if (stored === "LIGHT" || stored === "DARK" || stored === "SYSTEM") {
       return stored;
     }
   } catch {}
-  return "SYSTEM";
+  return "DARK";
 }
 
 function subscribeToTheme(onStoreChange: () => void) {
@@ -39,7 +39,7 @@ export function LandingThemeToggle() {
   const active = useSyncExternalStore(
     subscribeToTheme,
     readStoredTheme,
-    () => "SYSTEM"
+    () => "DARK"
   );
 
   const handleToggle = useCallback((theme: ThemePreference) => {

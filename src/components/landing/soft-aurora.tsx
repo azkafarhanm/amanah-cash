@@ -147,7 +147,7 @@ function getActiveTheme(): "light" | "dark" {
   if (docTheme === "dark" || docTheme === "light") return docTheme;
   const stored = window.localStorage?.getItem("amanah-cash-theme") as ThemePreference | null;
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return resolveTheme(stored || "SYSTEM", prefersDark);
+  return resolveTheme(stored || "DARK", prefersDark);
 }
 
 export function SoftAurora() {

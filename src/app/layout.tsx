@@ -10,7 +10,7 @@ const themeBootstrap = `
   try {
     stored = localStorage.getItem("amanah-cash-theme");
   } catch {}
-  const preference = valid.has(stored) ? stored : "SYSTEM";
+  const preference = valid.has(stored) ? stored : "DARK";
   const dark = preference === "DARK"
     || (preference === "SYSTEM" && matchMedia("(prefers-color-scheme: dark)").matches);
   const theme = dark ? "dark" : "light";
