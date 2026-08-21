@@ -65,10 +65,11 @@ try {
   const postgresClient = getPrismaClient(parsedProdPostgres);
   assert.ok(postgresClient, "PrismaClient initialized for PostgreSQL adapter");
   console.log("  ✔ PostgreSQL PrismaPg adapter instantiated cleanly without invoking SQLite");
-} catch (error: any) {
+} catch (error: unknown) {
+  const errMessage = error instanceof Error ? error.message : String(error);
   // When schema is still provider = "sqlite", Prisma 7 correctly verifies that adapter is @prisma/adapter-pg (based on postgres)
   assert.match(
-    error?.message ?? "",
+    errMessage,
     /@prisma\/adapter-pg.*postgres/i,
     "Prisma accurately identified the PostgreSQL Driver Adapter"
   );

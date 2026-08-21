@@ -3,7 +3,7 @@ export const THEME_PREFERENCES = ["LIGHT", "DARK", "SYSTEM"] as const;
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
 export type ResolvedTheme = "light" | "dark";
 
-export const DEFAULT_THEME_PREFERENCE: ThemePreference = "SYSTEM";
+export const DEFAULT_THEME_PREFERENCE: ThemePreference = "DARK";
 export const THEME_STORAGE_KEY = "amanah-cash-theme";
 export const THEME_CHANGE_EVENT = "amanah-cash:theme-change";
 

@@ -167,7 +167,6 @@ export function measureSection(
   const cardWidth = Math.floor((contentWidth - totalColGaps) / columns);
   const cardInnerWidth = cardWidth - (2 * cardPadH);
 
-  let maxCardH = 0;
   const rowHeights: number[] = [];
 
   items.forEach((item, idx) => {
@@ -215,7 +214,6 @@ export function auditAllSections(): SectionAnalysis[] {
     const availableHeight = vp.height - stickyTop;
     const isDesktop = vp.width >= 1024 && vp.height >= 608;
     const isTablet = vp.width >= 768 && vp.width < 1024;
-    const isMobile = vp.width < 768;
 
     for (const sec of sections) {
       const rawH = measureSection(sec.id, sec.name, sec.items, sec.isWorkflow, sec.hasAction, vp, "raw");

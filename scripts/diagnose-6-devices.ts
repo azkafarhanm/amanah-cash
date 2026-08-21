@@ -92,7 +92,7 @@ export function diagnoseDevice(dev: DeviceProfile): SectionDiagnostic[] {
   const results: SectionDiagnostic[] = [];
 
   for (const sec of sectionsData) {
-    let columns = isTablet ? (sec.id === "features" ? 2 : 3) : 2;
+    const columns = isTablet ? (sec.id === "features" ? 2 : 3) : 2;
     let cardPadV = 10;
     let cardPadH = 12;
     let iconBox = 24;
