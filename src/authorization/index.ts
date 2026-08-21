@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { currentUser } from "@/auth";
 import { createAuthorization } from "@/authorization/core";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
@@ -6,7 +7,7 @@ import { getPrismaClient } from "@/persistence/prisma";
 export * from "@/authorization/core";
 export * from "@/authorization/errors";
 
-export function authorization() {
+export const authorization = cache(() => {
   const prisma = getPrismaClient(loadAuthenticationEnvironment());
   return createAuthorization({
     async resolveSessionUserId() {
@@ -25,7 +26,7 @@ export function authorization() {
       });
     }
   });
-}
+});
 
 export const requireAuthenticatedUser = () => authorization().requireAuthenticatedUser();
 export const requirePlatformAdmin = () => authorization().requirePlatformAdmin();

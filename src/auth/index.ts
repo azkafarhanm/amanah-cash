@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { buildAuthOptions } from "@/auth/options";
@@ -9,9 +10,9 @@ export type AuthenticatedUser = {
   image: string | null;
 };
 
-export async function auth() {
+export const auth = cache(async () => {
   return getServerSession(buildAuthOptions());
-}
+});
 
 export async function currentUser(): Promise<AuthenticatedUser | null> {
   const session = await auth();
