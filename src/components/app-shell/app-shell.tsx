@@ -65,6 +65,7 @@ export function AppShell({ role, user, children }: AppShellProps) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    prefetch={true}
                     className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}
                     aria-current={active ? "page" : undefined}
                     onClick={() => setNavigationOpen(false)}
