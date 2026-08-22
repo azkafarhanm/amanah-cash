@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import type { Role } from "@/generated/prisma/enums";
 import { LogoutButton } from "@/components/auth/logout-button";
 import { Avatar, Logo, StatusBadge } from "@/components/ui";
@@ -19,6 +19,14 @@ export type AppShellProps = {
 export function AppShell({ role, user, children }: AppShellProps) {
   const pathname = usePathname();
   const [navigationOpen, setNavigationOpen] = useState(false);
+
+  // While the mobile navigation drawer is open it must behave as a stable
+  // overlay layer: freeze the page underneath so touch scrolling cannot drag
+  // the content (or, via scroll chaining, the viewport) behind the drawer.
+  useEffect(() => {
+    document.body.classList.toggle("navigationDrawerOpen", navigationOpen);
+    return () => document.body.classList.remove("navigationDrawerOpen");
+  }, [navigationOpen]);
   const navigation = navigationForRole(role);
   const roleLabel = role === "PLATFORM_ADMIN" ? "Admin" : "Operator";
   const displayName = user.name ?? user.email ?? "Pengguna";

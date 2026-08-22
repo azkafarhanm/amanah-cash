@@ -3,6 +3,13 @@
   gap: var(--space-6);
 }
 
+/* Every direct section must be shrinkable: the workspace grid's implicit
+   column otherwise inherits each section's min-content width (e.g. the filter
+   pills strip) and overflows narrow phone viewports. */
+.workspaceContainer > * {
+  min-width: 0;
+}
+
 .metricsBanner {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -63,6 +70,7 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
+  min-width: 0;
   padding: var(--space-4);
   border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
   border-radius: var(--shape-container);
@@ -98,6 +106,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-3);
+  min-width: 0;
 }
 
 .typeSegmentedGroup {
@@ -140,10 +149,15 @@
 .periodSelectGroup {
   display: flex;
   align-items: center;
+  /* The native <select> has a large intrinsic min-content width (its widest
+     option). Without min-width: 0 that floor propagates through the flex chain
+     and overflows narrow phone viewports. */
+  min-width: 0;
 }
 
 .periodSelect {
   min-height: var(--control-height-minimum);
+  min-width: 0;
   padding: 0 var(--space-4);
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   border-radius: var(--shape-control);
@@ -166,7 +180,10 @@
 
 .tableWrapper {
   width: var(--size-full);
-  overflow: visible;
+  /* Contain the wide 7-column table so narrow viewports (tablet landscape,
+     scaled desktop windows) scroll inside the wrapper instead of overflowing
+     the page horizontally. */
+  overflow-x: auto;
   border: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   border-radius: var(--shape-container);
   background: var(--color-background-surface);
@@ -336,11 +353,39 @@
   }
 
   .metricsBanner {
-    grid-template-columns: 1fr;
+    /* Compact single-row summary on phones: three stacked full-size cards
+       pushed the actual transaction content far below the fold. */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .metricCard {
+    padding: var(--space-3);
+  }
+
+  .metricLabel {
+    white-space: normal;
+  }
+
+  .metricDeposit,
+  .metricWithdrawal,
+  .metricCount {
+    font-size: var(--font-size-14);
+    line-height: var(--line-height-20);
+  }
+
+  .primaryActionBtn {
+    width: var(--size-full);
   }
 
   .filterToolbar {
-    flex-direction: column;
+    /* Grid rows with an explicit minmax(0, 1fr) track (instead of a flex
+       column) hard-caps every row at the toolbar's content width: flex
+       intrinsic sizing lets the select/pills strip min-content width leak
+       past narrow viewports. */
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
     align-items: stretch;
   }
 
@@ -349,7 +394,9 @@
   }
 
   .filterControls {
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
     align-items: stretch;
   }
 

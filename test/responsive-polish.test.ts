@@ -82,6 +82,11 @@ test("transaction filter search does not retain its desktop width basis as mobil
   const css = await readFile("src/components/transactions/workspace/workspace.module.css", "utf8");
   const mobileRules = css.slice(css.indexOf("@media (max-width: 48rem)"));
 
-  assert.match(mobileRules, /\.filterToolbar\s*\{[^}]*flex-direction:\s*column/);
+  // The toolbar stacks vertically on phones via an explicit single minmax(0, 1fr)
+  // grid track (instead of the previous flex column): rows stay full-width and
+  // the track hard-caps the intrinsic min-content of the select/pills strip,
+  // which used to leak past narrow viewports.
+  assert.match(mobileRules, /\.filterToolbar\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
+  assert.match(mobileRules, /\.filterControls\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   assert.match(mobileRules, /\.filterGroup\s*\{[^}]*flex:\s*0 1 auto/);
 });

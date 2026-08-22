@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 
 import "./globals.css";
@@ -19,6 +19,15 @@ const themeBootstrap = `
   document.documentElement.style.colorScheme = theme;
 })();
 `;
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  // cover is required so env(safe-area-inset-*) resolves inside the installed
+  // PWA (standalone) — without it every safe-area padding evaluates to 0 and
+  // content slides under the notch/status bar/home indicator.
+  viewportFit: "cover"
+};
 
 export const metadata: Metadata = {
   title: "Amanah Cash — Pengelolaan Keuangan Siswa yang Lebih Jelas",

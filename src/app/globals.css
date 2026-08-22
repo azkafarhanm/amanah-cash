@@ -815,6 +815,15 @@ body {
   font-family: var(--font-family-sans);
 }
 
+/*
+ * Toggled by AppShell while the mobile navigation drawer is open. Freezing the
+ * page scroll keeps the fixed drawer + scrim a stable overlay layer instead of
+ * letting touch scrolling drag the content behind/beneath them.
+ */
+body.navigationDrawerOpen {
+  overflow: hidden;
+}
+
 html {
   background: var(--color-background-canvas);
 }

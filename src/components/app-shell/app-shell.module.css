@@ -32,9 +32,8 @@
   gap: var(--space-4);
   padding-inline: var(--layout-gutter-mobile);
   padding-block-start: max(var(--space-0), env(safe-area-inset-top));
-  border-block-end: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
-  background: var(--glass-background, var(--color-background-surface));
-  backdrop-filter: blur(var(--glass-blur, 16px));
+  border-block-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  background: var(--color-background-surface);
 }
 
 .menuButton,
@@ -84,9 +83,8 @@
   width: min(var(--app-sidebar-width), calc(100vw - var(--space-12)));
   display: flex;
   flex-direction: column;
-  border-inline-end: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default));
-  background: var(--glass-background, var(--color-background-surface));
-  backdrop-filter: blur(var(--glass-blur, 16px));
+  border-inline-end: var(--border-width-default) var(--border-style-default) var(--color-border-default);
+  background: var(--color-background-surface);
   translate: -100% 0;
   transition: translate var(--motion-duration-panel) var(--motion-ease-standard);
 }
@@ -226,6 +224,7 @@
 .footer {
   grid-area: footer;
   padding: var(--space-4) var(--layout-gutter-mobile);
+  padding-block-end: max(var(--space-4), env(safe-area-inset-bottom));
   border-block-start: var(--border-width-default) var(--border-style-default) var(--color-border-default);
   color: var(--color-text-secondary);
   font: var(--type-supporting);
