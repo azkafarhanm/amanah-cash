@@ -1,8 +1,14 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import Image from "next/image";
 import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
+import {
+  describeOAuthLoginError,
+  shouldRedirectAuthenticatedVisitor
+} from "@/auth/oauth-security";
+import { LogoutButton } from "@/components/auth/logout-button";
 import { LoginButton } from "@/components/auth/login-button";
 import { LoginExperience } from "@/components/auth/login-experience";
 
@@ -10,7 +16,12 @@ import styles from "../auth.module.css";
 
 export const dynamic = "force-dynamic";
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams
+}: {
+  searchParams: Promise<{ error?: string }>;
+}) {
+  const { error: oauthError } = await searchParams;
   let session;
   let environment;
   try {
@@ -19,11 +30,26 @@ export default async function LoginPage() {
   } catch {
     redirect("/access-denied?error=Configuration");
   }
-  if (session) redirect("/app");
+
+  // OAuth must run against the canonical NEXTAUTH_URL origin: the redirect URI
+  // registered with Google is fixed to it, so starting the flow from any other
+  // origin (e.g. a deployment-specific *.vercel.app URL) strands the state
+  // cookie on the wrong origin and the callback fails. Send the visitor to the
+  // canonical login page up front instead.
+  const requestHost = (await headers()).get("host");
+  if (requestHost && requestHost !== new URL(environment.nextAuthUrl).host) {
+    redirect(`${environment.nextAuthUrl}/login`);
+  }
+
+  // A failed OAuth callback (?error=...) must stay visible. Forwarding a
+  // still-valid session straight into the app here would mask the failure and
+  // make a rejected sign-in look like a successful login as the session user.
+  if (session && shouldRedirectAuthenticatedVisitor(oauthError)) redirect("/app");
 
   const hasGoogleCredentials = Boolean(
     environment.googleClientId && environment.googleClientSecret
   );
+  const errorDescription = describeOAuthLoginError(oauthError);
 
   return (
     <LoginExperience
@@ -60,6 +86,21 @@ export default async function LoginPage() {
             : "Masuk menggunakan akun Google yang telah didaftarkan oleh administrator."}
         </p>
       </div>
+
+      {errorDescription ? (
+        <div className={styles.authError} role="alert">
+          <p className={styles.authErrorMessage}>{errorDescription}</p>
+          {session?.user?.email ? (
+            <div className={styles.authErrorSession}>
+              <p>
+                Sesi aktif saat ini: <strong>{session.user.email}</strong>. Keluar
+                dahulu bila Anda ingin masuk dengan akun Google lain.
+              </p>
+              <LogoutButton className={styles.authErrorLogout}>Keluar dari sesi ini</LogoutButton>
+            </div>
+          ) : null}
+        </div>
+      ) : null}
 
       {/* Stagger group 2: Divider */}
       <hr className={styles.divider} />
