@@ -39,8 +39,16 @@ export const metadata: Metadata = {
       "Satu aplikasi untuk mencatat setoran dan penarikan, memantau saldo, meninjau laporan, dan menjaga riwayat keuangan siswa tetap dapat ditelusuri.",
   },
   icons: {
-    icon: "/brand/icon.svg",
-    apple: "/icons/icon-192.svg"
+    // SVG (rounded solid background) for modern browsers + PNG fallbacks so
+    // the dark logo also stays visible on dark browser themes and on Safari,
+    // which does not support SVG favicons / apple-touch-icons.
+    icon: [
+      { url: "/brand/favicon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-48.png", sizes: "48x48", type: "image/png" },
+      { url: "/icons/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-16.png", sizes: "16x16", type: "image/png" }
+    ],
+    apple: "/icons/apple-touch-icon.png"
   },
   manifest: "/manifest.webmanifest"
 };

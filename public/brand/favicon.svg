@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Amanah Cash Icon 512">
-  <!-- Solid full-bleed packaging background (maskable-safe safe zone). -->
-  <rect width="512" height="512" fill="#FFFFFF" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Amanah Cash Icon">
+  <!-- Solid packaging background so the dark logo stays visible on dark browser tabs. -->
+  <rect width="512" height="512" rx="112" fill="#FFFFFF" />
   <!-- Original Amanah Cash logo, unmodified, centered inside the packaging. -->
   <g transform="translate(71.68 71.68) scale(0.72)">
     <!-- Primary A-Frame (Dark Navy) -->
