@@ -20,10 +20,22 @@ type HangingLampProps = {
   onPhaseChange?: (phase: LampPhase) => void;
   /** When true the fixture fades to a quieter visual weight so the brand and card dominate. */
   quiet?: boolean;
+  /**
+   * Jump straight to the illuminated state without the ignition ritual.
+   * Used for returning devices whose one-time activation already happened:
+   * the bulb must already be lit on first paint (no dark flash, no flash
+   * animation) — see device-activation.ts.
+   */
+  initiallyIlluminated?: boolean;
 };
 
-export function HangingLamp({ onPhaseChange, quiet }: HangingLampProps) {
-  const [phase, setPhase] = useState<LampPhase>("dark");
+export function HangingLamp({ onPhaseChange, quiet, initiallyIlluminated }: HangingLampProps) {
+  // Phase is derived, not effect-synced: until the user actually pulls the
+  // cord, a returning device (initiallyIlluminated) renders already lit — no
+  // ignition ritual, no dark flash, and no cascading effect state updates.
+  // The first real interaction pins the phase for good.
+  const [interactedPhase, setInteractedPhase] = useState<LampPhase | null>(null);
+  const phase: LampPhase = interactedPhase ?? (initiallyIlluminated ? "illuminated" : "dark");
   const [isFlashing, setIsFlashing] = useState(false);
   const [pullOffset, setPullOffset] = useState(0);
   const [isSpringing, setIsSpringing] = useState(false);
@@ -37,11 +49,11 @@ export function HangingLamp({ onPhaseChange, quiet }: HangingLampProps) {
     triggerHapticPull();
     authAudio.play("switchClick");
     setIsFlashing(true);
-    setPhase("igniting");
+    setInteractedPhase("igniting");
     setTimeout(() => {
       triggerHapticIgnition();
       authAudio.play("lampIgnition");
-      setPhase("illuminated");
+      setInteractedPhase("illuminated");
       onPhaseChange?.("illuminated");
     }, 380);
     setTimeout(() => setIsFlashing(false), 460);
@@ -51,7 +63,7 @@ export function HangingLamp({ onPhaseChange, quiet }: HangingLampProps) {
     if (phase !== "illuminated") return;
     triggerHapticPull();
     authAudio.play("switchClick");
-    setPhase("dark");
+    setInteractedPhase("dark");
     onPhaseChange?.("dark");
   }, [phase, onPhaseChange]);
 

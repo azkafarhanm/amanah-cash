@@ -1,10 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HangingLamp, type LampPhase } from "./hanging-lamp";
+import {
+  persistDeviceActivation,
+  readDeviceActivated
+} from "./device-activation";
 import { LandingThemeToggle } from "@/components/landing/landing-theme-toggle";
 import styles from "./login-experience.module.css";
+
+/** Runs before the browser paints on the client (no-op pass on the server). */
+const useBeforePaintEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 
 /**
  * Choreography phases — the room "waking up":
@@ -159,6 +166,9 @@ function buildArcSubpath(
 export function LoginExperience({ brandMark, brandName, tagline, children }: LoginExperienceProps) {
   const [phase, setPhase] = useState<RevealPhase>("dark");
   const [staggerCount, setStaggerCount] = useState(0);
+  /** Set for returning devices (activation already persisted) so the lamp
+   * itself — not just the card — is rendered in its illuminated state. */
+  const [isReturningDevice, setIsReturningDevice] = useState(false);
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameDims, setFrameDims] = useState({ w: 416, h: 480, r: 16 });
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -167,6 +177,13 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
+  /**
+   * Last phase reported by the lamp. Teardown must only run on a genuine
+   * illuminated → dark transition (a real cord pull); the lamp's initial
+   * mount echo of "dark" must never send a returning device's lit room back
+   * to sleep.
+   */
+  const lastLampPhaseRef = useRef<LampPhase | null>(null);
 
   const clearTimers = useCallback(() => {
     timers.current.forEach(clearTimeout);
@@ -232,15 +249,37 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
 
   const handleLampPhase = useCallback(
     (lampPhase: LampPhase) => {
-      const current = phaseRef.current;
+      const previousLampPhase = lastLampPhaseRef.current;
+      lastLampPhaseRef.current = lampPhase;
       if (lampPhase === "illuminated") {
-        if (current === "dark") revealForward();
-      } else if (lampPhase === "dark") {
-        if (current !== "dark") teardownReverse();
+        // The lamp pull is a one-time per-device onboarding: remember this
+        // browser so future visits skip the dark ritual and show the login
+        // card immediately. Purely presentational — unrelated to the
+        // authentication session, which may still expire or be signed out.
+        persistDeviceActivation();
+        if (phaseRef.current === "dark") revealForward();
+      } else if (lampPhase === "dark" && previousLampPhase === "illuminated") {
+        if (phaseRef.current !== "dark") teardownReverse();
       }
     },
     [revealForward, teardownReverse]
   );
+
+  /* Returning devices: the activation ritual already happened here, so skip
+     straight to the lit "ambient" state before first paint (no dark flash,
+     no repeated lamp pull). First-time devices keep the sleeping room. The
+     lamp is told to adopt its illuminated state in the same pre-paint pass,
+     and phaseRef is updated synchronously so the lamp's mount callback cannot
+     restart the reveal choreography. */
+  useBeforePaintEffect(() => {
+    if (phaseRef.current === "dark" && readDeviceActivated()) {
+      clearTimers();
+      setStaggerCount(Number.MAX_SAFE_INTEGER);
+      phaseRef.current = "ambient";
+      setPhase("ambient");
+      setIsReturningDevice(true);
+    }
+  }, []);
 
   /* Auto-illuminate: DISABLED for Batch 1.
      The lamp does NOT auto-ignite. The sleeping state persists until the
@@ -372,7 +411,11 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
       {/* Lamp scaler — lets small viewports shrink the whole lamp + cone unit
           in lockstep with the protected logo zone. */}
       <div className={styles.lampScaler}>
-        <HangingLamp onPhaseChange={handleLampPhase} quiet={isLampQuiet} />
+        <HangingLamp
+          onPhaseChange={handleLampPhase}
+          quiet={isLampQuiet}
+          initiallyIlluminated={isReturningDevice}
+        />
       </div>
 
       {/* Spotlight zone — brand identity lives inside the brightest area of the light.
