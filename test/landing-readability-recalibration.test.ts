@@ -15,10 +15,10 @@ test("Mobile readability rules enforce 14px titles, 13px descriptions, and 2-col
     /\.featuresList\s*\{[^}]*grid-template-columns:\s*repeat\(2,\s*1fr\);/
   );
 
-  // Mobile Feature Item enforces readable typography (>=14px title, >=13px description) and compact padding
+  // Mobile Feature Item enforces readable typography (>=14px title, >=13px description) and premium padding
   assert.match(
     styles,
-    /\.featureItem\s*\{[^}]*padding:\s*var\(--space-1-5/
+    /\.featureItem\s*\{[^}]*padding:\s*var\(--space-2-5/
   );
   assert.match(
     styles,
@@ -60,7 +60,7 @@ test("Mobile readability rules enforce 14px titles, 13px descriptions, and 2-col
   assert.match(styles, /\.workflowCopy\s*\{[^}]*min-width:\s*0;/);
 });
 
-test("Short viewport fallback (< 36rem) uses natural relative flow without micro-font shrinking", () => {
+test("Short viewport fallback uses natural relative flow without micro-font shrinking", () => {
   const styles = readSource("src/components/landing/landing-content.module.css");
 
   // Destructive micro-font shrinking media query must be removed
@@ -69,9 +69,10 @@ test("Short viewport fallback (< 36rem) uses natural relative flow without micro
   assert.doesNotMatch(styles, /grid-template-columns:\s*auto\s*1fr;\s*grid-template-rows:\s*auto\s*auto;/);
 
   // Short viewport media query cleanly applies position: relative fallback
+  // (tablet < 42rem and desktop < 38rem; mobile is always normal flow)
   assert.match(
     styles,
-    /@media\s*\(max-width:\s*47\.99rem\)\s*and\s*\(max-height:\s*35\.99rem\)[^{]*\{\s*\.problemsSection[^{]*\{\s*position:\s*relative\s*!important;\s*top:\s*auto\s*!important;\s*min-height:\s*auto\s*!important;/
+    /@media\s*\(min-width:\s*48rem\)\s*and\s*\(max-width:\s*63\.99rem\)\s*and\s*\(max-height:\s*41\.99rem\),\s*\(min-width:\s*64rem\)\s*and\s*\(max-height:\s*37\.99rem\)[^{]*\{\s*\.problemsSection[^{]*\{\s*position:\s*relative\s*!important;\s*top:\s*auto\s*!important;\s*min-height:\s*auto\s*!important;/
   );
 });
 

@@ -380,6 +380,7 @@
   height: 100%;
   pointer-events: none;
   z-index: 2;
+  overflow: visible;
   filter: var(--auth-border-trace-filter);
 }
 
@@ -393,15 +394,56 @@
   stroke-dashoffset: 0;
 }
 
-/* ---- Perimeter traveling lights (SVG Mask + Arc-Length RAF) ---- */
+/* ---- Perimeter traveling lights (pure CSS stroke-dash orbit) ---- */
+/*
+  The four LED strips are STATIC border paths animated entirely in CSS:
+  pathLength=1000 normalises the dash math, so dasharray "180 320" paints two
+  18%-perimeter windows at diametrically opposite points, and the plm-orbit
+  keyframes sweep stroke-dashoffset by exactly one lap (1000 units, 8s linear
+  infinite) so both windows travel clockwise and loop seamlessly. The teal
+  strips start 25% out of phase via a -2s animation-delay, giving 4 lights at
+  0/25/50/75% around the card. No per-frame JavaScript, no SVG mask
+  re-rasterisation, and CSS animations hold their phase through frame stalls
+  (no wall-clock jump).
+*/
 
 .perimeterLightPath {
+  --plm-total: 1000px;
+  --plm-seg: 180px;
   opacity: 0;
   transition: opacity 800ms ease;
+  stroke-dasharray: var(--plm-seg) calc(var(--plm-total) / 2 - var(--plm-seg));
+  animation: plm-orbit 8s linear infinite;
 }
 
 .perimeterLightPathOn {
   opacity: 1;
+}
+
+/* Teal strips run the same orbit a quarter-phase behind warm (25% of 8s). */
+.perimeterGlowTealBloom,
+.perimeterGlowTealCore {
+  animation-delay: -2s;
+}
+
+@keyframes plm-orbit {
+  from {
+    stroke-dashoffset: calc(var(--plm-seg) / 2);
+  }
+  to {
+    stroke-dashoffset: calc(var(--plm-seg) / 2 - var(--plm-total));
+  }
+}
+
+/* B/C: concrete SVG user units from getTotalLength(), never pathLength math. */
+.perimeterLightPathConcrete {
+  stroke-dasharray: var(--plm-concrete-dasharray);
+  animation-name: plm-orbit-concrete;
+}
+
+@keyframes plm-orbit-concrete {
+  from { stroke-dashoffset: var(--plm-concrete-start); }
+  to { stroke-dashoffset: var(--plm-concrete-end); }
 }
 
 .perimeterGlowWarmBloom {
@@ -420,6 +462,157 @@
 
 .perimeterGlowTealCore {
   filter: drop-shadow(0 0 1.5px var(--auth-plm-teal-core));
+}
+
+/* C keeps the same SVG ribbon/dash trajectory as B, but replaces all moving
+   filter surfaces with wider low-opacity strokes. It is intentionally a
+   rendering-cost experiment, not the final visual decision. */
+.perimeterGlowWarmSimple,
+.perimeterGlowTealSimple,
+.perimeterGlowWarmCoreSimple,
+.perimeterGlowTealCoreSimple {
+  filter: none;
+}
+
+.perimeterGlowWarmSimple {
+  stroke-width: 5px;
+  stroke: var(--auth-plm-warm-bloom);
+  opacity: 0.32;
+}
+
+.perimeterGlowTealSimple {
+  stroke-width: 5px;
+  stroke: var(--auth-plm-teal-bloom);
+  opacity: 0.32;
+}
+
+.perimeterGlowWarmCoreSimple {
+  stroke-width: 1.5px;
+  stroke: var(--auth-plm-warm-core);
+  opacity: 1;
+}
+
+.perimeterGlowTealCoreSimple {
+  stroke-width: 1.5px;
+  stroke: var(--auth-plm-teal-core);
+  opacity: 1;
+}
+
+.perimeterGlowTealSimple,
+.perimeterGlowTealCoreSimple {
+  animation-delay: -2s;
+}
+
+/* ---- Transform-only perimeter LED prototype ---- */
+/*
+  Kept beside the SVG dash implementation for an A/B comparison via
+  ?perimeterLedRenderer=transform. A long light is a flexible chain of static
+  slices: only its small carriers receive a transform animation. The glow is
+  rasterized with the slice rather than recalculated from a changing SVG dash.
+*/
+.cardFrameTransformPrototype .perimeterLightPath {
+  opacity: 0;
+  animation: none;
+  filter: none;
+}
+
+.cardFrameWebglPrototype .perimeterLightPath,
+[data-perimeter-led-renderer="webgl"] .perimeterLightPath {
+  display: none;
+  opacity: 0;
+  animation: none;
+  filter: none;
+}
+
+/* Compositing order for the WebGL renderer: the SVG outline rides ABOVE the
+   LED canvas (z-index: 4 over canvas z-index: 3). Filter is explicitly removed
+   on WebGL mode to prevent mobile compositors (observed on Hola Browser) from
+   clipping or discarding composited layer tiles on the left edge (x=0) and
+   horizontal corner boundaries. Default SVG renderer retains its original
+   filter and ordering. */
+.cardFrameWebglPrototype .borderTrace,
+[data-perimeter-led-renderer="webgl"] .borderTrace {
+  z-index: 4;
+  overflow: visible;
+  filter: none;
+}
+
+/* WebGL mode: the border outline is a 100% static, continuous solid stroke.
+   All stroke-dasharray and stroke-dashoffset math is removed, ensuring no
+   SkDashPathEffect rasterization anomalies or contour slicing gaps.
+   Transitions and animations on geometry are disabled so the outline never
+   appears late or un-draws partially during reveal/teardown. Visibility is
+   cleanly governed by the cardFrame opacity. Default SVG renderer retains
+   its full draw-on choreography. */
+.cardFrameWebglPrototype .borderTracePath,
+[data-perimeter-led-renderer="webgl"] .borderTracePath {
+  stroke-dasharray: none !important;
+  stroke-dashoffset: 0 !important;
+  transition: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+}
+
+.perimeterWebglCanvas,
+.perimeterWebglFallback {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.perimeterTransformLedLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.perimeterTransformLedCarrier {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+
+.perimeterTransformLedSlice {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3.5px;
+  border-radius: var(--radius-full);
+  transform: translate(-50%, -50%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--plm-led-bloom) 45%, transparent) 8%,
+    var(--plm-led-core) 28%,
+    var(--plm-led-core) 72%,
+    color-mix(in srgb, var(--plm-led-bloom) 45%, transparent) 92%,
+    transparent 100%
+  );
+  box-shadow:
+    0 0 1.5px var(--plm-led-core),
+    0 0 5px var(--plm-led-bloom),
+    0 0 10px var(--plm-led-shadow);
+}
+
+.perimeterTransformLedWarm {
+  --plm-led-core: var(--auth-plm-warm-core);
+  --plm-led-bloom: var(--auth-plm-warm-bloom);
+  --plm-led-shadow: rgba(217, 119, 6, 0.42);
+}
+
+.perimeterTransformLedTeal {
+  --plm-led-core: var(--auth-plm-teal-core);
+  --plm-led-bloom: var(--auth-plm-teal-bloom);
+  --plm-led-shadow: rgba(15, 118, 110, 0.42);
 }
 
 /* ---- Card surface ---- */
@@ -608,6 +801,13 @@
   }
   .perimeterLightPath {
     opacity: 0;
+    animation: none;
+  }
+  .perimeterTransformLedLayer {
+    display: none;
+  }
+  .perimeterWebglCanvas {
+    display: none;
   }
   .perimeterGlowWarmBloom,
   .perimeterGlowWarmCore,

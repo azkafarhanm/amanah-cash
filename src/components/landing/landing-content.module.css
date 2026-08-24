@@ -1,17 +1,18 @@
 /* ==========================================================================
-   Section-Level Scroll Stack / Large Physical Surfaces Architecture
+   Landing Content Architecture
+   - Mobile (< 48rem): normal document flow — one unified sheet per topic,
+     native scrolling, no sticky, no scroll-linked choreography.
+   - Tablet (48–63.99rem) & Desktop (>= 64rem): Section-Level Scroll Stack /
+     Large Physical Surfaces sticky-sheet takeover (Desktop Golden Reference
+     is immutable).
    ========================================================================== */
 
 .problemsSection,
-.problemsContinuationSection,
 .solutionSection,
-.solutionContinuationSection,
 .workflowSection,
-.workflowContinuationSection,
 .featuresSection,
 .featuresContinuationSection,
 .securitySection,
-.securityContinuationSection,
 .faqSection,
 .finalCtaSection {
   position: relative;
@@ -23,15 +24,11 @@
 }
 
 :global([data-theme="dark"]) .problemsSection,
-:global([data-theme="dark"]) .problemsContinuationSection,
 :global([data-theme="dark"]) .solutionSection,
-:global([data-theme="dark"]) .solutionContinuationSection,
 :global([data-theme="dark"]) .workflowSection,
-:global([data-theme="dark"]) .workflowContinuationSection,
 :global([data-theme="dark"]) .featuresSection,
 :global([data-theme="dark"]) .featuresContinuationSection,
 :global([data-theme="dark"]) .securitySection,
-:global([data-theme="dark"]) .securityContinuationSection,
 :global([data-theme="dark"]) .faqSection,
 :global([data-theme="dark"]) .finalCtaSection {
   box-shadow: 0 -24px 60px -5px rgb(0 0 0 / 55%), 0 -4px 16px -2px rgb(0 0 0 / 30%), inset 0 1px 0 rgb(255 255 255 / 6%);
@@ -42,24 +39,12 @@
   z-index: 1;
 }
 
-.problemsContinuationSection {
-  z-index: 2;
-}
-
 .solutionSection {
   z-index: 3;
 }
 
-.solutionContinuationSection {
-  z-index: 4;
-}
-
 .workflowSection {
   z-index: 5;
-}
-
-.workflowContinuationSection {
-  z-index: 6;
 }
 
 .featuresSection {
@@ -72,10 +57,6 @@
 
 .securitySection {
   z-index: 9;
-}
-
-.securityContinuationSection {
-  z-index: 10;
 }
 
 .faqSection {
@@ -145,65 +126,57 @@
 }
 
 /* ==========================================================================
-   Section-Level Sticky Sheet Takeover (Mobile Continuous Stack Height >= 36rem / 576px)
-   Preserves Continuous Physical Sheet Takeover (Problems A -> Problems B ->
-   Solution A -> Solution B -> Workflow A -> Workflow B -> Features A ->
-   Features B -> Security A -> Security B) including on iPhone SE (667px)
-   with generous 12rem runway.
+   Mobile Normal-Flow Composition (< 48rem)
+   No scroll stack, no sticky takeover, no scroll-linked choreography: each
+   topic is ONE unified sheet in natural document flow, scrolled natively at
+   any velocity. Sheets keep the physical identity (rounded top edge, hairline
+   border, calibrated top shadow) and interlock through a slight negative
+   margin cascade so borders and shadows read as one continuous surface.
+   Entrance animations stay one-shot (Reveal) and never gate scrolling.
    ========================================================================== */
 
-@media (max-width: 47.99rem) and (min-height: 36rem) {
+@media (max-width: 47.99rem) {
   .problemsSection,
-  .problemsContinuationSection,
   .solutionSection,
-  .solutionContinuationSection,
   .workflowSection,
-  .workflowContinuationSection,
   .featuresSection,
-  .featuresContinuationSection,
   .securitySection,
-  .securityContinuationSection {
-    position: sticky;
-    top: calc(var(--landing-nav-height) + env(safe-area-inset-top, 0px));
-    min-height: calc(100svh + 12rem);
-    padding-block: var(--space-4) var(--space-6);
-    border-start-start-radius: 1.5rem;
-    border-start-end-radius: 1.5rem;
-    box-shadow: 0 -10px 24px rgb(17 24 39 / 5%), 0 -2px 6px rgb(17 24 39 / 3%);
-    border-top: var(--border-width-default) solid var(--color-border-default);
-  }
-
   .faqSection,
   .finalCtaSection {
     position: relative;
-    min-height: auto;
-    padding-block: var(--space-8) max(var(--space-10), env(safe-area-inset-bottom, 0px));
+    margin-block-start: -1.25rem;
     border-start-start-radius: 1.5rem;
     border-start-end-radius: 1.5rem;
-    box-shadow: 0 -10px 24px rgb(17 24 39 / 5%), 0 -2px 6px rgb(17 24 39 / 3%);
     border-top: var(--border-width-default) solid var(--color-border-default);
+    box-shadow: 0 -10px 24px rgb(17 24 39 / 5%), 0 -2px 6px rgb(17 24 39 / 3%);
+  }
+
+  .problemsSection {
+    margin-block-start: 0;
+  }
+
+  /* The features continuation sheet only exists for the tablet stack
+     (48–64rem); mobile renders the unified feature list in one section. */
+  .featuresContinuationSection {
+    display: none;
   }
 }
 
 /* ==========================================================================
-   Short Viewport Fallback: Height < 36rem (Mobile) / < 42rem (Tablet) / < 38rem (Desktop)
-   Guarantees 100% reading comfort and zero clipping via Natural Physical Cascade
-   on ultra-short viewports (< 576px).
+   Short Viewport Fallback: Height < 42rem (Tablet) / < 38rem (Desktop)
+   Guarantees 100% reading comfort and zero clipping via Natural Physical
+   Cascade on ultra-short viewports. Mobile needs no fallback — it is always
+   in normal flow.
    ========================================================================== */
 
-@media (max-width: 47.99rem) and (max-height: 35.99rem),
-  (min-width: 48rem) and (max-width: 63.99rem) and (max-height: 41.99rem),
+@media (min-width: 48rem) and (max-width: 63.99rem) and (max-height: 41.99rem),
   (min-width: 64rem) and (max-height: 37.99rem) {
   .problemsSection,
-  .problemsContinuationSection,
   .solutionSection,
-  .solutionContinuationSection,
   .workflowSection,
-  .workflowContinuationSection,
   .featuresSection,
   .featuresContinuationSection,
   .securitySection,
-  .securityContinuationSection,
   .faqSection,
   .finalCtaSection {
     position: relative !important;
@@ -216,15 +189,11 @@
     border-top: var(--border-width-default) solid var(--color-border-default);
   }
 
-  .problemsContinuationSection,
   .solutionSection,
-  .solutionContinuationSection,
   .workflowSection,
-  .workflowContinuationSection,
   .featuresSection,
   .featuresContinuationSection,
   .securitySection,
-  .securityContinuationSection,
   .faqSection,
   .finalCtaSection {
     margin-block-start: -1.25rem;
@@ -254,7 +223,7 @@
 
 @media (max-width: 47.99rem) {
   .sectionContent {
-    gap: var(--space-4, 1rem); /* 16px calibrated breathing room on mobile */
+    gap: var(--space-5, 1.25rem); /* 20px breathing room between heading & cards in flow */
   }
 }
 
@@ -339,8 +308,8 @@
 
 @media (max-width: 47.99rem) {
   .itemList {
-    gap: var(--space-2-5, 0.625rem); /* 10px row gap on mobile */
-    row-gap: var(--space-2-5, 0.625rem);
+    gap: var(--space-3, 0.75rem); /* 12px row gap on mobile */
+    row-gap: var(--space-3, 0.75rem);
   }
 }
 
@@ -383,9 +352,9 @@
 
 @media (max-width: 47.99rem) {
   .gridFiveBalanced {
-    gap: var(--space-2-5, 0.625rem); /* 10px row and col gap on mobile */
-    row-gap: var(--space-2-5, 0.625rem);
-    column-gap: var(--space-2-5, 0.625rem);
+    gap: var(--space-3, 0.75rem); /* 12px row and col gap on mobile */
+    row-gap: var(--space-3, 0.75rem);
+    column-gap: var(--space-3, 0.75rem);
   }
 }
 
@@ -465,14 +434,14 @@
 
 @media (max-width: 47.99rem) {
   .item {
-    padding: var(--space-2-5, 0.625rem) var(--space-3, 0.75rem); /* 10px top/bottom, 12px left/right */
+    padding: var(--space-3, 0.75rem) var(--space-3-5, 0.875rem); /* 12px top/bottom, 14px left/right */
   }
 
   .item .itemIcon {
     width: var(--size-6, 1.5rem); /* 24px icon box */
     height: var(--size-6, 1.5rem);
     padding: var(--space-1, 0.25rem);
-    margin-block-end: var(--space-1-5, 0.375rem);
+    margin-block-end: var(--space-2, 0.5rem);
   }
 
   .item h3 {
@@ -539,137 +508,16 @@
   grid-template-columns: 1fr;
 }
 
-/* Problems Panels Responsive Visibility */
-.problemsContinuationSection {
-  display: block;
-}
-
-.problemsDesktopOnly {
-  display: none;
-}
-
-.problemsMobileOnly {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .problemsContinuationSection {
-    display: none !important;
-  }
-
-  .problemsDesktopOnly {
-    display: block !important;
-  }
-
-  .problemsMobileOnly {
-    display: none !important;
-  }
-}
-
-/* Solution Panels Responsive Visibility */
-.solutionContinuationSection {
-  display: block;
-}
-
-.solutionDesktopOnly {
-  display: none;
-}
-
-.solutionMobileOnly {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .solutionContinuationSection {
-    display: none !important;
-  }
-
-  .solutionDesktopOnly {
-    display: block !important;
-  }
-
-  .solutionMobileOnly {
-    display: none !important;
-  }
-}
-
-/* Workflow Panels Responsive Visibility */
-.workflowContinuationSection {
-  display: block;
-}
-
-.workflowDesktopOnly {
-  display: none;
-}
-
-.workflowMobileOnly {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .workflowContinuationSection {
-    display: none !important;
-  }
-
-  .workflowDesktopOnly {
-    display: block !important;
-  }
-
-  .workflowMobileOnly {
-    display: none !important;
-  }
-}
-
-/* Security Panels Responsive Visibility */
-.securityContinuationSection {
-  display: block;
-}
-
-.securityDesktopOnly {
-  display: none;
-}
-
-.securityMobileOnly {
-  display: block;
-}
-
-@media (min-width: 48rem) {
-  .securityContinuationSection {
-    display: none !important;
-  }
-
-  .securityDesktopOnly {
-    display: block !important;
-  }
-
-  .securityMobileOnly {
-    display: none !important;
-  }
-}
-
-/* Responsive Feature Visibility (Split on Mobile & Tablet < 64rem, Unified on Desktop >= 64rem) */
+/* Features Panel Responsive Visibility
+   The unified feature list is rendered by FeaturesSection at every width.
+   The continuation sheet remains ONLY for the tablet sticky stack
+   (48rem–64rem); mobile composes normal flow and desktop renders unified. */
 .featuresContinuationSection {
   display: block;
 }
 
-.featuresDesktopOnly {
-  display: none;
-}
-
-.featuresMobileOnly {
-  display: block;
-}
-
-@media (min-width: 64rem) {
+@media (max-width: 47.99rem), (min-width: 64rem) {
   .featuresContinuationSection {
-    display: none !important;
-  }
-
-  .featuresDesktopOnly {
-    display: block !important;
-  }
-
-  .featuresMobileOnly {
     display: none !important;
   }
 }
@@ -701,9 +549,9 @@
 @media (max-width: 47.99rem) {
   .featuresList {
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-1-5, 0.375rem); /* 6px row and column gap */
-    row-gap: var(--space-1-5, 0.375rem);
-    column-gap: var(--space-1-5, 0.375rem);
+    gap: var(--space-2-5, 0.625rem); /* 10px row and column gap */
+    row-gap: var(--space-2-5, 0.625rem);
+    column-gap: var(--space-2-5, 0.625rem);
   }
 }
 
@@ -768,14 +616,14 @@
 
 @media (max-width: 47.99rem) {
   .featureItem {
-    padding: var(--space-1-5, 0.375rem) var(--space-2, 0.5rem); /* 6px top/bottom, 8px left/right */
+    padding: var(--space-2-5, 0.625rem) var(--space-3, 0.75rem); /* 10px top/bottom, 12px left/right */
   }
 
   .featureItem .itemIcon {
     width: var(--size-5, 1.25rem); /* 20px icon box */
     height: var(--size-5, 1.25rem);
     padding: 2px;
-    margin-block-end: var(--space-0-5, 0.125rem); /* 2px */
+    margin-block-end: var(--space-1, 0.25rem); /* 4px */
   }
 
   .featureItem h3 {
@@ -814,9 +662,9 @@
 
 @media (max-width: 47.99rem) {
   .workflowList {
-    gap: var(--space-2-5, 0.625rem); /* 10px row and col gap */
-    row-gap: var(--space-2-5, 0.625rem);
-    column-gap: var(--space-2-5, 0.625rem);
+    gap: var(--space-3, 0.75rem); /* 12px row and col gap */
+    row-gap: var(--space-3, 0.75rem);
+    column-gap: var(--space-3, 0.75rem);
   }
 }
 
@@ -824,10 +672,6 @@
   .workflowList {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-.workflowContinuationList {
-  counter-reset: workflow 4;
 }
 
 .workflowItem {
@@ -894,8 +738,8 @@
 
 @media (max-width: 47.99rem) {
   .workflowItem {
-    padding: var(--space-2-5, 0.625rem) var(--space-3, 0.75rem); /* 10px × 12px */
-    gap: var(--space-2, 0.5rem);
+    padding: var(--space-3, 0.75rem) var(--space-3-5, 0.875rem); /* 12px × 14px */
+    gap: var(--space-2-5, 0.625rem);
   }
 
   .workflowItem::before {

@@ -2,7 +2,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { NextAuthOptions, Profile } from "next-auth";
 import GoogleProvider, { type GoogleProfile } from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { createAuthenticationAdapter } from "@/auth/adapter";
 import {
   evaluateGoogleAdmission,
@@ -13,6 +13,10 @@ import {
   isCrossUserSessionUpgrade,
   resolveActiveSessionUserId
 } from "@/auth/oauth-security";
+import {
+  developmentTunnelOrigin,
+  isDevelopmentTunnelHost
+} from "@/auth/dev-tunnel";
 import {
   loadAuthenticationEnvironment,
   type AuthenticationEnvironment
@@ -37,6 +41,12 @@ export type BuildAuthOptionsOverrides = {
    * session-conflict guard can be exercised outside a request scope.
    */
   readSessionCookie?: () => Promise<string | undefined>;
+  /**
+   * Reads the host the active request arrived on. Injectable so the
+   * development-tunnel redirect behavior can be exercised outside a
+   * request scope.
+   */
+  readRequestHost?: () => Promise<string | null>;
 };
 
 export function buildAuthOptions(
@@ -64,6 +74,32 @@ export function buildAuthOptions(
       const store = await cookies();
       return store.get(sessionCookieName)?.value;
     });
+  const readRequestHost =
+    overrides.readRequestHost ??
+    (async () => {
+      try {
+        const store = await headers();
+        return store.get("x-forwarded-host") ?? store.get("host");
+      } catch {
+        // Outside a request scope (scripts/tests) there is no host header.
+        return null;
+      }
+    });
+
+  /**
+   * Redirect base for login/logout redirects. next-auth pins `baseUrl` to
+   * NEXTAUTH_URL (the developer's localhost), which would strand phones
+   * browsing through a Cloudflare Quick Tunnel. In development, when the
+   * request itself arrived on a *.trycloudflare.com host, keep redirects on
+   * the tunnel origin instead. Production always uses the canonical origin.
+   */
+  async function resolveRedirectBase(baseUrl: string): Promise<string> {
+    const requestHost = await readRequestHost();
+    if (isDevelopmentTunnelHost(requestHost, environment.production)) {
+      return developmentTunnelOrigin(requestHost as string);
+    }
+    return baseUrl;
+  }
 
   async function activeSessionUserId(): Promise<string | null> {
     try {
@@ -220,11 +256,12 @@ export function buildAuthOptions(
         return session;
       },
       async redirect({ url, baseUrl }) {
-        if (url.startsWith("/")) return `${baseUrl}${url}`;
+        const base = await resolveRedirectBase(baseUrl);
+        if (url.startsWith("/")) return `${base}${url}`;
         try {
-          return new URL(url).origin === baseUrl ? url : `${baseUrl}/app`;
+          return new URL(url).origin === base ? url : `${base}/app`;
         } catch {
-          return `${baseUrl}/app`;
+          return `${base}/app`;
         }
       }
     }

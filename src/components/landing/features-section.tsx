@@ -6,7 +6,6 @@ import styles from "./landing-content.module.css";
 import { LandingSectionHeading } from "./landing-section-heading";
 import { Reveal } from "./reveal";
 
-const featuresPanelA = features.slice(0, 5);
 const featuresPanelB = features.slice(5, 10);
 
 export function FeaturesSection() {
@@ -24,28 +23,22 @@ export function FeaturesSection() {
             title="Fitur untuk pekerjaan harian yang nyata"
             description="Setiap fitur mendukung pencatatan, peninjauan, pengendalian akses, atau keberlanjutan operasional."
           />
-          {/* Desktop & Tablet: Unified 10-card list */}
-          <div className={styles.featuresDesktopOnly}>
-            <IconTextList
-              className={styles.featuresList}
-              itemClassName={styles.featureItem}
-              items={features}
-            />
-          </div>
-          {/* Mobile/PWA: Panel A (Cards 1–5) */}
-          <div className={styles.featuresMobileOnly}>
-            <IconTextList
-              className={styles.featuresList}
-              itemClassName={styles.featureItem}
-              items={featuresPanelA}
-            />
-          </div>
+          {/* Unified 10-card list at every width */}
+          <IconTextList
+            className={styles.featuresList}
+            itemClassName={styles.featureItem}
+            items={features}
+          />
         </PageContainer>
       </Reveal>
     </Section>
   );
 }
 
+/**
+ * Tablet-only continuation sheet (48–64rem sticky stack). Hidden on mobile
+ * (normal-flow unified composition) and on desktop (unified 10-card layout).
+ */
 export function FeaturesContinuationSection() {
   return (
     <Section

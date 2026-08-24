@@ -231,12 +231,24 @@ export function SoftAurora() {
 
       const mesh = new Mesh(gl, { geometry, program });
 
+      // Last size actually applied to the renderer. Resize events can fire
+      // without an effective size change (e.g. mobile URL-bar transitions
+      // altering viewport height), and calling renderer.setSize() with the
+      // same dimensions still reallocates the canvas backing store and clears
+      // it — a visible flicker under fast scrolling. Guard: skip unless the
+      // container size really changed.
+      let appliedWidth = 0;
+      let appliedHeight = 0;
+
       const handleResize = () => {
         if (!container || !renderer) return;
         const width = container.clientWidth;
         const height = container.clientHeight;
         if (width === 0 || height === 0) return;
+        if (width === appliedWidth && height === appliedHeight) return;
 
+        appliedWidth = width;
+        appliedHeight = height;
         renderer.setSize(width, height);
         program.uniforms.uResolution.value = [width, height];
       };

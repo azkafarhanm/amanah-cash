@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Image from "next/image";
 import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
+import { isDevelopmentTunnelHost } from "@/auth/dev-tunnel";
 import {
   describeOAuthLoginError,
   shouldRedirectAuthenticatedVisitor
@@ -36,8 +37,12 @@ export default async function LoginPage({
   // origin (e.g. a deployment-specific *.vercel.app URL) strands the state
   // cookie on the wrong origin and the callback fails. Send the visitor to the
   // canonical login page up front instead.
+  // Development exception: Cloudflare Quick Tunnels (*.trycloudflare.com, dev
+  // only) keep the login page on the tunnel origin — redirecting to the
+  // developer's localhost would strand phones browsing through the tunnel.
   const requestHost = (await headers()).get("host");
-  if (requestHost && requestHost !== new URL(environment.nextAuthUrl).host) {
+  const isDevTunnelHost = isDevelopmentTunnelHost(requestHost, environment.production);
+  if (!isDevTunnelHost && requestHost && requestHost !== new URL(environment.nextAuthUrl).host) {
     redirect(`${environment.nextAuthUrl}/login`);
   }
 
