@@ -152,6 +152,7 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
    * itself — not just the card — is rendered in its illuminated state. */
   const [isReturningDevice, setIsReturningDevice] = useState(false);
   const [perimeterLedRenderer, setPerimeterLedRenderer] = useState<PerimeterLedRenderer>("svg");
+  const [perimeterLedGlow, setPerimeterLedGlow] = useState<"none" | "soft" | "premium" | "neon" | "illuminated" | "reference" | "reference-v2" | "reference-v2-thick" | "reference-v2-glm" | "reference-v2-glm-bold" | "reference-v2-glm-no-outline" | "reference-v2-glm-no-outline-refined" | "reference-v2-glm-no-outline-refined-v2" | "reference-v2-glm-no-outline-neon-tube" | "reference-v2-glm-no-outline-perfect" | "reference-v2-glm-no-outline-neon-tube-solid" | "reference-v2-glm-no-outline-neon-tube-bold-curve" | "reference-v2-glm-no-outline-neon-tube-ultra">("none");
   const frameRef = useRef<HTMLDivElement>(null);
   const borderPathRef = useRef<SVGPathElement>(null);
   const transformLedRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -270,9 +271,14 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
   /* Runtime comparison switch only. Production remains on the existing SVG
      renderer unless an explicit experiment is requested. */
   useBeforePaintEffect(() => {
-    const requested = new URLSearchParams(window.location.search).get("perimeterLedRenderer");
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("perimeterLedRenderer");
     if (requested === "transform" || requested === "svg-concrete" || requested === "svg-simple-glow" || requested === "webgl") {
       setPerimeterLedRenderer(requested);
+    }
+    const requestedGlow = params.get("perimeterLedGlow");
+    if (requestedGlow === "soft" || requestedGlow === "premium" || requestedGlow === "neon" || requestedGlow === "illuminated" || requestedGlow === "reference" || requestedGlow === "reference-v2" || requestedGlow === "reference-v2-thick" || requestedGlow === "reference-v2-glm" || requestedGlow === "reference-v2-glm-bold" || requestedGlow === "reference-v2-glm-no-outline" || requestedGlow === "reference-v2-glm-no-outline-refined" || requestedGlow === "reference-v2-glm-no-outline-refined-v2" || requestedGlow === "reference-v2-glm-no-outline-neon-tube" || requestedGlow === "reference-v2-glm-no-outline-perfect" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-solid" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-bold-curve" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-ultra") {
+      setPerimeterLedGlow(requestedGlow);
     }
   }, []);
 
@@ -474,6 +480,7 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
           isWebglPrototype ? styles.cardFrameWebglPrototype : "",
         ].filter(Boolean).join(" ")}
         data-perimeter-led-renderer={perimeterLedRenderer}
+        data-perimeter-led-glow={perimeterLedGlow}
         aria-hidden={phase === "dark"}
         style={phase === "dark" ? { pointerEvents: "none" } : undefined}
       >
@@ -547,7 +554,7 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
         </svg>
 
         {isWebglPrototype && isSurfaceVisible ? (
-          <WebglPerimeterLed path={borderPath} width={frameDims.w} height={frameDims.h} radius={frameDims.r} />
+          <WebglPerimeterLed path={borderPath} width={frameDims.w} height={frameDims.h} radius={frameDims.r} glow={perimeterLedGlow} />
         ) : null}
 
         {isTransformPrototype && isSurfaceVisible ? (

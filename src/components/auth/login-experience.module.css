@@ -516,6 +516,31 @@
   filter: none;
 }
 
+/* "reference-v2-glm-no-outline", "reference-v2-glm-no-outline-refined", "reference-v2-glm-no-outline-refined-v2", "reference-v2-glm-no-outline-neon-tube", "reference-v2-glm-no-outline-perfect", "reference-v2-glm-no-outline-neon-tube-solid", "reference-v2-glm-no-outline-neon-tube-bold-curve", and "reference-v2-glm-no-outline-neon-tube-ultra" experiments ONLY:
+   hide the decorative SVG outline so the WebGL light is the single perimeter source.
+   Reversible — remove this rule and every mode renders the outline again. The SVG
+   element stays in the DOM (layout/fallback untouched). */
+[data-perimeter-led-glow="reference-v2-glm-no-outline"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-refined"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-refined-v2"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-perfect"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-solid"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-bold-curve"] .borderTrace,
+[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-ultra"] .borderTrace {
+  visibility: hidden;
+}
+
+/* "reference-v2-glm-no-outline-neon-tube-bold-curve" & "reference-v2-glm-no-outline-neon-tube-ultra": wide 30px sweeping corner radius */
+.cardFrame[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-bold-curve"],
+.cardFrame[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-ultra"] {
+  border-radius: 30px;
+}
+.cardFrame[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-bold-curve"] .cardSurface,
+.cardFrame[data-perimeter-led-glow="reference-v2-glm-no-outline-neon-tube-ultra"] .cardSurface {
+  border-radius: 28px;
+}
+
 .cardFrameWebglPrototype .perimeterLightPath,
 [data-perimeter-led-renderer="webgl"] .perimeterLightPath {
   display: none;
