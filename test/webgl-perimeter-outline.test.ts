@@ -211,5 +211,9 @@ test("WebGL LED implementation invariants remain intact and unmodified", () => {
   // Glow modes are selected via query param plumbing into the u_glow uniforms.
   assert.match(webgl, /uniform float u_glow;/);
   assert.match(tsx, /perimeterLedGlow/);
-  assert.match(tsx, /requestedGlow === "soft" \|\| requestedGlow === "premium" \|\| requestedGlow === "neon" \|\| requestedGlow === "illuminated" \|\| requestedGlow === "reference" \|\| requestedGlow === "reference-v2" \|\| requestedGlow === "reference-v2-thick" \|\| requestedGlow === "reference-v2-glm" \|\| requestedGlow === "reference-v2-glm-bold" \|\| requestedGlow === "reference-v2-glm-no-outline" \|\| requestedGlow === "reference-v2-glm-no-outline-refined" \|\| requestedGlow === "reference-v2-glm-no-outline-refined-v2" \|\| requestedGlow === "reference-v2-glm-no-outline-neon-tube" \|\| requestedGlow === "reference-v2-glm-no-outline-perfect" \|\| requestedGlow === "reference-v2-glm-no-outline-neon-tube-solid" \|\| requestedGlow === "reference-v2-glm-no-outline-neon-tube-bold-curve" \|\| requestedGlow === "reference-v2-glm-no-outline-neon-tube-ultra"/);
+  assert.match(tsx, /requestedGlow === "none" \|\| requestedGlow === "soft"/);
+
+  // Production defaults: LoginExperience defaults to WebGL renderer and reference-v2-glm-no-outline-neon-tube-ultra glow
+  assert.match(tsx, /useState<PerimeterLedRenderer>\("webgl"\)/);
+  assert.match(tsx, /useState<[^>]+>\("reference-v2-glm-no-outline-neon-tube-ultra"\)/);
 });

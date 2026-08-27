@@ -151,8 +151,8 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
   /** Set for returning devices (activation already persisted) so the lamp
    * itself — not just the card — is rendered in its illuminated state. */
   const [isReturningDevice, setIsReturningDevice] = useState(false);
-  const [perimeterLedRenderer, setPerimeterLedRenderer] = useState<PerimeterLedRenderer>("svg");
-  const [perimeterLedGlow, setPerimeterLedGlow] = useState<"none" | "soft" | "premium" | "neon" | "illuminated" | "reference" | "reference-v2" | "reference-v2-thick" | "reference-v2-glm" | "reference-v2-glm-bold" | "reference-v2-glm-no-outline" | "reference-v2-glm-no-outline-refined" | "reference-v2-glm-no-outline-refined-v2" | "reference-v2-glm-no-outline-neon-tube" | "reference-v2-glm-no-outline-perfect" | "reference-v2-glm-no-outline-neon-tube-solid" | "reference-v2-glm-no-outline-neon-tube-bold-curve" | "reference-v2-glm-no-outline-neon-tube-ultra">("none");
+  const [perimeterLedRenderer, setPerimeterLedRenderer] = useState<PerimeterLedRenderer>("webgl");
+  const [perimeterLedGlow, setPerimeterLedGlow] = useState<"none" | "soft" | "premium" | "neon" | "illuminated" | "reference" | "reference-v2" | "reference-v2-thick" | "reference-v2-glm" | "reference-v2-glm-bold" | "reference-v2-glm-no-outline" | "reference-v2-glm-no-outline-refined" | "reference-v2-glm-no-outline-refined-v2" | "reference-v2-glm-no-outline-neon-tube" | "reference-v2-glm-no-outline-perfect" | "reference-v2-glm-no-outline-neon-tube-solid" | "reference-v2-glm-no-outline-neon-tube-bold-curve" | "reference-v2-glm-no-outline-neon-tube-ultra">("reference-v2-glm-no-outline-neon-tube-ultra");
   const frameRef = useRef<HTMLDivElement>(null);
   const borderPathRef = useRef<SVGPathElement>(null);
   const transformLedRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -268,16 +268,16 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
     }
   }, []);
 
-  /* Runtime comparison switch only. Production remains on the existing SVG
-     renderer unless an explicit experiment is requested. */
+  /* Runtime comparison switch. Production defaults to WebGL with the ultra neon tube mode,
+     while URL query parameters allow falling back or testing past experiments. */
   useBeforePaintEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const requested = params.get("perimeterLedRenderer");
-    if (requested === "transform" || requested === "svg-concrete" || requested === "svg-simple-glow" || requested === "webgl") {
+    if (requested === "transform" || requested === "svg" || requested === "svg-concrete" || requested === "svg-simple-glow" || requested === "webgl") {
       setPerimeterLedRenderer(requested);
     }
     const requestedGlow = params.get("perimeterLedGlow");
-    if (requestedGlow === "soft" || requestedGlow === "premium" || requestedGlow === "neon" || requestedGlow === "illuminated" || requestedGlow === "reference" || requestedGlow === "reference-v2" || requestedGlow === "reference-v2-thick" || requestedGlow === "reference-v2-glm" || requestedGlow === "reference-v2-glm-bold" || requestedGlow === "reference-v2-glm-no-outline" || requestedGlow === "reference-v2-glm-no-outline-refined" || requestedGlow === "reference-v2-glm-no-outline-refined-v2" || requestedGlow === "reference-v2-glm-no-outline-neon-tube" || requestedGlow === "reference-v2-glm-no-outline-perfect" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-solid" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-bold-curve" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-ultra") {
+    if (requestedGlow === "none" || requestedGlow === "soft" || requestedGlow === "premium" || requestedGlow === "neon" || requestedGlow === "illuminated" || requestedGlow === "reference" || requestedGlow === "reference-v2" || requestedGlow === "reference-v2-thick" || requestedGlow === "reference-v2-glm" || requestedGlow === "reference-v2-glm-bold" || requestedGlow === "reference-v2-glm-no-outline" || requestedGlow === "reference-v2-glm-no-outline-refined" || requestedGlow === "reference-v2-glm-no-outline-refined-v2" || requestedGlow === "reference-v2-glm-no-outline-neon-tube" || requestedGlow === "reference-v2-glm-no-outline-perfect" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-solid" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-bold-curve" || requestedGlow === "reference-v2-glm-no-outline-neon-tube-ultra") {
       setPerimeterLedGlow(requestedGlow);
     }
   }, []);
