@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### WebGL Perimeter LED Default Production Promotion
+
+- Promoted `WebglPerimeterLed` to the `/login` production default renderer with the `reference-v2-glm-no-outline-neon-tube-ultra` profile (commit `8b8ea5e`).
+- Features 4 continuous traveling LED ribbons (2 Warm Amber + 2 Teal) in an 8000ms continuous orbit with 90° (25%) perimeter spacing.
+- Renders a ~5.0px solid chunky physical neon tube with a 100% full-thickness solid blunt front head cap and gradual tapered fade tail.
+- Hidden decorative static SVG outline (`visibility: hidden`) allowing single-source WebGL lighting.
+- Sweeping 30px rounded corner radius with concentric 28px card surface geometry.
+- Verified manual acceptance on physical mobile devices (Chrome on Android and Hola Browser).
+- Implements automatic `StaticPerimeterFallback` SVG degradation for non-WebGL environments and respects `prefers-reduced-motion: reduce`.
+- Full technical specification documented in `docs/54-webgl-perimeter-led-specification.md`.
+
 ### Profile Photos — Phase 3 Dashboard Integration Complete
 
 - Added Operator avatars with Google-sourced `User.image` to admin dashboard student-distribution list using the shared `Avatar` component at `sm` size (replaces `InitialsAvatar`).

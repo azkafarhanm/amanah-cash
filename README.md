@@ -104,6 +104,7 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Excel Export Foundation](docs/46-excel-export-foundation.md) | ExcelJS adapter, workbook layout, registry/HTTP integration, guard rails, tests, and deferred presentation work |
 | [PDF Export Foundation](docs/47-pdf-export-foundation.md) | PDFKit adapter, document-derived layout, pagination, registry/HTTP integration, guard rails, and tests |
 | [Financial Assurance Implementation](docs/48-financial-assurance-implementation.md) | Reconciliation, immutable audit reads, protected APIs, timeline UI, ownership/privacy boundaries, and verification |
+| [WebGL Perimeter LED Specification](docs/54-webgl-perimeter-led-specification.md) | Production WebGL perimeter LED lighting, geometry/SDF math, motion, fallback, and acceptance |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 

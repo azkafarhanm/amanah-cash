@@ -108,13 +108,16 @@ All animations use the signature easing: `cubic-bezier(0.16, 1, 0.3, 1)` — agg
 
 **No scale animation.** Scale on rectangular UI elements feels artificial.
 
-### Phase 5: Border Traces (1500ms — overlaps with Phase 4)
+### Phase 5: Perimeter LED Illumination (1500ms — overlaps with Phase 4)
 
-| Element | From | To | Duration |
-|---------|------|-----|----------|
-| SVG stroke-dashoffset | 2000 | 0 | 1200ms |
+| Element | Production Behavior | Specification |
+|---------|--------------------|---------------|
+| Perimeter Illumination | **WebGL Perimeter LED** | 4 traveling ribbons (2 Warm Amber + 2 Teal) in continuous 8000ms orbit |
+| Card Border Contour | 30px sweeping rounded corner radius | Procedural analytical SDF distance mapping |
+| Decorative Outline | Hidden (`visibility: hidden`) | Single-source WebGL lighting (`neon-tube-ultra`) |
+| Fallback Mechanism | `StaticPerimeterFallback` SVG | Static 4-ribbon fallback if WebGL unavailable or reduced motion |
 
-The trace starts from the top-center (under the lamp) and draws clockwise.
+*(Note: The legacy v1 implementation used a CSS/SVG `stroke-dashoffset` 2000 → 0 trace over 1200ms with a visible border outline. In production, this has been superseded by the hardware-accelerated WebGL perimeter LED system. See [WebGL Perimeter LED Specification](docs/54-webgl-perimeter-led-specification.md) for complete technical architecture).*
 
 ### Phase 6: Interactive (2700ms)
 
@@ -142,7 +145,8 @@ The trace starts from the top-center (under the lamp) and draws clockwise.
            ├── Opacity + translateY (600ms)
            └── Shadow transition (600ms)
 
-1500ms     Border traces (1200ms)
+1500ms     Perimeter LED illuminates
+           └── WebGL 4-LED continuous orbit begins (8000ms cycle)
 
 2700ms     Interactive
            └── Buttons enabled, focus management
@@ -219,7 +223,7 @@ When `prefers-reduced-motion: reduce` is active:
 - All phase transitions use 200ms ease instead of the signature easing.
 - No ignition flash animation.
 - No pull cord sway animation.
-- Border trace transition is instant (no stroke-dashoffset animation).
+- Perimeter illumination switches automatically to static accessible fallback (`StaticPerimeterFallback` SVG).
 - Card appears immediately (opacity 1, translateY 0).
 
 ### Screen Readers
