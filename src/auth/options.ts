@@ -226,16 +226,13 @@ export function buildAuthOptions(
         if (bindingValid) {
           const lastLoginAt = new Date();
           if (googleProfile?.picture) {
-            await prisma.$transaction([
-              prisma.user.updateMany({
-                where: { id: decision.user.id, image: null },
-                data: { image: googleProfile.picture }
-              }),
-              prisma.user.update({
-                where: { id: decision.user.id },
-                data: { lastLoginAt }
-              })
-            ]);
+            await prisma.user.update({
+              where: { id: decision.user.id },
+              data: {
+                image: googleProfile.picture,
+                lastLoginAt
+              }
+            });
           } else {
             await prisma.user.update({
               where: { id: decision.user.id },

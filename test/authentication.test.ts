@@ -247,7 +247,7 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
 
     const signIn = productionLikeOptions.callbacks!.signIn as unknown as (input: {
       account: { provider: string; providerAccountId: string };
-      profile: { email: string; email_verified: boolean; picture: string };
+      profile: { email: string; email_verified: boolean; picture?: string };
     }) => Promise<boolean>;
     const googleAccount = { provider: "google", providerAccountId: "google-operator-1" };
     assert.equal(await signIn({
@@ -258,10 +258,12 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
         picture: "https://profiles.example/first.jpg"
       }
     }), true);
-    assert.equal(
-      (await prisma.user.findUnique({ where: { id: "operator-1" }, select: { image: true } }))?.image,
-      "https://profiles.example/first.jpg"
-    );
+    const initialLoginUser = await prisma.user.findUnique({
+      where: { id: "operator-1" },
+      select: { image: true, lastLoginAt: true }
+    });
+    assert.equal(initialLoginUser?.image, "https://profiles.example/first.jpg");
+    assert.ok(initialLoginUser?.lastLoginAt instanceof Date);
 
     await adapter.linkAccount!({
       userId: "operator-1",
@@ -277,10 +279,26 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
         picture: "https://profiles.example/replacement.jpg"
       }
     }), true);
-    assert.equal(
-      (await prisma.user.findUnique({ where: { id: "operator-1" }, select: { image: true } }))?.image,
-      "https://profiles.example/first.jpg"
-    );
+    const replacementLoginUser = await prisma.user.findUnique({
+      where: { id: "operator-1" },
+      select: { image: true, lastLoginAt: true }
+    });
+    assert.equal(replacementLoginUser?.image, "https://profiles.example/replacement.jpg");
+    assert.ok(replacementLoginUser?.lastLoginAt instanceof Date);
+
+    assert.equal(await signIn({
+      account: googleAccount,
+      profile: {
+        email: "operator@example.com",
+        email_verified: true
+      }
+    }), true);
+    const noPictureLoginUser = await prisma.user.findUnique({
+      where: { id: "operator-1" },
+      select: { image: true, lastLoginAt: true }
+    });
+    assert.equal(noPictureLoginUser?.image, "https://profiles.example/replacement.jpg");
+    assert.ok(noPictureLoginUser?.lastLoginAt instanceof Date);
 
     await adapter.createSession!({
       sessionToken: "real-session",
