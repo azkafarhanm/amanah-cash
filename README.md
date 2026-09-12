@@ -129,6 +129,8 @@ Open `http://localhost:3000/login`. The example configuration enables the explic
 
 `npm run db:setup` validates the environment, applies migrations for the configured target, and runs the development seed. SQLite uses the ordered files in `migrations/`; PostgreSQL uses Prisma Migrate with the direct migration URL when `DIRECT_URL` is configured. It is safe to rerun. Use `npm run env:check`, `npm run db:migrate`, or `npm run db:seed` when only one step is needed. The seed command refuses to run when `NODE_ENV=production`. `npm run dev` also applies pending migrations and regenerates the provider-specific Prisma client before starting Next.js; restart the development server after changing the Prisma schema because an already-running process retains its loaded client.
 
+A production build never applies migrations. `npm run build` runs `npm run db:check` first, which fails the build when the configured PostgreSQL database is missing migrations the release expects. Apply them deliberately with `npx prisma migrate deploy` and build again. Set `DIRECT_URL` to the unpooled connection string so Prisma Migrate avoids the connection pooler.
+
 ### Environment variables
 
 `.env.example` is the authoritative local template. Keep real values in the ignored `.env` file or in the deployment secret store.

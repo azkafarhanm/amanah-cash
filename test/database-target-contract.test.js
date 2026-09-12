@@ -35,6 +35,20 @@ test("PostgreSQL migration branch executes Prisma deploy", async () => {
   assert.match(baselineScript, /["']--applied["']\s*,\s*["']0_init["']/);
 });
 
+test("the release build refuses to ship ahead of the database", async () => {
+  const [packageSource, check] = await Promise.all([
+    readFile("package.json", "utf8"),
+    readFile("scripts/check-pending-migrations.ts", "utf8")
+  ]);
+  const { scripts } = JSON.parse(packageSource);
+
+  assert.match(scripts.prebuild, /db:check/);
+  assert.match(scripts["db:check"], /check-pending-migrations/);
+  assert.match(check, /["']migrate["']\s*,\s*["']status["']/);
+  assert.match(check, /have not yet been applied/);
+  assert.match(check, /process\.exit\(1\)/);
+});
+
 test("PostgreSQL financial writes lock the Student row before authorization", async () => {
   const transactionService = await readFile("src/transactions/service.ts", "utf8");
 
