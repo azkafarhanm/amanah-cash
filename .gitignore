@@ -13,3 +13,5 @@ src/generated/
 graphify-out/
 .vercel
 *.mp4
+.agents/skills/
+skills-lock.json
