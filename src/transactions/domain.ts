@@ -148,6 +148,14 @@ export function reasonValue(value: unknown, label = "Alasan"): string {
   return reason;
 }
 
+export function optionalReasonValue(value: unknown, label = "Alasan"): string | null {
+  if (value === undefined || value === null || value === "") return null;
+  if (typeof value !== "string") throw new TransactionEngineError("VALIDATION", `${label} tidak valid.`, 400);
+  const reason = value.trim();
+  if (reason.length > 500) throw new TransactionEngineError("VALIDATION", `${label} maksimal 500 karakter.`, 400);
+  return reason || null;
+}
+
 export function notesValue(value: unknown): string | null {
   if (value === undefined || value === null || value === "") return null;
   if (typeof value !== "string") throw new TransactionEngineError("VALIDATION", "Catatan tidak valid.", 400);

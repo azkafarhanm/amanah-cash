@@ -7,6 +7,7 @@ import {
   commandId,
   correlationId,
   effect,
+  optionalReasonValue,
   payloadHash,
   reasonValue,
   revisionValue,
@@ -182,7 +183,7 @@ export function createTransactionEngine(database: TransactionEngineDatabase, now
   function edit(input: EditTransactionInput): TransactionResult {
     const values = transactionValues(input);
     const expectedRevision = revisionValue(input.expectedRevision);
-    const editReason = reasonValue(input.editReason, "Alasan edit");
+    const editReason = optionalReasonValue(input.editReason, "Alasan edit");
     const normalized = {
       operation: "EDIT", actorId: input.actorId, studentId: input.studentId, transactionId: transactionId(input.transactionId),
       commandId: commandId(input.commandId), expectedRevision, type: values.type, amount: values.amount.toString(),
@@ -431,7 +432,7 @@ export function createPrismaTransactionEngine(prisma: PrismaClient, now: () => D
   async function edit(input: EditTransactionInput): Promise<TransactionResult> {
     const values = transactionValues(input);
     const expectedRevision = revisionValue(input.expectedRevision);
-    const editReason = reasonValue(input.editReason, "Alasan edit");
+    const editReason = optionalReasonValue(input.editReason, "Alasan edit");
     const normalized = {
       operation: "EDIT", actorId: input.actorId, studentId: input.studentId, transactionId: transactionId(input.transactionId),
       commandId: commandId(input.commandId), expectedRevision, type: values.type, amount: values.amount.toString(),

@@ -398,15 +398,11 @@ export function TransactionDialog({
               </label>
 
               <label className={styles.field}>
-                Catatan
+                Catatan (opsional)
                 <textarea
                   className={styles.textarea}
                   name="notes"
                   defaultValue={item?.notes ?? ""}
-                  required={
-                    effectiveKind === "DEPOSIT" ||
-                    (kind === "EDIT" && selectedType === "DEPOSIT")
-                  }
                   maxLength={500}
                 />
               </label>
@@ -442,8 +438,8 @@ export function TransactionDialog({
 
               {kind === "EDIT" ? (
                 <label className={styles.field}>
-                  Alasan edit
-                  <textarea className={styles.textarea} name="editReason" required maxLength={500} />
+                  Alasan edit (opsional)
+                  <textarea className={styles.textarea} name="editReason" maxLength={500} />
                 </label>
               ) : null}
             </>
