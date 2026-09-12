@@ -70,7 +70,7 @@ ALTER TABLE "financial_audit_events"
         ("event_type" = 'CREATE' AND "before_snapshot" IS NULL)
         OR ("event_type" <> 'CREATE' AND "before_snapshot" IS NOT NULL)
       )
-      AND ("event_type" = 'CREATE' OR "reason" IS NOT NULL)
+      AND ("event_type" IN ('CREATE', 'EDIT') OR "reason" IS NOT NULL)
     )
   );
 
