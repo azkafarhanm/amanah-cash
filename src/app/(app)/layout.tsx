@@ -4,6 +4,7 @@ import { protectRoute } from "@/authorization/routes";
 import { AppLoading } from "@/components/app-shell/app-loading";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { SessionProvider } from "@/components/app-shell/session-provider";
+import { ScrollRestoration } from "@/components/app-shell/scroll-restoration";
 import { ThemeProvider } from "@/components/settings/theme-provider";
 import { ToastProvider } from "@/components/ui";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
@@ -24,6 +25,7 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
 
   return (
     <SessionProvider session={session}>
+      <ScrollRestoration />
       <ThemeProvider preference={theme}>
         <ToastProvider>
           <AppShell role={authorizationContext.role} user={session?.user ?? {}}>
@@ -34,4 +36,3 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
     </SessionProvider>
   );
 }
-

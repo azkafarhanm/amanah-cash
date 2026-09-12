@@ -12,7 +12,7 @@ export function BackButton({ href, children = "Kembali", className }: BackButton
   const combinedClassName = className ? `${styles.backButton} ${className}` : styles.backButton;
 
   return (
-    <Link href={href} className={combinedClassName}>
+    <Link href={href} scroll={false} className={combinedClassName}>
       <svg
         className={styles.backArrow}
         width="16"
