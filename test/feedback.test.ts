@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-test("logout and restore expose a post-session success notice", async () => {
+test("logout requires confirmation without a redundant success toast", async () => {
   const [logout, login, dataSettings, flashToast] = await Promise.all([
     readFile("src/components/auth/logout-button.tsx", "utf8"),
     readFile("src/app/(auth)/login/page.tsx", "utf8"),
@@ -10,9 +10,10 @@ test("logout and restore expose a post-session success notice", async () => {
     readFile("src/components/ui/flash-toast.tsx", "utf8")
   ]);
 
-  assert.match(logout, /LOGOUT_CALLBACK_URL/);
-  assert.match(login, /FlashToast/);
-  assert.match(login, /logged-out/);
+  assert.match(logout, /ConfirmationDialog/);
+  assert.match(logout, /LOGOUT_REDIRECT/);
+  assert.doesNotMatch(logout, /LOGOUT_CALLBACK_URL/);
+  assert.doesNotMatch(login, /logged-out/);
   assert.match(dataSettings, /RESTORE_CALLBACK_URL/);
   assert.doesNotMatch(dataSettings, /window\.confirm/);
   assert.match(flashToast, /toastContainer/);

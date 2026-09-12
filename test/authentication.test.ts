@@ -14,7 +14,7 @@ import {
   AuthenticationConfigurationError,
   loadAuthenticationEnvironment
 } from "../src/auth/environment";
-import { LOGOUT_REDIRECT } from "../src/components/auth/logout-button";
+import { LOGOUT_REDIRECT } from "../src/components/auth/logout-constants";
 import {
   buildAuthOptions,
   SESSION_MAX_AGE_SECONDS,

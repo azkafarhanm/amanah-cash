@@ -56,9 +56,7 @@ export default async function LoginPage({
     environment.googleClientId && environment.googleClientSecret
   );
   const errorDescription = describeOAuthLoginError(oauthError);
-  const noticeMessage = notice === "logged-out"
-    ? "Anda berhasil keluar dari Amanah Cash."
-    : notice === "restore-complete"
+  const noticeMessage = notice === "restore-complete"
     ? "Restore berhasil. Silakan masuk kembali untuk melanjutkan."
     : null;
 

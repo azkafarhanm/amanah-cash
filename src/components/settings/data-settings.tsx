@@ -3,7 +3,7 @@
 import { useRef, useState } from "react";
 import { signOut } from "next-auth/react";
 import { ConfirmationDialog, useToast } from "@/components/ui";
-import { RESTORE_CALLBACK_URL } from "@/components/auth/logout-button";
+import { RESTORE_CALLBACK_URL } from "@/components/auth/logout-constants";
 import styles from "./settings-sections.module.css";
 
 type BackupMetadata = {
