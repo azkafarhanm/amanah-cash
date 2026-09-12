@@ -28,7 +28,9 @@ test("Transaction UI uses accessible dialogs, mobile money input, filters, lifec
   assert.match(dialog, /errorSummary\.current\?\.focus\(\)/);
   assert.match(dialog, /kind === "DELETE"/);
   assert.match(dialog, /kind === "RESTORE"/);
-  assert.match(dialog, /selectedType === "DEPOSIT"/);
+  assert.doesNotMatch(dialog, /name="notes"[\s\S]{0,100}required=/);
+  assert.doesNotMatch(dialog, /name="editReason"[\s\S]{0,100}required=/);
+  assert.match(dialog, /name="reason"[\s\S]{0,100}required/);
   assert.match(experience, /aria-live="polite"/);
   assert.match(timeline, /Alasan Koreksi/);
   assert.match(experience, /name="dateFrom"/);
