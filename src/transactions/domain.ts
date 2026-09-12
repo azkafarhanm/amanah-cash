@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto";
+import { TransactionEngineError, effect, type CorrectionDirection, type TransactionErrorCode, type TransactionType } from "@/transactions/effect";
 
-export type TransactionType = "DEPOSIT" | "WITHDRAWAL" | "CORRECTION";
-export type CorrectionDirection = "INCREASE" | "DECREASE";
+export type { CorrectionDirection, TransactionErrorCode, TransactionType };
+export { TransactionEngineError, effect };
 export type FinancialEventType = "CREATE" | "EDIT" | "DELETE" | "RESTORE";
 
 export type TransactionSnapshot = {
@@ -68,30 +69,6 @@ export type LifecycleTransactionInput = {
   expectedRevision: unknown;
   reason: unknown;
 };
-
-export type TransactionErrorCode =
-  | "VALIDATION"
-  | "INSUFFICIENT_BALANCE"
-  | "READ_ONLY_STUDENT"
-  | "NOT_FOUND"
-  | "UNAUTHORIZED"
-  | "FORBIDDEN"
-  | "CONFLICT"
-  | "IDEMPOTENCY_CONFLICT"
-  | "CONCURRENT_MODIFICATION"
-  | "UNAVAILABLE";
-
-export class TransactionEngineError extends Error {
-  constructor(
-    public readonly code: TransactionErrorCode,
-    message: string,
-    public readonly status: number,
-    public readonly retryable = false
-  ) {
-    super(message);
-    this.name = "TransactionEngineError";
-  }
-}
 
 const TYPES = new Set<TransactionType>(["DEPOSIT", "WITHDRAWAL", "CORRECTION"]);
 const DIRECTIONS = new Set<CorrectionDirection>(["INCREASE", "DECREASE"]);
@@ -200,14 +177,6 @@ export function transactionValues(input: {
     throw new TransactionEngineError("VALIDATION", "Alasan ledger hanya boleh digunakan untuk Correction.", 400);
   }
   return { type, amount, occurredAt, correctionDirection: null, reason: null, notes };
-}
-
-export function effect(value: { type: TransactionType; amount: bigint; correctionDirection: CorrectionDirection | null }): bigint {
-  if (value.type === "DEPOSIT") return value.amount;
-  if (value.type === "WITHDRAWAL") return -value.amount;
-  if (value.type === "CORRECTION" && value.correctionDirection === "INCREASE") return value.amount;
-  if (value.type === "CORRECTION" && value.correctionDirection === "DECREASE") return -value.amount;
-  throw new TransactionEngineError("VALIDATION", "Transaction tidak memiliki efek Balance yang dikenal.", 400);
 }
 
 export function checkedBalance(balance: bigint, delta: bigint): bigint {

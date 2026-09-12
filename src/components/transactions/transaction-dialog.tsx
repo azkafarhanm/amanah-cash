@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui";
 import type { TransactionHistoryItem } from "@/transactions/read-service";
+import { effect } from "@/transactions/effect";
 import { WorkspaceStudentPicker, type StudentOption } from "./workspace/workspace-student-picker";
 import { formatThousand, parseNumericValue, rupiah } from "./presentation";
 import styles from "./transactions.module.css";
@@ -14,13 +15,16 @@ function localDateTime(value = new Date()) {
   return local.toISOString().slice(0, 16);
 }
 
-// Mirrors the server's balance rules in src/transactions/domain.ts, which cannot
-// be imported here because it pulls node:crypto into the client bundle.
-function balanceEffect(entry: TransactionHistoryItem): bigint {
-  const amount = BigInt(entry.amount);
-  if (entry.type === "DEPOSIT") return amount;
-  if (entry.type === "WITHDRAWAL") return -amount;
-  return entry.correctionDirection === "DECREASE" ? -amount : amount;
+// Uses the server's own balance rule (@/transactions/effect, the crypto-free
+// slice of @/transactions/domain) so this can never drift from it again. An
+// effect the server itself would refuse to compute is unknown, not zero or
+// positive: the caller falls back to letting the server decide.
+function balanceEffect(entry: TransactionHistoryItem): bigint | null {
+  try {
+    return effect({ type: entry.type, amount: BigInt(entry.amount), correctionDirection: entry.correctionDirection });
+  } catch {
+    return null;
+  }
 }
 
 export function TransactionDialog({
@@ -81,11 +85,13 @@ export function TransactionDialog({
   const activeStudentId = initialStudentId || selectedStudent?.id || "";
   const activeBalance = initialBalance ?? selectedStudent?.balance ?? null;
   // An edit replaces the original entry, so its effect is reverted before the new
-  // amount applies. Without a known balance the server stays the only judge.
+  // amount applies. Without a known balance or a known prior effect the server
+  // stays the only judge.
+  const editedItemEffect = kind === "EDIT" && item ? balanceEffect(item) : 0n;
   const availableBalance =
-    activeBalance === null
+    activeBalance === null || editedItemEffect === null
       ? null
-      : BigInt(activeBalance) - (kind === "EDIT" && item ? balanceEffect(item) : 0n);
+      : BigInt(activeBalance) - editedItemEffect;
 
   const effectiveKind = kind === "NEW" ? selectedType : kind;
   // The type this form will actually submit. NEW and EDIT both let the operator
