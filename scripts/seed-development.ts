@@ -1,7 +1,6 @@
 import "dotenv/config";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "../src/generated/prisma/client";
 import { loadAuthenticationEnvironment } from "../src/auth/environment";
+import { disconnectPrismaClient, getPrismaClient } from "../src/persistence/prisma";
 
 const environment = loadAuthenticationEnvironment();
 
@@ -21,9 +20,7 @@ if (adminEmail === operatorEmail) {
   throw new Error("Development admin and operator emails must be different");
 }
 
-const prisma = new PrismaClient({
-  adapter: new PrismaBetterSqlite3({ url: environment.databaseUrl })
-});
+const prisma = getPrismaClient(environment);
 
 try {
   const result = await prisma.$transaction(async (transaction) => {
@@ -83,5 +80,5 @@ try {
   console.log(`  Operator: ${result.operator.email}`);
   console.log(`  Student: ${result.student.name}`);
 } finally {
-  await prisma.$disconnect();
+  await disconnectPrismaClient();
 }

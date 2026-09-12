@@ -6,8 +6,9 @@
 ## Scope
 
 This preflight closes repository-local production risks without selecting a
-hosting vendor, changing the approved SQLite persistence architecture, or
-performing environment-specific deployment qualification.
+hosting vendor or performing environment-specific deployment qualification.
+The configured database target may be SQLite or PostgreSQL; the runtime and
+migration checks must use the same target in each environment.
 
 It covers:
 
@@ -84,7 +85,8 @@ npm run env:check:production
 The command forces production validation even when executed from a development
 shell. It requires:
 
-- `DATABASE_URL`: approved SQLite `file:` URL;
+- `DATABASE_URL`: approved SQLite `file:` URL or PostgreSQL URL;
+- `DIRECT_URL`: direct PostgreSQL URL for Prisma migrations when PostgreSQL is selected;
 - `AUTH_DEV_MODE=false`;
 - `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`;
 - `NEXTAUTH_SECRET`: at least 32 characters;
@@ -142,8 +144,9 @@ Manual QA remains required before Engineering Review acceptance:
 2. Run it with `AUTH_DEV_MODE=true`, a missing Google secret, an HTTP non-loopback
    origin, and an invalid export limit; confirm each fails explicitly without
    echoing the submitted value.
-3. Point a disposable configuration at an inaccessible SQLite location and run
-   `npm run db:migrate`; confirm the message is actionable and redacted.
+3. Point a disposable configuration at an inaccessible SQLite or PostgreSQL
+   target and run `npm run db:migrate`; confirm the message is actionable and
+   redacted.
 4. Exercise unauthenticated, wrong-role, missing-resource, and oversized-export
    failures and confirm their controlled status/message contracts.
 

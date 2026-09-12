@@ -6,7 +6,7 @@
 
 ## Scope delivered
 
-The Transaction Engine implements ownership-scoped Deposit, Withdrawal, directional Correction, edit, soft delete, and restore. It persists non-negative whole-IDR Student Balance and a monotonic financial version. Every successful lifecycle command writes the Transaction mutation, guarded Student Balance/version update, and immutable FinancialAuditEvent inside one SQLite `BEGIN IMMEDIATE` transaction.
+The Transaction Engine implements ownership-scoped Deposit, Withdrawal, directional Correction, edit, soft delete, and restore. It persists non-negative whole-IDR Student Balance and a monotonic financial version. Every successful lifecycle command writes the Transaction mutation, guarded Student Balance/version update, and immutable FinancialAuditEvent inside one provider transaction: SQLite uses `BEGIN IMMEDIATE`, while PostgreSQL locks the Student row with `FOR UPDATE` and retains the version guard.
 
 No Dashboard, chart, report, export, analytics, attachment, allowance, approval, category, notification, financial UI redesign, or financial read model is included.
 
@@ -19,7 +19,7 @@ Migration `005_transaction_engine.sql` and its Prisma mirror add:
 - conditional Correction and deletion-pair constraints;
 - business-time, active-history, type/date, reconciliation, and audit indexes;
 - immutable `financial_audit_events` with unique command IDs and deterministic snapshots; and
-- triggers prohibiting Transaction hard deletion, immutable identity changes, and audit update/delete.
+- triggers prohibiting Transaction hard deletion, immutable identity changes, and audit update/delete on both supported relational targets.
 
 The migration fails closed when legacy Transaction rows exist. Those rows lack trustworthy actor, business-time, command, revision, and audit provenance, so the migration does not invent a backfill identity. An operator must resolve such data under a separately reviewed import/recovery procedure before applying the migration.
 
@@ -29,7 +29,7 @@ Protected nested Operator APIs reuse the centralized owner authorization policy.
 
 The command flow is:
 
-1. `BEGIN IMMEDIATE` and reload actor/Student state.
+1. Start the provider transaction, serialize the Student row, and reload actor/Student state.
 2. Resolve unique command ID and reject payload mismatch.
 3. Validate type, exact signed-64-bit amount, Correction shape, lifecycle reason, occurrence time, and expected revision.
 4. Calculate the proposed Balance and reject overflow or a negative result.

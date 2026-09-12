@@ -204,6 +204,22 @@ export function buildAuthOptions(
             }
           }
         });
+        if (process.env.NEXTAUTH_DEBUG === "true") {
+          console.log(
+            "[auth-diag]",
+            JSON.stringify({
+              provider: account?.provider,
+              providerAccountId: account?.providerAccountId,
+              profileEmail: googleProfile?.email ?? null,
+              profileEmailVerified: googleProfile?.email_verified ?? null,
+              normalizedEmail: googleProfile?.email
+                ? normalizeGoogleEmail(googleProfile.email)
+                : null,
+              decisionAllowed: decision.allowed,
+              decisionReason: decision.allowed ? null : decision.reason
+            })
+          );
+        }
         if (!decision.allowed || !account?.providerAccountId) return false;
 
         // NextAuth v4 upgrades an existing session when the OAuth callback
@@ -214,6 +230,12 @@ export function buildAuthOptions(
         // (callbacks.signIn runs before callbackHandler/linkAccount, so
         // returning false here prevents the link entirely.)
         const sessionUserId = await activeSessionUserId();
+        if (process.env.NEXTAUTH_DEBUG === "true") {
+          console.log(
+            "[auth-diag]",
+            JSON.stringify({ sessionUserId, admittedUserId: decision.user.id })
+          );
+        }
         if (isCrossUserSessionUpgrade(sessionUserId, decision.user.id)) return false;
 
         const linkedAccount = await prisma.account.findUnique({
@@ -226,6 +248,12 @@ export function buildAuthOptions(
           select: { userId: true }
         });
         const bindingValid = isGoogleAccountBindingValid(decision.user.id, linkedAccount?.userId ?? null);
+        if (process.env.NEXTAUTH_DEBUG === "true") {
+          console.log(
+            "[auth-diag]",
+            JSON.stringify({ linkedUserId: linkedAccount?.userId ?? null, bindingValid })
+          );
+        }
         if (bindingValid) {
           const lastLoginAt = new Date();
           if (googleProfile?.picture) {

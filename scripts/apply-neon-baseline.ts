@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import pg from "pg";
@@ -282,7 +283,22 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("FAILED:", err);
-  process.exit(1);
-});
+const prismaCommand = process.platform === "win32" ? "prisma.cmd" : "prisma";
+
+main()
+  .then(() => {
+    const result = spawnSync(prismaCommand, ["migrate", "resolve", "--applied", "0_init"], {
+      cwd: resolve("."),
+      env: process.env,
+      stdio: "inherit"
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(`Failed to register PostgreSQL baseline migration (status ${result.status ?? "unknown"})`);
+    }
+    console.log("✔ PostgreSQL baseline registered in Prisma migration history as 0_init.");
+  })
+  .catch((err) => {
+    console.error("FAILED:", err);
+    process.exit(1);
+  });

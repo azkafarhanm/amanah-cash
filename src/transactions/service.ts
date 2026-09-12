@@ -268,6 +268,16 @@ export function createPrismaTransactionEngine(prisma: PrismaClient, now: () => D
           throw new TransactionEngineError("FORBIDDEN", "Platform Admin tidak dapat mengakses data finansial.", 403);
         }
 
+        // Serialize financial commands with ownership/status changes for this Student.
+        // The version guard below detects competing financial writes; this row lock
+        // also prevents a stale ownership or status read from committing afterward.
+        await tx.$queryRaw<{ id: string }[]>`
+          SELECT "id"
+          FROM "students"
+          WHERE "id" = ${input.studentId}
+          FOR UPDATE
+        `;
+
         const student = await tx.student.findFirst({
           where: { id: input.studentId, operatorId: input.actorId },
           select: { id: true, status: true, balance: true, financialVersion: true, operatorId: true }
@@ -566,4 +576,3 @@ export function transactionEngine() {
   }
   return createTransactionEngine(globalFinancial.amanahCashFinancialDatabase);
 }
-

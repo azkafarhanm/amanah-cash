@@ -110,7 +110,7 @@ AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 
 ## Local Development
 
-Prerequisites are Node.js 24 or newer, npm, and a local SQLite-compatible environment. From a fresh clone:
+Prerequisites are Node.js 24 or newer, npm, and a configured SQLite or PostgreSQL database target. From a fresh clone, the default `.env.example` uses SQLite:
 
 ```bash
 npm install
@@ -127,7 +127,7 @@ Open `http://localhost:3000/login`. The example configuration enables the explic
 | Operator | `operator@amanah-cash.example` | Owns and manages the seeded Student's financial record |
 | Student | `Development Student` | Active Student assigned to the seeded Operator |
 
-`npm run db:setup` validates the environment, applies all ordered SQLite migrations, and runs the development seed. It is safe to rerun. Use `npm run env:check`, `npm run db:migrate`, or `npm run db:seed` when only one step is needed. The seed command refuses to run when `NODE_ENV=production`. `npm run dev` also applies pending migrations and regenerates the Prisma client before starting Next.js; restart the development server after changing the Prisma schema because an already-running process retains its loaded client.
+`npm run db:setup` validates the environment, applies migrations for the configured target, and runs the development seed. SQLite uses the ordered files in `migrations/`; PostgreSQL uses Prisma Migrate with the direct migration URL when `DIRECT_URL` is configured. It is safe to rerun. Use `npm run env:check`, `npm run db:migrate`, or `npm run db:seed` when only one step is needed. The seed command refuses to run when `NODE_ENV=production`. `npm run dev` also applies pending migrations and regenerates the provider-specific Prisma client before starting Next.js; restart the development server after changing the Prisma schema because an already-running process retains its loaded client.
 
 ### Environment variables
 
@@ -135,7 +135,8 @@ Open `http://localhost:3000/login`. The example configuration enables the explic
 
 | Variable | When required | Description |
 |---|---|---|
-| `DATABASE_URL` | Always | SQLite `file:` URL. The default stores the database under ignored `data/`. |
+| `DATABASE_URL` | Always | SQLite `file:` URL or PostgreSQL connection URL. The default stores SQLite under ignored `data/`. |
+| `DIRECT_URL` | PostgreSQL migrations; optional otherwise | Direct, unpooled PostgreSQL URL used by Prisma Migrate. |
 | `NEXTAUTH_SECRET` | Always | At least 32 characters. Generate a unique deployment value with `openssl rand -base64 32`; never deploy the local example. |
 | `NEXTAUTH_URL` | Always | Exact application origin with no path, query, or fragment. Non-HTTPS is accepted only on loopback during development. |
 | `AUTH_DEV_MODE` | Optional; defaults to `false` | Enables seeded local sign-in only outside production. A production process fails closed if this is `true`. |
@@ -145,8 +146,9 @@ Open `http://localhost:3000/login`. The example configuration enables the explic
 | `EXPORT_MAX_BYTES` | Optional | Positive estimated and final rendered-byte guard rail. |
 
 Run `npm run env:check:production` before deployment qualification. It forces
-production-mode validation of Google OAuth, HTTPS origin, server-only SQLite,
-secrets, and export limits while redacting database location and secret values.
+production-mode validation of Google OAuth, HTTPS origin, server-only database
+configuration, secrets, and export limits while redacting database location and
+secret values.
 See [Production Preflight](docs/49-production-preflight.md) for dependency review,
 diagnostic evidence, remaining blockers, and Manual QA.
 | `DEV_SEED_ADMIN_EMAIL` | Development seed; local auth | Platform Admin seed email and local-auth allowlist entry. |

@@ -20,10 +20,10 @@
     "prisma:format": "prisma format",
     "prisma:generate": "prisma generate",
     "prisma:validate": "prisma validate",
-    "pretest": "prisma generate",
+    "pretest": "prisma generate --schema prisma/schema.prisma",
     "pretypecheck": "prisma generate",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test test/*.test.js test/*.test.ts",
+    "test": "tsx --test --tsconfig tsconfig.test.json test/*.test.js test/*.test.ts",
     "release:validate": "tsx scripts/validate-release.ts"
   },
   "dependencies": {
