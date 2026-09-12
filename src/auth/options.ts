@@ -169,7 +169,10 @@ export function buildAuthOptions(
           httpOnly: true,
           sameSite: "lax",
           path: "/",
-          secure: secureCookies
+          secure: secureCookies,
+          // Keep the auth cookie across browser/PWA restarts. Auth.js also
+          // refreshes the concrete expiry on eligible session requests.
+          maxAge: SESSION_MAX_AGE_SECONDS
         }
       }
     },
