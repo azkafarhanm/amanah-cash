@@ -58,7 +58,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "010_settings_preferences.sql" },
     { version: "011_settings_final_contract.sql" },
     { version: "012_maintenance_audit.sql" },
-    { version: "013_student_profile_photo_foundation.sql" }
+    { version: "013_student_profile_photo_foundation.sql" },
+    { version: "014_optional_edit_reason.sql" }
   ]);
   first.close();
 
@@ -77,7 +78,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "010_settings_preferences.sql" },
     { version: "011_settings_final_contract.sql" },
     { version: "012_maintenance_audit.sql" },
-    { version: "013_student_profile_photo_foundation.sql" }
+    { version: "013_student_profile_photo_foundation.sql" },
+    { version: "014_optional_edit_reason.sql" }
   ]);
   second.close();
 });
@@ -179,6 +181,13 @@ test("Transaction UI notes migration mirror matches the executable migration", (
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260721000000_transaction_ui_notes/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/006_transaction_ui_notes.sql"), "utf8")
+  );
+});
+
+test("optional edit reason migration is mirrored for the SQLite Prisma history", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20260912000000_optional_edit_reason/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/014_optional_edit_reason.sql"), "utf8")
   );
 });
 

@@ -90,6 +90,36 @@ test("Edit applies only the effect difference and records deterministic before/a
   database.close();
 });
 
+test("transaction notes and edit reasons are optional while correction reasons remain required", () => {
+  const { database, engine, create } = fixture();
+  const deposit = create({ notes: "" });
+  assert.equal(deposit.transaction.notes, null);
+
+  const edited = engine.edit({
+    actorId: "operator-1", studentId: "student-1", transactionId: deposit.transaction.id,
+    commandId: crypto.randomUUID(), correlationId: crypto.randomUUID(), expectedRevision: 1,
+    type: "DEPOSIT", amount: "700", occurredAt: "2026-07-20T11:00:00.000Z", editReason: ""
+  });
+  assert.equal(edited.transaction.notes, null);
+  assert.equal(
+    (database.prepare("SELECT reason FROM financial_audit_events WHERE event_type = 'EDIT'").get() as { reason: string | null }).reason,
+    null
+  );
+
+  assert.throws(
+    () => create({ type: "CORRECTION", amount: "10", correctionDirection: "INCREASE", reason: "" }),
+    (error: unknown) => error instanceof TransactionEngineError && error.code === "VALIDATION" && error.message === "Alasan Correction wajib diisi."
+  );
+  assert.throws(
+    () => engine.remove({
+      actorId: "operator-1", studentId: "student-1", transactionId: deposit.transaction.id,
+      commandId: crypto.randomUUID(), correlationId: crypto.randomUUID(), expectedRevision: 2, reason: ""
+    }),
+    (error: unknown) => error instanceof TransactionEngineError && error.code === "VALIDATION" && error.message === "Alasan wajib diisi."
+  );
+  database.close();
+});
+
 test("Edit rolls back when its effect would make Balance negative", () => {
   const { database, engine, create } = fixture();
   const deposit = create();
