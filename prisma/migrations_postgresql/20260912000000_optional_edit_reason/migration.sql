@@ -1,6 +1,3 @@
-DROP TRIGGER IF EXISTS "trg_financial_audit_no_update";
-DROP TRIGGER IF EXISTS "trg_financial_audit_no_delete";
-
 ALTER TABLE "financial_audit_events"
   DROP CONSTRAINT IF EXISTS "ck_financial_audit_shape";
 
