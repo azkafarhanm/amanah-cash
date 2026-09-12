@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadAuthenticationEnvironment } from "../src/auth/environment";
@@ -13,7 +14,17 @@ try {
     environment.databaseUrl.startsWith("postgresql://");
 
   if (isPostgres) {
-    console.log("Database migrations for PostgreSQL are managed via Prisma CLI (prisma migrate deploy).");
+    const prismaCommand = process.platform === "win32" ? "prisma.cmd" : "prisma";
+    const result = spawnSync(prismaCommand, ["migrate", "deploy"], {
+      cwd: projectRoot,
+      env: process.env,
+      stdio: "inherit"
+    });
+    if (result.error) throw result.error;
+    if (result.status !== 0) {
+      throw new Error(`PostgreSQL migration exited with status ${result.status ?? "unknown"}`);
+    }
+    console.log("Database migrations are current for the configured PostgreSQL target.");
     process.exit(0);
   }
 

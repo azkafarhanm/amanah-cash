@@ -9,7 +9,7 @@ coverage/
 !.env.local.example
 *.tsbuildinfo
 next-env.d.ts
-src/generated/prisma/
+src/generated/
 graphify-out/
 .vercel
 *.mp4

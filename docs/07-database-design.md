@@ -153,7 +153,7 @@ This query is a verification/reconciliation path, not the routine Balance write 
 
 ### 8.1 Serialization
 
-The current SQLite target uses `BEGIN IMMEDIATE` before Student, ownership, status, Transaction, command, or Balance reads. This reserves the single-writer boundary. A future database must use an equivalent Student row lock or compare-and-set using `financial_version`.
+The SQLite target uses `BEGIN IMMEDIATE` before Student, ownership, status, Transaction, command, or Balance reads. The PostgreSQL target uses an equivalent `SELECT ... FOR UPDATE` Student row lock plus the `financial_version` compare-and-set guard.
 
 The supported SQLite process boundary remains one active server process and one database file with no external writer. Physical serialization across different Students is acceptable; logical correctness remains per Student.
 

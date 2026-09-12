@@ -8,7 +8,7 @@
 
 This persistence design implements ADR-001, ADR-002, ADR-003, and the Authentication and Authorization TDS. It introduces no Auth.js configuration, provider, callback, session behavior, bootstrap executable, route protection, authorization middleware, API, or UI.
 
-The existing SQLite migration runner remains the application-startup migration authority. The executable migration is `migrations/002_auth_identity_and_ownership.sql`; the Prisma migration artifact at `prisma/migrations/20260720000000_auth_identity_and_ownership/migration.sql` is kept identical by an automated test. This avoids changing the working persistence bootstrap during an identity-only sprint while providing the Prisma migration artifact needed by the next integration sprint.
+The SQLite migration runner remains the application-startup migration authority for SQLite targets. PostgreSQL targets use Prisma Migrate through `prisma migrate deploy`; both paths are selected from the configured `DATABASE_URL`. The executable SQLite migration is `migrations/002_auth_identity_and_ownership.sql`, while the provider-specific Prisma migration artifacts remain covered by automated tests.
 
 ## 2. Model decisions
 
@@ -81,5 +81,5 @@ There is no seed file and no automatic User creation. The future `SUPER_ADMIN_EM
 - Admission logic must link Google to an existing active User; it must not rely on the adapter to create a provisioned User.
 - Because `name` and `role` are required and role has no default, an unintended generic adapter `createUser` call fails closed.
 - Provider-token retention must follow the TDS. Nullable Account token fields exist for adapter compatibility; their presence does not authorize retaining offline credentials.
-- The runtime SQLite driver enables foreign keys and retains the existing single-writer persistence boundary.
+- The runtime SQLite driver enables foreign keys and retains the existing single-writer persistence boundary. PostgreSQL uses the Prisma adapter, tracked migrations, and row-level locking for financial writes.
 - The separately approved populated-database ownership mapping must be completed before production migration.

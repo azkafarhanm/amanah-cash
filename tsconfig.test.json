@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/generated/prisma/*": ["./src/generated/prisma/*"],
+      "@/*": ["./src/*"]
+    }
+  }
+}
