@@ -28,7 +28,7 @@ test("Settings renders role-correct Data, Security, and About groups", async () 
   }
   assert.match(data, /api\/admin\/settings\/backup/);
   assert.match(data, /api\/admin\/settings\/restore/);
-  assert.match(data, /window\.confirm/);
+  assert.match(data, /ConfirmationDialog/);
   assert.match(securityAbout, /myaccount\.google\.com\/security/);
   assert.match(securityAbout, /href="\/changelog"/);
   assert.match(changelog, /releasedChangelog/);

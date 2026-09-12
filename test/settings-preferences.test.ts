@@ -36,7 +36,7 @@ test("Preferences UI is local-first and deletion safety is not configurable", as
   assert.doesNotMatch(schema, /deleteConfirmation/);
   assert.match(migration, /default_page_size[\s\S]*IN \(10, 20, 50\)/);
   assert.doesNotMatch(migration, /delete_confirmation/);
-  assert.match(deleteForm, /window\.confirm/);
+  assert.match(deleteForm, /ConfirmationDialog/);
   assert.doesNotMatch(deleteForm, /requireConfirmation/);
   assert.doesNotMatch(transactionDialog, /deleteConfirmation|requireConfirmation/);
 });

@@ -29,3 +29,5 @@ export { BackButton, type BackButtonProps } from "./back-button";
 export { SectionDivider, type SectionDividerProps } from "./section-divider";
 export { Toast, type ToastProps, type ToastTone } from "./toast";
 export { ToastProvider, useToast } from "./toast-provider";
+export { ConfirmationDialog } from "./confirmation-dialog";
+export { FlashToast } from "./flash-toast";

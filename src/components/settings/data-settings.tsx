@@ -2,7 +2,8 @@
 
 import { useRef, useState } from "react";
 import { signOut } from "next-auth/react";
-import { useToast } from "@/components/ui";
+import { ConfirmationDialog, useToast } from "@/components/ui";
+import { RESTORE_CALLBACK_URL } from "@/components/auth/logout-button";
 import styles from "./settings-sections.module.css";
 
 type BackupMetadata = {
@@ -30,6 +31,7 @@ export function DataSettings() {
     "idle" | "backing-up" | "validating" | "ready" | "restoring" | "error"
   >("idle");
   const [message, setMessage] = useState("");
+  const [confirmRestoreOpen, setConfirmRestoreOpen] = useState(false);
 
   async function downloadBackup() {
     setStatus("backing-up");
@@ -84,10 +86,8 @@ export function DataSettings() {
 
   async function restore() {
     if (!artifact || status !== "ready") return;
-    if (!window.confirm(
-      "Pulihkan backup ini? Semua data aplikasi saat ini akan diganti dan seluruh pengguna harus masuk kembali."
-    )) return;
 
+    setConfirmRestoreOpen(false);
     setStatus("restoring");
     setMessage("Memulihkan data… Jangan tutup halaman ini.");
     const body = new FormData();
@@ -98,11 +98,15 @@ export function DataSettings() {
         body
       });
       if (!response.ok) throw new Error("RESTORE_FAILED");
-      await signOut({ callbackUrl: "/login" });
+      await signOut({ callbackUrl: RESTORE_CALLBACK_URL });
     } catch {
       setStatus("error");
       setMessage("Restore gagal. Data saat ini tidak diubah.");
     }
+  }
+
+  function requestRestore() {
+    if (artifact && status === "ready") setConfirmRestoreOpen(true);
   }
 
   return (
@@ -159,7 +163,7 @@ export function DataSettings() {
             }}
           />
           {status === "ready" ? (
-            <button className={styles.dangerButton} type="button" onClick={() => void restore()}>
+            <button className={styles.dangerButton} type="button" onClick={requestRestore}>
               Pulihkan backup
             </button>
           ) : null}
@@ -169,6 +173,16 @@ export function DataSettings() {
       <p className={styles.status} role={status === "error" ? "alert" : "status"} aria-live="polite">
         {status === "validating" ? "Memvalidasi backup…" : message}
       </p>
+
+      <ConfirmationDialog
+        open={confirmRestoreOpen}
+        title="Pulihkan backup?"
+        description="Semua data aplikasi saat ini akan diganti dan seluruh pengguna harus masuk kembali setelah proses selesai."
+        confirmLabel="Pulihkan backup"
+        pending={status === "restoring"}
+        onCancel={() => setConfirmRestoreOpen(false)}
+        onConfirm={() => void restore()}
+      />
     </section>
   );
 }

@@ -2,13 +2,14 @@
 
 import { useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui";
+import { Button, useToast } from "@/components/ui";
 import styles from "./students.module.css";
 import dialogStyles from "@/components/transactions/transactions.module.css";
 
 export function CreateStudentModal() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const router = useRouter();
+  const toast = useToast();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
 
@@ -51,6 +52,7 @@ export function CreateStudentModal() {
 
       form.reset();
       closeModal();
+      toast.success("Siswa berhasil ditambahkan.");
       router.refresh();
     } catch {
       setError("Terjadi kesalahan sistem. Silakan coba lagi.");

@@ -12,6 +12,7 @@ import {
 import { LogoutButton } from "@/components/auth/logout-button";
 import { LoginButton } from "@/components/auth/login-button";
 import { LoginExperience } from "@/components/auth/login-experience";
+import { FlashToast } from "@/components/ui";
 
 import styles from "../auth.module.css";
 
@@ -20,9 +21,9 @@ export const dynamic = "force-dynamic";
 export default async function LoginPage({
   searchParams
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; notice?: string }>;
 }) {
-  const { error: oauthError } = await searchParams;
+  const { error: oauthError, notice } = await searchParams;
   let session;
   let environment;
   try {
@@ -55,6 +56,11 @@ export default async function LoginPage({
     environment.googleClientId && environment.googleClientSecret
   );
   const errorDescription = describeOAuthLoginError(oauthError);
+  const noticeMessage = notice === "logged-out"
+    ? "Anda berhasil keluar dari Amanah Cash."
+    : notice === "restore-complete"
+    ? "Restore berhasil. Silakan masuk kembali untuk melanjutkan."
+    : null;
 
   return (
     <LoginExperience
@@ -91,6 +97,8 @@ export default async function LoginPage({
             : "Masuk menggunakan akun Google yang telah didaftarkan oleh administrator."}
         </p>
       </div>
+
+      {noticeMessage ? <FlashToast title={noticeMessage} /> : null}
 
       {errorDescription ? (
         <div className={styles.authError} role="alert">
