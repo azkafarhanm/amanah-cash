@@ -88,6 +88,9 @@ export function TransactionDialog({
       : BigInt(activeBalance) - (kind === "EDIT" && item ? balanceEffect(item) : 0n);
 
   const effectiveKind = kind === "NEW" ? selectedType : kind;
+  // The type this form will actually submit. NEW and EDIT both let the operator
+  // pick one; effectiveKind stays "EDIT" so the dialog keeps its own title.
+  const submittedType = kind === "NEW" || kind === "EDIT" ? selectedType : kind;
 
   const title =
     effectiveKind === "DEPOSIT"
@@ -184,7 +187,7 @@ export function TransactionDialog({
         reason: data.get("lifecycleReason")
       };
     } else {
-      const type = kind === "EDIT" || kind === "NEW" ? selectedType : kind;
+      const type = submittedType;
       const amount = parseNumericValue(data.get("amount"));
       if (!amount || !/^[0-9]+$/.test(amount) || BigInt(amount) <= BigInt(0)) {
         setError("Jumlah harus berupa Rupiah bulat dan lebih dari nol.");
@@ -424,7 +427,7 @@ export function TransactionDialog({
                 />
               </label>
 
-              {effectiveKind === "CORRECTION" ? (
+              {submittedType === "CORRECTION" ? (
                 <div className={styles.correctionFields}>
                   <label className={styles.field}>
                     Arah koreksi

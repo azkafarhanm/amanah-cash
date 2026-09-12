@@ -15,6 +15,17 @@ const temporary = join(tmpdir(), `amanah-cash-transaction-ui-${crypto.randomUUID
 
 after(() => rmSync(temporary, { recursive: true, force: true }));
 
+test("Correction fields follow the submitted type so a CORRECTION can be edited", () => {
+  const dialog = source("src/components/transactions/transaction-dialog.tsx");
+
+  // Gating the correction fields on effectiveKind hid them during an edit, while
+  // submit still sent type=CORRECTION with a null reason, so every correction
+  // edit was rejected by the server.
+  assert.match(dialog, /const submittedType = kind === "NEW" \|\| kind === "EDIT" \? selectedType : kind/);
+  assert.match(dialog, /\{submittedType === "CORRECTION" \? \(/);
+  assert.doesNotMatch(dialog, /\{effectiveKind === "CORRECTION" \? \(/);
+});
+
 test("Transaction UI uses accessible dialogs, mobile money input, filters, lifecycle controls, and live outcomes", () => {
   const dialog = source("src/components/transactions/transaction-dialog.tsx");
   const experience = source("src/components/transactions/transaction-experience.tsx");
