@@ -14,6 +14,15 @@ function localDateTime(value = new Date()) {
   return local.toISOString().slice(0, 16);
 }
 
+// Mirrors the server's balance rules in src/transactions/domain.ts, which cannot
+// be imported here because it pulls node:crypto into the client bundle.
+function balanceEffect(entry: TransactionHistoryItem): bigint {
+  const amount = BigInt(entry.amount);
+  if (entry.type === "DEPOSIT") return amount;
+  if (entry.type === "WITHDRAWAL") return -amount;
+  return entry.correctionDirection === "DECREASE" ? -amount : amount;
+}
+
 export function TransactionDialog({
   kind,
   studentId: initialStudentId,
@@ -70,7 +79,13 @@ export function TransactionDialog({
 
   const isPickerRequired = allowStudentPicker || !initialStudentId;
   const activeStudentId = initialStudentId || selectedStudent?.id || "";
-  const activeBalance = initialBalance ?? selectedStudent?.balance ?? "0";
+  const activeBalance = initialBalance ?? selectedStudent?.balance ?? null;
+  // An edit replaces the original entry, so its effect is reverted before the new
+  // amount applies. Without a known balance the server stays the only judge.
+  const availableBalance =
+    activeBalance === null
+      ? null
+      : BigInt(activeBalance) - (kind === "EDIT" && item ? balanceEffect(item) : 0n);
 
   const effectiveKind = kind === "NEW" ? selectedType : kind;
 
@@ -177,7 +192,7 @@ export function TransactionDialog({
         if (amountField instanceof HTMLElement) amountField.focus();
         return;
       }
-      if (type === "WITHDRAWAL" && BigInt(amount) > BigInt(activeBalance)) {
+      if (type === "WITHDRAWAL" && availableBalance !== null && BigInt(amount) > availableBalance) {
         setError("Saldo tidak mencukupi. Server akan tetap memvalidasi saldo saat penyimpanan.");
         return;
       }
@@ -293,9 +308,11 @@ export function TransactionDialog({
               <h2 id={`${kind}-${item?.id ?? "new"}-title`}>{title}</h2>
               <p>
                 {effectiveKind === "DEPOSIT"
-                  ? `Saldo akan bertambah.${activeStudentId ? ` Saldo saat ini ${rupiah(activeBalance)}.` : ""}`
+                  ? `Saldo akan bertambah.${activeStudentId && activeBalance !== null ? ` Saldo saat ini ${rupiah(activeBalance)}.` : ""}`
                   : effectiveKind === "WITHDRAWAL"
-                  ? `Saldo tersedia ${rupiah(activeBalance)}.`
+                  ? availableBalance === null
+                    ? "Saldo akan divalidasi server saat penyimpanan."
+                    : `Saldo tersedia ${rupiah(String(availableBalance))}.`
                   : effectiveKind === "CORRECTION"
                   ? "Gunakan hanya untuk menyesuaikan selisih ledger."
                   : isLifecycle

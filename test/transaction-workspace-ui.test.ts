@@ -111,6 +111,20 @@ test("TransactionDialog provides dual submit actions and consecutive mode reset 
   assert.match(dialogSrc, /setSelectedStudent/);
 });
 
+test("TransactionDialog treats an unknown balance as unknown rather than zero", () => {
+  const dialogSrc = source("src/components/transactions/transaction-dialog.tsx");
+
+  // The workspace opens edits without a balance prop. Defaulting to "0" made the
+  // client-side guard reject every withdrawal edit opened from there.
+  assert.doesNotMatch(dialogSrc, /selectedStudent\?\.balance \?\? "0"/);
+  assert.match(dialogSrc, /selectedStudent\?\.balance \?\? null/);
+
+  // The guard stands down when the balance is unknown, and an edit reverts the
+  // original entry's effect before the new amount is compared.
+  assert.match(dialogSrc, /availableBalance !== null && BigInt\(amount\) > availableBalance/);
+  assert.match(dialogSrc, /kind === "EDIT" && item \? balanceEffect\(item\) : 0n/);
+});
+
 test("TransactionWorkspaceView renders top action button and inline mutation modal handlers", () => {
   const viewSrc = source("src/components/transactions/workspace/transaction-workspace-view.tsx");
   assert.match(viewSrc, /\+ Catat Transaksi/);
