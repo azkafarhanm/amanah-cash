@@ -15,7 +15,11 @@ import {
   loadAuthenticationEnvironment
 } from "../src/auth/environment";
 import { LOGOUT_REDIRECT } from "../src/components/auth/logout-button";
-import { buildAuthOptions, SESSION_MAX_AGE_SECONDS } from "../src/auth/options";
+import {
+  buildAuthOptions,
+  SESSION_MAX_AGE_SECONDS,
+  SESSION_UPDATE_AGE_SECONDS
+} from "../src/auth/options";
 import { getPrismaClient } from "../src/persistence/prisma";
 import { openDatabase } from "../src/persistence/database.js";
 
@@ -222,6 +226,8 @@ test("Prisma adapter creates, resolves, and destroys a real database session", a
   try {
     const productionLikeOptions = buildAuthOptions(environment);
     assert.equal(productionLikeOptions.session?.strategy, "database");
+    assert.equal(SESSION_MAX_AGE_SECONDS, 30 * 24 * 60 * 60);
+    assert.equal(SESSION_UPDATE_AGE_SECONDS, 24 * 60 * 60);
     assert.equal(
       productionLikeOptions.cookies?.sessionToken?.options.maxAge,
       SESSION_MAX_AGE_SECONDS

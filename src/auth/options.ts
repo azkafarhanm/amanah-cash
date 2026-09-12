@@ -23,8 +23,8 @@ import {
 } from "@/auth/environment";
 import { getPrismaClient } from "@/persistence/prisma";
 
-export const SESSION_MAX_AGE_SECONDS = 8 * 60 * 60;
-export const SESSION_UPDATE_AGE_SECONDS = 15 * 60;
+export const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
+export const SESSION_UPDATE_AGE_SECONDS = 24 * 60 * 60;
 
 const Google = ((GoogleProvider as unknown as { default?: typeof GoogleProvider }).default ??
   GoogleProvider) as typeof GoogleProvider;

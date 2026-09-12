@@ -56,7 +56,7 @@ test("client shell is served through the server boundary", async () => {
 test("PWA manifest defines standalone metadata and scalable icons", () => {
   const manifest = JSON.parse(readFileSync(resolve(root, "public", "manifest.webmanifest"), "utf8"));
   assert.equal(manifest.display, "standalone");
-  assert.equal(manifest.start_url, "/#students");
+  assert.equal(manifest.start_url, "/app");
   assert.deepEqual(manifest.icons.map(({ sizes }) => sizes), ["192x192", "512x512"]);
 });
 
