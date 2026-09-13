@@ -70,12 +70,19 @@ export function Toast({
     }, 180);
   }
 
+  // handleDismiss is deliberately not a dependency. Adding it would restart the
+  // auto-dismiss timer on every render, because ToastProvider passes a fresh
+  // `onClose={() => dismiss(t.id)}` arrow each time — the toast would then never
+  // dismiss itself. The stale closure this leaves behind is harmless: it calls
+  // that same arrow, whose `dismiss` is a useCallback with empty deps that uses
+  // the `setToasts(prev => ...)` updater form, and whose `t.id` never changes.
   useEffect(() => {
     if (!duration || duration <= 0) return;
     const timer = setTimeout(() => {
       handleDismiss();
     }, duration);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- see the note above
   }, [duration]);
 
   const toneClass =

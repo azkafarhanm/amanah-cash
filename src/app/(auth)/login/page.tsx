@@ -1,7 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import Image from "next/image";
 import { auth } from "@/auth";
 import { loadAuthenticationEnvironment } from "@/auth/environment";
 import { isDevelopmentTunnelHost } from "@/auth/dev-tunnel";

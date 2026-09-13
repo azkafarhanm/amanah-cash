@@ -75,7 +75,6 @@ export function runFullInspection(layoutType: "current" | "calibrated"): Record<
     for (const section of SECTION_SPECS) {
       let columns = 2;
       let cardPadV = 10;
-      let cardPadH = 12;
       let iconBox = 24;
       let iconMargin = 6;
       let titlePx = 14;
@@ -91,7 +90,6 @@ export function runFullInspection(layoutType: "current" | "calibrated"): Record<
       if (isDesktop) {
         columns = section.itemCount === 10 ? 5 : 3;
         cardPadV = 14;
-        cardPadH = 16;
         iconBox = 32;
         iconMargin = 10;
         titlePx = 18;
@@ -106,7 +104,6 @@ export function runFullInspection(layoutType: "current" | "calibrated"): Record<
       } else if (isTablet) {
         columns = section.itemCount === 10 ? 2 : 3;
         cardPadV = 12;
-        cardPadH = 14;
         iconBox = 28;
         iconMargin = 8;
         titlePx = 15;
@@ -125,7 +122,6 @@ export function runFullInspection(layoutType: "current" | "calibrated"): Record<
           if (layoutType === "calibrated") {
             // Horizontal / ultra-calibrated card layout
             cardPadV = 6;
-            cardPadH = 8;
             iconBox = 20;
             iconMargin = 4;
             titlePx = 13.5;
@@ -139,7 +135,6 @@ export function runFullInspection(layoutType: "current" | "calibrated"): Record<
             headingH = 64;
           } else {
             cardPadV = 8;
-            cardPadH = 10;
             iconBox = 20;
             iconMargin = 4;
             titlePx = 13.5;
