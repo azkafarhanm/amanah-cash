@@ -121,7 +121,18 @@ export function TransactionDialog({
       ? "Pulihkan"
       : "Catat transaksi");
 
-  // Sync open state for controlled usage
+  // Sync open state for controlled usage.
+  //
+  // Known debt: ConfirmationDialog and ContextDetailDrawer share this rule via
+  // useModalDialog (@/components/ui). This one is deliberately left out, because
+  // it is not the same rule: the dialog serves both controlled and uncontrolled
+  // callers, so the whole effect is skipped when controlledIsOpen is undefined,
+  // and opening also clears the error banner. Folding it into the hook would
+  // change behaviour rather than remove duplication.
+  //
+  // Paying this off means making TransactionDialog controlled-only. That is a
+  // change to how every call site drives it, with its own risk — a separate
+  // piece of work, not a cleanup.
   useEffect(() => {
     if (controlledIsOpen !== undefined && dialog.current) {
       if (controlledIsOpen && !dialog.current.open) {
