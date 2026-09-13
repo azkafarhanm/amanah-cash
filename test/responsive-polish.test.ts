@@ -90,3 +90,30 @@ test("transaction filter search does not retain its desktop width basis as mobil
   assert.match(mobileRules, /\.filterControls\s*\{[^}]*grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   assert.match(mobileRules, /\.filterGroup\s*\{[^}]*flex:\s*0 1 auto/);
 });
+
+test("the auth width breakpoint yields to the short-viewport ladder", async () => {
+  const css = await readFile("src/components/auth/login-experience.module.css", "utf8");
+
+  // The lamp geometry is set twice, and on a phone both blocks match at once: a
+  // `max-width: 30rem` block and a ladder of `max-height` blocks. They target the
+  // same `.viewport` selector, so specificity ties and source order decides the
+  // winner. The height ladder has to come last.
+  //
+  // When it did not, a narrow short phone got the width block's reserved zone
+  // (28 + 116 + 28 + 16 = 188px) instead of the 560px tier's (16 + 92 + 20 + 10 =
+  // 138px). Fifty pixels of a ~553px iPhone SE viewport, inside a `.viewport`
+  // that is `height: 100dvh; overflow: hidden` with no scroll until 440px — so
+  // the bottom of the card was silently cut off on exactly the devices the
+  // ladder was built for.
+  const widthBlock = css.indexOf("--auth-lamp-rod-height: 28px");
+  const ladderStart = css.indexOf("@media (max-height: 760px)");
+  const ladderEnd = css.indexOf("@media (max-height: 560px)");
+
+  assert.ok(widthBlock > -1, "expected the max-width: 30rem lamp geometry block");
+  assert.ok(ladderStart > -1 && ladderEnd > -1, "expected the short-viewport ladder");
+  assert.ok(
+    widthBlock < ladderStart,
+    "the max-width: 30rem lamp block must precede the max-height ladder, or short phones lose the compaction"
+  );
+  assert.ok(ladderEnd > ladderStart, "the ladder must run from tallest to shortest");
+});
