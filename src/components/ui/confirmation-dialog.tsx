@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
 import { Button } from "./button";
+import { useModalDialog } from "./use-modal-dialog";
 import styles from "./confirmation-dialog.module.css";
 
 export function ConfirmationDialog({
@@ -21,16 +22,9 @@ export function ConfirmationDialog({
   onConfirm(): void;
   onCancel(): void;
 }) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialog = useModalDialog(open);
   const titleId = useId();
   const descriptionId = useId();
-
-  useEffect(() => {
-    const element = dialog.current;
-    if (!element) return;
-    if (open && !element.open) element.showModal();
-    if (!open && element.open) element.close();
-  }, [open]);
 
   return (
     <dialog
