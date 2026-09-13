@@ -5,8 +5,6 @@ import { signOut } from "next-auth/react";
 import { ConfirmationDialog } from "@/components/ui";
 import { LOGOUT_REDIRECT } from "./logout-constants";
 
-export { LOGOUT_REDIRECT, RESTORE_CALLBACK_URL } from "./logout-constants";
-
 export function LogoutButton({
   className,
   children = "Keluar",
