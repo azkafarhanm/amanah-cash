@@ -548,10 +548,48 @@ Motion never:
 
 - Respect `prefers-reduced-motion` globally.
 - Prefer opacity and transform for optional motion.
-- Avoid scroll-jacking, pinned narrative sections that trap users, and layout animation that causes instability.
+- Avoid scroll-jacking, pinned narrative sections that trap users, and layout animation that causes instability. One approved exception exists; see §10.7.1.
 - Test on representative mobile hardware and touch input.
 - Load meaningful content independently of animation libraries.
 - Do not make pointer position, hover, or motion necessary to understand or operate the page.
+
+#### 10.7.1 Approved Exception — Section-Level Sticky Sheet Takeover
+
+The narrative sections (`problemsSection`, `solutionSection`, `workflowSection`,
+`featuresSection`, `securitySection`) use `position: sticky` so each section holds
+while the next slides over it. This is a pinned narrative section, which the rule
+above otherwise forbids. It is deliberate and approved.
+
+**Why it is permitted here:** the rule exists to stop pages that *trap* a reader —
+that capture the scroll wheel, decouple scrolling from finger movement, or make
+progress unpredictable. This implementation does none of that. It is pure CSS
+`sticky`; the scroll position is never intercepted, scroll velocity is never
+rewritten, and every section can be scrolled past at the reader's own speed. What is
+pinned is the section's *background sheet*, not the reader.
+
+**Where it is active, and where it is not:**
+
+| Viewport | Behaviour |
+|----------|-----------|
+| ≥ 64rem wide **and** ≥ 38rem tall | Sticky takeover |
+| 48–63.99rem wide **and** ≥ 42rem tall | Sticky takeover, with rounded top edge |
+| Anything shorter or narrower, including phones | Sections flow normally |
+
+**The phone case is an accepted technical limitation, not a design choice.** The
+takeover could not be made to track the layout reliably at phone sizes, so it is
+switched off there and the sections simply flow. The result is perfectly usable and
+nobody is missing information — but it should be recorded as a limitation that was
+accepted, not as an effect that was deliberately withheld, so that anyone who later
+finds a way to make it work knows this door is open.
+
+Note the minimum-*height* conditions. They exist because the takeover breaks on
+short viewports, which includes landscape phones and short laptop windows — not only
+small screens. A 1366×768 laptop clears the 38rem (608px) threshold, but not by
+much once browser chrome is subtracted.
+
+**Do not remove this to satisfy the bullet above.** The implementation is marked
+`100% IMMUTABLE` in `landing-content.module.css` for this reason; this section is
+the rationale that comment does not carry.
 
 ## 11. Copywriting Guidelines
 

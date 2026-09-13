@@ -301,10 +301,13 @@
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
+/* No width transition here. The bar's width encodes a rupiah amount, and motion
+   guidelines §5 prohibits transitioning a financial total. It would not have run
+   anyway: the page is a server component with no in-place data update, and a
+   transition never fires on an element's initial width. */
 .barFill {
   height: 100%;
   border-radius: var(--radius-sm);
-  transition: width var(--motion-duration-panel) var(--motion-ease-standard);
 }
 
 .barValue {
