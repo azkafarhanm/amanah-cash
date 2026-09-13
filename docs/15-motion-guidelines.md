@@ -13,6 +13,24 @@
 
 Motion is supportive only. It exists to explain non-financial state change, preserve orientation, and confirm interaction. It must never communicate financial truth, decorate financial data, delay a workflow, imply unconfirmed success, or compete with content.
 
+### 1.1 Scope
+
+This document governs the **authenticated application** — every surface a signed-in
+user works in. There, motion serves an operator handling other people's money, and
+the restraint below is the point.
+
+It does **not** govern the unauthenticated surfaces: the Landing Page and the Login
+experience. Those are persuasion surfaces, not tools, and their motion is governed
+by `docs/22-landing-page-strategy.md` §10, which permits a decorative treatment this
+document prohibits outright — ambient light, orbiting perimeter lights, aurora, and
+a swinging lamp all live there deliberately.
+
+Read the prohibitions in §5 as applying to the authenticated application. Applying
+them to the Landing Page would condemn a design that was approved on its own terms,
+and reading the Landing Page's licence into the application would dismantle the
+restraint the application depends on. Neither document overrides the other; they
+describe two different places.
+
 ## 2. Motion Principles
 
 - **Purposeful:** every animation has a stated usability reason.
@@ -34,6 +52,14 @@ Recommended starting values, pending visual review:
 | Fast | 120–160ms | Color, opacity, small control state |
 | Standard | 180–240ms | Overlay and local content presence |
 | Deliberate | 240–320ms | Rare screen-orientation transition |
+| Slow | 350ms | Toast entrance from outside the viewport |
+
+`Slow` exists because a toast travels in from beyond the screen edge, a longer
+distance than any overlay that appears in place, and needs the extra time to stay
+legible rather than snap. It is implemented as `--motion-duration-slow` and is used
+by exactly one animation, `toastEnter`. It is not a general-purpose duration: if a
+second use appears, that is a sign the motion is too slow, not that the token needs
+broadening.
 
 Use a calm ease-out for entrances and ease-in for exits. Avoid elastic, springy, overshooting, or bouncing motion in financial workflows. Staggered animation is normally prohibited for operational lists.
 
@@ -119,15 +145,23 @@ Errors appear without dramatic motion. An unknown commit outcome uses calm, pers
 
 ## 9. Motion Review Record
 
-Every nontrivial animation must record:
+Every nontrivial animation must record two things, in a comment beside the
+animation itself rather than in a separate register:
 
-- component and trigger;
-- user-facing purpose;
-- duration/easing/token;
-- interruption behavior;
-- reduced-motion equivalent;
-- effect on focus and screen-reader announcements;
-- performance evidence on mobile;
-- reviewer approval.
+- its user-facing purpose, in one sentence;
+- its reduced-motion equivalent.
 
 If its purpose cannot be stated in one sentence, remove it.
+
+This section previously demanded six more fields — trigger, duration/easing/token,
+interruption behaviour, screen-reader effect, mobile performance evidence, and
+reviewer approval. No such record was ever written, for any of the animations in
+this codebase. A requirement that nothing has ever met does not protect anything;
+it only makes the document inaccurate about how this project works.
+
+The two fields kept are the two that cannot be recovered by reading the code. A
+duration and an easing are already stated in the CSS. Whether an animation is
+*worth having*, and what a reduced-motion user gets instead, are decisions — and
+decisions are what a comment must carry. Performance evidence and reviewer sign-off
+belong to a team process this project does not have; reinstate them alongside the
+process, not before it.
