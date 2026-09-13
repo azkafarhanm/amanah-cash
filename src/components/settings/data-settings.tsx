@@ -87,6 +87,9 @@ export function DataSettings() {
   async function restore() {
     if (!artifact || status !== "ready") return;
 
+    // Restore reports progress on the page, not in the dialog: it ends in a
+    // signOut redirect, so a pending dialog would be the last thing on screen
+    // with nothing to return to. Close first, then report.
     setConfirmRestoreOpen(false);
     setStatus("restoring");
     setMessage("Memulihkan data… Jangan tutup halaman ini.");
@@ -179,7 +182,6 @@ export function DataSettings() {
         title="Pulihkan backup?"
         description="Semua data aplikasi saat ini akan diganti dan seluruh pengguna harus masuk kembali setelah proses selesai."
         confirmLabel="Pulihkan backup"
-        pending={status === "restoring"}
         onCancel={() => setConfirmRestoreOpen(false)}
         onConfirm={() => void restore()}
       />
