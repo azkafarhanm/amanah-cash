@@ -40,10 +40,15 @@ const SECTIONS: SectionConfig[] = [
 function evaluateViewport(vp: ViewportQA) {
   const isDesktop = vp.width >= 1024 && vp.height >= 608; // 64rem = 1024px, 38rem = 608px
   const isTablet = vp.width >= 768 && vp.width < 1024 && vp.height >= 672; // 48rem = 768px, 42rem = 672px
-  const isMobileSticky = vp.width < 768 && vp.height >= 736; // 46rem = 736px
-  const isShortFallback = !isDesktop && !isTablet && !isMobileSticky;
 
-  const isSticky = isDesktop || isTablet || isMobileSticky;
+  // There is no mobile sticky tier. landing-content.module.css gives every
+  // viewport under 48rem `position: relative` outright, so a phone gets natural
+  // flow no matter how tall it is. This function previously carried an
+  // `isMobileSticky` branch at 46rem that the stylesheet has no counterpart
+  // for, which made it report STICKY SHEET TAKEOVER for any phone taller than
+  // 736px — an iPhone 14 Pro Max or a Pixel 7 — and check the wrong invariants
+  // for them.
+  const isSticky = isDesktop || isTablet;
   const navHeight = 56; // var(--size-14) = 3.5rem = 56px
 
   console.log(`\n===============================================================`);

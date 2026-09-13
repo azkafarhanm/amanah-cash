@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useCallback, useContext, useState } from "react";
-import { Toast, type ToastTone, type ToastProps } from "./toast";
+import { Toast, type ToastTone } from "./toast";
 import styles from "./toast.module.css";
 
 export interface ToastOptions {
