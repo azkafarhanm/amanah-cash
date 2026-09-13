@@ -81,7 +81,11 @@ function snapshotFromPrisma(row: {
 }
 
 function isBusy(error: unknown) {
-  return error instanceof Error && /SQLITE_BUSY|database is locked|database is busy/i.test(error.message);
+  if (error instanceof Error && /SQLITE_BUSY|database is locked|database is busy/i.test(error.message)) return true;
+  // P2028: Prisma's interactive-transaction budget (5s default) expired, e.g. while
+  // this transaction's row lock queued behind a concurrent writer on the same Student.
+  // The transaction never committed, so it is safe to tell the caller to retry.
+  return typeof error === "object" && error !== null && "code" in error && (error as { code?: unknown }).code === "P2028";
 }
 
 function nowIso(now: () => Date) {
