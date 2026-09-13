@@ -71,3 +71,25 @@ test("PostgreSQL integrity migration protects financial shape and immutability",
     assert.match(integrityMigration, new RegExp(invariant));
   }
 });
+
+test("operator_audit.action is constrained on both targets, not only SQLite", async () => {
+  const [sqlite, postgres] = await Promise.all([
+    readFile("migrations/007_operator_self_provisioning_audit.sql", "utf8"),
+    readFile(
+      "prisma/migrations_postgresql/20260913000000_operator_audit_action_parity/migration.sql",
+      "utf8"
+    )
+  ]);
+
+  // The audit trail is the record of record, so the two targets must accept the
+  // same set of actions. SQLite constrained this from the start; PostgreSQL ran
+  // without any constraint until this migration, making production the looser
+  // of the two. Both lists are asserted here so they cannot drift apart again.
+  const actions = ["CREATED", "UPDATED", "ACTIVATED", "DEACTIVATED", "DELETED", "STUDENT_CREATE"];
+
+  assert.match(postgres, /ck_operator_audit_action/);
+  for (const action of actions) {
+    assert.match(sqlite, new RegExp(`'${action}'`));
+    assert.match(postgres, new RegExp(`'${action}'`));
+  }
+});
