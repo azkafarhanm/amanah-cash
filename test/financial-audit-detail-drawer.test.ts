@@ -30,9 +30,11 @@ test("detail drawer lazy-loads only the approved endpoint and deduplicates reque
 test("detail drawer exposes all required states and native modal semantics", () => {
   const drawer = source("src/components/financial-assurance/financial-audit-detail.tsx");
   const platformDrawer = source("src/components/ui/context-detail-drawer.tsx");
+  const modalDialog = source("src/components/ui/use-modal-dialog.ts");
   assert.match(drawer, /<ContextDetailDrawer/);
   assert.match(platformDrawer, /<dialog/);
-  assert.match(platformDrawer, /\.showModal\(\)/);
+  assert.match(platformDrawer, /useModalDialog\(open\)/);
+  assert.match(modalDialog, /\.showModal\(\)/);
   assert.match(platformDrawer, /aria-labelledby=\{titleId\}/);
   assert.match(platformDrawer, /aria-describedby=\{descriptionId\}/);
   assert.match(drawer, /aria-busy="true"/);

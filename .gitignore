@@ -15,3 +15,4 @@ graphify-out/
 *.mp4
 .agents/skills/
 skills-lock.json
+.claude/

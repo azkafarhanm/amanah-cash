@@ -5,8 +5,7 @@ import { useEffect, useLayoutEffect } from "react";
 import {
   readScrollPositions,
   saveScrollPosition,
-  scrollPositionKey,
-  SCROLL_POSITION_STORAGE_KEY
+  scrollPositionKey
 } from "./scroll-position";
 
 const useIsomorphicLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -19,7 +18,7 @@ function readStorage(): Storage | null {
   }
 }
 
-  export function ScrollRestoration() {
+export function ScrollRestoration() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
@@ -91,5 +90,3 @@ function readStorage(): Storage | null {
 
   return null;
 }
-
-export { SCROLL_POSITION_STORAGE_KEY };

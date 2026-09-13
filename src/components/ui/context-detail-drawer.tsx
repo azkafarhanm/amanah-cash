@@ -1,13 +1,12 @@
 "use client";
 
 import {
-  useEffect,
   useId,
-  useRef,
   type HTMLAttributes,
   type ReactNode
 } from "react";
 
+import { useModalDialog } from "./use-modal-dialog";
 import styles from "./context-detail-drawer.module.css";
 
 export type ContextDetailDrawerProps = {
@@ -46,17 +45,10 @@ export function ContextDetailDrawer({
   footer,
   contentProps
 }: ContextDetailDrawerProps) {
-  const dialog = useRef<HTMLDialogElement>(null);
+  const dialog = useModalDialog(open);
   const generatedId = useId();
   const titleId = `${generatedId}-title`;
   const descriptionId = `${generatedId}-description`;
-
-  useEffect(() => {
-    const element = dialog.current;
-    if (!element) return;
-    if (open && !element.open) element.showModal();
-    if (!open && element.open) element.close();
-  }, [open]);
 
   const { className: contentClassName, ...restContentProps } =
     contentProps ?? {};
