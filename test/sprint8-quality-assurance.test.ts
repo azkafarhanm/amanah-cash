@@ -72,9 +72,10 @@ test("Epic 8.4 Visual Review: operational CSS contains tokenized properties and 
 });
 
 test("Epic 8.5 Final MVP Alignment: business rules, authorization, and financial invariants intact", async () => {
-  const [authorization, domain, readService] = await Promise.all([
+  const [authorization, domain, effectModule, readService] = await Promise.all([
     readFile("src/authorization/index.ts", "utf8"),
     readFile("src/transactions/domain.ts", "utf8"),
+    readFile("src/transactions/effect.ts", "utf8"),
     readFile("src/transactions/read-service.ts", "utf8")
   ]);
 
@@ -84,7 +85,9 @@ test("Epic 8.5 Final MVP Alignment: business rules, authorization, and financial
   assert.match(authorization, /requireOperator/);
 
   // Financial invariants
-  assert.match(domain, /export function effect/);
+  // effect() moved to the crypto-free effect.ts so the client dialog can share
+  // it too; domain.ts re-exports it for existing server-side importers.
+  assert.match(effectModule, /export function effect/);
   assert.match(domain, /export function checkedBalance/);
   assert.match(readService, /workspaceHistory/);
 });
