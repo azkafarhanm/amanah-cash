@@ -337,13 +337,18 @@
     Amanah              5.58       3.10       3.18        8.2-8.9
       after            10.30       7.06       7.06       11.0-11.7
     Cash                1.06       1.23       1.46        1.68-1.74
-      after             3.83       3.64       3.76        2.32-2.46
+      after             3.83       3.64       3.76        4.46-4.73
 
-  docs/16-accessibility-guidelines.md §5 requires 3:1 for large text. Dark now
-  clears it. Light "Cash" does not, and no scrim can get it there: #00A896 has a
-  relative luminance of 0.297, so even against pure white it tops out at 3.02:1.
-  Closing that needs a darker accent for the light theme — a brand decision, not
-  a CSS one, and deliberately left open.
+  docs/16-accessibility-guidelines.md §5 requires 3:1 for large text. Every
+  measurement now clears it.
+
+  The light column only got there because the accent itself changed. No backdrop
+  could rescue #00A896: its relative luminance is 0.297, so even against pure
+  white it topped out at 3.02:1. --color-brand-accent is now #0D7367 in the light
+  theme; see the note beside it in globals.css. Dark keeps #00C4B4, which passes
+  on its own.
+
+  Re-measure after touching any of this: npx tsx scripts/qa-auth-contrast.ts
 
   The scrim was deliberately not pushed harder. A denser one measured 5.1-6.1:1
   in dark, but at that strength its own edges became visible: the wordmark then
@@ -424,12 +429,14 @@
   text-wrap: balance;
 }
 
+/*
+  The same brand teal the shared Logo uses for its own accent word
+  (ui.module.css .logoAccent). This file used to repeat the two hex values
+  instead, which is how the login wordmark and the logo beside it came to be
+  adjusted independently. One token, one colour, per theme.
+*/
 .brandAccent {
-  color: #00A896;
-}
-
-:global(:root[data-theme="dark"]) .brandAccent {
-  color: #00C4B4;
+  color: var(--color-brand-accent);
 }
 
 /* Tagline — quiet, secondary, editorial */
