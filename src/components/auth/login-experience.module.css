@@ -18,6 +18,9 @@
   --auth-spotlight-core: rgba(255, 252, 242, 0.065);
   --auth-spotlight-warm: rgba(254, 243, 199, 0.032);
   --auth-spotlight-edge: rgba(45, 212, 191, 0.025);
+  /* Light theme pushes the scrim toward white: the accent teal sits mid-
+     luminance, so it separates best from a very light ground here. */
+  --auth-brand-scrim: rgba(255, 255, 255, 0.88);
   --auth-brand-shadow: rgba(15, 23, 42, 0.06);
   --auth-card-background: var(--color-background-surface);
   --auth-card-border: color-mix(in srgb, #71858a 24%, transparent);
@@ -75,6 +78,10 @@
   --auth-spotlight-core: rgba(255, 249, 232, 0.16);
   --auth-spotlight-warm: rgba(254, 220, 156, 0.08);
   --auth-spotlight-edge: rgba(45, 212, 191, 0.07);
+  /* Dark theme darkens instead: the spotlight core lands on this line and
+     lifts the ground to the accent's own luminance, so the scrim puts the
+     night back behind the words. */
+  --auth-brand-scrim: rgba(4, 10, 18, 0.78);
   --auth-brand-shadow: rgba(255, 242, 208, 0.14);
   --auth-card-background: color-mix(in srgb, #111c28 96%, transparent);
   --auth-card-border: rgba(160, 213, 208, 0.2);
@@ -253,7 +260,15 @@
 
 .spotlightZone {
   position: relative;
-  z-index: 4;
+  /*
+    Above the pendant's own layer (hanging-lamp.module.css sets z-index: 20).
+    The lamp paints a 1040x780 light cone that used to wash straight over this
+    wordmark: measured behind "Cash", the ground read rgb(153,158,146) with the
+    cone on and rgb(42,60,64) with it off. Sitting under that wash is what made
+    the brand look glary. Raising the zone lets .brandText::before put its scrim
+    above the cone, which is the only layer where it can restore contrast.
+  */
+  z-index: 21;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -300,10 +315,61 @@
 }
 
 .brandText {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-1);
+}
+
+/*
+  Brand scrim.
+
+  The pendant's light cone is 1040x780 and paints above this text, so the
+  wordmark sat inside the wash rather than under it. Measured behind "Cash":
+  rgb(153,158,146) with the cone lit, rgb(42,60,64) with it hidden.
+
+  Contrast against the rendered ground, before -> after:
+
+                        dark 375   dark 412   dark 1032   light (all)
+    Amanah              5.58       3.10       3.18        8.2-8.9
+      after            12.49       9.84       9.96       12.6-13.0
+    Cash                1.06       1.23       1.46        1.68-1.74
+      after             5.11       5.14       5.30        2.57-2.65
+
+  docs/16-accessibility-guidelines.md §5 requires 3:1 for large text. Dark now
+  clears 4.5:1 everywhere. Light "Cash" does not and cannot: #00A896 has a
+  relative luminance of 0.297, so even on pure white it tops out at 3.02:1.
+  Closing that gap needs a darker accent for the light theme, which is a brand
+  decision, not a CSS one.
+
+  This dims the lamp locally instead of globally: turning --auth-spotlight-core
+  or the cone down would have fixed the numbers by dulling the pendant, which is
+  the whole point of this screen. Keep the ellipse soft — an earlier pass used
+  118% width and it read as a black label pasted over the art.
+
+  If you raise --auth-spotlight-core or the cone's opacity, re-measure; the
+  headroom above 4.5:1 in dark is about 0.6.
+*/
+.brandText::before {
+  content: "";
+  position: absolute;
+  inset: -0.9em -1.6em;
+  z-index: -1;
+  pointer-events: none;
+  /*
+    Centred at 42%, not 50%: the tagline is wider than the wordmark and the
+    column is flex-start, so both words sit in the left half of this box.
+    The ellipse has to fade out well before the box edge, or it reads as a
+    pasted-on panel rather than shade.
+  */
+  background: radial-gradient(
+    ellipse 62% 74% at 42% 50%,
+    var(--auth-brand-scrim) 0%,
+    color-mix(in srgb, var(--auth-brand-scrim) 82%, transparent) 42%,
+    color-mix(in srgb, var(--auth-brand-scrim) 38%, transparent) 66%,
+    transparent 88%
+  );
 }
 
 .brandStageVisible {
