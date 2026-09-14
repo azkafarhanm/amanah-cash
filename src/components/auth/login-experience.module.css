@@ -21,6 +21,7 @@
   /* Light theme pushes the scrim toward white: the accent teal sits mid-
      luminance, so it separates best from a very light ground here. */
   --auth-brand-scrim: rgba(255, 255, 255, 0.88);
+  --auth-brand-halo: rgba(255, 255, 255, 0.75);
   --auth-brand-shadow: rgba(15, 23, 42, 0.06);
   --auth-card-background: var(--color-background-surface);
   --auth-card-border: color-mix(in srgb, #71858a 24%, transparent);
@@ -81,7 +82,8 @@
   /* Dark theme darkens instead: the spotlight core lands on this line and
      lifts the ground to the accent's own luminance, so the scrim puts the
      night back behind the words. */
-  --auth-brand-scrim: rgba(4, 10, 18, 0.78);
+  --auth-brand-scrim: rgba(4, 10, 18, 0.74);
+  --auth-brand-halo: rgba(2, 6, 12, 0.85);
   --auth-brand-shadow: rgba(255, 242, 208, 0.14);
   --auth-card-background: color-mix(in srgb, #111c28 96%, transparent);
   --auth-card-border: rgba(160, 213, 208, 0.2);
@@ -333,28 +335,30 @@
 
                         dark 375   dark 412   dark 1032   light (all)
     Amanah              5.58       3.10       3.18        8.2-8.9
-      after            12.49       9.84       9.96       12.6-13.0
+      after            10.30       7.06       7.06       11.0-11.7
     Cash                1.06       1.23       1.46        1.68-1.74
-      after             5.11       5.14       5.30        2.57-2.65
+      after             3.83       3.64       3.76        2.32-2.46
 
   docs/16-accessibility-guidelines.md §5 requires 3:1 for large text. Dark now
-  clears 4.5:1 everywhere. Light "Cash" does not and cannot: #00A896 has a
-  relative luminance of 0.297, so even on pure white it tops out at 3.02:1.
-  Closing that gap needs a darker accent for the light theme, which is a brand
-  decision, not a CSS one.
+  clears it. Light "Cash" does not, and no scrim can get it there: #00A896 has a
+  relative luminance of 0.297, so even against pure white it tops out at 3.02:1.
+  Closing that needs a darker accent for the light theme — a brand decision, not
+  a CSS one, and deliberately left open.
 
-  This dims the lamp locally instead of globally: turning --auth-spotlight-core
-  or the cone down would have fixed the numbers by dulling the pendant, which is
-  the whole point of this screen. Keep the ellipse soft — an earlier pass used
-  118% width and it read as a black label pasted over the art.
+  The scrim was deliberately not pushed harder. A denser one measured 5.1-6.1:1
+  in dark, but at that strength its own edges became visible: the wordmark then
+  sat on a grey patch, which is worse to look at than the glare it fixed. The
+  size and opacity here are the point where the scrim stops being noticeable.
+  The halo below carries the rest of the legibility, which WCAG does not score.
 
-  If you raise --auth-spotlight-core or the cone's opacity, re-measure; the
-  headroom above 4.5:1 in dark is about 0.6.
+  Do not "fix" this by turning down --auth-spotlight-core or the cone: that
+  dulls the pendant, which is the whole point of the screen. If you raise
+  either, re-measure — dark headroom above the 3:1 floor is only about 0.6.
 */
 .brandText::before {
   content: "";
   position: absolute;
-  inset: -0.9em -1.6em;
+  inset: -1.2em -1.9em;
   z-index: -1;
   pointer-events: none;
   /*
@@ -364,12 +368,28 @@
     pasted-on panel rather than shade.
   */
   background: radial-gradient(
-    ellipse 62% 74% at 42% 50%,
+    ellipse 56% 56% at 42% 50%,
     var(--auth-brand-scrim) 0%,
-    color-mix(in srgb, var(--auth-brand-scrim) 82%, transparent) 42%,
-    color-mix(in srgb, var(--auth-brand-scrim) 38%, transparent) 66%,
-    transparent 88%
+    color-mix(in srgb, var(--auth-brand-scrim) 76%, transparent) 30%,
+    color-mix(in srgb, var(--auth-brand-scrim) 34%, transparent) 58%,
+    transparent 92%
   );
+}
+
+/*
+  The scrim alone cannot be both invisible and strong enough — widen it and its
+  edges hit the box; darken it and it reads as a patch. A halo that hugs the
+  letterforms carries the rest: it has no boundary to notice, and it is the
+  standard treatment for type over imagery. WCAG scores the glyph against the
+  ground and ignores shadows, so the scrim is what moves the measured number and
+  this is what makes the words feel crisp.
+*/
+.brandName,
+.brandTagline {
+  text-shadow:
+    0 1px 2px var(--auth-brand-halo),
+    0 0 10px var(--auth-brand-halo),
+    0 0 24px var(--auth-brand-halo);
 }
 
 .brandStageVisible {
