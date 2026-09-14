@@ -368,8 +368,16 @@
   --brand-dark-border: #334155;
 
   --color-brand-frame: #0B2535;
-  --color-brand-diamond: #00A896;
-  --color-brand-accent: #00A896;
+  /*
+    Darkened from #00A896 for contrast. On the login screen the accent word sits
+    under the pendant's light cone, where it measured 2.50:1 against the lit
+    ground — below the 3:1 floor docs/16-accessibility-guidelines.md §5 sets for
+    large text. #00A896 could not be rescued by any backdrop: its relative
+    luminance is 0.297, so even on pure white it tops out at 3.02:1. #0D7367
+    measures 4.81:1 in place. The dark theme keeps #00C4B4, which already passes.
+  */
+  --color-brand-diamond: #0D7367;
+  --color-brand-accent: #0D7367;
   --color-brand-tagline: #5A6E78;
 
   --color-background-canvas: var(--color-calm-25);
