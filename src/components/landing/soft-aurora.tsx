@@ -219,8 +219,26 @@ export function SoftAurora() {
           uColor3: { value: currentColor3 },
           uAlpha: { value: currentAlpha },
           uSpeed: { value: currentSpeed },
-          uBandHeight: { value: isMobile ? 0.42 : 0.48 },
-          uBandSpread: { value: isMobile ? 0.32 : 0.38 },
+          // uBandHeight is the band's CENTRE on the y axis, not its size;
+          // uBandSpread is how far it reaches from that centre (see bandCenter
+          // and the smoothstep in the fragment shader).
+          //
+          // A phone hero is tall and narrow, a desktop one wide and short, so
+          // the same centre lands somewhere quite different relative to the
+          // headline: at 0.48 the ribbon sat below the title on a phone and the
+          // heading read against flat dark. Raising the centre puts it back
+          // behind the words, which is where the desktop layout already had it.
+          //
+          // The wider spread is a real increase in coverage rather than a
+          // reposition, and docs/22 §8.5.1 records why it is allowed here.
+          //
+          // Mobile was previously 0.42 / 0.32 with no reason recorded. That was
+          // not a performance saving: these are shader uniforms, so every value
+          // costs the GPU the same. Only dpr above is a performance decision.
+          uBandHeight: { value: isMobile ? 0.62 : 0.48 },
+          uBandSpread: { value: isMobile ? 0.56 : 0.38 },
+          // Frequency stays higher on a phone: the same noise scale spread over
+          // a narrow viewport reads as too few, too-large features.
           uNoiseFrequency: { value: isMobile ? 1.8 : 1.5 },
           uNoiseAmplitude: { value: isMobile ? 0.45 : 0.6 },
           uMouse: { value: currentMouse },

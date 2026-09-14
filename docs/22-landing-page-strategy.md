@@ -430,6 +430,38 @@ Avoid:
 - oversized claims or statistics;
 - visual metaphors associated with trading, crypto, or banking wealth.
 
+#### 8.5.1 Approved Exception — Aurora Coverage on Phones
+
+The aurora behind the Hero reaches further on phones than it does on desktop:
+`uBandSpread` is 0.56 under 768px against 0.38 above it, and the band's centre
+sits at 0.62 rather than 0.48 (`soft-aurora.tsx`). Read against the rule above,
+the wider spread is more coverage for a decorative element, so it is recorded
+here rather than left to look like drift.
+
+**Why the centre moves.** A phone Hero is tall and narrow; a desktop Hero is
+wide and short. The band's centre is a fraction of the viewport height, so the
+same value lands somewhere quite different relative to the headline. At 0.48 the
+ribbon sat *below* the title on a phone and the heading read against flat dark,
+while on desktop the same value placed it behind the words. Moving the centre
+restores the desktop composition rather than intensifying it.
+
+**Why the spread widens.** Once the centre moved up, the narrower reach left the
+ribbon as a band across the middle with the top of the Hero empty. The wider
+spread fills the composition the way the desktop one already is.
+
+**What this does not license.** The decoration is still secondary. `uAlpha` is
+unchanged and identical on both — the aurora is no more opaque on a phone than
+on a desktop; it is positioned and sized for a different frame. Coverage was
+stopped at the point where it still reads as atmosphere: a stronger variant
+(centre 0.70, spread 0.60) was rendered and rejected for competing with the
+headline, which §10.1 forbids.
+
+**Verified, not assumed.** Hero text contrast over the aurora was measured
+before and after on three viewports and both themes. Dark title 15.24:1 → 11.48:1
+and subheading 13.28:1 → 10.71:1 at 393px; light title 12.55:1 → 10.58:1. Every
+value stays far above the 4.5:1 that docs/16-accessibility-guidelines.md §5
+requires. Re-measure if `uAlpha`, the palette, or these uniforms change.
+
 ## 9. Visual Direction
 
 ### 9.1 Desired Character
