@@ -430,6 +430,54 @@ Avoid:
 - oversized claims or statistics;
 - visual metaphors associated with trading, crypto, or banking wealth.
 
+#### 8.5.1 Approved Exception — the Aurora Is More Prominent on Phones
+
+Under 768px the Hero aurora is deliberately stronger than the desktop one, not
+merely repositioned. In `soft-aurora.tsx`: band centre 0.62 against 0.48, spread
+0.56 against 0.38, `uEdgeFeather` 0.04 against 0.15, and opacity scaled by 1.48.
+
+This is a real exception to the rule above, approved on its own terms rather
+than reasoned away. §8.5 says abstract decoration stays secondary and §10.1 says
+motion should not become the main attraction; on a phone the aurora now carries
+more of the Hero than either line envisages. It is recorded here so that the
+next person to read those rules knows this was a decision, not drift.
+
+**What went wrong.** A phone Hero is 1304px tall against an 873px viewport, and
+a desktop Hero is wide and short. Three things followed from that shape and none
+of them were visible in the source:
+
+1. The band centre is a fraction of canvas height, so 0.48 put the ribbon
+   *below* the headline on a phone while placing it behind the words on desktop.
+2. The canvas is half again taller than what can be seen at once, so the ribbon
+   was spread across more area than any one screen shows.
+3. `edgeMask` faded the effect in over 15% from every edge. On a 1304px canvas
+   that is the top ~196px — precisely where the eyebrow and headline sit. The
+   aurora was being extinguished exactly where it was wanted.
+
+The third was the largest, and no amount of moving or widening the band could
+beat it. Feathering is now a uniform so the phone can use 0.04.
+
+**Where it was stopped.** Five variants were rendered and compared. The chosen
+one keeps the headline plainly dominant in the composition. A stronger variant
+(the same values plus the ambient wash raised from 0.30 to 0.55) was rejected
+for competing with the headline rather than framing it.
+
+**Unchanged.** The desktop values, the palette, the speed, and the `dpr` cap
+that exists for mobile GPU cost. Every difference is confined to the `isMobile`
+branch.
+
+**Verified, not assumed.** Hero text contrast over the aurora was measured on
+three viewports and both themes, before and after. At 393px, dark: title
+15.24:1 → 7.93:1, subheading 13.28:1 → 7.77:1. Light: title 12.55:1 → 8.88:1,
+subheading 11.89:1 → 8.61:1. Tablet at 768px did not move, confirming the
+desktop branch is untouched. Everything stays well above the 4.5:1 in
+docs/16-accessibility-guidelines.md §5.
+
+Re-measure if the palette, `uAlpha`, `uEdgeFeather`, or the band uniforms
+change. Note when measuring that the eyebrow is a pill with its own opaque
+background and rounded corners: averaging its bounding box samples the corners
+and reports a contrast far worse than what anyone reads. Sample the interior.
+
 ## 9. Visual Direction
 
 ### 9.1 Desired Character

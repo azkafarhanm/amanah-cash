@@ -33,6 +33,10 @@ const FRAGMENT_SHADER = /* glsl */ `
   uniform vec2 uMouse;
   uniform float uMouseInfluence;
   uniform float uEnableMouse;
+  // How far the vignette fades the ribbon in from each edge, as a fraction of
+  // the canvas. Was a hardcoded 0.15, which on a phone meant the top ~196px of
+  // a 1304px hero — exactly where the headline sits — was faded to nothing.
+  uniform float uEdgeFeather;
 
   varying vec2 vUv;
 
@@ -104,8 +108,8 @@ const FRAGMENT_SHADER = /* glsl */ `
     col = mix(col, uColor3, colorMix2);
 
     // Vignette edge falloff for seamless background integration
-    float edgeMask = smoothstep(0.0, 0.15, uv.x) * smoothstep(1.0, 0.85, uv.x) *
-                     smoothstep(0.0, 0.15, uv.y) * smoothstep(1.0, 0.85, uv.y);
+    float edgeMask = smoothstep(0.0, uEdgeFeather, uv.x) * smoothstep(1.0, 1.0 - uEdgeFeather, uv.x) *
+                     smoothstep(0.0, uEdgeFeather, uv.y) * smoothstep(1.0, 1.0 - uEdgeFeather, uv.y);
 
     float finalAlpha = intensity * uAlpha * edgeMask;
 
@@ -184,13 +188,19 @@ export function SoftAurora() {
 
       const geometry = new Triangle(gl);
       const initialTheme = getActiveTheme();
+      // A phone hero is 1304px tall against an 873px viewport, so the ribbon is
+      // spread over half again as much canvas as can be seen at once and reads
+      // as a fragment. This lifts the opacity to compensate. docs/22 §8.5.1
+      // records it, because it does make the decoration more prominent on a
+      // phone than on a desktop rather than merely repositioning it.
+      const alphaScale = isMobile ? 1.48 : 1;
       const initialPalette = THEME_PALETTES[initialTheme];
 
       // Interpolation targets for smooth color transitions during theme switches
       let targetColor1 = [...initialPalette.color1];
       let targetColor2 = [...initialPalette.color2];
       let targetColor3 = [...initialPalette.color3];
-      let targetAlpha = initialPalette.alpha;
+      let targetAlpha = initialPalette.alpha * alphaScale;
       let targetSpeed = initialPalette.speed;
 
       const currentColor1 = [...targetColor1];
@@ -219,13 +229,32 @@ export function SoftAurora() {
           uColor3: { value: currentColor3 },
           uAlpha: { value: currentAlpha },
           uSpeed: { value: currentSpeed },
-          uBandHeight: { value: isMobile ? 0.42 : 0.48 },
-          uBandSpread: { value: isMobile ? 0.32 : 0.38 },
+          // uBandHeight is the band's CENTRE on the y axis, not its size;
+          // uBandSpread is how far it reaches from that centre (see bandCenter
+          // and the smoothstep in the fragment shader).
+          //
+          // A phone hero is tall and narrow, a desktop one wide and short, so
+          // the same centre lands somewhere quite different relative to the
+          // headline: at 0.48 the ribbon sat below the title on a phone and the
+          // heading read against flat dark. Raising the centre puts it back
+          // behind the words, which is where the desktop layout already had it.
+          //
+          // The wider spread is a real increase in coverage rather than a
+          // reposition, and docs/22 §8.5.1 records why it is allowed here.
+          //
+          // Mobile was previously 0.42 / 0.32 with no reason recorded. That was
+          // not a performance saving: these are shader uniforms, so every value
+          // costs the GPU the same. Only dpr above is a performance decision.
+          uBandHeight: { value: isMobile ? 0.62 : 0.48 },
+          uBandSpread: { value: isMobile ? 0.56 : 0.38 },
+          // Frequency stays higher on a phone: the same noise scale spread over
+          // a narrow viewport reads as too few, too-large features.
           uNoiseFrequency: { value: isMobile ? 1.8 : 1.5 },
           uNoiseAmplitude: { value: isMobile ? 0.45 : 0.6 },
           uMouse: { value: currentMouse },
           uMouseInfluence: { value: mouseInfluence },
           uEnableMouse: { value: enableMouse },
+          uEdgeFeather: { value: isMobile ? 0.04 : 0.15 },
         },
       });
 
@@ -296,7 +325,7 @@ export function SoftAurora() {
         targetColor1 = [...nextPalette.color1];
         targetColor2 = [...nextPalette.color2];
         targetColor3 = [...nextPalette.color3];
-        targetAlpha = nextPalette.alpha;
+        targetAlpha = nextPalette.alpha * alphaScale;
         targetSpeed = nextPalette.speed;
       };
 
