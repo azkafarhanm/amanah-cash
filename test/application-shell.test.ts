@@ -110,3 +110,19 @@ test("navigation links do not opt into the five-minute client cache", () => {
     "navigation Links must not set prefetch={true}: it caches money pages for five minutes"
   );
 });
+
+test("back and forward navigation refetches instead of serving Next's own cache", () => {
+  const refresher = readSource("src/components/app-shell/history-navigation-refresh.tsx");
+  const layout = readSource("src/app/(app)/layout.tsx");
+
+  // Next serves back/forward from its own cache by design — staleTimes
+  // explicitly "doesn't change back/forward caching behavior" — which on a page
+  // showing a current figure means stepping back redisplays a pre-transaction
+  // total. Removing prefetch={true} covers forward navigation only.
+  assert.match(refresher, /addEventListener\("popstate"/);
+  assert.match(refresher, /router\.refresh\(\)/);
+  assert.match(refresher, /removeEventListener\("popstate"/);
+
+  // Useless unless mounted for the authenticated surfaces.
+  assert.match(layout, /<HistoryNavigationRefresh \/>/);
+});

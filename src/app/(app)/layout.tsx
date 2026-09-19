@@ -4,6 +4,7 @@ import { protectRoute } from "@/authorization/routes";
 import { AppLoading } from "@/components/app-shell/app-loading";
 import { AppShell } from "@/components/app-shell/app-shell";
 import { SessionProvider } from "@/components/app-shell/session-provider";
+import { HistoryNavigationRefresh } from "@/components/app-shell/history-navigation-refresh";
 import { ScrollRestoration } from "@/components/app-shell/scroll-restoration";
 import { ThemeProvider } from "@/components/settings/theme-provider";
 import { ToastProvider } from "@/components/ui";
@@ -26,6 +27,7 @@ export default async function AuthenticatedLayout({ children }: { children: Reac
   return (
     <SessionProvider session={session}>
       <ScrollRestoration />
+      <HistoryNavigationRefresh />
       <ThemeProvider preference={theme}>
         <ToastProvider>
           <AppShell role={authorizationContext.role} user={session?.user ?? {}}>
