@@ -83,3 +83,46 @@ test("shared loading, empty, not-found, forbidden, and unexpected-error states e
     assert.ok(readSource(path).length > 0, `${path} must not be empty`);
   }
 });
+
+test("navigation links do not opt into the five-minute client cache", () => {
+  const shell = readSource("src/components/app-shell/app-shell.tsx");
+
+  // Every destination in this nav is force-dynamic and renders money. Setting
+  // prefetch={true} on a Link moves it into Next's "static" client-cache tier,
+  // whose staleTimes default is five minutes — so a figure recorded moments ago
+  // would still read its pre-transaction value until a manual reload.
+  //
+  // Left at the default, the shell and loading boundary are still prefetched
+  // while the page segment falls under staleTimes.dynamic (default 0, never
+  // reused), so figures are read fresh on arrival.
+  //
+  // Comments are stripped first: the source carries a note explaining this
+  // decision, and matching prose would make the guard pass or fail on wording.
+  const code = shell
+    .replace(/\{\/\*[\s\S]*?\*\/\}/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/\/\/[^\n]*/g, "");
+
+  assert.match(code, /href=\{item\.href\}/, "expected the navigation Link");
+  assert.doesNotMatch(
+    code,
+    /prefetch=\{true\}/,
+    "navigation Links must not set prefetch={true}: it caches money pages for five minutes"
+  );
+});
+
+test("back and forward navigation refetches instead of serving Next's own cache", () => {
+  const refresher = readSource("src/components/app-shell/history-navigation-refresh.tsx");
+  const layout = readSource("src/app/(app)/layout.tsx");
+
+  // Next serves back/forward from its own cache by design — staleTimes
+  // explicitly "doesn't change back/forward caching behavior" — which on a page
+  // showing a current figure means stepping back redisplays a pre-transaction
+  // total. Removing prefetch={true} covers forward navigation only.
+  assert.match(refresher, /addEventListener\("popstate"/);
+  assert.match(refresher, /router\.refresh\(\)/);
+  assert.match(refresher, /removeEventListener\("popstate"/);
+
+  // Useless unless mounted for the authenticated surfaces.
+  assert.match(layout, /<HistoryNavigationRefresh \/>/);
+});
