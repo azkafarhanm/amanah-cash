@@ -71,9 +71,29 @@ export function AppShell({ role, user, children }: AppShellProps) {
               const active = pathname === item.href || (item.href !== "/admin" && item.href !== "/operator" && pathname.startsWith(`${item.href}/`));
               return (
                 <li key={item.href}>
+                  {/*
+                    No prefetch={true} here on purpose.
+
+                    Every destination in this nav is force-dynamic and shows
+                    money: both dashboards, the student list, reports,
+                    reconciliation. Setting prefetch={true} opts a link into
+                    Next's `static` client-cache tier, which reuses the
+                    prefetched payload for five minutes (staleTimes.static
+                    default). The effect was that recording a deposit and then
+                    clicking a nav item showed the figure from before it, with
+                    only a manual reload correcting it.
+
+                    Left at the default, the shell and loading boundary are
+                    still prefetched — navigation stays responsive — but the
+                    page segment itself falls under staleTimes.dynamic, which
+                    defaults to 0 and is never reused, so those figures are
+                    read fresh on arrival.
+
+                    Note this does not cover browser back/forward, which serves
+                    its own cache by design and is unaffected by staleTimes.
+                  */}
                   <Link
                     href={item.href}
-                    prefetch={true}
                     className={`${styles.navItem} ${active ? styles.navItemActive : ""}`}
                     aria-current={active ? "page" : undefined}
                     onClick={() => setNavigationOpen(false)}
