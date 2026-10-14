@@ -37,6 +37,9 @@ const FRAGMENT_SHADER = /* glsl */ `
   // the canvas. Was a hardcoded 0.15, which on a phone meant the top ~196px of
   // a 1304px hero — exactly where the headline sits — was faded to nothing.
   uniform float uEdgeFeather;
+  // 1.0 below 768px, 0.0 above. Routes phones through mobileAurora(); the
+  // desktop body of main() is untouched and renders pixel-identical to before.
+  uniform float uMobileRibbon;
 
   varying vec2 vUv;
 
@@ -71,7 +74,52 @@ const FRAGMENT_SHADER = /* glsl */ `
     return 130.0 * dot(m, g);
   }
 
+  /*
+    The desktop ribbon, redrawn for a tall, narrow canvas.
+
+    main() samples its noise in raw UV space, where x and y both run 0..1
+    whatever the canvas shape. On a 1366x800 desktop that stretches features
+    sideways, which is what makes them read as a flowing ribbon. On a phone the
+    hero canvas is about 390x1304, so the same features stretch six to seven
+    times taller than wide and read as vertical pillars. uResolution was always
+    passed in; nothing used it.
+
+    Here y is measured in canvas widths instead (p.y runs 0..height/width), so
+    features are round in pixels, and the band's thickness and sway are in the
+    same units. The motion is the desktop's own: the same slow sine sway along
+    x, the same two noise octaves. Flag and twin-diagonal variants were also
+    built and recorded side by side; this one was chosen for matching desktop.
+  */
+  vec4 mobileAurora(vec2 uv, float t) {
+    float aspect = uResolution.x / max(uResolution.y, 1.0);
+    vec2 p = vec2(uv.x, uv.y / aspect);
+    float cy = uBandHeight / aspect;
+
+    float n = snoise(vec2(p.x * 1.6 - t * 0.10, p.y * 1.6 + t * 0.07));
+    float n2 = snoise(vec2(p.x * 2.1 - t * 0.12, p.y * 1.2 + t * 0.18 + n * 0.45));
+    float centre = cy + sin(uv.x * 3.14159 * 0.75 + t * 0.22) * 0.25 + n2 * 0.22;
+    float band = smoothstep(uBandSpread, 0.0, abs(p.y - centre));
+
+    float wash = smoothstep(0.9, 0.0, abs(p.y - cy)) * 0.30;
+    float intensity = clamp(band * 1.1 + wash * 0.5 + n * 0.08, 0.0, 1.0);
+
+    float colorMix1 = smoothstep(0.05, 0.58, uv.x + n * 0.18);
+    float colorMix2 = smoothstep(0.38, 0.92, uv.x + n * 0.22);
+    vec3 col = mix(uColor1, uColor2, colorMix1);
+    col = mix(col, uColor3, colorMix2);
+
+    float edgeMask = smoothstep(0.0, uEdgeFeather, uv.x) * smoothstep(1.0, 1.0 - uEdgeFeather, uv.x) *
+                     smoothstep(0.0, uEdgeFeather, uv.y) * smoothstep(1.0, 1.0 - uEdgeFeather, uv.y);
+    float a = intensity * uAlpha * edgeMask;
+    return vec4(col * a, a);
+  }
+
   void main() {
+    if (uMobileRibbon > 0.5) {
+      gl_FragColor = mobileAurora(vUv, uTime * uSpeed);
+      return;
+    }
+
     vec2 uv = vUv;
     float t = uTime * uSpeed;
 
@@ -229,32 +277,35 @@ export function SoftAurora() {
           uColor3: { value: currentColor3 },
           uAlpha: { value: currentAlpha },
           uSpeed: { value: currentSpeed },
-          // uBandHeight is the band's CENTRE on the y axis, not its size;
-          // uBandSpread is how far it reaches from that centre (see bandCenter
-          // and the smoothstep in the fragment shader).
+          // uBandHeight is the band's CENTRE on the y axis, as a fraction of
+          // canvas height, not its size. uBandSpread is how far the band
+          // reaches from that centre.
           //
-          // A phone hero is tall and narrow, a desktop one wide and short, so
-          // the same centre lands somewhere quite different relative to the
-          // headline: at 0.48 the ribbon sat below the title on a phone and the
-          // heading read against flat dark. Raising the centre puts it back
-          // behind the words, which is where the desktop layout already had it.
+          // The two branches read uBandSpread in different units. Desktop
+          // (main) measures it in canvas heights. Phones (mobileAurora) measure
+          // it in canvas widths, because that is what keeps the ribbon's shape
+          // the same on a canvas over three times taller than it is wide. So
+          // 0.52 on a phone is 0.52 x 390px ~ 203px either side of the centre,
+          // enough to sit behind the whole headline and subheading.
           //
-          // The wider spread is a real increase in coverage rather than a
-          // reposition, and docs/22 §8.5.1 records why it is allowed here.
+          // The centre is 0.74 on a phone because that is where the headline
+          // block lands on a 1304px hero; 0.48 put the ribbon below the title.
+          // docs/22 §8.5.1 records why the phone aurora is allowed to carry
+          // more of the hero than the desktop one does.
           //
-          // Mobile was previously 0.42 / 0.32 with no reason recorded. That was
-          // not a performance saving: these are shader uniforms, so every value
-          // costs the GPU the same. Only dpr above is a performance decision.
-          uBandHeight: { value: isMobile ? 0.62 : 0.48 },
-          uBandSpread: { value: isMobile ? 0.56 : 0.38 },
-          // Frequency stays higher on a phone: the same noise scale spread over
-          // a narrow viewport reads as too few, too-large features.
-          uNoiseFrequency: { value: isMobile ? 1.8 : 1.5 },
-          uNoiseAmplitude: { value: isMobile ? 0.45 : 0.6 },
+          // These are shader uniforms: every value costs the GPU the same.
+          // Only dpr above is a performance decision.
+          uBandHeight: { value: isMobile ? 0.74 : 0.48 },
+          uBandSpread: { value: isMobile ? 0.52 : 0.38 },
+          // Read by main() only. mobileAurora sets its own noise scales in
+          // width units, so phone values here would have no effect.
+          uNoiseFrequency: { value: 1.5 },
+          uNoiseAmplitude: { value: 0.6 },
           uMouse: { value: currentMouse },
           uMouseInfluence: { value: mouseInfluence },
           uEnableMouse: { value: enableMouse },
           uEdgeFeather: { value: isMobile ? 0.04 : 0.15 },
+          uMobileRibbon: { value: isMobile ? 1.0 : 0.0 },
         },
       });
 
