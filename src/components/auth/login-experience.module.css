@@ -130,6 +130,28 @@
   transform-origin: top center;
 }
 
+/*
+  No overscroll bounce while the login screen is mounted.
+
+  The screen is sized to exactly one viewport and never scrolls. Chrome on
+  Android still answers a drag with its elastic overscroll: the whole page,
+  lamp and controls included, slides up to ~45px and springs back. On a page
+  that fits the screen that reads as "there is something below", and there
+  is not.
+
+  Scoped with :has() to the document that contains this screen, so the rule
+  lapses as soon as the user navigates into the app. The long pages there keep
+  their edge bounce, and Chrome's pull-to-refresh, which is how a user
+  re-fetches balances in a browser tab.
+
+  Headless browsers do not render touch overscroll, so this cannot be checked
+  by the contrast or layout scripts: verify on a real Android device.
+*/
+:global(html):has(.viewport),
+:global(body):has(.viewport) {
+  overscroll-behavior: none;
+}
+
 .viewport {
   height: 100svh;
   height: 100dvh;

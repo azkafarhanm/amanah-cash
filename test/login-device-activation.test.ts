@@ -119,3 +119,13 @@ test("login card does not reserve grid rows for empty conditional slots", async 
   assert.match(css, /\.brandStage\s*\{[^}]*background:\s*var\(--auth-plaque-background\)/);
   assert.match(css, /\.brandStage\s*\{[^}]*border:[^;]*var\(--auth-plaque-border\)/);
 });
+
+test("login screen suppresses overscroll bounce without touching the rest of the app", async () => {
+  const styles = await readFile("src/components/auth/login-experience.module.css", "utf8");
+  const css = styles.replace(/\/\*[\s\S]*?\*\//g, "");
+
+  // Chrome on Android slid the whole one-screen login page up and back on drag.
+  // Scoped through :has() so app pages keep edge bounce and pull-to-refresh.
+  assert.match(css, /:global\(html\):has\(\.viewport\),\s*:global\(body\):has\(\.viewport\)\s*\{\s*overscroll-behavior:\s*none;/);
+  assert.doesNotMatch(css, /:global\((html|body)\)\s*\{[^}]*overscroll-behavior/);
+});
