@@ -84,3 +84,21 @@ test("Desktop Golden Reference remains immutable", () => {
     /@media\s*\(min-width:\s*64rem\)\s*and\s*\(min-height:\s*38rem\)\s*\{\s*\.problemsSection,\s*\.solutionSection,\s*\.workflowSection,\s*\.featuresSection,\s*\.securitySection\s*\{\s*position:\s*sticky;\s*top:\s*var\(--landing-nav-height\);\s*min-height:\s*calc\(100svh \+ 12rem\);/
   );
 });
+
+test("phone aurora samples noise in pixel-true units and leaves desktop on its own path", () => {
+  const aurora = readSource("src/components/landing/soft-aurora.tsx");
+
+  // In raw UV space a 390x1304 canvas stretched every noise feature six to
+  // seven times taller than wide: vertical pillars instead of a ribbon.
+  assert.match(aurora, /vec4 mobileAurora\(vec2 uv, float t\)/);
+  assert.match(aurora, /uResolution\.x \/ max\(uResolution\.y, 1\.0\)/);
+  assert.match(aurora, /if \(uMobileRibbon > 0\.5\) \{\s*gl_FragColor = mobileAurora\(vUv, uTime \* uSpeed\);\s*return;/);
+  assert.match(aurora, /uMobileRibbon: \{ value: isMobile \? 1\.0 : 0\.0 \}/);
+
+  // Desktop values the laptop layout was approved with.
+  assert.match(aurora, /uBandHeight: \{ value: isMobile \? 0\.74 : 0\.48 \}/);
+  assert.match(aurora, /uBandSpread: \{ value: isMobile \? 0\.52 : 0\.38 \}/);
+
+  // The variants were chosen between with a query-string switch; none of it ships.
+  assert.doesNotMatch(aurora, /URLSearchParams|uMotionStyle/);
+});

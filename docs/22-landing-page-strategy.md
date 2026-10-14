@@ -433,8 +433,10 @@ Avoid:
 #### 8.5.1 Approved Exception — the Aurora Is More Prominent on Phones
 
 Under 768px the Hero aurora is deliberately stronger than the desktop one, not
-merely repositioned. In `soft-aurora.tsx`: band centre 0.62 against 0.48, spread
-0.56 against 0.38, `uEdgeFeather` 0.04 against 0.15, and opacity scaled by 1.48.
+merely repositioned. In `soft-aurora.tsx`: band centre 0.74 against 0.48,
+`uEdgeFeather` 0.04 against 0.15, and opacity scaled by 1.48. Phones also draw
+through their own shader path, `mobileAurora()` — see "Pillars" below — where the
+band spread of 0.52 is measured in canvas widths rather than heights.
 
 This is a real exception to the rule above, approved on its own terms rather
 than reasoned away. §8.5 says abstract decoration stays secondary and §10.1 says
@@ -472,6 +474,39 @@ three viewports and both themes, before and after. At 393px, dark: title
 subheading 11.89:1 → 8.61:1. Tablet at 768px did not move, confirming the
 desktop branch is untouched. Everything stays well above the 4.5:1 in
 docs/16-accessibility-guidelines.md §5.
+
+**Pillars (second revision).** The first version of this exception made the
+aurora stronger but left it reading as tall vertical pillars on a phone rather
+than as the flowing ribbon the desktop shows. The cause was geometry, not
+motion: the shader sampled its noise in raw UV space, where both axes run 0..1
+whatever the canvas shape. A desktop canvas is wide, so features stretch
+sideways into a ribbon; a phone Hero canvas is about 390x1304, so the same
+features stretched six to seven times taller than wide. `uResolution` had always
+been passed to the shader and never read.
+
+Phones now go through `mobileAurora()`, which measures y in canvas widths so
+noise features are round in pixels, and runs the desktop's own motion — the
+same slow sine sway and two noise octaves — in those units. A flag-wave variant
+and a twin diagonal ribbon were built and recorded side by side with this one;
+this one was chosen because it matches the desktop.
+
+The desktop path is gated off by a uniform and its code is unchanged. Frozen
+frames at 1920x912, 1366x768, 820x1180 and 768x1024, both themes, diff
+identical to the previous build within the capture's own noise floor (one
+channel level on 587 pixels at 1366, present between two captures of the
+*same* build as well).
+
+Contrast, one frozen frame, previous phone aurora → this one:
+
+| | Dark (360–412px) | Light (360–412px) |
+|---|---|---|
+| Title | 8.79–9.00 → 9.78–13.35 | 9.25–9.33 → 9.76–11.50 |
+| Subheading | 7.60–7.63 → 9.11–10.15 | 8.86–8.88 → 9.90–10.29 |
+| Supporting line | **2.75–2.76** → 4.91–5.09 | **3.94–3.95** → 5.26–5.40 |
+
+The supporting line ("Dirancang untuk pekerjaan harian…") had been below the
+4.5:1 that normal-size text owes under the previous version: a bright pillar
+fell directly behind it. It now passes on every width measured.
 
 Re-measure if the palette, `uAlpha`, `uEdgeFeather`, or the band uniforms
 change. Note when measuring that the eyebrow is a pill with its own opaque
