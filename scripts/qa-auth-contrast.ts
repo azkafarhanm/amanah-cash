@@ -19,12 +19,13 @@
       npx tsx scripts/qa-auth-contrast.ts
 
   Run it after touching any of: --color-brand-accent, --color-brand-diamond,
-  --auth-brand-scrim, --auth-brand-halo, --auth-spotlight-*, or the lamp's light
-  cone. Those are the knobs that move these numbers.
+  --auth-plaque-*, --auth-spotlight-*, or the lamp's light cone. Those are the
+  knobs that move these numbers.
 
-  Thresholds come from docs/16-accessibility-guidelines.md §5: large text needs
-  3:1. 4.5:1 is the target this screen aims for, to leave headroom for the
-  gradient varying between viewports.
+  Thresholds come from docs/16-accessibility-guidelines.md §5. The wordmark is
+  large text and needs 3:1; 4.5:1 is the target this screen aims for, to leave
+  headroom for the gradient varying between viewports. The tagline is 12-14px,
+  which is normal text, so it owes 4.5:1 outright.
 */
 
 // Marks this file as a module. Without it TypeScript treats every script in
@@ -35,14 +36,17 @@ export {};
 const AUTH_BASE_URL = process.env.QA_BASE_URL ?? "http://localhost:3000";
 
 const AUTH_VIEWPORTS = [
+  { name: "galaxy-a   360x740", width: 360, height: 740 },
   { name: "iphone-se  375x553", width: 375, height: 553 },
   { name: "pixel-9    412x760", width: 412, height: 760 },
-  { name: "ipad-pro  1032x1376", width: 1032, height: 1376 }
+  { name: "ipad-pro  1032x1376", width: 1032, height: 1376 },
+  { name: "laptop    1366x768", width: 1366, height: 768 }
 ];
 
-const BRAND_WORDS: Array<{ label: string; selector: string }> = [
-  { label: "Amanah", selector: '[class*="brandName"] > span:not([class])' },
-  { label: "Cash", selector: '[class*="brandAccent"]' }
+const BRAND_WORDS: Array<{ label: string; selector: string; floor: number }> = [
+  { label: "Amanah", selector: '[class*="brandName"] > span:not([class])', floor: 3 },
+  { label: "Cash", selector: '[class*="brandAccent"]', floor: 3 },
+  { label: "Tagline", selector: '[class*="brandTagline"]', floor: 4.5 }
 ];
 
 type AuthRgb = [number, number, number];
@@ -158,7 +162,7 @@ async function runAuthContrast() {
 
         const text = colour.match(/\d+/g)!.slice(0, 3).map(Number) as AuthRgb;
         const ratio = contrastRatio(text, ground);
-        if (ratio < 3) failures += 1;
+        if (ratio < word.floor) failures += 1;
 
         rows.push({
           theme,
@@ -167,7 +171,7 @@ async function runAuthContrast() {
           text: `rgb(${text.join(",")})`,
           ground: `rgb(${ground.join(",")})`,
           ratio: `${ratio.toFixed(2)}:1`,
-          "floor 3:1": ratio >= 3 ? "pass" : "FAIL",
+          floor: `${ratio >= word.floor ? "pass" : "FAIL"} (${word.floor}:1)`,
           "target 4.5:1": ratio >= 4.5 ? "pass" : "under"
         });
       }
@@ -181,11 +185,11 @@ async function runAuthContrast() {
 
   if (failures > 0) {
     console.error(
-      `\n${failures} measurement(s) below the 3:1 floor required by docs/16-accessibility-guidelines.md §5.`
+      `\n${failures} measurement(s) below the floor required by docs/16-accessibility-guidelines.md §5.`
     );
     process.exit(1);
   }
-  console.log("\nEvery measurement clears the 3:1 floor.");
+  console.log("\nEvery measurement clears its floor.");
 }
 
 runAuthContrast().catch((error: unknown) => {
