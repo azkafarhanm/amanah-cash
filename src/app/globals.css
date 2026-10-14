@@ -217,8 +217,10 @@
   --color-blue-900: #1e3a5f;
   --color-red-50: #fef2f2;
   --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
   --color-green-50: #f0fdf4;
   --color-green-700: #15803d;
   --color-emerald-50: #ecfdf5;
@@ -399,6 +401,8 @@
   --color-disabled-background: var(--color-neutral-100);
   --color-error-foreground: var(--color-red-700);
   --color-error-background: var(--color-red-50);
+  --color-error-background-hover: var(--color-red-100);
+  --color-error-background-active: var(--color-red-200);
   --color-success-foreground: var(--color-green-700);
   --color-success-background: var(--color-green-50);
   --color-warning-foreground: var(--color-amber-700);
@@ -613,6 +617,22 @@
   --button-secondary-border: var(--color-border-default);
   --button-secondary-border-hover: var(--color-border-strong);
   --button-secondary-border-active: var(--color-action-primary);
+  /*
+    Destructive buttons are tinted, not solid.
+
+    The confirmation dialog used to force the error colour onto the label of a
+    primary button while leaving its teal fill alone. That measured 1.73:1 in
+    the light theme and 1.52:1 in the dark one, against the 4.5:1 a 16px label
+    owes. A solid saturated fill clears the ratio, but a block of it in the
+    middle of a pale dialog is the same glare the login wordmark had. So the
+    tinted surface carries the warning and the foreground carries the contrast:
+    5.92:1 light, 6.80:1 dark, measured against the resolved values above.
+  */
+  --button-danger-background: var(--color-error-background);
+  --button-danger-background-hover: var(--color-error-background-hover);
+  --button-danger-background-active: var(--color-error-background-active);
+  --button-danger-foreground: var(--color-error-foreground);
+  --button-danger-border: var(--color-error-foreground);
   --button-disabled-background: var(--color-disabled-background);
   --button-disabled-foreground: var(--color-disabled-foreground);
   --button-height-default: var(--control-height-default);
@@ -723,6 +743,8 @@
   --color-disabled-background: var(--color-navy-800);
   --color-error-foreground: var(--color-red-100);
   --color-error-background: var(--color-red-800);
+  --color-error-background-hover: var(--color-red-700);
+  --color-error-background-active: var(--color-red-900);
   --color-success-foreground: var(--color-emerald-200);
   --color-success-background: var(--color-emerald-900);
   --color-warning-foreground: var(--color-amber-100);

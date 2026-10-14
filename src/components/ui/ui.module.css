@@ -101,6 +101,28 @@
   border-color: var(--button-secondary-border-active);
 }
 
+/*
+  Reserved for actions that cannot be undone. Logging out is not one of them:
+  see the tone note on ConfirmationDialog. The outline is what keeps the tinted
+  fill reading as a button rather than as a highlighted paragraph, so it is not
+  decoration and must not be dropped.
+*/
+.buttonDanger {
+  color: var(--button-danger-foreground);
+  background: var(--button-danger-background);
+  border-color: var(--button-danger-border);
+}
+
+.buttonDanger:hover:not(:disabled, [aria-busy="true"]) {
+  background: var(--button-danger-background-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.buttonDanger:active:not(:disabled, [aria-busy="true"]) {
+  background: var(--button-danger-background-active);
+}
+
 .heading {
   margin: var(--space-0);
   color: var(--color-text-primary);

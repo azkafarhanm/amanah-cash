@@ -182,6 +182,7 @@ export function DataSettings() {
         title="Pulihkan backup?"
         description="Semua data aplikasi saat ini akan diganti dan seluruh pengguna harus masuk kembali setelah proses selesai."
         confirmLabel="Pulihkan backup"
+        tone="danger"
         onCancel={() => setConfirmRestoreOpen(false)}
         onConfirm={() => void restore()}
       />

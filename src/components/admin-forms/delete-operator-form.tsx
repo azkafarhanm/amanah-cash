@@ -50,6 +50,7 @@ export function DeleteOperatorForm({
         title="Hapus Operator?"
         description="Akses Operator akan dinonaktifkan. Identitas historis dan audit tetap dipertahankan, dan tindakan ini tidak dapat dibatalkan dari halaman ini."
         confirmLabel="Hapus Operator"
+        tone="danger"
         onCancel={() => setConfirmOpen(false)}
         onConfirm={confirmDelete}
       />

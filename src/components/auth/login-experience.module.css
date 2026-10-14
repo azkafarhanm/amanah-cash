@@ -83,7 +83,13 @@
      lifts the ground to the accent's own luminance, so the scrim puts the
      night back behind the words. */
   --auth-brand-scrim: rgba(4, 10, 18, 0.74);
-  --auth-brand-halo: rgba(2, 6, 12, 0.85);
+  /*
+    Halved from 0.85. At that strength the three shadow layers stacked into a
+    dark cloud that hugged the letters, and it read as a smudge behind the
+    wordmark rather than as depth. It moves the measured ratio only a little —
+    see the note on .brandName — which is why it could be softened.
+  */
+  --auth-brand-halo: rgba(2, 6, 12, 0.42);
   --auth-brand-shadow: rgba(255, 242, 208, 0.14);
   --auth-card-background: color-mix(in srgb, #111c28 96%, transparent);
   --auth-card-border: rgba(160, 213, 208, 0.2);
@@ -335,9 +341,12 @@
 
                         dark 375   dark 412   dark 1032   light (all)
     Amanah              5.58       3.10       3.18        8.2-8.9
-      after            10.30       7.06       7.06       11.0-11.7
+      after             9.71       6.75       6.87       11.0-11.7
     Cash                1.06       1.23       1.46        1.68-1.74
-      after             3.83       3.64       3.76        4.46-4.73
+      after             3.62       3.48       3.64        4.46-4.73
+
+  (The dark "after" figures are from after the halo below was softened; they
+  were 0.15-0.3 higher with the heavier halo.)
 
   docs/16-accessibility-guidelines.md §5 requires 3:1 for large text. Every
   measurement now clears it.
@@ -358,7 +367,7 @@
 
   Do not "fix" this by turning down --auth-spotlight-core or the cone: that
   dulls the pendant, which is the whole point of the screen. If you raise
-  either, re-measure — dark headroom above the 3:1 floor is only about 0.6.
+  either, re-measure — dark headroom above the 3:1 floor is only about 0.5.
 */
 .brandText::before {
   content: "";
@@ -388,13 +397,25 @@
   standard treatment for type over imagery. WCAG scores the glyph against the
   ground and ignores shadows, so the scrim is what moves the measured number and
   this is what makes the words feel crisp.
+
+  The 24px layer is gone and the 10px one is now 8px. Three layers at 0.85 in
+  the dark theme summed to something close to opaque for roughly a letter's
+  width in every direction, which is what made the wordmark look like it was
+  sitting on a black patch. Two tight layers still separate the glyph edges
+  without painting a shape of their own.
+
+  Note for anyone re-measuring: qa-auth-contrast.ts hides each word with
+  `visibility: hidden` before photographing the ground, which hides that word's
+  own shadow — but not its neighbour's. The "Amanah" halo bleeds into the box
+  measured for "Cash", so this rule does move the dark "Cash" figure. Softening
+  it took that from 3.64-3.83:1 to 3.48-3.64:1, still above the 3:1 floor. The
+  scrim and the accent colour remain the main levers.
 */
 .brandName,
 .brandTagline {
   text-shadow:
     0 1px 2px var(--auth-brand-halo),
-    0 0 10px var(--auth-brand-halo),
-    0 0 24px var(--auth-brand-halo);
+    0 0 8px var(--auth-brand-halo);
 }
 
 .brandStageVisible {
