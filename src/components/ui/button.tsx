@@ -5,9 +5,15 @@ import styles from "./ui.module.css";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
   loadingLabel?: string;
-  variant?: "primary" | "secondary";
+  variant?: "primary" | "secondary" | "danger";
   children: ReactNode;
 }
+
+const variantClasses = {
+  primary: styles.buttonPrimary,
+  secondary: styles.buttonSecondary,
+  danger: styles.buttonDanger
+} as const;
 
 export function Button({
   isLoading = false,
@@ -20,8 +26,7 @@ export function Button({
   "aria-label": ariaLabel,
   ...props
 }: ButtonProps) {
-  const variantClass =
-    variant === "secondary" ? styles.buttonSecondary : styles.buttonPrimary;
+  const variantClass = variantClasses[variant];
 
   return (
     <button

@@ -16,7 +16,13 @@
 .description { color: var(--color-text-secondary); font: var(--type-body); }
 .close { min-width: var(--control-height-minimum); min-height: var(--control-height-minimum); border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: var(--shape-control); color: var(--color-text-primary); background: var(--color-background-surface); font-size: var(--font-size-24); cursor: pointer; }
 .actions { display: flex; justify-content: flex-end; gap: var(--space-3); padding-block-start: var(--space-2); }
-.confirm { color: var(--color-error-foreground) !important; border-color: var(--color-error-foreground) !important; }
+/*
+  The confirm button carries no rule of its own any more. It used to be
+  `.confirm { color: var(--color-error-foreground) !important }`, which recoloured
+  only the label and border of a button whose fill stayed brand teal: red on
+  teal, 1.73:1 light and 1.52:1 dark. Tone now selects a real Button variant,
+  where fill and foreground are chosen together.
+*/
 .close:focus-visible, .close:disabled { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); }
 
 @media (max-width: 48rem) {

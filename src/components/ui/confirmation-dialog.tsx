@@ -5,11 +5,23 @@ import { Button } from "./button";
 import { useModalDialog } from "./use-modal-dialog";
 import styles from "./confirmation-dialog.module.css";
 
+/*
+  `tone` decides whether the confirm button is red, and the rule is narrower
+  than it looks: red means the action cannot be undone.
+
+  Every caller used to get red, logout included. Logging out destroys nothing —
+  you sign back in — so spending the warning colour on it teaches people to
+  ignore red, and then it is worth nothing on the day they are about to delete
+  an operator. Reach for "danger" only when the data does not come back.
+*/
+export type ConfirmationTone = "default" | "danger";
+
 export function ConfirmationDialog({
   open,
   title,
   description,
   confirmLabel,
+  tone = "default",
   pending = false,
   onConfirm,
   onCancel
@@ -18,6 +30,7 @@ export function ConfirmationDialog({
   title: string;
   description: string;
   confirmLabel: string;
+  tone?: ConfirmationTone;
   pending?: boolean;
   onConfirm(): void;
   onCancel(): void;
@@ -58,7 +71,7 @@ export function ConfirmationDialog({
           <Button type="button" variant="secondary" disabled={pending} onClick={onCancel}>
             Batal
           </Button>
-          <Button type="button" className={styles.confirm} isLoading={pending} loadingLabel="Memproses…" onClick={onConfirm}>
+          <Button type="button" variant={tone === "danger" ? "danger" : "primary"} isLoading={pending} loadingLabel="Memproses…" onClick={onConfirm}>
             {pending ? "Memproses…" : confirmLabel}
           </Button>
         </footer>
