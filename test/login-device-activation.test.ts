@@ -101,3 +101,21 @@ test("logout ends the session without clearing device activation storage", async
   assert.match(source, /signOut\(/);
   assert.doesNotMatch(source, /localStorage|sessionStorage|removeItem|\.clear\(/);
 });
+
+test("login card does not reserve grid rows for empty conditional slots", async () => {
+  const [experience, styles] = await Promise.all([
+    readFile("src/components/auth/login-experience.tsx", "utf8"),
+    readFile("src/components/auth/login-experience.module.css", "utf8")
+  ]);
+
+  // Wrapping a null notice or error slot left an empty row that still took the
+  // card's gap: a visible blank band between the description and the divider.
+  assert.match(experience, /Children\.toArray\(children\)\.map/);
+  assert.doesNotMatch(experience, /Array\.isArray\(children\)/);
+
+  // The brand sits on a plaque with an edge, not on a borderless scrim.
+  const css = styles.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(css, /\.brandText::before/);
+  assert.match(css, /\.brandStage\s*\{[^}]*background:\s*var\(--auth-plaque-background\)/);
+  assert.match(css, /\.brandStage\s*\{[^}]*border:[^;]*var\(--auth-plaque-border\)/);
+});

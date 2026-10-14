@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Children, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { HangingLamp, type LampPhase } from "./hanging-lamp";
 import {
   persistDeviceActivation,
@@ -590,26 +590,23 @@ export function LoginExperience({ brandMark, brandName, tagline, children }: Log
           role="region"
           aria-labelledby="login-title"
         >
-          {Array.isArray(children)
-            ? children.map((child, i) => (
-                <div
-                  key={i}
-                  data-stagger
-                  data-stagger-index={i}
-                  className={[styles.staggerItem, staggerCount > i ? styles.staggerItemVisible : ""].filter(Boolean).join(" ")}
-                >
-                  {child}
-                </div>
-              ))
-            : (
-                <div
-                  data-stagger
-                  data-stagger-index={0}
-                  className={[styles.staggerItem, staggerCount > 0 ? styles.staggerItemVisible : ""].filter(Boolean).join(" ")}
-                >
-                  {children}
-                </div>
-              )}
+          {/*
+            Children.toArray drops null, undefined and booleans. The login page
+            passes several conditional slots (notice, error, dev accounts, help
+            text) that are usually empty, and wrapping each one anyway left an
+            empty grid row that still took the card's gap — two of them sat
+            between the description and the divider as a visible blank band.
+          */}
+          {Children.toArray(children).map((child, i) => (
+            <div
+              key={i}
+              data-stagger
+              data-stagger-index={i}
+              className={[styles.staggerItem, staggerCount > i ? styles.staggerItemVisible : ""].filter(Boolean).join(" ")}
+            >
+              {child}
+            </div>
+          ))}
         </div>
       </div>
     </div>
