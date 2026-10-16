@@ -46,10 +46,21 @@
 .secondaryButton:focus-visible { outline: var(--border-width-emphasis) var(--border-style-default) var(--focus-visible-color); outline-offset: var(--space-0-5); box-shadow: var(--focus-visible-shadow); }
 .button:disabled, .secondaryButton:disabled { cursor: not-allowed; opacity: var(--opacity-60); }
 .previewRow { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-4); min-width: 0; }
+/* Archive: a quiet panel at the foot of the page, and a status banner at the top once archived. */
+.archiveSection, .archivedBanner { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); min-width: 0; }
+.archiveSection > button, .archivedBanner > button { flex: 0 0 auto; white-space: nowrap; }
+.archiveCopy { display: grid; gap: var(--space-1-5); min-width: 0; }
+.archiveCopy h2 { margin: var(--space-0); font: var(--type-h5); }
+.archiveCopy p { margin: var(--space-0); color: var(--color-text-secondary); font: var(--type-supporting); }
+.archiveSection .archiveBlocked { color: var(--color-warning-foreground); }
+/* Same warning family as the "Diarsipkan" status badge, so the two read as one state. */
+.archivedBanner { padding: var(--space-3-5) var(--space-4); border: var(--border-width-default) var(--border-style-default) var(--glass-border, var(--color-border-default)); border-radius: var(--shape-control); color: var(--color-warning-foreground); background: var(--color-warning-background); box-shadow: inset 3px 0 0 var(--color-warning-foreground), var(--surface-inset-highlight), var(--shadow-xs); }
+.archivedBanner .archiveCopy p { color: inherit; }
 .photoPreview { flex: 0 0 auto; border: var(--border-width-default) var(--border-style-default) var(--color-border-default); border-radius: 50%; object-fit: cover; }
 @media (max-width: 48rem) {
   .studentDetailHeader { flex-direction: column; align-items: flex-start; gap: var(--space-3); width: var(--size-full); }
   .studentDetailHeaderCopy { width: var(--size-full); min-width: 0; }
+  .archiveSection, .archivedBanner { flex-direction: column; align-items: stretch; }
   .toolbar, .definition, .cropWorkspace { grid-template-columns: 1fr; width: var(--size-full); min-width: 0; }
   .cropFrame { width: var(--size-full); max-width: 100%; }
   .cropControls { width: var(--size-full); min-width: 0; }

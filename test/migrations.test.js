@@ -59,7 +59,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "011_settings_final_contract.sql" },
     { version: "012_maintenance_audit.sql" },
     { version: "013_student_profile_photo_foundation.sql" },
-    { version: "014_optional_edit_reason.sql" }
+    { version: "014_optional_edit_reason.sql" },
+    { version: "015_student_archive.sql" }
   ]);
   first.close();
 
@@ -79,7 +80,8 @@ test("reopening a file-backed database does not reapply an applied migration", (
     { version: "011_settings_final_contract.sql" },
     { version: "012_maintenance_audit.sql" },
     { version: "013_student_profile_photo_foundation.sql" },
-    { version: "014_optional_edit_reason.sql" }
+    { version: "014_optional_edit_reason.sql" },
+    { version: "015_student_archive.sql" }
   ]);
   second.close();
 });
@@ -188,6 +190,13 @@ test("optional edit reason migration is mirrored for the SQLite Prisma history",
   assert.equal(
     readFileSync(resolve(root, "prisma/migrations/20260912000000_optional_edit_reason/migration.sql"), "utf8"),
     readFileSync(resolve(root, "migrations/014_optional_edit_reason.sql"), "utf8")
+  );
+});
+
+test("student archive migration is mirrored for the SQLite Prisma history", () => {
+  assert.equal(
+    readFileSync(resolve(root, "prisma/migrations/20261016000000_student_archive/migration.sql"), "utf8"),
+    readFileSync(resolve(root, "migrations/015_student_archive.sql"), "utf8")
   );
 });
 

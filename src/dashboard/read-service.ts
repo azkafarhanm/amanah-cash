@@ -66,7 +66,7 @@ export function dashboardReadService(
           prisma.student.groupBy({ by: ["status"], orderBy: { status: "asc" }, _count: true }),
           prisma.user.findMany({
             where: { role: "OPERATOR", deletedAt: null },
-            select: { id: true, name: true, image: true, _count: { select: { students: true } } },
+            select: { id: true, name: true, image: true, _count: { select: { students: { where: { status: { not: "ARCHIVED" } } } } } },
             orderBy: [{ name: "asc" }, { id: "asc" }]
           }),
           prisma.operatorAudit.findMany({
@@ -119,7 +119,8 @@ export function dashboardReadService(
           inactive: inactiveOperators
         },
         students: {
-          total: activeStudents + inactiveStudents + archivedStudents,
+          // Archived Students have left; they are reported separately, not counted in.
+          total: activeStudents + inactiveStudents,
           active: activeStudents,
           inactive: inactiveStudents,
           archived: archivedStudents
@@ -285,7 +286,7 @@ export function dashboardReadService(
           take: ACTIVITY_LIMIT
         }),
         prisma.student.findMany({
-          where: { operatorId },
+          where: { operatorId, status: { not: "ARCHIVED" } },
           select: { id: true, name: true, status: true, updatedAt: true, photoObjectKey: true, photoUpdatedAt: true },
           orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
           take: ACTIVITY_LIMIT
@@ -361,7 +362,8 @@ export function dashboardReadService(
 
       return {
         students: {
-          total: activeStudents + inactiveStudents + archivedStudents,
+          // Archived Students have left; they are reported separately, not counted in.
+          total: activeStudents + inactiveStudents,
           active: activeStudents,
           inactive: inactiveStudents,
           archived: archivedStudents,

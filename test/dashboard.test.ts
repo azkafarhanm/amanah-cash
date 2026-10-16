@@ -64,10 +64,11 @@ after(async () => {
 test("Admin dashboard aggregates administration without exposing financial data", async () => {
   const dashboard = await dashboardReadService(environment, now).admin();
   assert.deepEqual(dashboard.operators, { total: 2, active: 2, inactive: 0 });
-  assert.deepEqual(dashboard.students, { total: 4, active: 2, inactive: 1, archived: 1 });
+  // Archived Students are reported on their own and left out of the total.
+  assert.deepEqual(dashboard.students, { total: 3, active: 2, inactive: 1, archived: 1 });
   assert.deepEqual(dashboard.studentDistribution.map(({ operatorName, studentCount }) => ({ operatorName, studentCount })), [
     { operatorName: "Operator Dua", studentCount: 1 },
-    { operatorName: "Operator Satu", studentCount: 3 }
+    { operatorName: "Operator Satu", studentCount: 2 } // the third, archived, is not counted
   ]);
   assert.equal(dashboard.administrativeActivity[0].kind, "STATUS_CHANGE");
   assert.equal(dashboard.administrativeActivity[0].title, "Operator yang telah dihapus");
@@ -79,7 +80,7 @@ test("Admin dashboard aggregates administration without exposing financial data"
 
 test("Operator dashboard is ownership-scoped and uses persisted balances and Jakarta business time", async () => {
   const dashboard = await dashboardReadService(environment, now).operator("operator-1");
-  assert.deepEqual(dashboard.students, { total: 3, active: 1, inactive: 1, archived: 1, activeToday: 1 });
+  assert.deepEqual(dashboard.students, { total: 2, active: 1, inactive: 1, archived: 1, activeToday: 1 });
   assert.equal(dashboard.managedBalance, "800");
   assert.deepEqual(dashboard.today, {
     deposits: { count: 1, amount: "1000" },

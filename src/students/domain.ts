@@ -12,6 +12,8 @@ export type StudentRecord = {
   updatedAt: Date;
   photoObjectKey: string | null;
   photoUpdatedAt: Date | null;
+  /** Set when archived through the archive action; null for Students archived before it existed. */
+  archivedAt?: Date | null;
   operator: { id: string; name: string; email: string };
 };
 
@@ -19,7 +21,7 @@ export type StudentOperatorOption = { id: string; name: string; email: string };
 
 export class StudentManagementError extends Error {
   constructor(
-    public readonly code: "VALIDATION" | "DUPLICATE_NAME" | "NOT_FOUND" | "INVALID_OPERATOR" | "CONFLICT",
+    public readonly code: "VALIDATION" | "DUPLICATE_NAME" | "NOT_FOUND" | "INVALID_OPERATOR" | "CONFLICT" | "BALANCE_NOT_ZERO" | "INVALID_STATE",
     message: string,
     public readonly status: number
   ) {
@@ -46,11 +48,26 @@ export type StudentRepository = {
     }
   ): Promise<StudentRecord>;
   find(id: string, operatorId?: string): Promise<StudentRecord | null>;
+  /** With no status, every Student except ARCHIVED ones. Archived Students are reachable only by asking for them. */
   list(input: { search: string; status?: StudentStatus; operatorId?: string; skip: number; take: number }): Promise<{ items: StudentRecord[]; total: number }>;
   audit?(data: { operatorId: string; actorId: string; action: string; summary: string }): Promise<void>;
+  /**
+   * Moves a Student into or out of ARCHIVED and records it, as one atomic step.
+   * Archiving must re-check a zero balance in the same statement that changes the
+   * status, so a deposit committing in between cannot be hidden behind the archive.
+   * Resolves to the updated record, or to the reason nothing changed.
+   */
+  setArchived(input: { id: string; operatorId: string; actorId: string; archived: boolean }): Promise<
+    | { outcome: "UPDATED"; student: StudentRecord }
+    | { outcome: "NOT_FOUND" | "BALANCE_NOT_ZERO" | "ALREADY" }
+  >;
 };
 
 const STATUSES = new Set<StudentStatus>(["ACTIVE", "INACTIVE", "ARCHIVED"]);
+
+function formatRupiah(balance: string | undefined) {
+  return `Rp ${BigInt(balance ?? "0").toLocaleString("id-ID")}`;
+}
 
 function nameValue(value: unknown) {
   if (typeof value !== "string") throw new StudentManagementError("VALIDATION", "Nama lengkap wajib diisi.", 400);
@@ -94,6 +111,47 @@ export function createStudentManagement(repository: StudentRepository) {
     return { name, notes, status, operatorId: operator.id };
   }
 
+  /*
+    Archiving hides a Student who has left from everyday work: lists, the
+    transaction picker, dashboard counts. It never deletes. Transactions and
+    financial audit events are append-only by design and enforced by database
+    triggers, and past reports must keep reconciling with what was printed.
+
+    The balance must be zero, because a hidden Student with money still held
+    is a debt nobody can see. The transaction engine already refuses every
+    financial command for a non-ACTIVE Student, so a zero balance stays zero.
+
+    Platform Admin is never shown an amount: Admin has no access to financial
+    data, so its message only says the balance is not yet zero.
+  */
+  async function applyArchive(
+    input: { id: string; operatorId: string; actorId: string; archived: boolean; audience: "operator" | "admin" }
+  ) {
+    const result = await repository.setArchived(input);
+    if (result.outcome === "UPDATED") return result.student;
+    if (result.outcome === "NOT_FOUND") throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
+    if (result.outcome === "ALREADY") {
+      throw new StudentManagementError(
+        "INVALID_STATE",
+        input.archived ? "Siswa sudah diarsipkan." : "Siswa tidak sedang diarsipkan.",
+        409
+      );
+    }
+    if (input.audience === "admin") {
+      throw new StudentManagementError(
+        "BALANCE_NOT_ZERO",
+        "Saldo Siswa belum nol. Operator perlu mencatat penarikan sampai saldo nol sebelum Siswa dapat diarsipkan.",
+        409
+      );
+    }
+    const current = await repository.find(input.id, input.operatorId);
+    throw new StudentManagementError(
+      "BALANCE_NOT_ZERO",
+      `Saldo Siswa masih ${formatRupiah(current?.balance)}. Catat penarikan sampai saldo nol sebelum mengarsipkan.`,
+      409
+    );
+  }
+
   return {
     activeOperators: repository.activeOperators,
     async create(input: { name: unknown; notes: unknown; status: unknown; operatorId: unknown }) {
@@ -135,7 +193,36 @@ export function createStudentManagement(repository: StudentRepository) {
         oldOperatorId: current.operator.id,
         newOperatorId: values.operatorId
       };
+
+      // Crossing the ARCHIVED boundary goes through the same guarded, audited
+      // step the Operator uses, not through a plain status write.
+      const archiving = current.status !== "ARCHIVED" && values.status === "ARCHIVED";
+      const restoring = current.status === "ARCHIVED" && values.status !== "ARCHIVED";
+      if (archiving) {
+        // Checked up front so a refused archive does not leave the other field
+        // changes half-applied. setArchived re-checks atomically regardless.
+        if (current.balance !== undefined && current.balance !== "0") {
+          throw new StudentManagementError(
+            "BALANCE_NOT_ZERO",
+            "Saldo Siswa belum nol. Operator perlu mencatat penarikan sampai saldo nol sebelum Siswa dapat diarsipkan.",
+            409
+          );
+        }
+        const updated = await repository.update(id, { ...values, status: current.status }, current.operator.id, ownershipTransfer);
+        return applyArchive({ id, operatorId: updated.operator.id, actorId, archived: true, audience: "admin" });
+      }
+      if (restoring) {
+        await applyArchive({ id, operatorId: current.operator.id, actorId, archived: false, audience: "admin" });
+      }
       return repository.update(id, values, current.operator.id, ownershipTransfer);
+    },
+    async archiveByOperator(operatorId: string, studentId: string) {
+      if (!operatorId || !studentId) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
+      return applyArchive({ id: studentId, operatorId, actorId: operatorId, archived: true, audience: "operator" });
+    },
+    async restoreByOperator(operatorId: string, studentId: string) {
+      if (!operatorId || !studentId) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);
+      return applyArchive({ id: studentId, operatorId, actorId: operatorId, archived: false, audience: "operator" });
     },
     async detail(id: string, scope: StudentScope) {
       if (!id) throw new StudentManagementError("NOT_FOUND", "Siswa tidak ditemukan.", 404);

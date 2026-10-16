@@ -7,13 +7,13 @@ import { createStudentManagement, StudentManagementError, type StudentRecord, ty
 
 const select = {
   id: true, name: true, notes: true, status: true, balance: true, createdAt: true, updatedAt: true,
-  photoObjectKey: true, photoUpdatedAt: true,
+  photoObjectKey: true, photoUpdatedAt: true, archivedAt: true,
   operator: { select: { id: true, name: true, email: true } }
 } as const;
 
 function formatStudent(row: {
   id: string; name: string; notes: string | null; status: StudentStatus; balance: bigint; createdAt: Date; updatedAt: Date;
-  photoObjectKey: string | null; photoUpdatedAt: Date | null;
+  photoObjectKey: string | null; photoUpdatedAt: Date | null; archivedAt: Date | null;
   operator: { id: string; name: string; email: string };
 }): StudentRecord {
   return {
@@ -26,6 +26,7 @@ function formatStudent(row: {
     updatedAt: row.updatedAt,
     photoObjectKey: row.photoObjectKey,
     photoUpdatedAt: row.photoUpdatedAt,
+    archivedAt: row.archivedAt,
     operator: row.operator
   };
 }
@@ -89,6 +90,36 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
         throw error;
       }
     },
+    async setArchived({ id, operatorId, actorId, archived }) {
+      return prisma.$transaction(async (transaction) => {
+        // One conditional UPDATE does the check and the change together. On
+        // PostgreSQL it waits for any transaction-engine write holding this
+        // Student's row and re-evaluates the WHERE against the committed
+        // balance, so a deposit that lands first makes this match nothing.
+        const changed = await transaction.student.updateMany({
+          where: archived
+            ? { id, operatorId, status: { not: "ARCHIVED" }, balance: BigInt(0) }
+            : { id, operatorId, status: "ARCHIVED" },
+          data: archived
+            ? { status: "ARCHIVED", archivedAt: new Date() }
+            : { status: "ACTIVE", archivedAt: null }
+        });
+        if (changed.count !== 1) {
+          const existing = await transaction.student.findFirst({ where: { id, operatorId }, select: { status: true } });
+          if (!existing) return { outcome: "NOT_FOUND" as const };
+          if ((existing.status === "ARCHIVED") === archived) return { outcome: "ALREADY" as const };
+          return { outcome: "BALANCE_NOT_ZERO" as const };
+        }
+        const student = await transaction.student.findUniqueOrThrow({ where: { id }, select });
+        await transaction.operatorAudit.create({ data: {
+          operatorId,
+          actorId,
+          action: archived ? "STUDENT_ARCHIVE" : "STUDENT_RESTORE",
+          summary: archived ? `Mengarsipkan siswa: ${student.name}` : `Memulihkan siswa dari arsip: ${student.name}`
+        } });
+        return { outcome: "UPDATED" as const, student: formatStudent(student) };
+      });
+    },
     find: async (id, operatorId) => {
       const found = await prisma.student.findFirst({ where: { id, ...(operatorId ? { operatorId } : {}) }, select });
       return found ? formatStudent(found) : null;
@@ -101,8 +132,11 @@ export function studentManagement(environment: AuthenticationEnvironment = loadA
       if (!operatorId && search) {
         searchOR.push({ operator: { name: { contains: search } } });
       }
-      const where = {
-        ...(operatorId ? { operatorId } : {}), ...(status ? { status } : {}),
+      const where: Prisma.StudentWhereInput = {
+        ...(operatorId ? { operatorId } : {}),
+        // No status asked for means everyday work: archived Students are left
+        // out, and appear only when the "Diarsipkan" filter asks for them.
+        status: status ?? { not: "ARCHIVED" },
         ...(search ? { OR: searchOR } : {})
       };
       const [items, total] = await prisma.$transaction([
