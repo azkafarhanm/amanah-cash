@@ -5,6 +5,15 @@
 **Owner:** Project Owner
 **Last Updated:** 2026-07-31
 
+> **Status note (2026-10-16).** This roadmap has not been revised since
+> 2026-07-31 and no longer describes the current state. The application has
+> been in production on Vercel with Neon PostgreSQL since September 2026, and
+> work since then has been driven by issues found in use rather than by the
+> batches below. For what has shipped, read `CHANGELOG.md`; for the current
+> system, `AI_CONTEXT.md` and `README.md`. The phases, status values and
+> "ON HOLD" items below are a historical record, not instructions. A new
+> forward plan is a Product Owner decision and has not been written.
+
 ---
 
 ## 1. Purpose
@@ -1007,7 +1016,7 @@ MVP scope. Every batch preserves existing functionality, domain rules,
 authorization boundaries, and financial integrity. The Design System Foundation
 (`docs/51-design-system-foundation-v2.md`), Dashboard Analytics Specification
 (`docs/52-dashboard-analytics-specification.md`), and Students Management
-Specification (`docs/53-students-management-specification.md`) are the visual
+Specification (`docs/57-students-management-specification.md`) are the visual
 references for Phase 2 work.
 
 ## 11. Sprint 7 — Design System Polish
@@ -1497,7 +1506,7 @@ documentation.
 
 **Completion evidence (2026-08-02):**
 
-- Issued formal MVP Quality Completion report at `docs/52-mvp-quality-completion-report.md`.
+- Issued formal MVP Quality Completion report at `docs/52-mvp-quality-completion-report.md` (removed 2026-10-16; in the git history).
 - Automated repository gates passed: 228 automated tests passing, 0 TypeScript errors, 0 ESLint warnings/errors, Next.js production build clean.
 - All Sprint 8 Epics (8.1 Accessibility, 8.2 Performance, 8.3 Cross-Device/Theme, 8.4 Visual Review, 8.5 Final Audit) fully verified.
 - Approved for Release Qualification Phase (Sprint R1).
@@ -1779,12 +1788,12 @@ exists.
 | Product scope and exclusions | `docs/00-product-principles.md`, `docs/01-functional-requirements.md`, `README.md` |
 | Financial and ownership rules | `docs/03-business-rules.md`, `docs/04-domain-model.md` |
 | User behavior and states | `docs/05-user-flow.md`, `docs/06-wireframe.md`, `docs/14-component-guidelines.md`, `docs/19-screen-specifications.md` |
-| Architecture and persistence | `docs/08-system-architecture.md`, `docs/28-database-design.md`, `docs/36-adr-transaction-balance-and-audit.md`, `docs/37-technical-design-transaction-foundation.md` |
-| Authentication and authorization | `docs/27-adr-authentication-authorization.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md` |
+| Architecture and persistence | `docs/08-system-architecture.md`, `docs/07-database-design.md`, `docs/36-adr-transaction-balance-and-audit.md`, `docs/37-technical-design-transaction-foundation.md` |
+| Authentication and authorization | `docs/26-adr-authentication.md`, `docs/27-adr-authorization-and-roles.md`, `docs/29-technical-design-authentication-authorization.md`, `docs/30-authentication-persistence-design.md`, `docs/31-authentication-implementation.md`, `docs/32-authorization-implementation.md`, `docs/55-login-experience.md` |
 | Design implementation | `docs/12-ui-design-system.md`, `docs/14-component-guidelines.md`, `docs/16-accessibility-guidelines.md`, `docs/18-design-tokens.md` |
-| Remaining Landing Page feature | `docs/22-landing-page-strategy.md`, `docs/23-landing-page-blueprint.md`, `docs/24-landing-page-content.md`, `docs/25-landing-page-implementation-plan.md` |
-| Implemented MVP Settings feature | `docs/21-mvp-settings-specification.md`, `docs/50-settings-ui-ux-review-proposal.md`, `src/settings/`, `src/components/settings/` |
-| Implemented delivery state and known MVP interaction gap | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/34-operator-management-implementation.md`, `docs/35-student-management-implementation.md`, `docs/41-mvp-quality-assurance-report.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
+| Landing Page | `docs/22-landing-page-strategy.md`, `docs/23-landing-page-blueprint.md`, `docs/24-landing-page-content.md`, `docs/56-landing-page-design-content-specification.md` |
+| Implemented MVP Settings feature | `docs/21-mvp-settings-specification.md`, `src/settings/`, `src/components/settings/` |
+| Implemented delivery state | `AI_CONTEXT.md`, `CHANGELOG.md`, `docs/34-operator-management-implementation.md`, `docs/35-student-management-implementation.md`, `docs/42-dashboard-implementation.md`, `docs/43-reporting-foundation.md`, `docs/44-export-foundation.md`, `docs/48-financial-assurance-implementation.md` |
 | Production/export gaps | `docs/02-non-functional-requirements.md`, `docs/45-export-production-readiness-review.md` |
 
 ## 16. Roadmap Integrity Check
@@ -1795,7 +1804,7 @@ At this revision:
 - Phase 1 (Functional MVP, Sprints 0–6) is `COMPLETE`.
 - Phase 2 (Design System Polish, Sprint 7) is `COMPLETE` (Batches 7.1.1, 7.2.1, 7.3.1, 7.4.1, 7.5.1 complete). Batch 7.3.2 (Landing Page Visual Evidence) remains `BLOCKED` by Product Owner decisions.
 - Phase 3 (Product Quality Assurance, Sprint 8) is `COMPLETE` (Epics 8.1 through 8.5 complete).
-- The MVP Quality Completion report (`docs/52-mvp-quality-completion-report.md`) has been issued and approved for Release Qualification (Sprint R1).
+- The MVP Quality Completion report was issued and approved for Release Qualification (Sprint R1). It has since been removed from `docs/`; it is in the git history.
 
 - The Landing Page visual evidence work (authentic screenshots, brand identity)
   is folded into Batch 7.3.2 and remains `BLOCKED` by Product Owner decisions on

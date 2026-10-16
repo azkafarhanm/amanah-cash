@@ -21,7 +21,7 @@ This specification extends the existing Landing Page strategy, blueprint, and co
 documents with the current MVP scope and broader institutional positioning. Until
 fully synchronized, the currently approved and implemented contracts in
 `docs/22-landing-page-strategy.md` through
-`docs/25-landing-page-implementation-plan.md` remain authoritative.
+`docs/24-landing-page-content.md` remain authoritative.
 
 If this proposal conflicts with product requirements, business rules, privacy
 boundaries, authorization rules, or implemented behavior, those higher

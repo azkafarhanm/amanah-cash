@@ -1,6 +1,8 @@
 # Amanah Cash
 
-Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform provides Google authentication, centralized role and ownership authorization, Operator and Student management, the complete Transaction Engine, its Operator-facing financial UI, Student Financial History timeline, and centralized Rupiah formatting.
+Amanah Cash is a mobile-first Progressive Web App for managing funds entrusted to Students. The implemented platform provides Google authentication, centralized role and ownership authorization, Operator and Student management (including archiving Students who have left), the complete Transaction Engine, its Operator-facing financial UI, Student Financial History timeline, reports and exports, dashboards, Student profile photos, and centralized Rupiah formatting.
+
+It runs in production on Vercel with a Neon PostgreSQL database. The current version is in `package.json` and what each release changed is in [CHANGELOG.md](CHANGELOG.md).
 
 ## Problem Statement
 
@@ -38,6 +40,7 @@ Included:
 - Platform Admin management of Operator accounts and Student assignments.
 - Operator self-provisioning of Students ("+ Tambah Student") automatically bound to the active Operator session.
 - Create, edit, list, search, filter, paginate, and view Students.
+- Archive a Student who has left, once their balance is zero, and restore them. Archived Students leave everyday lists, the transaction picker, and dashboard counts; their history and past reports are kept. See BR-STU-008 in [Business Rules](docs/03-business-rules.md).
 - Operator visibility limited to currently assigned Students.
 - Read-only administrative and ownership-scoped operational dashboards with reusable summary and activity cards.
 - Read-only administrative reports and ownership-scoped Operator financial reports with composable periods, summaries, sorting, pagination, and Student detail timelines.
@@ -58,12 +61,14 @@ Implemented financial engine scope:
 Excluded:
 
 - Offline synchronization.
-- Hard Transaction deletion and Student deletion.
+- Hard Transaction deletion and Student deletion. Database triggers refuse to delete Transactions and financial audit events; a Student who has left is archived instead.
 - Transaction transfer, schedules, monthly allowance, categories, attachments, approval workflow, advanced export document styling, advanced analytics, notifications, and bulk operations remain unimplemented extension scope.
 - Multiple currencies and distributed infrastructure.
 - Audit-detail inspection is read-only and allow-listed; the timeline and drawer never expose raw snapshots or internal metadata.
 
-Auth.js with Google and Database Sessions is implemented. Platform Admin provisions Operator identities; Amanah Cash owns roles, activation, and authorization. Platform Admin has no routine financial-data access. SQLite remains the current approved persistence target, while production deployment decisions remain deferred to the Deployment phase.
+Auth.js with Google and Database Sessions is implemented. Platform Admin provisions Operator identities; Amanah Cash owns roles, activation, and authorization. Platform Admin has no routine financial-data access.
+
+Production runs on Vercel with Neon PostgreSQL. Local development can target either SQLite or PostgreSQL; the two share one schema contract, and tests assert that the financial integrity guards and audit constraints are present on both.
 
 ## Documentation Map
 
@@ -78,10 +83,10 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Wireframes](docs/06-wireframe.md) | Structured UI specification |
 | [Database Design](docs/07-database-design.md) | Schema and integrity |
 | [System Architecture](docs/08-system-architecture.md) | Technical responsibilities |
-| [Landing Page Design & Content Specification](docs/48-landing-page-design-content-specification.md) | Proposed approval-gated public product narrative and experience specification |
-| [Development Roadmap](docs/09-development-roadmap.md) | Executable feature and release sequence |
+| [Development Roadmap](docs/09-development-roadmap.md) | Historical delivery sequence up to 2026-07-31; see its status note |
 | [MVP Settings Specification](docs/21-mvp-settings-specification.md) | Approved appearance, preferences, Backup/Restore, Security, About, roles, states, and exclusions |
-| [Settings UI/UX Review Decision](docs/50-settings-ui-ux-review-proposal.md) | Approved decision record for the Light/Dark direction, restrained navigation motion, and lean MVP Settings scope |
+| [Landing Page Strategy](docs/22-landing-page-strategy.md) | Landing Page positioning, motion rules, and the recorded phone-aurora exception |
+| [Landing Page Design & Content Specification](docs/56-landing-page-design-content-specification.md) | Public product narrative and experience specification |
 | [Engineering Rules](docs/10-engineering-rules.md) | Contributor standards |
 | [Development Workflow](docs/11-development-workflow.md) | Requirement-to-release workflow |
 | [Authentication and Authorization TDS](docs/29-technical-design-authentication-authorization.md) | Implementation contract for identity, sessions, roles, and ownership |
@@ -96,7 +101,6 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Transaction Engine Implementation](docs/38-transaction-engine-implementation.md) | Physical schema, atomic write protocol, APIs, migration policy, errors, and tests |
 | [Transaction UI Implementation](docs/39-transaction-ui-implementation.md) | Financial overview, history, filters, forms, lifecycle dialogs, accessibility, and UI tests |
 | [UX Polish and Placeholder Strategy](docs/40-ux-polish-and-placeholder-strategy.md) | Planned-feature placeholders, empty/loading/error state taxonomy, navigation consistency, mobile behavior, and accessibility |
-| [MVP QA Report](docs/41-mvp-quality-assurance-report.md) | Executed workflow matrix, defects, regression evidence, limitations, and release recommendation |
 | [Dashboard Implementation](docs/42-dashboard-implementation.md) | Dashboard read model, reusable cards, performance, authorization, privacy, and verification |
 | [Reporting Foundation](docs/43-reporting-foundation.md) | Report read model, polished filters/states/summaries/tables, accessibility, ownership/privacy boundaries, performance, and export integration |
 | [Export Foundation](docs/44-export-foundation.md) | Coordinator, documents, registry, CSV/Excel/PDF adapters, authorized endpoints, privacy boundaries, and presentation boundaries |
@@ -104,7 +108,10 @@ Auth.js with Google and Database Sessions is implemented. Platform Admin provisi
 | [Excel Export Foundation](docs/46-excel-export-foundation.md) | ExcelJS adapter, workbook layout, registry/HTTP integration, guard rails, tests, and deferred presentation work |
 | [PDF Export Foundation](docs/47-pdf-export-foundation.md) | PDFKit adapter, document-derived layout, pagination, registry/HTTP integration, guard rails, and tests |
 | [Financial Assurance Implementation](docs/48-financial-assurance-implementation.md) | Reconciliation, immutable audit reads, protected APIs, timeline UI, ownership/privacy boundaries, and verification |
+| [Profile Photos Specification](docs/53-profile-photos-feature-specification.md) | Profile photo design, storage, rendering, and delivery phases |
 | [WebGL Perimeter LED Specification](docs/54-webgl-perimeter-led-specification.md) | Production WebGL perimeter LED lighting, geometry/SDF math, motion, fallback, and acceptance |
+| [Login Experience](docs/55-login-experience.md) | The login screen as implemented: lamp choreography, returning browsers, brand plaque and contrast, layout, known accessibility gaps |
+| [Students Management Specification](docs/57-students-management-specification.md) | Visual reference for the Student list and detail screens |
 
 AI assistants should begin with [AI_CONTEXT.md](AI_CONTEXT.md).
 
@@ -146,6 +153,10 @@ A production build never applies migrations. `npm run build` runs `npm run db:ch
 | `GOOGLE_CLIENT_SECRET` | When `AUTH_DEV_MODE=false` | Secret matching the Google client ID. |
 | `EXPORT_MAX_ROWS` | Optional; defaults to `10000` | Positive synchronous export row guard rail; this is not a measured capacity guarantee. |
 | `EXPORT_MAX_BYTES` | Optional | Positive estimated and final rendered-byte guard rail. |
+| `BLOB_READ_WRITE_TOKEN` | Student photos | Vercel Blob token for the private Student photo store, used to upload and serve photos. |
+| `DEV_SEED_ADMIN_EMAIL` | Development seed; local auth | Platform Admin seed email and local-auth allowlist entry. |
+| `DEV_SEED_OPERATOR_EMAIL` | Development seed; local auth | Operator seed email and local-auth allowlist entry. |
+| `DEV_SEED_STUDENT_NAME` | Development seed | Seeded Student name. |
 
 Run `npm run env:check:production` before deployment qualification. It forces
 production-mode validation of Google OAuth, HTTPS origin, server-only database
@@ -153,9 +164,19 @@ configuration, secrets, and export limits while redacting database location and
 secret values.
 See [Production Preflight](docs/49-production-preflight.md) for dependency review,
 diagnostic evidence, remaining blockers, and Manual QA.
-| `DEV_SEED_ADMIN_EMAIL` | Development seed; local auth | Platform Admin seed email and local-auth allowlist entry. |
-| `DEV_SEED_OPERATOR_EMAIL` | Development seed; local auth | Operator seed email and local-auth allowlist entry. |
-| `DEV_SEED_STUDENT_NAME` | Development seed | Seeded Student name. |
+
+### Applying a migration to production
+
+`npm run build` refuses to ship while the production database is behind, so a
+release that adds a migration needs the migration applied **before** its pull
+request is merged. In practice this has been done in the Neon SQL Editor on the
+`amanah_cash` database: run the migration file from
+`prisma/migrations_postgresql/<name>/migration.sql` together with an
+`INSERT INTO "_prisma_migrations"` row whose `checksum` is the `sha256sum` of that
+file, inside `BEGIN … COMMIT`, then verify before merging. Running
+`npx prisma migrate deploy` against the production `DIRECT_URL` achieves the same.
+A pull request preview built before the migration was applied fails that check by
+design; redeploy it afterwards.
 
 ### Authentication Modes
 
@@ -238,13 +259,17 @@ Known roadmap routes render an explicit planned or in-development placeholder in
 
 ## Development Roadmap
 
-Project Foundation, Student Management, authentication, authorization, App Shell, Operator Management, the Transaction Engine, Transaction UI, developer onboarding, UX Polish, MVP QA, Dashboard Foundation, Reporting Foundation, guard-railed Export Foundation with CSV, Excel, and PDF, Sprint 2 (Student Financial History, Global Currency Standardization, Search UX, QA Fixes, UI Polish), Sprint 3 report/export presentation enhancements, Financial Assurance through the Audit Detail Drawer, Repository Production Preflight, and Admin form validation recovery are complete. Server-rejected Admin Operator and Student create/edit forms now preserve submitted values with associated inline errors and predictable focus. The application is tagged `v1.1.0`. The current recommendation remains **READY WITH MINOR LIMITATIONS**; measured per-format export capacity, streaming/snapshot architecture, advanced export document styling, and deployment qualification remain bounded future work.
+The MVP is complete and in production. Delivered work, newest first, is in [CHANGELOG.md](CHANGELOG.md), which the app also shows under Settings → About. The original sprint plan is kept in [docs/09](docs/09-development-roadmap.md) as a historical record; no forward plan has been written since it.
+
+Known limits that remain open: measured per-format export capacity and a streaming export path, advanced export document styling, backup and restore on the PostgreSQL production target (they work on SQLite only), and the login screen's reduced-motion and screen-reader gaps listed in [Login Experience](docs/55-login-experience.md) §8.
 
 ## Contributing
 
 Contributions must trace to approved requirements, preserve atomic persisted-Balance reconciliation, controlled Transaction lifecycle, immutable audit, ownership/privacy boundaries, architecture layers, relevant verification, and synchronized documentation. Follow the [Engineering Rules](docs/10-engineering-rules.md) and [Development Workflow](docs/11-development-workflow.md).
 
-Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run prisma:validate`, and `npm run build` before handing off an implementation sprint. Every sprint must also synchronize `AI_CONTEXT.md` and relevant implementation documentation.
+Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run prisma:validate`, and `npm run build` before handing off a change. Keep `AI_CONTEXT.md` and the relevant implementation documentation in step with it.
+
+`npm test` regenerates the Prisma client for SQLite into `src/generated/prisma`, the same folder the PostgreSQL client uses. If your local database is PostgreSQL, run `npx prisma generate` (or `npm run typecheck`) after the tests, before using the dev server again.
 
 ## License
 
