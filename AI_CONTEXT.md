@@ -1,7 +1,7 @@
 # Amanah Cash — Canonical Engineering Handoff
 
-**Last updated:** 2026-08-04
-**Current delivery state:** Phases 1–3 of Profile Photos complete; Sprint 7–8 product quality complete; Release Phase ON HOLD
+**Last updated:** 2026-10-16
+**Current delivery state:** Version 1.2.0, in production on Vercel with Neon PostgreSQL. The MVP is complete; work since September has been driven by issues found in use. No forward roadmap has been written since `docs/09` (see its status note).
 
 ## Project Purpose
 
@@ -20,7 +20,7 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Transaction Engine implemented with Prisma persistence, fail-closed migration, protected Operator APIs, SQLite `BEGIN IMMEDIATE` serialization, Balance/version guards, command idempotency, immutable audit, lifecycle rollback, and comprehensive tests.
 - Transaction UI implemented on Operator Student Detail with committed Balance overview, newest-first filtered cursor history, Deposit/Withdrawal/Correction forms, edit, soft delete, restore, safe retry identity, mobile responsiveness, and accessible dialogs.
 - UX Polish implemented with one reusable planned-feature placeholder, complete sidebar route outcomes, richer dashboard previews, contextual empty/search states, ownership-scoped Operator list balances, responsive table cards, differentiated error states, and layout-stable skeletons.
-- MVP Quality Assurance completed across authentication, administration, Student ownership, every Transaction lifecycle mutation, long-chain Balance reconciliation, authorization routes, UI states, database integrity, and performance smoke checks. Five confirmed defects were fixed with regression coverage; see `docs/41-mvp-quality-assurance-report.md`.
+- MVP Quality Assurance completed across authentication, administration, Student ownership, every Transaction lifecycle mutation, long-chain Balance reconciliation, authorization routes, UI states, database integrity, and performance smoke checks. Five confirmed defects were fixed with regression coverage. (The QA report itself was removed from `docs/` on 2026-10-16 and is in the git history.)
 - Dashboard and Analytics Foundation implemented as a read-only presentation layer: privacy-safe Admin aggregates and activity, ownership-scoped Operator counts/managed Balance/daily activity, reusable dashboard cards, responsive skeletons, meaningful empty states, fixed bounded queries, and isolation tests. No schema, authorization, ownership, or financial-write behavior changed.
 - Reporting Foundation implemented and production-polished as a read-only presentation layer: privacy-safe Admin activity reports, ownership-scoped Operator financial history and Student timelines, reusable filters/summaries/tables, Asia/Jakarta periods, sorting, database pagination, persisted exact-revision Balance evidence, distinct no-assignment/first-use/search/filter states with contextual actions, explanatory zero summaries, grouped dates, pending/live-result feedback, semantic responsive tables, and an export adapter contract. No Dashboard, schema, authorization, ownership, or financial-write behavior changed.
 - Export Foundation implemented as a downstream Reporting consumer: centralized authorized export endpoints, a read-service-only multipage coordinator, presentation-neutral documents, an extensible CSV/Excel/PDF registry with all three formats enabled, shared display formatters, UTF-8/escaped/spreadsheet-safe CSV serialization, presentation-only ExcelJS workbooks, and presentation-only paginated PDFKit reports with repeated table headers. Centralized row/optional-byte guard rails, controlled oversized errors, privacy-safe Jakarta filenames, and registry-gated UI actions apply to every format. No Reporting calculation/query, authorization, ownership, Dashboard, Transaction Engine, schema, or Export Contract behavior changed.
@@ -52,56 +52,30 @@ Amanah Cash is a mobile-first PWA for recording financial events after they occu
 - Premium Visual Overhaul: switched color system from ink-blue/slate to teal/navy per docs/51. Light theme accent is now teal (#0D9488); dark theme uses deep navy (#0A0F1E) canvas with teal-400 (#2DD4BF) accent. Added navy + purple primitive palettes. Added dark theme glass override, surface depth (gradient backgrounds, inset highlights, hover elevation), button micro-interactions (hover lift, active press), and fixed all remaining hardcoded values in dashboard CSS.
 - Sprint 7 — Epic 7.4 Batch 7.4.1 (Motion Polish) complete: added global prefers-reduced-motion overrides in globals.css covering all elements, aligned hover transitions, focus ring visual treatments, and loading skeletons across component CSS modules using design system tokens (--motion-duration-fast, --motion-ease-standard), verified that financial values never animate or transition, and added test/motion-polish.test.ts for automated regression coverage. No behavior, API, or contract changes.
 - Sprint 7 — Epic 7.5 Batch 7.5.1 (Responsive Polish) complete: added iOS/mobile safe-area inset support (env(safe-area-inset-*)) across App Shell, Context Detail Drawer, and mobile bottom-sheet dialogs; enforced 44px min touch targets across all interactive controls; guaranteed 320px viewport safety with overflow-wrap/word-break/min-width reflow; added test/responsive-polish.test.ts for automated regression coverage. No behavior, API, or contract changes.
-- Sprint 8 — Product Quality Assurance complete: audited Accessibility (8.1), Performance (8.2), Cross-Device & Theme QA (8.3), Visual Review (8.4), and Final MVP Alignment (8.5). Added test/sprint8-quality-assurance.test.ts (228 total tests passing) and issued the official MVP Quality Completion report at docs/52-mvp-quality-completion-report.md. Approved for Release Qualification Phase (Sprint R1).
+- Sprint 8 — Product Quality Assurance complete: audited Accessibility (8.1), Performance (8.2), Cross-Device & Theme QA (8.3), Visual Review (8.4), and Final MVP Alignment (8.5). Added test/sprint8-quality-assurance.test.ts (228 total tests passing at the time) and issued an MVP Quality Completion report, since removed from `docs/` and kept in the git history. Approved for Release Qualification Phase (Sprint R1).
 - Shared secondary button affordance polish complete: all shared secondary `Button` consumers now receive tokenized hover elevation and border emphasis plus subtle pressed feedback in Light and Dark themes. Existing focus-visible, disabled/loading, and reduced-motion behavior is preserved; reconciliation behavior is unchanged.
 - Authenticated shell scope alignment complete: removed the non-functional notification bell and its obsolete styles because notifications remain outside the approved MVP. Header account alignment, responsive behavior, keyboard navigation, and logout accessibility remain unchanged; no notification subsystem or placeholder was added.
 - Profile Photos Phase 2.3 complete: StudentAvatar renders in Student list, Student detail header, workspace student picker, dashboard recent students, operator dashboard attention students, dashboard recent activity, and admin dashboard latest assignments. All surfaces use the shared StudentAvatar component with authorized same-origin photo delivery. Ownership transfer immediately changes media authorization.
 - Profile Photos Phase 3 complete: Student avatars verified in all approved dashboard surfaces (Recent Activity, attention students, latest assignments, recent students). Operator avatars with Google-sourced User.image added to admin dashboard student-distribution list using shared Avatar component at sm size. No photos in KPI cards, Quick Actions, Smart Insights, or aggregate statistics. Avatar rendering hierarchy redesigned with neutral container and dedicated fallback layer — eliminates background-color flash. No changes to upload pipeline, storage, authorization, schema, business logic, reports, exports, or backup.
 - WebGL Perimeter LED Production Default complete: Promoted hardware-accelerated WebGL perimeter lighting (`WebglPerimeterLed`) to the `/login` production default (commit `8b8ea5e`). Implements the `reference-v2-glm-no-outline-neon-tube-ultra` visual profile featuring 4 traveling LED ribbons (2 Warm Amber + 2 Teal) in an 8000ms continuous orbit with 90° (25%) spacing, ~5.0px solid chunky neon tube diameter, 100% solid blunt front cap, gradual tapered fade tail, 30px sweeping corner radius, hidden decorative static SVG outline, and automatic `StaticPerimeterFallback` SVG degradation for non-WebGL or reduced-motion environments. Hands-on device acceptance testing passed on Chrome on Android and Hola Browser. Documented in `docs/54-webgl-perimeter-led-specification.md`.
+- Production deployment (September 2026): Vercel hosting with Neon PostgreSQL. PostgreSQL migrations live in `prisma/migrations_postgresql/` and carry integrity guards matching SQLite (immutable financial audit, transaction shape, `operator_audit.action`). `npm run build` runs `db:check` and refuses to build while the database is missing a migration; migrations are applied to production before their pull request is merged (README → "Applying a migration to production").
+- Hardening after launch: financial writes lock the Student row before authorization; Prisma's P2028 is classified as a retryable busy error; Corrections can be edited; transaction reasons are optional; the installed PWA opens at the dashboard with a persistent session; back navigation restores scroll position; logout asks for confirmation; action feedback is standardized.
+- Stale figures fixed (October 2026): sidebar links no longer use `prefetch={true}`, which had served money pages from a five-minute client cache; a `popstate` listener (`history-navigation-refresh.tsx`) refetches on browser Back/Forward.
+- Login screen (October 2026): brand lockup on a frosted plaque, darker light-theme accent, measured contrast script, empty card rows removed, overscroll bounce disabled on that page only. Documented from the implementation in `docs/55-login-experience.md`.
+- Destructive confirmations (October 2026): `Button` has a `danger` variant and `ConfirmationDialog` a `tone`; red is reserved for actions that cannot be undone.
+- Phone aurora (October 2026): the landing-page hero aurora has its own shader path on phones (`mobileAurora()`), sampling noise in pixel-true units so it reads as a ribbon rather than vertical pillars. Desktop rendering is pixel-identical to before. Recorded in `docs/22` §8.5.1.
+- Student archive (October 2026, v1.2.0): Operators archive and restore their own zero-balance Students; Platform Admin does the same through the edit form. Archived Students leave everyday lists, the transaction picker, and dashboard counts; history and past reports are kept. BR-STU-008 in `docs/03`; migration `015_student_archive` / `20261016000000_student_archive`.
 
 
 ## Current Implementation Status
 
-Profile Photos Phase 1 is complete. The shared `src/components/ui/avatar.tsx`
-primitive supports XS, SM, MD, and LG account-avatar sizes, renders existing
-Auth.js `User.image` metadata when present, and preserves deterministic initials
-or `?` fallback without layout shift. It is used only in the authenticated
-header, sidebar account section, and the Admin/Operator Settings account section.
-The Admin Operator list did not previously display avatars, so its read contract
-was intentionally left unchanged. Student photos, uploads, media APIs, object
-storage, dashboard photos, schema changes, and backup changes remain pending
-future phases under `docs/53-profile-photos-feature-specification.md` and ADR-005.
-
-Profile Photos Phase 2.1 is also complete as an internal-only foundation.
-Migration `013_student_profile_photo_foundation.sql` adds nullable
-`Student.photoObjectKey`/`Student.photoUpdatedAt` persistence with a database
-constraint requiring both values to be null or both populated. `src/media/`
-owns provider-neutral storage, image-processor, media-service, metadata,
-validation, and immutable-key contracts. The Student-photo UI flag remains
-disabled and no application read model, page, route, Vercel Blob adapter,
-upload/delete workflow, dashboard, Financial Assurance, or backup behavior
-consumes the new fields. Phase 2.2 requires separate Engineering Review and
-Manual QA approval.
-
-Profile Photos Phase 2.2 is complete. The assigned Operator's Student Detail is
-the only surface with photo controls. Its client workflow requires an explicit
-1:1 crop confirmation, creates a compressed local WebP preview, and uploads the
-original plus normalized crop coordinates. The authenticated owner-only upload
-route repeats authoritative MIME/content, size, decoded dimension/pixel, static
-image, and crop validation; Sharp applies orientation, strips metadata, and
-creates 64/96/128/512 WebP renditions. `ProfilePhotoMediaService` writes every
-object through `MediaStorage`; `VercelBlobStorage` is the provider adapter.
-SQLite receives only the immutable object-family key and update timestamp after
-all objects succeed, using an ownership/current-reference precondition. A new
-upload never deletes the old family. Failed persistence leaves the Student row
-unchanged and attempts immediate rollback of only the newly written family.
-Broad Student avatar integration remains disabled pending Phase 2.3; there is
-still no media read route, delete-photo workflow, cleanup job, dashboard or
-Financial Assurance photo, or backup integration.
+Profile Photos are complete through Phase 3 (`docs/53-profile-photos-feature-specification.md`, ADR-005). Account avatars use Auth.js `User.image`, refreshed from Google at sign-in, with deterministic initials fallback. Operators upload Student photos from Student Detail: a mandatory 1:1 crop, server re-validation, Sharp normalization to 64/96/128/512 WebP renditions, and private Vercel Blob storage behind the provider-neutral `MediaStorage` boundary (`BLOB_READ_WRITE_TOKEN`). The database stores only the immutable object-family key and update time, written after every object succeeds; a failed write leaves the previous photo in place. Photos are served through an owner-authorized same-origin route and appear in Student lists, detail, the transaction picker, and dashboard activity, never in KPI or aggregate surfaces. There is still no delete-photo workflow, cleanup job, or backup integration for photos.
 
 The application has three complete business modules—Operator Management, Student Management, and the Transaction Engine—plus its complete Operator-facing Transaction UI, Transaction Workspace, Student Financial History timeline, Global Currency Standardization, debounced live search, and polished filter/cursor UX.
 
 Platform Admin can manage Operator accounts at `/admin/operators` and Students at `/admin/students`. New Operators are inactive until explicitly activated. An Operator cannot be deactivated or logically deleted while Students remain assigned. Operator deletion preserves the Google identity and audit history.
+
+Students who have left are archived, not deleted (BR-STU-008). An Operator archives from the foot of Student Detail once the balance is zero, and restores from the banner shown on an archived Student. `studentManagement().list()` with no status excludes `ARCHIVED`; the "Diarsipkan" filter is the only way an archived Student appears in a list. Platform Admin archiving or restoring through the edit form goes through the same guarded, audited `setArchived` step. Each change writes `STUDENT_ARCHIVE` or `STUDENT_RESTORE` to `operator_audit` and sets or clears `students.archived_at`.
 
 Every Student has exactly one active Operator. Platform Admin can create and edit Students and change their Operator. Reassignment requires a reason and atomically changes the current `operatorId` plus appends a privacy-minimized immutable `OWNERSHIP_TRANSFER` audit event. All existing ownership authorization immediately follows the new owner. Operators can list and view only their own Students at `/operator/students`; cross-Operator detail access is masked through the existing owner policy.
 
@@ -117,16 +91,9 @@ Admin and Operator report pages expose implemented CSV, Excel, and PDF downloads
 
 `/operator/transactions` renders the production **Transaction Workspace** (`TransactionWorkspaceView`), combining compact today cash flow drawer metrics (`WorkspaceMetricsBanner`), URL SearchParams-synchronized filters (`WorkspaceFilterToolbar`), multi-student transaction streams, student notes/class identity, responsive desktop tables, mobile touch cards, loading skeletons, and cursor-based load-more pagination directly connected to `GET /api/operator/transactions`. Server API remains the single source of truth; client code performs zero manual sum or total recalculations.
 
-Latest verification:
+Latest verification (2026-10-16, v1.2.0): TypeScript, ESLint, and the full test suite (317 tests) pass; `npm run build` passes locally; the Student archive migration is applied to production and verified (both constraints present, `_prisma_migrations` checksum matching the file).
 
-- Prisma format, validation, and client generation: passed.
-- TypeScript: passed.
-- ESLint: passed.
-- Production build: passed.
-- Automated tests: Profile Photos Phase 2.2 focused coverage passes, including upload success, validation rejection, replacement, persistence rollback, and storage-boundary usage. Full-suite verification is required at each release gate.
-- Isolated development-auth HTTP workflow: passed for both roles, logout/session enforcement, ownership masking, admin lifecycle, Student lifecycle, malformed request handling, and the complete financial chain.
-- Database reconciliation: persisted and independently aggregated Balance both `2100`; financial version `7`; four retained Transactions; seven lifecycle audit events; zero foreign-key or orphan violations.
-- Release recommendation: **MVP QUALITY COMPLETE — APPROVED FOR RELEASE QUALIFICATION (SPRINT R1)**.
+Browser-level checks that are not part of `npm test` live in `scripts/qa-*.ts` (login contrast, readability, pacing, takeover geometry). They need Playwright installed locally and a running dev server; Playwright is deliberately not a project dependency.
 
 ## Current Architecture Status
 
@@ -137,9 +104,9 @@ Central authentication and authorization boundaries
         ↓
 Feature domain services (Operators / Students / Transactions)
         ↓
-Prisma models plus serialized SQLite financial-write adapter
+Prisma models plus serialized financial-write adapter
         ↓
-SQLite relational database and invariant triggers
+PostgreSQL (production, Neon) or SQLite (local option), each with invariant triggers and constraints
 ```
 
 - `src/auth/` owns Google identity admission and database-session behavior.
@@ -164,7 +131,7 @@ SQLite relational database and invariant triggers
 - `src/app/api/admin/` and `src/app/api/operator/` expose role-appropriate JSON boundaries.
 - `src/components/app-shell/` remains the only authenticated application chrome.
 - `src/components/ui/` remains the shared design-system primitive layer.
-- `src/media/` owns Profile Photo validation, Sharp processing, immutable key generation, the provider-neutral storage/service boundaries, the Vercel Blob adapter, and conflict-safe Student reference orchestration. Only the Phase 2.2 owner upload route and Student Detail upload control consume it; media delivery and broad avatar reads remain disabled.
+- `src/media/` owns Profile Photo validation, Sharp processing, immutable key generation, the provider-neutral storage/service boundaries, the Vercel Blob adapter, and conflict-safe Student reference orchestration, and owner-authorized photo delivery.
 - `src/components/ui/context-detail-drawer.tsx` is the single platform Context Detail Drawer primitive. Feature consumers provide read-only content and do not own drawer geometry, modality, motion, or scrolling.
 - The implemented financial model uses Student persisted Balance/version, Student-owned Transactions, and immutable FinancialAuditEvents. Identity, account lifecycle, and authentication/session data remain separate from financial data.
 
@@ -178,9 +145,9 @@ SQLite relational database and invariant triggers
 - Deactivation and deletion revoke database sessions. Database triggers prevent either operation from orphaning Students.
 - Every Student has one required `operatorId`. Only active, non-deleted Operators may be assigned.
 - Student transfer requires a reason and commits the owner update plus privacy-minimized immutable `OWNERSHIP_TRANSFER` audit atomically. No Balance, Transaction snapshot, or financial delta is exposed to Platform Admin.
-- Student statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. Inactive and archived Students remain visible to their owner but are financially read-only.
+- Student statuses are `ACTIVE`, `INACTIVE`, and `ARCHIVED`. Inactive and archived Students are financially read-only. Inactive Students stay in everyday lists; archived Students are left out of them and reachable only through the "Diarsipkan" filter or a direct link. Archiving requires a zero balance.
 - Student names remain normalized and unique case-insensitively under the approved database rule.
-- Student and Operator search and pagination execute server-side with ten records per page.
+- Student and Operator search and pagination execute server-side. Page size is a per-user preference (10/20/50, default 20) with an explicit URL override.
 - Operator list queries are scoped by the authorized Operator ID. Operator detail additionally uses the centralized masked ownership policy.
 - Financial presentation is implemented for owned Operator Student detail and list summaries; authoritative Balance is persisted and changed only by the Transaction Engine.
 - Dashboard presentation is read-only. Admin projections never select financial detail; Operator projections require the server-derived current Operator ID, aggregate persisted owned balances, and bound recent activity to six rows.
@@ -202,7 +169,7 @@ SQLite relational database and invariant triggers
 
 `User`: Google identity, exact role, active state, creation time, last login time, and logical deletion time. Operator lifecycle events are recorded in `operator_audit`.
 
-`Student` (implemented): UUID, normalized unique name, optional notes, `ACTIVE`/`INACTIVE`/`ARCHIVED` status, creation/update times, one required active Operator owner, persisted non-negative whole-IDR `balance`, and monotonic `financialVersion`.
+`Student` (implemented): UUID, normalized unique name, optional notes, `ACTIVE`/`INACTIVE`/`ARCHIVED` status, `archivedAt` (set only while archived, enforced by a CHECK on both targets), creation/update times, one required active Operator owner, persisted non-negative whole-IDR `balance`, monotonic `financialVersion`, and an optional photo object-family key with its update time.
 
 `Transaction` (implemented): Student-owned `DEPOSIT`/`WITHDRAWAL`/`CORRECTION`, amount, bounded Notes, Correction direction/reason, business occurrence time, creation/latest actor metadata, revision, and soft-delete metadata. `FinancialAuditEvent` is immutable evidence with unique command identity, actor/scope, deterministic snapshots, Balance transitions, schema version, and correlation identity. No currency column exists because IDR is fixed.
 
@@ -213,7 +180,10 @@ SQLite relational database and invariant triggers
 - Platform Admin bootstrap remains environment/deployment-specific and is not automated.
 - A populated database predating mandatory ownership still requires an explicit Student-to-Operator mapping; the ownership migration intentionally refuses to invent one.
 - Real Google login requires deployment-specific OAuth credentials and exact callback registration.
-- SQLite is the approved current persistence target; production deployment topology remains deferred.
+- Backup and restore in Settings work on SQLite only. On the PostgreSQL production target they report `CLOUD_BACKUP_UNAVAILABLE`/`CLOUD_RESTORE_UNAVAILABLE`, so production has no in-app backup.
+- `npm test` writes the SQLite Prisma client into the folder the PostgreSQL client also uses; after the tests, run `npx prisma generate` before using a PostgreSQL dev server.
+- An Operator can only be deleted when no Students are assigned, and archived Students still count as assigned. The reconciliation (Pemeriksaan) list has no status filter, so archived Students are not listed there.
+- The login screen does not skip its dark room for reduced-motion users and does not announce when the card becomes usable (`docs/55` §8).
 - No offline data mutation or synchronization exists. The service worker supports installable delivery only.
 - CSV, Excel, and PDF export are implemented. Advanced export presentation, categories, attachments, schedules, monthly allowance, approvals, notifications, bulk operations, advanced analytics, and distributed infrastructure do not exist.
 - CSV, Excel, and PDF export are synchronous and fully buffered. They have a default 10,000-row cap and optional byte cap, but no deadline/concurrency control or cross-page snapshot and are not qualified to generate 30,000–100,000-row files. Such requests are rejected after the first Reporting page by default. See `docs/45-export-production-readiness-review.md`.
@@ -225,19 +195,14 @@ SQLite relational database and invariant triggers
 
 ## Outstanding Work
 
-- Review production deployment, database topology, backups, OAuth configuration, dependency advisories, and Platform Admin bootstrap in their separately approved phases.
+- Platform Admin bootstrap is still manual.
 - Resolve the documented ExcelJS/Archiver and Next.js PostCSS/Sharp high advisory chains through supported upstream releases or a separately approved and validated adapter/override decision.
 - Benchmark representative export workloads, tune the implemented row/byte limits, and define deadline/concurrency policy before claiming measured production capacity.
 - Decide on backpressure-aware CSV streaming and multipage consistency at the Reporting read boundary. Any background-job export path requires a separately approved architecture change.
 
 ## Next Recommended Sprint
 
-Phase 1 (Functional MVP), Phase 2 (Design System Polish), and Phase 3 (Product
-Quality Assurance — Sprint 8) are **COMPLETE**. The official MVP Quality Completion
-report (`docs/52-mvp-quality-completion-report.md`) has declared MVP Quality
-Complete.
-
-Next Phase: **Sprint R1 — Release and Deployment Qualification**.
+None is planned. Release and deployment qualification (the old "Sprint R1") is done: the application is in production. Candidates already identified, none of them scheduled, are in Known Limitations and Outstanding Work above. Choosing among them is a Product Owner decision.
 
 ## Core Business Rules to Preserve
 
@@ -261,6 +226,7 @@ Next Phase: **Sprint R1 — Release and Deployment Qualification**.
 - Invent an administrative financial bypass.
 - Change Student Balance outside the approved atomic Transaction Engine.
 - Hard-delete Transaction or FinancialAuditEvent history, or mutate immutable Transaction identity/ownership/creation fields.
+- Delete a Student. A Student who has left is archived (BR-STU-008); deleting one would require deleting their Transactions and audit events, which the database refuses.
 - Use floating-point money.
 - Split Transaction lifecycle, Balance/version, idempotency, or audit writes across transaction boundaries.
 - Put authoritative business logic in UI code.
@@ -278,7 +244,7 @@ Next Phase: **Sprint R1 — Release and Deployment Qualification**.
 | `docs/04-domain-model.md` | Entities and invariants |
 | `docs/07-database-design.md` | Implemented foundation plus approved Transaction Engine target schema/integrity contract |
 | `docs/08-system-architecture.md` | Architecture responsibilities |
-| `docs/09-development-roadmap.md` | Delivery milestones |
+| `docs/09-development-roadmap.md` | Historical delivery sequence to 2026-07-31 (not current; see its status note) |
 | `docs/10-engineering-rules.md` | Engineering standards |
 | `docs/26-adr-authentication.md` | Authentication decision |
 | `docs/27-adr-authorization-and-roles.md` | Roles and ownership decision |
@@ -293,15 +259,19 @@ Next Phase: **Sprint R1 — Release and Deployment Qualification**.
 | `docs/38-transaction-engine-implementation.md` | Implemented persistence, write protocol, protected APIs, migration policy, errors, and tests |
 | `docs/39-transaction-ui-implementation.md` | Implemented financial overview, history, filters, forms, lifecycle dialogs, accessibility, and UI tests |
 | `docs/40-ux-polish-and-placeholder-strategy.md` | Implemented placeholder architecture, state taxonomy, navigation outcomes, mobile behavior, and accessibility |
-| `docs/41-mvp-quality-assurance-report.md` | Executed QA matrix, confirmed defects and regressions, known limitations, and release recommendation |
 | `docs/42-dashboard-implementation.md` | Dashboard read model, reusable cards, performance, authorization/privacy boundaries, and verification |
 | `docs/43-reporting-foundation.md` | Reporting read model, filters, summaries, UX, authorization/privacy boundaries, and export integration |
 | `docs/44-export-foundation.md` | Export coordinator, documents, registry, CSV/Excel/PDF, endpoints, privacy, and future presentation boundaries |
 | `docs/45-export-production-readiness-review.md` | Export buffering, pagination cost, filenames, volume limits, consistency, and Production Hardening gates |
 | `docs/46-excel-export-foundation.md` | ExcelJS adapter, workbook presentation, registry integration, guard rails, tests, and deferred presentation work |
 | `docs/47-pdf-export-foundation.md` | PDFKit adapter, pagination, document-derived layout, registry integration, guard rails, tests, and deferred presentation work |
-| `docs/48-landing-page-design-content-specification.md` | Proposed approval-gated Landing Page positioning, information architecture, final copy, visual direction, motion, accessibility, and claim governance |
-| `docs/53-profile-photos-feature-specification.md` | Approved phased Profile Photos design; Phase 1 User-image integration is complete and later phases remain pending |
+| `docs/48-financial-assurance-implementation.md` | Reconciliation, immutable audit reads, timeline and detail drawer |
+| `docs/22-landing-page-strategy.md` | Landing Page strategy and motion rules, including the phone-aurora exception (§8.5.1) |
+| `docs/53-profile-photos-feature-specification.md` | Profile Photos design; complete through Phase 3 |
+| `docs/54-webgl-perimeter-led-specification.md` | Login card perimeter light |
+| `docs/55-login-experience.md` | Login screen as implemented, with its known accessibility gaps |
+| `docs/56-landing-page-design-content-specification.md` | Landing Page positioning, information architecture, copy, visual direction, and claim governance |
+| `docs/57-students-management-specification.md` | Visual reference for the Student screens |
 | `docs/adr/ADR-005-profile-photo-architecture.md` | Accepted Profile Photo storage, reference, authorization, fallback, placement, and backup architecture |
 
 ## Sprint Completion Rule

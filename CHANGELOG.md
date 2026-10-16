@@ -6,6 +6,60 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-10-16
+
+### Student Archive
+
+- Operators can archive a Student who has left, from the Student page, and restore them in one click. Archived Students no longer appear in Student lists, the transaction Student picker, or dashboard counts, and stay findable under the "Diarsipkan" filter.
+- Nothing is deleted. Transaction history is kept, and reports for past periods still include an archived Student's transactions.
+- Archiving requires a zero balance. The Student page shows the outstanding amount and asks for a withdrawal first.
+- Every archive and restore is recorded with who did it and when. Platform Admin archiving through the edit form follows the same rules.
+- The Student status filter's default option is now "Aktif & tidak aktif" instead of "Semua", because it leaves archived Students out.
+
+### Balances Stay Current
+
+- Figures are re-read when moving between pages from the sidebar, instead of a pre-transaction value being reused for up to five minutes after a deposit or withdrawal.
+- The browser's Back and Forward buttons now load current figures.
+- Going back restores the previous scroll position.
+
+### Transactions and Data Integrity
+
+- A Correction can now be edited, and valid withdrawal edits are no longer blocked in the transaction workspace.
+- A reason is now optional when recording or editing a transaction.
+- Financial writes lock the Student's record before checking permissions, closing a window where two edits could interleave.
+- A briefly busy database during a transaction is reported as "try again" rather than as a failure.
+- The production database now enforces the same integrity rules as development: immutable financial audit records, valid transaction shapes, and the list of recordable operator actions.
+- A release is refused if the production database is missing a migration, instead of shipping code ahead of its database.
+
+### Login Screen
+
+- The "Amanah Cash" wordmark now sits on a frosted plaque under the lamp, replacing a dark smudge. "Cash" and the tagline are clearly readable in both themes.
+- The light-theme brand teal is darker so the wordmark meets contrast requirements.
+- The login card no longer has an empty band under its description, and fits on short phone screens.
+- The login page no longer bounces when dragged on Android phones.
+
+### Landing Page
+
+- On phones, the hero aurora is drawn as a flowing ribbon like the desktop version instead of tall vertical columns, and carries more of the hero. The small supporting line under the headline is now readable over it.
+
+### Dialogs and Feedback
+
+- Logging out asks for confirmation.
+- Confirmation buttons for irreversible actions, such as deleting an Operator or restoring a backup, use a readable red style. Reversible actions, logging out included, use the normal button.
+- Actions across the app show consistent success and error messages.
+
+### Installed App and Session
+
+- The installed app opens at the dashboard and stays signed in across restarts.
+- Google profile photos are refreshed at sign-in.
+- Layout fixes on phones for the Student detail page, tables, and this changelog.
+
+### Documentation
+
+- Removed obsolete documents: the logo design brief and validation protocol, completed implementation plans, superseded QA reports, and an already-incorporated review proposal.
+- Merged the two conflicting login specifications into `docs/55-login-experience.md`, written from the current implementation.
+- Updated the README and engineering handoff, and marked the roadmap as a historical record.
+
 ### WebGL Perimeter LED Default Production Promotion
 
 - Promoted `WebglPerimeterLed` to the `/login` production default renderer with the `reference-v2-glm-no-outline-neon-tube-ultra` profile (commit `8b8ea5e`).
@@ -38,10 +92,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - Defined `package.json.version` as the canonical application version and documented the manual semantic-version release workflow.
 - Production builds now run release validation before compilation.
-
-### Fixed
-
-### Removed
 
 ### Authenticated Shell Scope Alignment
 
