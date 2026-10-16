@@ -96,7 +96,8 @@ export function StudentList({
           defaultValue={query.status ?? ""}
           onChange={(e) => updateParams(searchValue, e.target.value)}
         >
-          <option value="">Semua</option>
+          {/* No status means everyday work: archived Students are left out, so this is not "Semua". */}
+          <option value="">Aktif & tidak aktif</option>
           <option value="ACTIVE">Aktif</option>
           <option value="INACTIVE">Tidak aktif</option>
           <option value="ARCHIVED">Diarsipkan</option>

@@ -148,6 +148,7 @@ model Student {
   financialVersion     Int                   @default(0) @map("financial_version")
   photoObjectKey       String?               @map("photo_object_key")
   photoUpdatedAt       DateTime?             @map("photo_updated_at")
+  archivedAt           DateTime?             @map("archived_at")
 
   @@index([operatorId], map: "ix_students_operator")
   @@map("students")

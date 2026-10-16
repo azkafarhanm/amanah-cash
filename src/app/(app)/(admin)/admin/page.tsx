@@ -54,7 +54,7 @@ export default async function AdminHome() {
         <KpiCard
           label="Total Siswa"
           value={dashboard.students.total}
-          description={`${dashboard.students.active} aktif · ${dashboard.students.inactive} tidak aktif · ${dashboard.students.archived} diarsipkan`}
+          description={`${dashboard.students.active} aktif · ${dashboard.students.inactive} tidak aktif${dashboard.students.archived > 0 ? ` · ${dashboard.students.archived} diarsipkan, tidak dihitung` : ""}`}
           icon={GraduationCap}
           sparklineData={[10, 12, 15, 18, 20, 22, 25]}
           sparklineColor="var(--color-action-primary)"

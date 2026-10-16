@@ -79,6 +79,9 @@ export function operatorFormError(
 }
 
 function studentErrorField(error: StudentManagementError): StudentFormField | null {
+  // Matched by code first: the archive refusal mentions "Operator" in its text,
+  // and the substring checks below would otherwise pin it to the wrong field.
+  if (error.code === "BALANCE_NOT_ZERO" || error.code === "INVALID_STATE") return "status";
   if (error.code === "DUPLICATE_NAME" || error.message.includes("Nama")) return "name";
   if (error.message.includes("Catatan")) return "notes";
   if (error.message.includes("Status")) return "status";

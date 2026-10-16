@@ -44,6 +44,16 @@ Student notes are optional, trimmed before persistence, and limited to 500 chara
 
 Platform Admin creates and edits Student identity, notes, lifecycle status, and Operator assignment. Operators are also permitted to self-provision Students ("Tambah Student") directly assigned to their own active session (`operatorId` derived strictly from server session, client `operatorId` payload ignored). Operator student creation automatically records an immutable `STUDENT_CREATE` audit event.
 
+### BR-STU-008: Archiving a Student Who Has Left
+
+An Operator may archive a Student they own, and restore one they archived. Platform Admin may do the same through the Student edit form. Archiving is not deletion: no application operation removes a Student, a Transaction, or a financial audit event, and the database enforces this for the latter two.
+
+- **Balance must be zero.** A Student holding money cannot be hidden. The check and the status change are one conditional write, so a deposit committing first makes the archive fail. The Operator is told the outstanding amount; Platform Admin, which has no access to financial data, is told only that the balance is not yet zero.
+- **What it hides.** Archived Students are left out of every Student list unless the "Diarsipkan" filter asks for them, out of the transaction Student picker, and out of dashboard totals, per-Operator counts, and recent-Student lists. The transaction engine already refuses every financial command for a non-ACTIVE Student, so an archived balance stays at zero.
+- **What it keeps.** Reports and exports for past periods still include an archived Student's transactions, so a report reopened today matches the one printed then.
+- **Reversible.** Restoring sets the Student back to ACTIVE in one step. Because it can be undone, the archive confirmation uses the ordinary button, not the destructive one.
+- **Recorded.** Each archive and restore records `STUDENT_ARCHIVE` or `STUDENT_RESTORE` in `operator_audit`, with the actor. `students.archived_at` holds when, and may only be set while the Student is ARCHIVED; Students archived before this rule existed have no date.
+
 
 ## 3. Monetary Rules
 
